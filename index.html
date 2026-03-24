@@ -380,15 +380,17 @@
             <h2>맞춤 마케팅 상담 신청</h2>
             <p>입력해주신 내용을 확인한 후 순차적으로 연락드립니다. 업종과 예산에 맞는 현실적인 방향으로 상담해드립니다.</p>
           </div>
-          <ul class="meta-list">
-            <li><span class="check">✓</span><span>상호</span></li>
-            <li><span class="check">✓</span><span>담당자명</span></li>
-            <li><span class="check">✓</span><span>연락처</span></li>
-            <li><span class="check">✓</span><span>지역(선택)</span></li>
-            <li><span class="check">✓</span><span>업종</span></li>
-            <li><span class="check">✓</span><span>문의내용</span></li>
-          </ul>
-          <div class="info-box">
+      <div class="form-grid">
+                <div class="field"><label>상호</label><input name="business" placeholder="예: 모멘텀식당" required></div>
+                <div class="field"><label>담당자명</label><input name="manager" placeholder="성함을 입력하세요" required></div>
+                <div class="field"><label>연락처</label><input name="phone" placeholder="010-0000-0000" required></div>
+                <div class="field"><label>지역 (선택)</label><input name="region" placeholder="예:동래구, 남포동, 남산동, 보문단지 등"></div>
+                <div class="field"><label>업종</label><input name="industry" placeholder="예: 음식점, 병원, 미용" required></div>
+                <div class="field"><label>예상 광고 예산</label><input name="budget" placeholder="예: 월 10~300만원"></div>
+                <div class="field full"><label>현재 상태</label><input name="status" placeholder="예: 오픈 예정 / 운영 중 / 광고 진행 중"></div>
+                <div class="field full"><label>문의내용</label><textarea name="inquiry" placeholder="현재 고민, 목표, 원하시는 광고 방향/ 상품을 적어주세요." required></textarea></div>
+              </div>
+              <div class="form-actions">
             <div class="item-title">고객센터 안내</div>
             <div class="muted" style="margin-top:14px"><strong style="color:#0f172a">소재지</strong><br>부산 동래구 충렬대로 318 한양상가A동 204호</div>
             <div class="muted" style="margin-top:12px"><strong style="color:#0f172a">고객센터</strong><br>0507-1313-5668</div>
