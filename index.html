@@ -536,6 +536,28 @@
       });
     }
 
+    function applyDiagnosisToContact() {
+      if (new URLSearchParams(location.search).get('source') !== 'growth-diagnostic') return;
+      try {
+        const data = JSON.parse(sessionStorage.getItem('momentumLatestDiagnosis') || 'null');
+        const form = document.getElementById('contactForm');
+        if (!data || !form) return;
+        const status = form.querySelector('input[name="status"]');
+        const inquiry = form.querySelector('textarea[name="inquiry"]');
+        if (status && !status.value) status.value = `성장진단: ${data.industry} / ${data.area} / 목표 ${data.goal} / 예산 ${data.budget}`;
+        if (inquiry && !inquiry.value) inquiry.value = `1분 성장진단 결과를 바탕으로 상담을 요청합니다.\n${data.ranking.join('\n')}\n현재 검색·플레이스 유입: ${data.search}`;
+        const notice = document.getElementById('contactNotice');
+        if (notice) {
+          notice.className = 'notice success';
+          notice.textContent = '성장진단 결과가 상담 신청서에 반영되었습니다.';
+        }
+      } catch (error) {
+        sessionStorage.removeItem('momentumLatestDiagnosis');
+      }
+    }
+
+    applyDiagnosisToContact();
+
     bindWeb3Form('heroForm', 'heroNotice');
     bindWeb3Form('contactForm', 'contactNotice');
   </script>
