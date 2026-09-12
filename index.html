@@ -575,17 +575,21 @@
     }
 
     function applyServiceParam() {
-      const service = new URLSearchParams(location.search).get('service');
-      if (!service) return;
+      const params = new URLSearchParams(location.search);
+      const service = params.get('service');
+      const brief = params.get('brief');
+      if (!service && !brief) return;
       ['heroForm', 'contactForm'].forEach(function (formId) {
         const form = document.getElementById(formId);
         if (!form) return;
         const select = form.querySelector('select[name="service"]');
         const inquiry = form.querySelector('textarea[name="inquiry"]');
-        if (select && Array.from(select.options).some(function (option) { return option.value === service; })) {
+        if (service && select && Array.from(select.options).some(function (option) { return option.value === service; })) {
           select.value = service;
         }
-        if (inquiry && !inquiry.value) inquiry.value = service + ' 상담을 요청합니다. 현재 운영 상황과 필요한 범위를 확인해 주세요.';
+        if (inquiry && !inquiry.value) {
+          inquiry.value = brief || (service + ' 상담을 요청합니다. 현재 운영 상황과 필요한 범위를 확인해 주세요.');
+        }
       });
     }
 
