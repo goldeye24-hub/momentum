@@ -270,7 +270,7 @@
               <div class="form-grid">
                 <div class="field"><label>상호</label><input name="business" placeholder="예: 모멘텀식당" required></div>
                 <div class="field"><label>담당자명</label><input name="manager" placeholder="성함을 입력하세요" required></div>
-                <div class="field"><label>연락처</label><input name="phone" placeholder="010-0000-0000" required></div>
+                <div class="field"><label>연락처</label><input type="tel" name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+\\-\\s]{8,20}" placeholder="010-0000-0000" required></div>
                 <div class="field"><label>지역 (선택)</label><input name="region" placeholder="예:동래구, 남포동, 남산동, 보문단지 등"></div>
                 <div class="field"><label>업종</label><input name="industry" placeholder="예: 음식점, 병원, 미용" required></div>
                 <div class="field"><label>관심 서비스</label><select name="service" required><option value="">선택하세요</option><option>홈페이지 제작</option><option>상세페이지 제작</option><option>월간 성장관리</option><option>검색·플레이스 광고</option><option>기타 맞춤 마케팅</option></select></div>
@@ -283,7 +283,7 @@
                 <a class="btn btn-outline" href="tel:050713135668">전화 상담</a>
                 <button class="btn btn-dark" type="submit">상담 신청하기</button>
               </div>
-              <div id="heroNotice" class="notice"></div>
+              <div id="heroNotice" class="notice" role="status" aria-live="polite" aria-atomic="true"></div>
               <div class="tiny">상담 내용은 답변 목적으로만 확인하며, 가격·일정은 제작 범위 확인 후 안내합니다.</div>
             </form>
           </div>
@@ -467,7 +467,7 @@
                 <a class="btn btn-outline" href="tel:050713135668">고객센터 연결</a>
                 <button class="btn btn-dark" type="submit">맞춤 상담 신청하기</button>
               </div>
-              <div id="contactNotice" class="notice"></div>
+              <div id="contactNotice" class="notice" role="status" aria-live="polite" aria-atomic="true"></div>
             </form>
           </div>
         </div>
@@ -525,7 +525,7 @@
 
         if (!accessKeyInput.value || accessKeyInput.value === 'YOUR_WEB3FORMS_ACCESS_KEY') {
           notice.className = 'notice error';
-          notice.textContent = 'Web3Forms Access Key를 입력하면 네이버 메일로 문의를 받을 수 있습니다.';
+          notice.textContent = '현재 온라인 접수가 준비 중입니다. 전화 상담을 이용해주세요.';
           return;
         }
 
@@ -544,15 +544,15 @@
 
           if (result.success) {
             notice.className = 'notice success';
-            notice.textContent = '상담 신청이 정상적으로 접수되었습니다. 네이버 메일을 확인해주세요.';
+            notice.textContent = '상담 신청이 정상적으로 접수되었습니다. 확인 후 연락드리겠습니다.';
             form.reset();
           } else {
             notice.className = 'notice error';
-            notice.textContent = result.message || '전송에 실패했습니다. 잠시 후 다시 시도해주세요.';
+            notice.textContent = '전송에 실패했습니다. 잠시 후 다시 시도하거나 전화 상담을 이용해주세요.';
           }
         } catch (error) {
           notice.className = 'notice error';
-          notice.textContent = '네트워크 오류로 전송에 실패했습니다. 잠시 후 다시 시도해주세요.';
+          notice.textContent = '네트워크 오류로 접수하지 못했습니다. 잠시 후 다시 시도하거나 전화 상담을 이용해주세요.';
         } finally {
           submitButton.disabled = false;
           submitButton.textContent = originalText;
