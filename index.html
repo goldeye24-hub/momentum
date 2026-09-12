@@ -536,6 +536,17 @@
 
         try {
           const formData = new FormData(form);
+          const campaignParams = new URLSearchParams(location.search);
+          formData.set('유입 페이지', location.origin + location.pathname);
+          try {
+            formData.set('이전 방문처', document.referrer ? new URL(document.referrer).origin : '직접 방문');
+          } catch (error) {
+            formData.set('이전 방문처', '확인 불가');
+          }
+          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (key) {
+            const value = campaignParams.get(key);
+            if (value) formData.set(key, value.slice(0, 120));
+          });
           const response = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             body: formData
