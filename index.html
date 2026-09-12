@@ -321,8 +321,8 @@
           <p>홈페이지와 상세페이지는 보기 좋은 화면에서 끝나지 않습니다. 고객이 핵심 장점을 이해하고 전화·문의·구매 행동으로 이어지도록 메시지와 전환 동선을 함께 설계합니다.</p>
         </div>
         <div class="grid-3" style="margin-top:40px">
-          <div class="card service-card"><div class="card-body"><div class="icon-chip">▣</div><div class="item-title" style="margin-top:18px">소상공인 홈페이지 제작</div><div class="muted" style="margin-top:10px">업종·상권·고객 고민을 반영해 모바일 중심 소개, 서비스, 신뢰 요소, 문의 동선을 한 번에 구축합니다.</div><ul class="check-list"><li><span class="check">✓</span><span>핵심 메시지·페이지 구조 설계</span></li><li><span class="check">✓</span><span>전화·상담 전환 동선</span></li><li><span class="check">✓</span><span>검색·광고 연결을 고려한 기본 구조</span></li></ul><a class="btn btn-dark service-inquiry" href="#contact" data-service="홈페이지 제작">홈페이지 제작 상담</a></div></div>
-          <div class="card service-card"><div class="card-body"><div class="icon-chip">▤</div><div class="item-title" style="margin-top:18px">매출형 상세페이지 제작</div><div class="muted" style="margin-top:10px">상품의 차이와 구매 이유를 빠르게 이해하도록 문제·해결·근거·구성·행동요청 순서로 설계합니다.</div><ul class="check-list"><li><span class="check">✓</span><span>구매자 문제와 핵심 장점 정리</span></li><li><span class="check">✓</span><span>신뢰 근거·FAQ·행동요청 구성</span></li><li><span class="check">✓</span><span>광고 소재와 연결되는 메시지</span></li></ul><a class="btn btn-dark service-inquiry" href="#contact" data-service="상세페이지 제작">상세페이지 제작 상담</a></div></div>
+          <div class="card service-card"><div class="card-body"><div class="icon-chip">▣</div><div class="item-title" style="margin-top:18px">소상공인 홈페이지 제작</div><div class="muted" style="margin-top:10px">업종·상권·고객 고민을 반영해 모바일 중심 소개, 서비스, 신뢰 요소, 문의 동선을 한 번에 구축합니다.</div><ul class="check-list"><li><span class="check">✓</span><span>핵심 메시지·페이지 구조 설계</span></li><li><span class="check">✓</span><span>전화·상담 전환 동선</span></li><li><span class="check">✓</span><span>검색·광고 연결을 고려한 기본 구조</span></li></ul><a class="btn btn-dark" href="website-design.html#services">홈페이지 제작 자세히 보기</a></div></div>
+          <div class="card service-card"><div class="card-body"><div class="icon-chip">▤</div><div class="item-title" style="margin-top:18px">매출형 상세페이지 제작</div><div class="muted" style="margin-top:10px">상품의 차이와 구매 이유를 빠르게 이해하도록 문제·해결·근거·구성·행동요청 순서로 설계합니다.</div><ul class="check-list"><li><span class="check">✓</span><span>구매자 문제와 핵심 장점 정리</span></li><li><span class="check">✓</span><span>신뢰 근거·FAQ·행동요청 구성</span></li><li><span class="check">✓</span><span>광고 소재와 연결되는 메시지</span></li></ul><a class="btn btn-dark" href="website-design.html#services">상세페이지 제작 자세히 보기</a></div></div>
           <div class="card service-card"><div class="card-body"><div class="icon-chip">→</div><div class="item-title" style="margin-top:18px">제작 후 성장관리</div><div class="muted" style="margin-top:10px">제작 이후 실제 문의와 유입을 기록해 검색·플레이스·콘텐츠·광고의 다음 우선순위를 조정합니다.</div><ul class="check-list"><li><span class="check">✓</span><span>문의·방문·매출 기록</span></li><li><span class="check">✓</span><span>채널별 성과 비교</span></li><li><span class="check">✓</span><span>다음달 예산 재배분</span></li></ul><a class="btn btn-outline service-inquiry" href="#contact" data-service="월간 성장관리">성장관리 상담</a></div></div>
         </div>
         <div class="tiny">제작 범위와 일정은 상담 후 확정하며, 가격을 임의로 확정하지 않습니다.</div>
@@ -574,6 +574,21 @@
       }
     }
 
+    function applyServiceParam() {
+      const service = new URLSearchParams(location.search).get('service');
+      if (!service) return;
+      ['heroForm', 'contactForm'].forEach(function (formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        const select = form.querySelector('select[name="service"]');
+        const inquiry = form.querySelector('textarea[name="inquiry"]');
+        if (select && Array.from(select.options).some(function (option) { return option.value === service; })) {
+          select.value = service;
+        }
+        if (inquiry && !inquiry.value) inquiry.value = service + ' 상담을 요청합니다. 현재 운영 상황과 필요한 범위를 확인해 주세요.';
+      });
+    }
+
     function bindServiceInquiry() {
       document.querySelectorAll('.service-inquiry[data-service]').forEach(function (link) {
         link.addEventListener('click', function () {
@@ -589,6 +604,7 @@
     }
 
     applyDiagnosisToContact();
+    applyServiceParam();
     bindServiceInquiry();
 
     bindWeb3Form('heroForm', 'heroNotice');
