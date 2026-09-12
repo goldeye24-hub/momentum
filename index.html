@@ -109,6 +109,10 @@
     .notice.success { color: #059669; }
     .notice.error { color: #dc2626; }
     .tiny { font-size: 12px; color: #64748b; margin-top: 8px; }
+    .consent { margin-top: 14px; padding: 14px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .consent label { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; color: #334155; }
+    .consent input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; }
+    .consent small { display: block; margin-top: 7px; color: #64748b; line-height: 1.5; }
 
     .section { padding: 84px 0; }
     .section-soft { background: #f8fafc; }
@@ -274,12 +278,13 @@
                 <div class="field full"><label>현재 상태</label><input name="status" placeholder="예: 오픈 예정 / 운영 중 / 광고 진행 중"></div>
                 <div class="field full"><label>문의내용</label><textarea name="inquiry" placeholder="현재 고민, 목표, 원하시는 광고 방향/ 상품을 적어주세요." required></textarea></div>
               </div>
+              <div class="consent"><label><input type="checkbox" name="privacy_consent" value="동의" required><span>개인정보 수집·이용에 동의합니다. (필수)</span></label><small>수집항목: 상호·담당자명·연락처·문의내용 및 선택 입력정보 / 목적: 상담 접수와 답변 / 보유기간: 상담 완료 후 3개월 이내 파기</small></div>
               <div class="form-actions">
                 <a class="btn btn-outline" href="tel:050713135668">전화 상담</a>
                 <button class="btn btn-dark" type="submit">상담 신청하기</button>
               </div>
               <div id="heroNotice" class="notice"></div>
-              <div class="tiny">GitHub에 그대로 올린 뒤, Web3Forms Access Key만 넣으면 네이버 메일로 문의를 받을 수 있습니다.</div>
+              <div class="tiny">상담 내용은 답변 목적으로만 확인하며, 가격·일정은 제작 범위 확인 후 안내합니다.</div>
             </form>
           </div>
         </div>
@@ -457,6 +462,7 @@
                 <div class="field full"><label>현재 상태</label><input name="status"></div>
                 <div class="field full"><label>문의내용</label><textarea name="inquiry" required></textarea></div>
               </div>
+              <div class="consent"><label><input type="checkbox" name="privacy_consent" value="동의" required><span>개인정보 수집·이용에 동의합니다. (필수)</span></label><small>수집항목: 상호·담당자명·연락처·문의내용 및 선택 입력정보 / 목적: 상담 접수와 답변 / 보유기간: 상담 완료 후 3개월 이내 파기</small></div>
               <div class="form-actions">
                 <a class="btn btn-outline" href="tel:050713135668">고객센터 연결</a>
                 <button class="btn btn-dark" type="submit">맞춤 상담 신청하기</button>
