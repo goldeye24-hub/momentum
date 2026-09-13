@@ -276,15 +276,15 @@
               <input type="checkbox" name="botcheck" style="display:none" />
 
               <div class="form-grid">
-                <div class="field"><label>상호</label><input name="business" placeholder="예: 모멘텀식당" required></div>
-                <div class="field"><label>담당자명</label><input name="manager" placeholder="성함을 입력하세요" required></div>
-                <div class="field"><label>연락처</label><input type="tel" name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+\-\s]{8,20}" placeholder="010-0000-0000" required></div>
-                <div class="field"><label>지역 (선택)</label><input name="region" placeholder="예:동래구, 남포동, 남산동, 보문단지 등"></div>
-                <div class="field"><label>업종</label><input name="industry" placeholder="예: 음식점, 병원, 미용" required></div>
-                <div class="field"><label>관심 서비스</label><select name="service" required><option value="">선택하세요</option><option>홈페이지 제작</option><option>상세페이지 제작</option><option>월간 성장관리</option><option>검색·플레이스 광고</option><option>기타 맞춤 마케팅</option></select></div>
-                <div class="field full"><label>가용 예산</label><input name="budget" placeholder="예: 제작 범위와 예산을 함께 알려주세요"></div>
-                <div class="field full"><label>현재 상태</label><input name="status" placeholder="예: 오픈 예정 / 운영 중 / 광고 진행 중"></div>
-                <div class="field full"><label>문의내용</label><textarea name="inquiry" placeholder="현재 고민, 목표, 원하시는 광고 방향/ 상품을 적어주세요." required></textarea></div>
+                <div class="field"><label for="heroBusiness">상호</label><input id="heroBusiness" name="business" autocomplete="organization" placeholder="예: 모멘텀식당" required></div>
+                <div class="field"><label for="heroManager">담당자명</label><input id="heroManager" name="manager" autocomplete="name" placeholder="성함을 입력하세요" required></div>
+                <div class="field"><label for="heroPhone">연락처</label><input id="heroPhone" type="tel" name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+\-\s]{8,20}" placeholder="010-0000-0000" required></div>
+                <div class="field"><label for="heroRegion">지역 (선택)</label><input id="heroRegion" name="region" autocomplete="address-level2" placeholder="예:동래구, 남포동, 남산동, 보문단지 등"></div>
+                <div class="field"><label for="heroIndustry">업종</label><input id="heroIndustry" name="industry" placeholder="예: 음식점, 병원, 미용" required></div>
+                <div class="field"><label for="heroService">관심 서비스</label><select id="heroService" name="service" required><option value="">선택하세요</option><option>홈페이지 제작</option><option>상세페이지 제작</option><option>월간 성장관리</option><option>검색·플레이스 광고</option><option>기타 맞춤 마케팅</option></select></div>
+                <div class="field full"><label for="heroBudget">가용 예산</label><input id="heroBudget" name="budget" placeholder="예: 제작 범위와 예산을 함께 알려주세요"></div>
+                <div class="field full"><label for="heroStatus">현재 상태</label><input id="heroStatus" name="status" placeholder="예: 오픈 예정 / 운영 중 / 광고 진행 중"></div>
+                <div class="field full"><label for="heroInquiry">문의내용</label><textarea id="heroInquiry" name="inquiry" placeholder="현재 고민, 목표, 원하시는 광고 방향/ 상품을 적어주세요." required></textarea></div>
               </div>
               <div class="consent"><label><input type="checkbox" name="privacy_consent" value="동의" required><span>개인정보 수집·이용에 동의합니다. (필수)</span></label><small>수집항목: 상호·담당자명·연락처·문의내용 및 선택 입력정보 / 목적: 상담 접수와 답변 / 보유기간: 상담 완료 후 3개월 이내 파기</small></div>
               <div class="form-actions">
@@ -460,15 +460,15 @@
               <input type="hidden" name="from_name" value="모멘텀마케팅 홈페이지" />
               <input type="checkbox" name="botcheck" style="display:none" />
               <div class="form-grid">
-                <div class="field"><label>상호</label><input name="business" required></div>
-                <div class="field"><label>담당자명</label><input name="manager" required></div>
-                <div class="field"><label>연락처</label><input type="tel" name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+\-\s]{8,20}" placeholder="010-0000-0000" required></div>
-                <div class="field"><label>지역(선택)</label><input name="region"></div>
-                <div class="field"><label>업종</label><input name="industry" required></div>
-                <div class="field"><label>관심 서비스</label><select name="service" required><option value="">선택하세요</option><option>홈페이지 제작</option><option>상세페이지 제작</option><option>월간 성장관리</option><option>검색·플레이스 광고</option><option>기타 맞춤 마케팅</option></select></div>
-                <div class="field full"><label>가용 예산</label><input name="budget"></div>
-                <div class="field full"><label>현재 상태</label><input name="status"></div>
-                <div class="field full"><label>문의내용</label><textarea name="inquiry" required></textarea></div>
+                <div class="field"><label for="contactBusiness">상호</label><input id="contactBusiness" name="business" autocomplete="organization" required></div>
+                <div class="field"><label for="contactManager">담당자명</label><input id="contactManager" name="manager" autocomplete="name" required></div>
+                <div class="field"><label for="contactPhone">연락처</label><input id="contactPhone" type="tel" name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+\-\s]{8,20}" placeholder="010-0000-0000" required></div>
+                <div class="field"><label for="contactRegion">지역(선택)</label><input id="contactRegion" name="region" autocomplete="address-level2"></div>
+                <div class="field"><label for="contactIndustry">업종</label><input id="contactIndustry" name="industry" required></div>
+                <div class="field"><label for="contactService">관심 서비스</label><select id="contactService" name="service" required><option value="">선택하세요</option><option>홈페이지 제작</option><option>상세페이지 제작</option><option>월간 성장관리</option><option>검색·플레이스 광고</option><option>기타 맞춤 마케팅</option></select></div>
+                <div class="field full"><label for="contactBudget">가용 예산</label><input id="contactBudget" name="budget"></div>
+                <div class="field full"><label for="contactStatus">현재 상태</label><input id="contactStatus" name="status"></div>
+                <div class="field full"><label for="contactInquiry">문의내용</label><textarea id="contactInquiry" name="inquiry" required></textarea></div>
               </div>
               <div class="consent"><label><input type="checkbox" name="privacy_consent" value="동의" required><span>개인정보 수집·이용에 동의합니다. (필수)</span></label><small>수집항목: 상호·담당자명·연락처·문의내용 및 선택 입력정보 / 목적: 상담 접수와 답변 / 보유기간: 상담 완료 후 3개월 이내 파기</small></div>
               <div class="form-actions">
