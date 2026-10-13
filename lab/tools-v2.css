@@ -1,0 +1,35 @@
+
+/* Momentum Lab 2.1: real evidence-driven utilities */
+.verify-panel{background:#fff;border:1px solid #e1e7ef;border-radius:14px;padding:22px;margin:0 0 16px;box-shadow:0 4px 18px #25354e08}
+.verify-panel h3{margin:0 0 6px;font-size:18px;color:#1d2c43}
+.verify-panel .desc{font-size:13px;color:#708097;margin:0 0 17px}
+.verify-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.verify-head .sub{font-size:11px;font-weight:700;color:#ad5e24;background:#fff1e6;padding:6px 9px;border-radius:9px}
+.verify-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}
+.verify-metric{border:1px solid #e2e9f0;border-radius:11px;background:#f9fbfe;padding:15px}
+.verify-metric small{display:block;font-size:11px;color:#728198}
+.verify-metric strong{font-size:23px;font-weight:850;display:block;color:#233550;margin:4px 0}
+.verify-metric span{font-size:11px;color:#8995a7}
+.verify-detail{padding:11px 13px;border:1px solid #e5e9f0;border-radius:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:8px}
+.verify-detail b{font-size:13px}
+.verify-detail p{font-size:12px;margin:1px 0 0;color:#65758b}
+.verify-tag{white-space:nowrap;border-radius:9px;padding:4px 8px;font-size:11px;background:#edf2f8;color:#60738e}
+.verify-tag.good{background:#e9f6ec;color:#147448}.verify-tag.problem{background:#ffefea;color:#a64120}
+.verify-note{padding:11px 13px;background:#f0f4f9;color:#5d708a;border-radius:9px;font-size:12px;margin:12px 0}
+.verify-note.warning{background:#fff7eb;color:#835721}
+.verify-platforms{display:flex;flex-wrap:wrap;gap:8px}
+.verify-platforms label{cursor:pointer;border:1px solid #dce3ed;border-radius:9px;padding:7px 10px;color:#47566b;font-size:12px}
+.verify-platforms label:has(input:checked){border-color:#f0a16d;background:#fff2e7;color:#ad501b}
+.verify-platforms input{accent-color:#e96f2e}
+.verify-log{display:grid;gap:7px}
+.verify-log-item{display:flex;justify-content:space-between;gap:15px;border:1px solid #e3e9f1;background:#fff;padding:10px 12px;border-radius:9px;font-size:12px}
+.verify-log-item .flag{font-weight:800;color:#28445e}.verify-log-item .flag.seen{color:#16754d}
+.verify-list{display:grid;gap:6px}.verify-list .verify-detail{margin:0}
+.verify-file{border:1px dashed #d2dce8;padding:15px;border-radius:10px;background:#f8fbfe}
+.verify-file input{max-width:100%;font-size:12px}
+.verify-sample{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;border:1px solid #e5ebf3;border-radius:10px;background:#f8fafc;padding:13px;max-height:300px;overflow:auto}
+.verify-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.verify-timeline{font-size:12px;color:#607188}
+.verify-textbutton{border:0;background:transparent;color:#2d609a;text-decoration:underline;padding:2px;font-size:12px}
+@media(max-width:760px){.verify-results{grid-template-columns:1fr}.verify-grid2{grid-template-columns:1fr}.verify-panel{padding:16px}.verify-head{align-items:flex-start}}
+@media print{.verify-panel{break-inside:avoid}}
