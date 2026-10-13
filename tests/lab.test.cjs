@@ -71,3 +71,38 @@ test('business audit rejects invalid input and never fakes platform data',async(
   assert.equal(p.data.input.provider,"naver");
  }finally{if(prev!==undefined)process.env.MOMENTUM_PLACE_API_ENABLED=prev}
 });
+
+test('SEO GEO has evidence-based tools and no old manual checklist',()=>{
+ const html=fs.readFileSync('lab/index.html','utf8');
+ assert.match(html,/id="techcheck"/);
+ assert.match(html,/id="observegeo"/);
+ assert.match(html,/id="rankCopied"/);
+ assert.match(html,/id="keywordsCSV"/);
+ assert.match(html,/id="shopsCsv"/);
+ assert.match(html,/id="exportCalendar"/);
+ assert.doesNotMatch(html,/const geoTitles=/);
+ assert.match(html,/tools-v2\.js/);
+ assert.match(html,/tools-v2\.css/);
+});
+test('add-on front-end script parses',()=>{
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/tools-v2.js','utf8')));
+});
+test('technical SEO URL validator blocks internal or map URLs',()=>{
+ const {validateUrl}=require('../api/website-seo.js');
+ assert.equal(validateUrl('http://127.0.0.1/admin'),null);
+ assert.equal(validateUrl('http://localhost/private'),null);
+ assert.equal(validateUrl('http://[::1]/secret'),null);
+ assert.equal(validateUrl('https://naver.com/search'),null);
+ assert.equal(validateUrl('https://maps.app.goo.gl/abc'),null);
+ assert.equal(validateUrl('ftp://example.com'),null);
+ assert.equal(validateUrl('https://example.com/#frag'),null);
+ assert.equal(validateUrl('https://example.com/a?utm_campaign=x'),'https://example.com/a');
+});
+test('SEO endpoint rejects missing public URL before calling Google',async()=>{
+ const h=require('../api/website-seo.js');
+ let code,body;
+ const res={setHeader(){},status(n){code=n;return this},json(x){body=x;return this}};
+ await h({method:'GET',query:{url:'http://192.168.1.11/admin'}},res);
+ assert.equal(code,400);
+ assert.match(body.error,/홈페이지/);
+});
