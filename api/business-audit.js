@@ -5,7 +5,7 @@ const rate = new Map();
 const same = v=>String(v||"").normalize("NFKC").replace(/[^\p{L}\p{N}]/gu,"").toLowerCase();
 const clean = (v,n=120)=>String(v||"").trim().slice(0,n);
 const fail = (status,message)=>({status,message});
-const acceptedHosts = host=>/(^|\.)(naver\.com|kakao\.com|google\.com|google\.co\.kr|goo\.gl|maps\.app\.goo\.gl)$/.test(host);
+const acceptedHosts = host=>/(^|\.)(naver\.com|naver\.me|kakao\.com|google\.com|google\.co\.kr|goo\.gl|maps\.app\.goo\.gl)$/.test(host);
 const safePlaceLink = s=>{
   if(!s)return null;
   try{
@@ -93,7 +93,7 @@ module.exports=async(req,res)=>{
   if(link)observations.push({kind:"confirmed",label:"제공된 플레이스 링크",text:link.provider+" 지도 URL 확인",source:link.url});
   for(const [p,d] of matches){
    const n=p==="google"?"구글":"카카오";
-   observations.push({kind:"confirmed",label:n+" API 업체 식별",text:[d.store.name,d.store.address,d.store.category].filter(Boolean).join(" · "),source:d.store.url||""});
+   observations.push({kind:"confirmed",label:n+" API 상호명 일치 후보",text:[d.store.name,d.store.address,d.store.category].filter(Boolean).join(" · "),source:d.store.url||""});
    if(d.store.phone)observations.push({kind:"confirmed",label:n+" 공개 전화번호",text:d.store.phone,source:d.store.url||""});
    if(typeof d.store.rating==="number")observations.push({kind:"confirmed",label:"구글 공개 평점",text:d.store.rating+"점 · 평가 수 "+(d.store.reviews??"미제공"),source:d.store.url||""});
   }
