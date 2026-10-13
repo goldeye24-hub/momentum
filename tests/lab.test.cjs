@@ -106,3 +106,12 @@ test('SEO endpoint rejects missing public URL before calling Google',async()=>{
  assert.equal(code,400);
  assert.match(body.error,/홈페이지/);
 });
+
+test('Naver Place public-text fallback and clipboard import are present',()=>{
+ const page=fs.readFileSync('lab/index.html','utf8');
+ assert.match(page,/id="naverPageText"/);
+ assert.match(page,/id="readPlaceClipboard"/);
+ assert.match(page,/id="analyzePlaceText"/);
+ assert.match(page,/\/lab\/place-text\.js/);
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/place-text.js','utf8')));
+});
