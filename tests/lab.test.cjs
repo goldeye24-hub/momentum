@@ -45,3 +45,29 @@ test('serverless review endpoint declines calls when credentials disabled',async
     assert.equal(code,503);assert.match(body.error,/활성화/);
   }finally{if(prev!==undefined)process.env.MOMENTUM_AI_ENABLED=prev}
 });
+test('automatic business lookup form is primary, manual checklist secondary',()=>{
+  assert.match(html,/id="runAudit"/);
+  assert.match(html,/id="bizurl"/);
+  assert.match(html,/id="auditresult"/);
+  assert.match(html,/<details class="audit-manual" id="manualaudit">/);
+  assert.ok(html.indexOf('id="runAudit"')<html.indexOf('id="checklist"'));
+});
+test('business audit rejects invalid input and never fakes platform data',async()=>{
+ const handler=require('../api/business-audit.js');
+ const mock=(body)=>{let code,data;const res={setHeader(){},status(n){code=n;return this},json(d){data=d;return this}};return handler({method:"POST",headers:{},body},res).then(()=>({code,data}))};
+ let p=await mock({name:"A"});
+ assert.equal(p.code,400);
+ p=await mock({name:"포항 묵돌이",placeUrl:"http://127.0.0.1/admin"});
+ assert.equal(p.code,400);
+ const prev=process.env.MOMENTUM_PLACE_API_ENABLED;
+ delete process.env.MOMENTUM_PLACE_API_ENABLED;
+ try{
+  p=await mock({name:"포항 묵돌이",placeUrl:"https://m.place.naver.com/restaurant/123"});
+  assert.equal(p.code,200);
+  assert.equal(p.data.coverage.officialApiMatched,0);
+  assert.equal(p.data.platforms.google.status,"not_configured");
+  assert.equal(p.data.platforms.kakao.status,"not_configured");
+  assert.equal(p.data.platforms.naver.status,"manual_required");
+  assert.equal(p.data.input.provider,"naver");
+ }finally{if(prev!==undefined)process.env.MOMENTUM_PLACE_API_ENABLED=prev}
+});
