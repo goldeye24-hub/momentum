@@ -28,6 +28,7 @@ function normalize(d){
   for(var v of allowed)if(!n.sectionOrder.includes(v))n.sectionOrder.push(v);
   n.sectionEnabled=n.sectionEnabled&&typeof n.sectionEnabled==='object'?n.sectionEnabled:{};
   for(var a of allowed)if(typeof n.sectionEnabled[a]!=='boolean')n.sectionEnabled[a]=true;
+  if(typeof n.demoMode!=='boolean')n.demoMode=true;
   n.heroImage=image(n.heroImage);n.aboutImage=image(n.aboutImage);
   return n;
 }
@@ -35,7 +36,7 @@ function render(d,css){
  var c=normalize(d),color=c.colors;
  var media=function(url,alt){return url?'<img src="'+esc(url)+'" alt="'+esc(alt)+'" loading="lazy" decoding="async">':'<span class="fallback-photo" aria-label="이미지 등록 전"></span>'};
  var name=esc(c.brand||'브랜드명');
- var ribbon='<div class="sample-ribbon"><strong>DESIGN SAMPLE</strong> · 제작 샘플 — 실제 업체가 아닙니다</div>';
+ var ribbon=c.demoMode===false?'':'<div class="sample-ribbon"><strong>DESIGN SAMPLE</strong> · 제작 샘플 — 실제 업체가 아닙니다</div>';
  var nav='<div class="site-shell"><header class="site-header"><a class="site-logo" href="#top">'+name+'</a><nav class="site-nav" aria-label="사이트 메뉴">';
   c.sectionOrder.filter(function(id){return c.sectionEnabled[id]}).slice(0,4).forEach(function(id){nav+='<a href="#'+id+'">'+sectionNames[id]+'</a>'});
   nav+='</nav></header></div>';
@@ -50,9 +51,9 @@ function render(d,css){
   contact:'<section id="contact" class="site-section"><div class="site-shell"><div class="contact-panel"><div><span class="section-kicker">05 / CONTACT</span><h2>'+text(c.contactTitle)+'</h2><p>'+text(c.contactText)+'</p></div><a class="site-primary" href="'+esc(contactUrl)+'">'+esc(c.cta||'문의하기')+' ↗</a></div></div></section>'
  };
  var blocks=c.sectionOrder.filter(function(id){return c.sectionEnabled[id]}).map(function(id){return sections[id]}).join('');
- var footer='<div class="site-shell"><footer class="site-footer"><span>© '+name+' · <strong>업종별 홈페이지 제작 샘플</strong></span><a href="https://momentum-goldeye24-hubs-projects.vercel.app/site-builder/" target="_blank" rel="noopener noreferrer">모멘텀마케팅 제작툴 ↗</a></footer></div>';
+ var footer=c.demoMode===false?'<div class="site-shell"><footer class="site-footer"><span>© '+name+' · All rights reserved.</span></footer></div>':'<div class="site-shell"><footer class="site-footer"><span>© '+name+' · <strong>업종별 홈페이지 제작 샘플</strong></span><a href="https://momentum-goldeye24-hubs-projects.vercel.app/site-builder/" target="_blank" rel="noopener noreferrer">모멘텀마케팅 제작툴 ↗</a></footer></div>';
  var rule=':root{--ink:'+color.ink+';--bg:'+color.background+';--accent:'+color.accent+';--panel:'+color.panel+'}';
- return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+name+' | 홈페이지 디자인 샘플</title><meta name="description" content="'+esc(String(c.description||'').slice(0,145))+'"><style>'+String(css||'')+'\n'+rule+'</style></head><body class="style-'+esc(c.style)+'">'+ribbon+nav+'<main>'+hero+ticker+blocks+'</main>'+footer+'</body></html>';
+ return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+name+(c.demoMode===false?' | 공식 홈페이지':' | 홈페이지 디자인 샘플')+'</title><meta name="description" content="'+esc(String(c.description||'').slice(0,145))+'"><style>'+String(css||'')+'\n'+rule+'</style></head><body class="style-'+esc(c.style)+'">'+ribbon+nav+'<main>'+hero+ticker+blocks+'</main>'+footer+'</body></html>';
 }
 window.MomentumSiteKit={normalize:normalize,render:render,sectionNames:sectionNames,copy:copy};
 })();
