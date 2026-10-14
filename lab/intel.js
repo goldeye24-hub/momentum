@@ -1,7 +1,7 @@
 "use strict";
 (()=>{
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&gt;','<':'&lt;','"':'&quot;',"'":'&#39;'}[ch]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','>':'&gt;','<':'&lt;','"':'&quot;',"'":'&#39;'}[ch]));
 const navSearch=term=>'https://search.naver.com/search.naver?query='+encodeURIComponent(term);
 let result=null,lastRequest=0;
 function getResult(){return result}
