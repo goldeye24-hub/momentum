@@ -348,7 +348,7 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   const rendered=kit.render(preset,design);
   assert.match(rendered,/<html lang="ko">/);
   assert.match(rendered,/DESIGN SAMPLE/);
-  assert.match(rendered,/class="site-hero"/);
+  assert.match(rendered,/class="site-shell site-hero"/);
   assert.match(rendered,/class="services-grid"/);
   assert.match(rendered,/id="contact"/);
   assert.match(rendered,/src="https:\/\/images\.unsplash\.com\//);
