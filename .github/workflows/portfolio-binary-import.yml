@@ -1,0 +1,33 @@
+name: Decode verified portfolio screenshots
+on:
+  push:
+    branches:
+      - fix/portfolio-real-screenshots-20261014
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - name: Decode genuine homepage screenshot files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          base64 -d portfolio-shots/mukdori.b64 > assets/portfolio-mukdori.jpg
+          base64 -d portfolio-shots/balmonghair.b64 > assets/portfolio-balmonghair.jpg
+          file assets/portfolio-*.jpg
+          test $(stat -c %s assets/portfolio-mukdori.jpg) -gt 50000
+          test $(stat -c %s assets/portfolio-balmonghair.jpg) -gt 15000
+      - name: Commit produced binary JPG snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/portfolio-mukdori.jpg assets/portfolio-balmonghair.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Save verified browser screenshots for public portfolio"
+            git push origin HEAD:fix/portfolio-real-screenshots-20261014
+          fi
