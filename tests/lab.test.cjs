@@ -387,7 +387,7 @@ test('page builder has real section, image, style, reorder, persistence and expo
  assert.doesNotThrow(()=>new vm.Script(js));
  for(const marker of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])
   assert.ok(js.includes(marker),marker);
- assert.equal((gallery.match(/class="sample-card"/g)||[]).length,5);
+ assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,5);
  assert.match(gallery,/data-filter/);
  assert.equal((gallery.match(/class="card-visual"/g)||[]).length,5);
  assert.doesNotMatch(gallery,/<iframe/i);
