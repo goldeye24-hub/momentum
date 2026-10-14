@@ -236,7 +236,8 @@ test('industry FAQ, 28 industry category directory, and four useful dedicated se
  assert.match(home,/상담 가능 업종 전체 보기/);
  assert.match(home,/href="\/industries\/"/);
  assert.match(directory,/상담 가능한 28개 업종군/);
- assert.equal((directory.match(/<article class="card"><h3>/g)||[]).length,28);
+ const allIndustries=directory.slice(directory.indexOf('>상담 가능한 28개 업종군</h2>'));
+ assert.equal((allIndustries.match(/<article class="card"><h3>/g)||[]).length,28);
  for(const slug of sectors){
   const url='/industries/'+slug+'/';
   assert.ok(home.includes('href="'+url+'"'),'Homepage sector link '+slug);
