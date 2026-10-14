@@ -113,7 +113,7 @@ module.exports=async(req,res)=>{
   if(matches.length===1)improvements.push({priority:"next",title:"플랫폼별 등록 정보 추가 확인",reason:"현재 한 곳의 공식 검색 API만 이름 일치를 확인했습니다. 나머지는 계정 또는 검색권한 확인이 필요합니다."});
   const total=Object.values(platform).filter(x=>x.status==="matched").length;
   return res.status(200).json({
-   input:{name,region,placeUrl:link?.url||null,provider:link?.provider||null},
+   input:{name,region,placeUrl:link?.url||null,provider:link?.provider||null,naverPlaceId},
    checkedAt:new Date().toISOString(),
    coverage:{officialApiMatched:total,availableProviders:3,naverChecked:naver.status==="matched",naverSource:naver.source||null},
    platforms:platform,observations,improvements,
