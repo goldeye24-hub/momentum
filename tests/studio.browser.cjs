@@ -172,16 +172,9 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.setViewportSize({width:390,height:844});
     assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
-    assert.equal(await agencyHome.locator('#work .agency-work-card').count(),3);
-    for(const type of ['seafood','beauty']){
-      const preview=agencyHome.locator('.agency-work-photo-'+type+' img');
-      await preview.scrollIntoViewIfNeeded();
-      await preview.evaluate(img=>img.decode());
-      const dimensions=await preview.evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,source:img.currentSrc}));
-      assert.ok(dimensions.width>=700&&dimensions.height>=800,'Real screenshot is broken: '+type+' '+JSON.stringify(dimensions));
-      assert.ok(dimensions.source.includes('/assets/portfolio-'),'Unexpected preview source: '+type);
-    }
-
+    assert.equal(await agencyHome.locator('#work .agency-sample-card').count(),3);
+    assert.match(await agencyHome.locator('#work').innerText(),/디자인 샘플/);
+    assert.ok(await agencyHome.locator('#work a[href="/site-builder/"]').count()>=1);
     assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
     assert.equal(await agencyHome.locator('#services .service-card').count(),9);
     const customCss=await agencyHome.evaluate(async()=>{
@@ -231,6 +224,70 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(await landing.locator('#requestedProduct').inputValue(),'키워드 검색광고');
     await landing.close();
     console.log('PASS: four real service landings, two protected-media-safe case studies, mobile accessibility and cross-page inquiry preselection');
+
+    // Real industry template pages: actual navigable pages, not fictional screenshots.
+    const templatePage=await ctx.newPage();
+    const templateErrors=[];
+    templatePage.on('pageerror',e=>templateErrors.push(String(e)));
+    for(const id of ['restaurant','beauty','academy','clinic','corporate']){
+      const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      assert.equal(response.status(),200,'Template route '+id);
+      await templatePage.waitForSelector('.site-hero h1',{timeout:15000});
+      assert.ok((await templatePage.locator('h1').innerText()).length>=6,id+' empty heading');
+      assert.equal(await templatePage.locator('.service-card').count(),3,'Service cards '+id);
+      assert.equal(await templatePage.locator('.gallery-tile').count(),3,'Gallery '+id);
+      assert.match(await templatePage.locator('.sample-ribbon').innerText(),/실제 업체가 아닙니다/);
+      await templatePage.setViewportSize({width:390,height:844});
+      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile sample overflow '+id+' '+JSON.stringify(dims));
+    }
+    assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
+    await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
+    assert.equal(await templatePage.locator('.sample-card').count(),5);
+    await templatePage.locator('[data-filter="professional"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),2);
+    await templatePage.locator('[data-filter="all"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),5);
+    await templatePage.screenshot({path:path.join(root,'artifacts/momentum-website-samples.png'),fullPage:true});
+    await templatePage.close();
+
+    // Browser-only template editor: section edits, color, autosave, JSON/HTML output.
+    const builder=await ctx.newPage();
+    const builderErrors=[];
+    builder.on('pageerror',e=>builderErrors.push(String(e)));
+    const editResponse=await builder.goto('http://127.0.0.1:'+port+'/site-builder/?template=beauty',{waitUntil:'load'});
+    assert.equal(editResponse.status(),200);
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('LUME STUDIO'),{timeout:15000});
+    assert.match(await builder.locator('#previewTitle').innerText(),/에디토리얼 뷰티/);
+    await builder.locator('#edit-brand').fill('테스트 브랜드');
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('테스트 브랜드'),{timeout:10000});
+    await builder.locator('[data-tab="hero"]').click();
+    await builder.locator('#edit-headline').fill('브랜드의 첫 페이지');
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('브랜드의 첫 페이지'),{timeout:10000});
+    await builder.locator('[data-tab="services"]').click();
+    assert.equal(await builder.locator('.edit-collection').count(),3);
+    await builder.locator('[data-add="services"]').click();
+    assert.equal(await builder.locator('.edit-collection').count(),4);
+    await builder.locator('[data-tab="sections"]').click();
+    await builder.locator('[data-visible="faq"]').uncheck();
+    await builder.waitForFunction(()=>!document.querySelector('#sitePreview')?.srcdoc?.includes('id="faq"'),{timeout:10000});
+    await builder.locator('[data-tab="style"]').click();
+    await builder.locator('[data-field="colors.accent"]').fill('#113399');
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('--accent:#113399'),{timeout:10000});
+    await builder.locator('[data-viewport="mobile"]').click();
+    assert.match(await builder.locator('.preview-stage').getAttribute('class'),/mobile/);
+    await builder.screenshot({path:path.join(root,'artifacts/momentum-site-builder.png'),fullPage:true});
+    await builder.reload({waitUntil:'load'});
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('테스트 브랜드'),{timeout:15000});
+    await builder.locator('[data-tab="sections"]').click();
+    assert.equal(await builder.locator('[data-visible="faq"]').isChecked(),false);
+    const htmlExport=await Promise.all([builder.waitForEvent('download'),builder.locator('#downloadHtml').click()]);
+    assert.match(htmlExport[0].suggestedFilename(),/테스트-브랜드\.html/);
+    const jsonExport=await Promise.all([builder.waitForEvent('download'),builder.locator('#saveConfig').click()]);
+    assert.match(jsonExport[0].suggestedFilename(),/테스트-브랜드\.json/);
+    assert.equal(builderErrors.length,0,'Builder errors: '+builderErrors.join(' | '));
+    await builder.close();
+    console.log('PASS: five actual sample sites, sample gallery filter, editor live changes, autosave, export and mobile preview');
 
     // Home-page product redesign: service CTAs must target the correctly preselected inquiry product.
     const publicPage=await ctx.newPage();
