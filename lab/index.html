@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10243c"><meta name="description" content="모멘텀마케팅 무료 매장진단. 상호명과 플레이스 URL만 입력하면 연동된 공식 데이터로 매장 현황, SEO·GEO, 경쟁매장 등 분석 결과를 확인할 수 있습니다.">
 <title>모멘텀마케팅 | 무료 매장 분석실</title><link rel="stylesheet" href="/lab/customer.css"><link rel="stylesheet" href="/lab/studio.css"></head><body>
 <header class="top"><div class="container top-inner"><a href="/" class="wordmark">MOMENTUM <b>MARKETING</b></a><nav class="mainnav"><a href="/">회사소개</a><a href="/#services">전문 서비스</a><a href="/lab/" aria-current="page">무료 작업실</a><a href="/#contact">문의하기</a></nav><a class="pill-btn" href="/#contact">마케팅 상담 ↗</a></div></header>
-<section class="hero"><div class="container hero-row"><div><span class="eyebrow">MOMENTUM BUSINESS INTELLIGENCE</span><h1>우리 매장의 온라인 경쟁력,<br>두 가지 정보로 진단하세요.</h1><p>상호명과 플레이스 링크만 입력하면 연결된 공식 데이터로 매장 정보를 조사합니다. 포털 API 인증과 분석 설정은 모멘텀이 관리합니다.</p></div><div class="features"><span>✓ 3사 사업장 정보</span><span>✓ 키워드·노출 조사</span><span>✓ SEO·GEO 진단</span><span>✓ 경쟁현황과 개선안</span></div></div></section>
+<section class="hero"><div class="container hero-row"><div><span class="eyebrow">NAVER-FIRST LOCAL ANALYTICS</span><h1>우리 매장의 온라인 경쟁력,<br>두 가지 정보로 진단하세요.</h1><p>상호명과 플레이스 링크만 입력하면 네이버 플레이스를 우선 조사하고, 연결된 공식 데이터로 매장정보·검색 수요·경쟁 현황을 비교합니다. 모든 API 설정은 모멘텀이 관리합니다.</p></div><div class="features"><span>✓ 3사 사업장 정보</span><span>✓ 키워드·노출 조사</span><span>✓ SEO·GEO 진단</span><span>✓ 경쟁현황과 개선안</span></div></div></section>
 <div class="container layout"><aside class="side" aria-label="진단 메뉴"><div class="sidehead">MOMENTUM ANALYTICS</div>
 <button class="sidebtn active" data-view="overview"><span>◈</span>종합 진단</button>
 <button class="sidebtn" data-view="places"><span>▣</span>3사 플레이스 현황</button>
@@ -16,18 +16,18 @@
 <button class="sidebtn" data-view="calendar"><span>▨</span>홍보 캘린더</button>
 <div class="side-footer">매장 정보는 이 브라우저에만 보관됩니다. 포털 API 키와 사용료는 모멘텀이 서버에서 관리합니다.</div>
 </aside><main class="content">
-<section class="search" aria-label="매장 진단 입력"><div class="search-head"><div><h2>무료 매장 통합진단</h2><p>사업자에게 API 키·CSV·검색어 입력을 요구하지 않습니다.</p></div><span class="tag">상호 + 플레이스 URL</span></div>
+<section class="search" aria-label="매장 진단 입력"><div class="search-head"><div><h2>무료 매장 통합진단</h2><p>사업자에게 API 키·CSV·검색어 입력을 요구하지 않습니다.</p></div><span class="tag">상호 + 네이버 플레이스 URL</span></div>
 <form id="auditForm" class="input-row"><div class="field"><label for="storeName">매장명 <span style="color:#d55d22">*</span></label><input id="storeName" name="name" placeholder="예: 포항 묵돌이" autocomplete="organization" maxlength="80" required></div>
-<div class="field"><label for="placeUrl">플레이스 URL <span style="color:#d55d22">*</span></label><input id="placeUrl" name="placeUrl" type="url" placeholder="네이버·구글·카카오맵 링크 붙여넣기" autocomplete="off" required></div><button id="start" type="submit" class="btn">무료 진단 시작 →</button></form>
+<div class="field"><label for="placeUrl">플레이스 URL <span style="color:#d55d22">*</span></label><input id="placeUrl" name="placeUrl" type="url" placeholder="네이버 플레이스 링크를 붙여넣으세요" autocomplete="off" required></div><button id="start" type="submit" class="btn">무료 진단 시작 →</button></form>
 <p class="hint">매장 정보는 공식 데이터에서 확인되며, 정확히 식별되지 않으면 임의로 다른 매장의 정보를 붙이지 않습니다.</p>
 <div id="auditMessage" class="notice" role="status" aria-live="polite">매장명을 입력하고 플레이스 URL을 붙여넣어 주세요. 확인된 데이터만 보고서에 반영합니다.</div>
 </section>
 <section id="overview" class="section active"><div class="sectionhead"><div><h2>매장 종합진단</h2><p>실제로 확인된 정보와 아직 확인하지 못한 항목을 분리합니다.</p></div><span class="tag">자동 진단 보고서</span></div>
 <div id="stats" class="grid3"><div class="stat"><div class="label">검증된 플랫폼</div><strong>—</strong><div class="sub">검색 전</div></div><div class="stat"><div class="label">확인된 정보</div><strong>—</strong><div class="sub">공식 출처 기준</div></div><div class="stat"><div class="label">마지막 검사</div><strong>—</strong><div class="sub">검색 전</div></div></div>
-<div class="grid2" style="margin-top:16px"><div class="card"><h3>확인된 매장 정보</h3><div id="findings" class="empty">먼저 상호명과 플레이스 링크로 진단을 시작하세요.</div></div><div class="card"><h3>우선 확인할 개선 과제</h3><div id="improvements" class="empty">데이터를 조회한 뒤 근거 있는 과제만 표시됩니다.</div></div></div>
+<div class="card" id="naverFocus" style="margin-top:16px;border-left:4px solid #12a859"><h3>네이버 플레이스 집중 진단</h3><p>입력한 네이버 플레이스 링크를 우선 확인합니다.</p></div><div class="grid2" style="margin-top:16px"><div class="card"><h3>확인된 매장 정보</h3><div id="findings" class="empty">먼저 상호명과 플레이스 링크로 진단을 시작하세요.</div></div><div class="card"><h3>우선 확인할 개선 과제</h3><div id="improvements" class="empty">데이터를 조회한 뒤 근거 있는 과제만 표시됩니다.</div></div></div>
 <div class="card"><h3>진단 보고서</h3><p>실제 조회한 출처와 확인하지 못한 정보까지 구분해 정리합니다.</p><div class="actions"><button class="btn" type="button" id="makeReport">보고서 생성</button><button class="btn alt" type="button" id="copyReport">보고서 복사</button><button class="btn alt" type="button" id="printReport">인쇄 / PDF</button></div><pre id="reportText" class="copybox" style="margin-top:13px;max-height:300px;overflow:auto">진단 전입니다.</pre></div>
 <div class="callout"><h3>진단부터 실제 개선까지</h3><p>검색 노출·지도 정보·홈페이지 제작·블로그 운영과 광고 전략을 매장별로 설계합니다.</p><a href="/#contact">모멘텀 맞춤 상담 신청 →</a></div></section>
-<section id="places" class="section"><div class="sectionhead"><div><h2>3사 플레이스 현황</h2><p>서버에 연결된 공식 데이터에서 업체를 찾고 주소·전화·업종 일치 여부를 조사합니다.</p></div></div>
+<section id="places" class="section"><div class="sectionhead"><div><h2>네이버 플레이스 · 3사 정보 비교</h2><p>네이버를 먼저 확인하고 구글·카카오의 공개정보를 교차 비교합니다.</p></div></div>
 <div id="platformCards" class="grid3"><div class="card">네이버 검색 전</div><div class="card">구글 검색 전</div><div class="card">카카오맵 검색 전</div></div>
 <div class="card" style="margin-top:16px"><h3>플랫폼별 정보 일치성</h3><div id="consistency" class="empty">실제 업체 정보가 확인되면 차이를 분석합니다.</div><div class="notice warn">플레이스 링크 자체는 공식 순위·리뷰 수·실제 조회수에 접근할 권한이 아닙니다.</div></div></section>
 <section id="ranking" class="section"><div class="sectionhead"><div><h2>검색 노출·순위</h2><p>포털마다 결과 기준이 다르므로 측정 조건과 출처를 분리합니다.</p></div></div>
