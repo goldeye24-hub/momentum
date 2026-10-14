@@ -6,6 +6,8 @@ on:
       - 'api/**'
       - 'index.html'
       - 'tests/**'
+      - 'site-builder/**'
+      - 'website-samples/**'
       - '.github/workflows/marketing-lab-checks.yml'
   push:
     branches: [main]
@@ -14,6 +16,8 @@ on:
       - 'api/**'
       - 'index.html'
       - 'tests/**'
+      - 'site-builder/**'
+      - 'website-samples/**'
 permissions:
   contents: read
 jobs:
