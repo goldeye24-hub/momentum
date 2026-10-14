@@ -272,9 +272,9 @@ test('local SEO GEO check works honestly without NAVER credentials',()=>{
 test('integrated agency visual redesign retains accurate products and live inquiry paths',()=>{
  const home=fs.readFileSync('index.html','utf8');
  const agency=fs.readFileSync('agency.css','utf8');
- assert.match(home,/INTEGRATED MARKETING AGENCY/);
- assert.match(home,/마케팅의 모든 과정/);
- assert.match(home,/Integrated[\s\S]*Growth System/);
+ assert.match(home,/INTEGRATED DIGITAL AGENCY/);
+ assert.match(home,/고객의 선택을 만드는/);
+ assert.match(home,/Built for[\s\S]*Your Next Move/);
  assert.match(home,/agency-visual/);
  assert.match(home,/SEARCH ADVERTISING/);
  assert.match(home,/VIRAL & EXPERIENCES/);
@@ -300,4 +300,39 @@ test('integrated agency visual redesign retains accurate products and live inqui
  const industry=fs.readFileSync('industries/site.css','utf8');
  assert.match(lab,/integrated agency identity/);
  assert.match(industry,/Cross-site agency brand/);
+});
+
+test('editorial work archive, four service pillars and privacy-safe case studies',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const style=fs.readFileSync('agency-showcase.css','utf8');
+ const experience=fs.readFileSync('agency-experience.js','utf8');
+ assert.match(home,/id="work"/);
+ assert.match(home,/href="\/work\/mukdori\/"/);
+ assert.match(home,/href="\/work\/balmonghair\/"/);
+ assert.match(home,/프로젝트 소개용 그래픽/);
+ assert.equal((home.match(/class="agency-work-card /g)||[]).length,3);
+ assert.equal((home.match(/class="agency-service-family"/g)||[]).length,4);
+ assert.equal((home.match(/class="card service-card/g)||[]).length,9);
+ assert.match(home,/href="\/agency-showcase\.css"/);
+ assert.match(home,/src="\/agency-experience\.js"/);
+ assert.match(home,/aria-controls="agencyNav"/);
+ assert.doesNotMatch(home,/href="https:\/\/(mukdori-pohang|balmonghair-busan)\.vercel\.app\//);
+ for(const slug of ['search-ads','viral','place-seo','creative']){
+  assert.ok(home.includes('href="/services/'+slug+'/";')||home.includes('href="/services/'+slug+'/"'));
+  const page=fs.readFileSync('services/'+slug+'/index.html','utf8');
+  assert.match(page,/<h1>/);
+  assert.match(page,/href="\/\?service=/);
+  assert.match(page,/href="\/services\/site\.css"/);
+  assert.match(page,/WHAT WE DELIVER/);
+ }
+ for(const slug of ['mukdori','balmonghair']){
+  const page=fs.readFileSync('work/'+slug+'/index.html','utf8');
+  assert.match(page,/PROJECT OVERVIEW/);
+  assert.match(page,/실제 제작 구성/);
+  assert.doesNotMatch(page,/검색순위가.*상승|매출.*증가/);
+ }
+ assert.match(style,/\.agency-work-card/);
+ assert.match(style,/\.agency-service-family/);
+ assert.match(style,/prefers-reduced-motion/);
+ assert.doesNotThrow(()=>new vm.Script(experience));
 });
