@@ -362,6 +362,10 @@ test('five distinct industry websites are real navigable demo pages with safe HT
  assert.doesNotMatch(html,/src="javascript:/);
  assert.match(html,/&lt;script&gt;alert/);
  assert.match(html,/&lt;img src=x onerror/);
+ sample.demoMode=false;
+ const productionHtml=kit.render(sample,design);
+ assert.doesNotMatch(productionHtml,/class="sample-ribbon"/);
+ assert.match(productionHtml,/공식 홈페이지/);
 });
 test('page builder has real section, image, style, reorder, persistence and export controls',()=>{
  const html=fs.readFileSync('site-builder/index.html','utf8');
