@@ -43,6 +43,7 @@ function render(){
  document.querySelector('[data-view="creative"]')?.click();
  }));
  renderKeywords();
+ document.dispatchEvent(new CustomEvent('momentum:intel-ready',{detail:{name:merchant.name,placeUrl:document.getElementById('placeUrl')?.value||''}}));
  if(typeof window.MomentumCustomerReport==='function')window.MomentumCustomerReport();
 }
 async function run(){
@@ -54,6 +55,7 @@ async function run(){
  if(stat){stat.className='own-intel-status';stat.textContent='모멘텀 자체 엔진이 입력한 상호와 링크를 분석하는 중입니다.'}
  try{
   const res=await fetch('/api/own-intelligence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,placeUrl})});
+  if(res.status===401||res.status===403)throw Error('현재 사이트 접근 보호 때문에 진단 API를 사용할 수 없습니다.');
   const body=await res.json();
   if(which!==lastRequest)return;
   if(!res.ok)throw Error(body.error||'자체 분석 오류');
