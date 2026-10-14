@@ -59,10 +59,41 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await page.locator('#ownIntelFacts').innerText(),/12345678/);
     assert.match(await page.locator('#ownIntelKeywords').innerText(),/포항 맛집/);
     assert.match(await page.locator('#keywordIdeas').innerText(),/포항 맛집/);
+
+    // Real SEO/GEO actionability when all provider API keys are absent:
+    // every issue must be identified by the checker, not invented by a model.
+    await page.waitForSelector('#selfAudit:not([hidden])');
+    assert.equal(await page.locator('#selfAudit [data-check]').count(),12);
+    assert.match(await page.locator('#selfAuditStatus').innerText(),/확인 0\/12개/);
+    await page.locator('#selfAudit [data-check="contacts"] [data-choice="problem"]').click();
+    assert.match(await page.locator('#selfAuditFindings').innerText(),/주소·전화번호·영업시간/);
+    assert.match(await page.locator('#selfAuditStatus').innerText(),/개선 필요 1개/);
+    await page.locator('#makeReport').click();
+    assert.match(await page.locator('#reportText').innerText(),/직접 확인 점검/);
+    assert.match(await page.locator('#reportText').innerText(),/실제 출입구/);
+    // An unconfirmed item must stay unconfirmed, never classified as an observed defect.
+    assert.match(await page.locator('#reportText').innerText(),/\[미확인\]/);
     await page.locator('#makeReport').click();
     assert.match(await page.locator('#reportText').innerText(),/모멘텀 독립 진단/);
     assert.match(await page.locator('#reportText').innerText(),/실제 검색량 미측정/);
     console.log('PASS: self-owned business and link-only engine generated keywords and printable report without Naver API');
+    // Critical fallback: useful human-verified SEO/GEO diagnosis and report
+    // must still work if API functions are blocked or return 503.
+    const offline=await ctx.newPage();
+    await offline.route('**/api/**',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'공급자 API 연결 불가'})}));
+    await offline.goto('http://127.0.0.1:'+port+'/lab/',{waitUntil:'load'});
+    await offline.fill('#storeName','포항 묵돌이');
+    await offline.fill('#placeUrl','https://m.place.naver.com/restaurant/12345678/home');
+    await offline.locator('#start').click();
+    await offline.waitForSelector('#selfAudit:not([hidden])');
+    await offline.locator('#selfAudit [data-check="photos"] [data-choice="problem"]').click();
+    assert.match(await offline.locator('#selfAuditFindings').innerText(),/대표사진/);
+    await offline.locator('#makeReport').click();
+    assert.match(await offline.locator('#reportText').innerText(),/직접 확인 점검/);
+    assert.match(await offline.locator('#reportText').innerText(),/사진/);
+    await offline.close();
+    console.log('PASS: checklist and evidence-based report still operate with all APIs offline');
+
 
     await page.locator('[data-view="creative"]').click();
     await page.waitForSelector('.studio-template',{state:'visible'});

@@ -115,7 +115,7 @@ function calendar(){
 }
 function generateReport(){
  const d=state.audit,own=window.MomentumIntel?.getResult?.();
- if(!d&&!own){$("reportText").textContent="진단을 먼저 시작하세요.";return}
+ if(!d&&!own&&!window.MomentumSelfAudit?.isActive?.()){$("reportText").textContent="진단을 먼저 시작하세요.";return}
  const t=["모멘텀마케팅 매장 통합진단","작성 시각: "+fmt(d?.checkedAt||own?.createdAt||new Date().toISOString()),"매장명: "+(state.company||own?.merchant?.name||v("storeName")),"입력 플레이스: "+(state.placeUrl||v("placeUrl"))];
  if(own){
   const m=own.merchant;
@@ -147,6 +147,7 @@ function generateReport(){
  }
  if(state.seo?.score)t.push("","[홈페이지 기술 SEO]","Google Lighthouse: "+state.seo.score.seo+"/100");
  if(state.competitors?.places?.length)t.push("","[카카오 장소 API 검색]","검색어: "+state.competitors.keyword+" / API 결과 수: "+state.competitors.places.length);
+ if(window.MomentumSelfAudit?.reportLines) t.push(...window.MomentumSelfAudit.reportLines());
  t.push("","[한계]","입력정보 기반의 자체 생성 키워드와 실제 네이버 검색량은 별개입니다.","플레이스 URL만으로 점주 비공개 조회수나 실제 순위를 측정하지 않습니다.","네이버 지도 실제 순위·AI 추천률·실시간 매장 방문객 수는 측정되지 않았습니다.");
  state.report=t.join("\n");$("reportText").textContent=state.report;
 }
@@ -184,12 +185,15 @@ async function runAudit(){
  state.audit=null;state.competitors=null;state.seo=null;
  try{
  const resp=await fetch("/api/business-audit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:state.company,placeUrl:state.placeUrl})});
+ if(resp.status===401||resp.status===403)throw Error("사이트 접근 보호 또는 API 요청 권한을 확인해야 합니다.");
+ const contentType=resp.headers.get("content-type")||"";
+ if(!contentType.includes("application/json"))throw Error("서버가 JSON 분석결과 대신 접근 제한 페이지 또는 오류 화면을 반환했습니다.");
  const data=await resp.json();
  if(!resp.ok)throw Error(data.error||"서버 조회에 실패했습니다.");
  state.audit=data;store("lastProfile",{company:state.company,placeUrl:state.placeUrl});
  baseData();drawNaverFocus();drawPlatforms();suggestions();renderSEO();renderRanking();renderCompetitors();calendar();generateReport();
  const count=Number(data.coverage?.officialApiMatched||0);
- notify(count>0?"공식 검색 API에서 "+count+"개 플랫폼의 상호 일치 후보를 찾았습니다. 주소를 확인한 뒤 결과를 참고하세요.":"매장 링크의 형식을 확인했습니다. 실제 네이버·구글·카카오 공개정보 조회는 내부 API와 활용 권한 설정 후 가능합니다.",count>0?"ok":"warn");
+ notify(count>0?"공식 검색 API에서 "+count+"개 플랫폼의 상호 일치 후보를 찾았습니다. 주소를 확인한 뒤 결과를 참고하세요.":"외부 업체정보 실측 API가 연결되지 않았습니다. 아래 SEO·GEO 12항목을 직접 확인해 개선안을 작성할 수 있습니다.",count>0?"ok":"warn");
  await sourceFetch();
  }catch(err){notify("진단을 완료할 수 없습니다. "+err.message,"warn");}
  finally{state.busy=false;button.disabled=false;button.textContent="무료 진단 시작 →";}

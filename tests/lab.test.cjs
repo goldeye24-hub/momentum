@@ -249,3 +249,22 @@ test('industry FAQ, 28 industry category directory, and four useful dedicated se
  }
  assert.match(directory,/의료·법률·금융·주류/);
 });
+
+test('local SEO GEO check works honestly without NAVER credentials',()=>{
+ const h=fs.readFileSync('lab/index.html','utf8');
+ const logic=fs.readFileSync('lab/self-audit.js','utf8');
+ assert.match(h,/id="selfAudit"/);
+ assert.match(h,/id="selfAuditStatus"/);
+ assert.match(h,/\/lab\/self-audit\.js/);
+ assert.match(h,/\/lab\/self-audit\.css/);
+ assert.match(logic,/const CHECKS=/);
+ assert.match(logic,/direct|답변|담당자|확인자/);
+ assert.match(logic,/reportLines:lines/);
+ assert.match(logic,/실측 데이터 아님/);
+ assert.doesNotThrow(()=>new vm.Script(logic));
+ const count=(logic.match(/\{id:'[^']+',group:/g)||[]).length;
+ assert.equal(count,12);
+ const customer=fs.readFileSync('lab/customer.js','utf8');
+ assert.match(customer,/MomentumSelfAudit\.reportLines\(\)/);
+ assert.match(customer,/content-type/);
+});
