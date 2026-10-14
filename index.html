@@ -261,7 +261,7 @@
         <a href="#open-packages">오픈패키지</a>
         <a href="/industries/">업종별 솔루션</a>
         <a href="/lab/">무료 마케팅 도구</a>
-        <a href="/site-builder/">홈페이지 제작툴</a>
+        <a href="/website-samples/">홈페이지 디자인</a>
       </nav>
       <a class="btn btn-brand topbar-cta" href="#contact">상담 문의 <span aria-hidden="true">↗</span></a>
       <button type="button" class="agency-menu-toggle" aria-label="메뉴 열기" aria-controls="agencyNav" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -343,26 +343,26 @@
      <div class="agency-sample-label"><span>01 / 외식업 · 음식점</span><span>DESIGN SAMPLE</span></div>
      <div class="agency-sample-viewport"><iframe title="시그니처 다이닝 데모 사이트 미리보기" src="/website-samples/restaurant/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div>
      <div class="agency-sample-info"><h3>시그니처 다이닝</h3><p>따뜻한 에디토리얼 레스토랑 디자인</p>
-      <div class="agency-sample-actions"><a href="/website-samples/restaurant/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/site-builder/?template=restaurant">이 디자인 편집 ↗</a></div>
+      <div class="agency-sample-actions"><a href="/website-samples/restaurant/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/?service=홈페이지%20제작&design=restaurant#contact">이 디자인 선택 ↗</a></div>
      </div>
     </article>
 <article class="agency-sample-card" data-reveal>
      <div class="agency-sample-label"><span>02 / 미용 · 뷰티</span><span>DESIGN SAMPLE</span></div>
      <div class="agency-sample-viewport"><iframe title="에디토리얼 뷰티 데모 사이트 미리보기" src="/website-samples/beauty/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div>
      <div class="agency-sample-info"><h3>에디토리얼 뷰티</h3><p>정제된 타이포그래피와 감각적인 사진</p>
-      <div class="agency-sample-actions"><a href="/website-samples/beauty/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/site-builder/?template=beauty">이 디자인 편집 ↗</a></div>
+      <div class="agency-sample-actions"><a href="/website-samples/beauty/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/?service=홈페이지%20제작&design=beauty#contact">이 디자인 선택 ↗</a></div>
      </div>
     </article>
 <article class="agency-sample-card" data-reveal>
      <div class="agency-sample-label"><span>03 / 기업 · B2B</span><span>DESIGN SAMPLE</span></div>
      <div class="agency-sample-viewport"><iframe title="코퍼레이트 웹 데모 사이트 미리보기" src="/website-samples/corporate/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div>
      <div class="agency-sample-info"><h3>코퍼레이트 웹</h3><p>서비스·역량과 기업 문의를 중심으로</p>
-      <div class="agency-sample-actions"><a href="/website-samples/corporate/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/site-builder/?template=corporate">이 디자인 편집 ↗</a></div>
+      <div class="agency-sample-actions"><a href="/website-samples/corporate/" target="_blank" rel="noopener">샘플사이트 보기 ↗</a><a href="/?service=홈페이지%20제작&design=corporate#contact">이 디자인 선택 ↗</a></div>
      </div>
     </article>
   </div>
-  <div class="agency-sample-bottom"><p>음식점 · 미용 · 교육 · 의료 · 기업용 샘플 총 5종. 문구·사진·색상·섹션 구성을 수정할 수 있습니다.</p>
-   <div><a class="btn btn-brand" href="/website-samples/">전체 샘플사이트 보기 ↗</a><a class="btn agency-sample-alt" href="/site-builder/">홈페이지 제작툴 열기 ↗</a></div>
+  <div class="agency-sample-bottom"><p>음식점 · 미용 · 교육 · 의료 · 기업용 샘플 총 5종. 고객은 샘플을 둘러보고 마음에 드는 디자인을 선택해 상담을 요청할 수 있습니다.</p>
+   <div><a class="btn btn-brand" href="/website-samples/">전체 샘플사이트 보기 ↗</a><a class="btn agency-sample-alt" href="/?service=홈페이지%20제작#contact">제작 상담하기 ↗</a></div>
   </div>
   <p class="agency-work-disclosure">위 사이트는 업체와 고객 실적을 표시하는 포트폴리오가 아니라 **실제 접속 가능한 독창적 디자인 샘플**입니다. 광고 성과·방문 증가·매출 실적은 포함하지 않습니다.</p>
  </div>
@@ -541,6 +541,7 @@
               <input type="checkbox" name="botcheck" style="display:none" />
               
               <div class="form-grid">
+                <div class="field full" id="selectedDesignWrap" hidden><label for="selectedDesign">선택한 홈페이지 디자인</label><input id="selectedDesign" name="selected_design" readonly></div>
                 <div class="field full"><label for="requestedProduct">관심 상품 (선택)</label><select name="product" id="requestedProduct"><option value="">선택 또는 직접 문의</option><option value="키워드 검색광고">키워드 검색광고</option><option value="바이럴마케팅">바이럴마케팅</option><option value="블로그 체험단">블로그 체험단</option><option value="플레이스 진단 및 SEO 최적화">플레이스 진단 및 SEO 최적화</option><option value="플레이스 등록 및 수정대행">플레이스 등록 및 수정대행</option><option value="플레이스 리뷰 신고 및 삭제 요청 지원">플레이스 리뷰 신고 및 삭제 요청 지원</option><option value="오픈마켓 상세페이지 제작">오픈마켓 상세페이지 제작</option><option value="홈페이지 제작">홈페이지 제작</option><option value="사진촬영">사진촬영</option><option value="오픈패키지 1">오픈패키지 1</option><option value="오픈패키지 2">오픈패키지 2</option></select></div>
                 <div class="field"><label>상호</label><input name="business" required></div>
                 <div class="field"><label>담당자명</label><input name="manager" required></div>
@@ -657,6 +658,18 @@
       }
     }));
 
+    // 포트폴리오에서 고른 시안은 상담 신청서에만 전달합니다.
+    (function(){
+      const chosen = new URLSearchParams(location.search).get('design');
+      const names = {restaurant:'윤슬 다이닝 · 음식점', beauty:'온결 헤어스튜디오 · 뷰티', academy:'배움결 아카데미 · 교육', clinic:'온담 클리닉 · 의료', corporate:'지음 테크 · 기업'};
+      const label = names[chosen];
+      if (!label) return;
+      const field = document.getElementById('selectedDesign');
+      const wrap = document.getElementById('selectedDesignWrap');
+      const product = document.getElementById('requestedProduct');
+      if (field && wrap){field.value=label;wrap.hidden=false;}
+      if (product) product.value='홈페이지 제작';
+    })();
     bindWeb3Form('contactForm', 'contactNotice');
   </script>
   <script defer src="/agency-experience.js"></script>

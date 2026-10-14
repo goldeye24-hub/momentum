@@ -1,0 +1,42 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/site-builder",
+      "destination": "/admin/",
+      "permanent": false
+    },
+    {
+      "source": "/site-builder/:path*",
+      "destination": "/admin/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/api/admin-site-builder"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/api/admin-site-builder"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/api/admin-site-builder?action=login"
+    },
+    {
+      "source": "/admin/logout",
+      "destination": "/api/admin-site-builder?action=logout"
+    },
+    {
+      "source": "/admin/assets/:asset",
+      "destination": "/api/admin-site-builder?asset=:asset"
+    }
+  ],
+  "functions": {
+    "api/admin-site-builder.js": {
+      "includeFiles": "site-builder/**"
+    }
+  }
+}

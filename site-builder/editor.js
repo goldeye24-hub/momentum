@@ -136,8 +136,8 @@ function uploadImage(file,path){
 }
 function setup(){
  if(!kit){updateStatus('제작툴 로딩 오류');return}
- Promise.all([fetch('/site-builder/presets.json').then(function(r){if(!r.ok)throw Error('presets');return r.json()}),
-  fetch('/site-builder/site-template.css').then(function(r){if(!r.ok)throw Error('css');return r.text()})])
+ Promise.all([fetch('/admin/assets/presets.json').then(function(r){if(!r.ok)throw Error('presets');return r.json()}),
+  fetch('/admin/assets/site-template.css').then(function(r){if(!r.ok)throw Error('css');return r.text()})])
  .then(function(results){
   templates=results[0];css=results[1];
   var dropdown=el('templateSelect');
