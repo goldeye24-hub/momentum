@@ -119,6 +119,28 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       console.log('PASS: '+size+' downloaded '+w+'x'+h+' PNG');
     }
 
+    // Home-page product redesign: service CTAs must target the correctly preselected inquiry product.
+    const publicPage=await ctx.newPage();
+    const publicErrors=[];
+    publicPage.on('pageerror',e=>publicErrors.push(String(e)));
+    await publicPage.goto('http://127.0.0.1:'+port+'/',{waitUntil:'load'});
+    assert.equal(await publicPage.locator('#services .service-card').count(),9);
+    assert.equal(await publicPage.locator('#open-packages .package-card').count(),2);
+    await publicPage.locator('a[data-product="오픈패키지 2"]').click();
+    assert.equal(await publicPage.locator('#requestedProduct').inputValue(),'오픈패키지 2');
+    assert.match(await publicPage.locator('#open-packages').innerText(),/파워링크 광고 세팅/);
+    await publicPage.locator('a[data-product="플레이스 진단 및 SEO 최적화"]').click();
+    assert.equal(await publicPage.locator('#requestedProduct').inputValue(),'플레이스 진단 및 SEO 최적화');
+    assert.match(await publicPage.locator('.owner-notice').innerText(),/사업주가 직접/);
+    await publicPage.screenshot({path:path.join(root,'artifacts/momentum-services-desktop.png'),fullPage:true});
+    await publicPage.setViewportSize({width:390,height:844});
+    const siteDims=await publicPage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+    assert.ok(siteDims.scrollWidth<=siteDims.viewport+3,'Homepage mobile horizontal overflow '+JSON.stringify(siteDims));
+    await publicPage.screenshot({path:path.join(root,'artifacts/momentum-services-mobile.png'),fullPage:true});
+    assert.equal(publicErrors.length,0,'Homepage browser errors: '+publicErrors.join(' | '));
+    await publicPage.close();
+    console.log('PASS: product catalog, package inquiry links and mobile homepage layout');
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);

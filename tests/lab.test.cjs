@@ -196,3 +196,32 @@ test('server endpoint has no keys, requires only merchant inputs and returns evi
  assert.match(html,/\/lab\/intel\.css/);
  assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/intel.js','utf8')));
 });
+
+
+test('homepage offers the approved Momentum marketing products and two open packages',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const products=[
+  '키워드 검색광고','바이럴마케팅','블로그 체험단',
+  '플레이스 진단 및 SEO 최적화','플레이스 등록 및 수정대행',
+  '플레이스 리뷰 신고 및 삭제 요청 지원',
+  '오픈마켓 상세페이지 제작','홈페이지 제작','사진촬영',
+  '오픈패키지 1','오픈패키지 2'
+ ];
+ for(const name of products){
+  assert.ok(h.includes('data-product="'+name+'"'),'Missing product CTA: '+name);
+  assert.ok(h.includes('<option value="'+name+'">'),'Missing product in inquiry form: '+name);
+ }
+ for(const portal of ['네이버','다음','카카오','구글'])assert.match(h,new RegExp(portal));
+ assert.equal((h.match(/class="card service-card/g)||[]).length,9);
+ assert.equal((h.match(/class="package-card card/g)||[]).length,2);
+ const package1=h.slice(h.indexOf('>오픈패키지 1</div>'),h.indexOf('>오픈패키지 2</div>'));
+ for(const service of ['사진촬영','플레이스 등록대행','SEO 최적화','네이버 예약 세팅','블로그 체험단'])assert.ok(package1.includes(service),'Package 1 missing '+service);
+ const package2=h.slice(h.indexOf('>오픈패키지 2</div>'),h.indexOf('id="open-packages"')+12000);
+ assert.match(package2,/오픈패키지 1 구성 전체 포함/);
+ assert.match(package2,/플레이스 광고 세팅/);
+ assert.match(package2,/파워링크 광고 세팅/);
+ assert.match(h,/등록 및 기본정보 수정은 사업주가 직접 할 수 있는 무료 서비스/);
+ assert.match(h,/삭제 여부는 네이버 판단에 따르며 보장하지 않음/);
+ assert.match(h,/매체 광고비 별도/);
+ assert.doesNotMatch(h,/파워패키지|신규고객 패키지|샤오홍슈/);
+});
