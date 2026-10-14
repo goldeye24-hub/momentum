@@ -34,7 +34,8 @@ function buildFields(){
    output=heading('브랜드 기본정보','업체 이름, 상단 안내 문구, 고객 문의 연락처를 입력하세요.')+
     field('브랜드명','brand')+field('상단 영문 문구','tagline')+field('문의 버튼 문구','cta')+
     field('전화번호','phone','text','전화 링크 자동 연결')+field('이메일','email','email','전화번호가 없을 때 사용')+
-    '<p class="warning">샘플의 업체명·서비스 설명은 예시입니다. 실제 사용 시 본인의 사실과 연락처로 변경하세요. 현재 편집 결과는 서버에 전송되지 않습니다.</p>';
+    '<div class="sort-item"><label><input type="checkbox" id="demoMode" data-demo="1"'+(cfg.demoMode?' checked':'')+'>디자인 샘플 안내 표시</label></div>'+
+    '<p class="warning">샘플의 업체명·서비스 설명은 예시입니다. 실제 운영 전 본인의 업체정보·연락처로 교체하고 데모용 사진의 사용권리를 확인한 뒤 샘플 표시를 해제하세요. 현재 편집 결과는 서버에 전송되지 않습니다.</p>';
    break;
   case 'hero':
    output=heading('첫 화면 디자인','방문자가 가장 먼저 읽는 문구와 메인 이미지를 편집할 수 있어요.')+
@@ -161,6 +162,7 @@ function setup(){
  el('editorFields').addEventListener('change',function(e){
   var target=e.target;
   if(target.hasAttribute('data-visible')){cfg.sectionEnabled[target.dataset.visible]=target.checked;schedule()}
+  if(target.hasAttribute('data-demo')){cfg.demoMode=target.checked;schedule()}
   if(target.hasAttribute('data-upload'))uploadImage(target.files?.[0],target.dataset.upload);
  });
  el('editorFields').addEventListener('click',function(e){
