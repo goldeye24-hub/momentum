@@ -141,6 +141,32 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await publicPage.close();
     console.log('PASS: product catalog, package inquiry links and mobile homepage layout');
 
+
+    // Validate real industry pages and customer navigation (no fake links or empty SEO pages).
+    const industryPage=await ctx.newPage();
+    const industryErrors=[];
+    industryPage.on('pageerror',e=>industryErrors.push(String(e)));
+    await industryPage.goto('http://127.0.0.1:'+port+'/industries/',{waitUntil:'load'});
+    assert.match(await industryPage.title(),/업종별 마케팅 서비스/);
+    assert.equal(await industryPage.locator('.section.soft .grid .card').count(),28);
+    const industryLinks=await industryPage.locator('a[href^="/industries/"]').count();
+    assert.ok(industryLinks>=4);
+    for(const route of ['/industries/restaurant/','/industries/hairshop/','/industries/hospital/','/industries/academy/']){
+      const response=await industryPage.goto('http://127.0.0.1:'+port+route,{waitUntil:'load'});
+      assert.equal(response.status(),200,'Invalid route '+route);
+      assert.ok((await industryPage.locator('h1').innerText()).length>5);
+      assert.ok(await industryPage.locator('a[href="/#contact"]').count()>=1);
+      assert.equal(await industryPage.locator('h2').count(),3);
+    }
+    await industryPage.goto('http://127.0.0.1:'+port+'/industries/',{waitUntil:'load'});
+    await industryPage.setViewportSize({width:390,height:844});
+    const industrySize=await industryPage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+    assert.ok(industrySize.scrollWidth<=industrySize.viewport+3,'Industry directory mobile overflow '+JSON.stringify(industrySize));
+    await industryPage.screenshot({path:path.join(root,'artifacts/momentum-industries-mobile.png'),fullPage:true});
+    assert.equal(industryErrors.length,0,'Industry pages browser errors: '+industryErrors.join(' | '));
+    await industryPage.close();
+    console.log('PASS: industry directory and four sector pages, mobile and no errors');
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
