@@ -67,6 +67,19 @@
       persist();paint();
     });
     document.addEventListener('momentum:intel-ready',e=>activate(e.detail));
+    // Independent fallback: owner-confirmed check remains usable even if all
+    // serverless endpoints are offline, blocked or not configured.
+    el('auditForm')?.addEventListener('submit',()=>{
+      const enteredName=String(el('storeName')?.value||'').trim();
+      const enteredUrl=String(el('placeUrl')?.value||'').trim();
+      try{
+        const u=new URL(enteredUrl);
+        const host=u.hostname.toLowerCase();
+        const supported=/(^|\\.)(naver\\.com|naver\\.me|kakao\\.com|google\\.com|google\\.co\\.kr|goo\\.gl|maps\\.app\\.goo\\.gl)$/.test(host);
+        if(u.protocol==='https:'&&supported&&enteredName.length>=2)activate({name:enteredName,placeUrl:enteredUrl});
+      }catch{}
+    });
+
     // Allow visitors to clear browser-only answers for this store.
     el('selfAuditReset')?.addEventListener('click',()=>{answers={};persist();paint()});
   }
