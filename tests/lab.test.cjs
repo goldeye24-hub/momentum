@@ -433,12 +433,13 @@ test('internal CRM product catalog and admin-only authentication protect private
  for(const name of ['블로그체험단','블로그기자단','카페상위노출','플레이스트래픽','블로그배포','카페건바이','네이버광고대행','블로그상위노출','클립대행','인스타건바이','인스타상위노출','인스타계정대행','쓰레드대행','인플루언서 섭외','외국인 인플루언서 섭외','홈페이지제작','홈페이지재연장','상세페이지제작']){
   assert.ok(names.includes(name),name);
  }
- for(const file of ['crm-index.html','crm.css','crm.js']){
+ for(const file of ['crm-index.html','crm.css','crm.js','crm-commerce.js']){
   assert.ok(fs.statSync('site-builder/'+file).size>200,file);
  }
  assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('site-builder/crm.js','utf8')));
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('site-builder/crm-commerce.js','utf8')));
  const html=fs.readFileSync('site-builder/crm-index.html','utf8');
- for(const id of ['customerForm','contractForm','renewalList','catalogFilters','productGrid','recordList','exportCalendar','exportData','importData']){
+ for(const id of ['customerForm','contractForm','renewalList','catalogFilters','productGrid','recordList','exportCalendar','exportData','importData','supplierForm','supplierRates','bundleForm','bundleLines','bundleRecords','usageForm']){
   assert.ok(html.includes('id="'+id+'"'),id);
  }
  const v=JSON.parse(fs.readFileSync('vercel.json','utf8'));
@@ -474,6 +475,9 @@ test('internal CRM product catalog and admin-only authentication protect private
   const asset=request({...base,headers:{host:'momentum.test',cookie},query:{asset:'products.json'}});
   assert.equal(asset.statusCode,200);
   assert.equal(JSON.parse(asset.body).products.length,18);
+  const module=request({...base,headers:{host:'momentum.test',cookie},query:{asset:'crm-commerce.js'}});
+  assert.equal(module.statusCode,200);
+  assert.match(module.body,/function saveBundle/);
  }finally{
   if(password===undefined)delete process.env.MOMENTUM_ADMIN_PASSWORD;else process.env.MOMENTUM_ADMIN_PASSWORD=password;
   if(secret===undefined)delete process.env.MOMENTUM_SESSION_SECRET;else process.env.MOMENTUM_SESSION_SECRET=secret;
