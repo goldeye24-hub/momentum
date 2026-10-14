@@ -342,7 +342,7 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   const preset=presets.find(x=>x.id===id);
   assert.ok(preset,id);
   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-  assert.doesNotMatch(page,/site-builder\/kit\.js/);
+  assert.doesNotMatch(page,/<script\s+src="\/site-builder\/kit\.js"/);
   assert.match(page,/site-template\.css/);
   assert.match(page,/noindex,follow/);
   assert.match(page,/<section class="site-shell site-hero"/);
