@@ -1,13 +1,13 @@
 [
   {
     "id": "restaurant",
-    "label": "시그니처 다이닝",
+    "label": "계절의 식탁",
     "industry": "음식점·외식업",
     "style": "restaurant",
-    "brand": "NOON TABLE",
-    "tagline": "SEASONAL DINING / BUSAN",
-    "headline": "한 접시에 담은<br>계절의 이야기.",
-    "description": "좋은 재료의 순간을 기다리는 식탁. 여유로운 한 끼를 위한 다이닝 경험을 제안합니다.",
+    "brand": "윤슬 다이닝",
+    "tagline": "제철의 맛을 담은 작은 식탁",
+    "headline": "한 접시마다<br>계절이 머무는 곳.",
+    "description": "평범한 하루를 조금 특별하게. 제철 식재료와 편안한 공간을 담은 가상의 다이닝 브랜드를 소개합니다.",
     "colors": {
       "ink": "#281C23",
       "background": "#FBF6EF",
@@ -16,57 +16,57 @@
     },
     "heroImage": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=84",
     "aboutImage": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=84",
-    "cta": "상담 문의",
+    "cta": "방문·예약 문의",
     "phone": "",
     "email": "",
-    "aboutTitle": "매일 새로운 계절을 맞이하는 식탁.",
-    "aboutText": "NOON TABLE은 가상의 레스토랑입니다. 이 화면은 실제 업체나 실적이 아닌 음식점 홈페이지 제작을 위한 데모 디자인입니다.",
-    "servicesTitle": "고객이 찾는 서비스",
+    "aboutTitle": "맛있는 순간에는<br>그만한 이유가 있습니다.",
+    "aboutText": "재료를 고르는 기준부터 식탁의 온도까지. 손님에게 전하고 싶은 경험을 사진과 이야기로 소개하는 음식점 홈페이지 예시입니다. 이 매장은 실제로 운영되지 않는 가상 브랜드입니다.",
+    "servicesTitle": "식탁에서 만나는 경험",
     "services": [
       {
-        "title": "계절의 메뉴",
-        "description": "제철 식재료와 균형 잡힌 조합"
+        "title": "오늘의 계절 메뉴",
+        "description": "대표 메뉴의 구성과 맛의 특징을 한눈에 소개하는 영역"
       },
       {
-        "title": "저녁 다이닝",
-        "description": "한 상을 완성하는 코스 안내"
+        "title": "기념일의 식탁",
+        "description": "모임 공간과 이용 방법을 안내하는 영역"
       },
       {
-        "title": "프라이빗 모임",
-        "description": "소중한 자리를 위한 공간"
+        "title": "편안한 예약 안내",
+        "description": "운영시간과 예약 방법을 알기 쉽게 전달하는 영역"
       }
     ],
-    "galleryTitle": "공간과 경험을 소개합니다.",
+    "galleryTitle": "공간을 먼저 둘러보세요",
     "gallery": [
       {
-        "title": "브랜드 스토리",
-        "description": "이야기를 담는 화면",
+        "title": "담음새와 메뉴",
+        "description": "사진과 실제 정보를 연결해 보여주는 영역",
         "image": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "서비스 경험",
-        "description": "고객을 위한 안내",
+        "title": "머무르고 싶은 공간",
+        "description": "콘텐츠에 맞는 이미지를 교체하는 영역",
         "image": "https://images.unsplash.com/photo-1508424757105-b6d5ad9329d0?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "매장의 분위기",
-        "description": "사진과 콘텐츠",
+        "title": "식탁의 분위기",
+        "description": "실제 사업장의 분위기로 바꾸는 영역",
         "image": "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1600&q=84"
       }
     ],
     "faqTitle": "방문 전 확인해 주세요",
     "faq": [
       {
-        "question": "예약이나 문의는 어떻게 하나요?",
-        "answer": "전화 또는 공식 문의 채널을 통해 안내받을 수 있습니다."
+        "question": "예약은 어떻게 진행하나요?",
+        "answer": "실제 홈페이지 제작 시 예약 링크 또는 매장 전화번호를 등록하는 자리입니다."
       },
       {
-        "question": "이용 전 무엇을 확인해야 하나요?",
-        "answer": "상품·서비스 내용과 운영시간을 확인해 주세요."
+        "question": "메뉴와 영업시간은 어디에서 확인하나요?",
+        "answer": "실제 운영 정보로 메뉴·가격·휴무일을 바꾼 뒤 공개해 주세요."
       }
     ],
-    "contactTitle": "좋은 식탁에서 만나요.",
-    "contactText": "문의할 내용이 있다면 편하게 연락해 주세요.",
+    "contactTitle": "좋은 하루의 끝에서<br>한 끼를 나눕니다.",
+    "contactText": "방문 안내와 예약 방법을 여기에 등록하세요.",
     "sectionOrder": [
       "about",
       "services",
@@ -83,17 +83,18 @@
     },
     "headingFont": "serif",
     "heroLayout": "split",
-    "navText": "MENU"
+    "navText": "메뉴",
+    "demoMode": true
   },
   {
     "id": "beauty",
-    "label": "에디토리얼 뷰티",
+    "label": "온결 뷰티 스튜디오",
     "industry": "미용·뷰티",
     "style": "beauty",
-    "brand": "LUME STUDIO",
-    "tagline": "THE ART OF YOUR STYLE",
-    "headline": "나다운 아름다움,<br>그 안의 새로운 감각.",
-    "description": "결을 살리는 스타일링, 편안한 상담, 오롯이 나를 위한 시간.",
+    "brand": "온결 헤어스튜디오",
+    "tagline": "나에게 어울리는 아름다움",
+    "headline": "나다운 스타일의<br>결을 찾다.",
+    "description": "유행보다 오래 남는 나만의 분위기. 디자이너의 감각과 편안한 상담을 전하는 가상 뷰티 스튜디오입니다.",
     "colors": {
       "ink": "#3B322F",
       "background": "#FAF5F1",
@@ -102,57 +103,57 @@
     },
     "heroImage": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=84",
     "aboutImage": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1600&q=84",
-    "cta": "상담 문의",
+    "cta": "시술 상담 문의",
     "phone": "",
     "email": "",
-    "aboutTitle": "디테일이 만드는 특별한 분위기.",
-    "aboutText": "고객에게 중요한 정보와 브랜드의 분위기가 자연스럽게 전달되도록 설계한 업종별 홈페이지 샘플입니다.",
-    "servicesTitle": "고객이 찾는 서비스",
+    "aboutTitle": "어울리는 스타일은<br>대화에서 시작됩니다.",
+    "aboutText": "시술 전 상담 방식, 디자이너 소개, 실제 작업 사진을 전달하도록 설계한 뷰티 업종용 샘플입니다. 표시된 브랜드와 시술 내용은 예시입니다.",
+    "servicesTitle": "당신을 위한 스타일링",
     "services": [
       {
-        "title": "디자인 컷",
-        "description": "헤어의 흐름을 고려한 맞춤 커트"
+        "title": "디자인 커트",
+        "description": "얼굴형과 평소 손질 습관을 고려하는 상담 과정 소개"
       },
       {
-        "title": "컬러 스타일링",
-        "description": "피부톤과 분위기에 맞는 컬러"
+        "title": "맞춤 컬러",
+        "description": "원하는 분위기와 모발 상태를 확인하는 시술 안내"
       },
       {
-        "title": "프라이빗 케어",
-        "description": "편안함을 우선한 개인 상담"
+        "title": "스타일 케어",
+        "description": "방문 전 알아두면 좋은 관리 및 이용 정보"
       }
     ],
-    "galleryTitle": "공간과 경험을 소개합니다.",
+    "galleryTitle": "스타일을 완성하는 장면들",
     "gallery": [
       {
-        "title": "브랜드 스토리",
-        "description": "이야기를 담는 화면",
+        "title": "스타일 포트폴리오",
+        "description": "사진과 실제 정보를 연결해 보여주는 영역",
         "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "서비스 경험",
-        "description": "고객을 위한 안내",
+        "title": "디자이너의 작업 공간",
+        "description": "콘텐츠에 맞는 이미지를 교체하는 영역",
         "image": "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "매장의 분위기",
-        "description": "사진과 콘텐츠",
+        "title": "디테일과 분위기",
+        "description": "실제 사업장의 분위기로 바꾸는 영역",
         "image": "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&w=1600&q=84"
       }
     ],
     "faqTitle": "방문 전 확인해 주세요",
     "faq": [
       {
-        "question": "예약이나 문의는 어떻게 하나요?",
-        "answer": "전화 또는 공식 문의 채널을 통해 안내받을 수 있습니다."
+        "question": "담당 디자이너를 지정할 수 있나요?",
+        "answer": "실제 매장 운영 정책과 디자이너 정보를 입력하는 자리입니다."
       },
       {
-        "question": "이용 전 무엇을 확인해야 하나요?",
-        "answer": "상품·서비스 내용과 운영시간을 확인해 주세요."
+        "question": "시술 가격과 소요시간을 알 수 있나요?",
+        "answer": "실제 가격표 및 시술별 예상 소요시간으로 수정해 주세요."
       }
     ],
-    "contactTitle": "당신에게 어울리는 순간.",
-    "contactText": "문의할 내용이 있다면 편하게 연락해 주세요.",
+    "contactTitle": "당신의 다음 스타일을<br>함께 이야기해요.",
+    "contactText": "상담 채널과 예약 가능 시간을 등록하세요.",
     "sectionOrder": [
       "about",
       "services",
@@ -169,17 +170,18 @@
     },
     "headingFont": "serif",
     "heroLayout": "side",
-    "navText": "MENU"
+    "navText": "메뉴",
+    "demoMode": true
   },
   {
     "id": "academy",
-    "label": "모던 교육 브랜드",
+    "label": "배움결 아카데미",
     "industry": "교육·학원",
     "style": "academy",
-    "brand": "NEXT CLASS",
-    "tagline": "EDUCATION FOR TOMORROW",
-    "headline": "배움의 다음을<br>설계합니다.",
-    "description": "질문하는 힘에서 시작해 스스로 성장하는 공부. 목표와 과정이 분명한 배움을 만듭니다.",
+    "brand": "배움결 아카데미",
+    "tagline": "내일의 성장을 준비하는 배움",
+    "headline": "공부의 방향이<br>달라지는 순간.",
+    "description": "점수만이 아니라 스스로 질문하는 힘. 교육과정과 상담 동선을 명료하게 보여주는 학원 브랜드 예시입니다.",
     "colors": {
       "ink": "#102C5C",
       "background": "#F2F6FF",
@@ -188,57 +190,57 @@
     },
     "heroImage": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=84",
     "aboutImage": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1600&q=84",
-    "cta": "상담 문의",
+    "cta": "수강 상담 신청",
     "phone": "",
     "email": "",
-    "aboutTitle": "점수가 아니라 성장의 과정을 봅니다.",
-    "aboutText": "고객에게 중요한 정보와 브랜드의 분위기가 자연스럽게 전달되도록 설계한 업종별 홈페이지 샘플입니다.",
-    "servicesTitle": "고객이 찾는 서비스",
+    "aboutTitle": "각자의 속도에서<br>시작하는 성장.",
+    "aboutText": "학부모와 수강생이 가장 궁금해하는 과정, 대상, 시간표, 상담 방법을 빠르게 찾도록 구성한 교육 홈페이지 샘플입니다. 수강 성과나 실적을 주장하지 않습니다.",
+    "servicesTitle": "목표에 맞춘 교육과정",
     "services": [
       {
-        "title": "초등 기초",
-        "description": "배움의 즐거움을 만드는 첫 단계"
+        "title": "기초 다지기",
+        "description": "대상 학년과 학습 목표를 자세히 설명하는 자리"
       },
       {
-        "title": "중등 집중",
-        "description": "학습습관과 개념을 함께 점검"
+        "title": "집중 프로그램",
+        "description": "진행 방식·수업 시간·수강 안내를 보여주는 자리"
       },
       {
-        "title": "진로 프로그램",
-        "description": "학생의 가능성을 찾는 활동"
+        "title": "진로·학습 상담",
+        "description": "상담 절차와 신청 방법을 명확히 안내하는 자리"
       }
     ],
-    "galleryTitle": "공간과 경험을 소개합니다.",
+    "galleryTitle": "배움이 일어나는 공간",
     "gallery": [
       {
-        "title": "브랜드 스토리",
-        "description": "이야기를 담는 화면",
+        "title": "공간 및 수업 분위기",
+        "description": "사진과 실제 정보를 연결해 보여주는 영역",
         "image": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "서비스 경험",
-        "description": "고객을 위한 안내",
+        "title": "교육과정 소개",
+        "description": "콘텐츠에 맞는 이미지를 교체하는 영역",
         "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "매장의 분위기",
-        "description": "사진과 콘텐츠",
+        "title": "학습 자료와 활동",
+        "description": "실제 사업장의 분위기로 바꾸는 영역",
         "image": "https://images.unsplash.com/photo-1584697964358-3e14ca57658b?auto=format&fit=crop&w=1600&q=84"
       }
     ],
     "faqTitle": "방문 전 확인해 주세요",
     "faq": [
       {
-        "question": "예약이나 문의는 어떻게 하나요?",
-        "answer": "전화 또는 공식 문의 채널을 통해 안내받을 수 있습니다."
+        "question": "수강 대상과 시간표는 어떻게 확인하나요?",
+        "answer": "실제 운영하는 학년별 과정과 시간표를 등록하세요."
       },
       {
-        "question": "이용 전 무엇을 확인해야 하나요?",
-        "answer": "상품·서비스 내용과 운영시간을 확인해 주세요."
+        "question": "상담 또는 체험수업은 가능한가요?",
+        "answer": "상담 가능 시간과 체험수업 운영 여부를 정확히 기재하세요."
       }
     ],
-    "contactTitle": "다음 단계가 궁금하다면.",
-    "contactText": "문의할 내용이 있다면 편하게 연락해 주세요.",
+    "contactTitle": "성장의 첫 질문을<br>남겨주세요.",
+    "contactText": "학원 문의 채널과 상담 가능 시간을 등록하는 곳입니다.",
     "sectionOrder": [
       "about",
       "services",
@@ -255,17 +257,18 @@
     },
     "headingFont": "sans",
     "heroLayout": "full",
-    "navText": "MENU"
+    "navText": "메뉴",
+    "demoMode": true
   },
   {
     "id": "clinic",
-    "label": "프리미엄 클리닉",
+    "label": "온담 클리닉",
     "industry": "병원·의료",
     "style": "clinic",
-    "brand": "CLEAR CLINIC",
-    "tagline": "CARE WITH CLARITY",
-    "headline": "건강한 일상에<br>더 가까이.",
-    "description": "진료 안내부터 방문까지 필요한 정보를 투명하고 편안하게 전달합니다.",
+    "brand": "온담 클리닉",
+    "tagline": "쉽게 확인하는 진료 안내",
+    "headline": "방문 전 궁금한 점,<br>한눈에 확인하세요.",
+    "description": "진료과목과 의료진, 예약·방문 방법을 명료하게 안내하는 의료기관 홈페이지 디자인 샘플입니다.",
     "colors": {
       "ink": "#174047",
       "background": "#F4FAF9",
@@ -274,41 +277,41 @@
     },
     "heroImage": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=84",
     "aboutImage": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1600&q=84",
-    "cta": "상담 문의",
+    "cta": "진료 문의",
     "phone": "",
     "email": "",
-    "aboutTitle": "정확한 정보가 만드는 안심.",
-    "aboutText": "고객에게 중요한 정보와 브랜드의 분위기가 자연스럽게 전달되도록 설계한 업종별 홈페이지 샘플입니다.",
-    "servicesTitle": "고객이 찾는 서비스",
+    "aboutTitle": "편안한 방문은<br>정확한 안내에서.",
+    "aboutText": "의료기관의 실제 진료 정보와 의료진의 확인된 자격, 운영시간을 안내하기 위한 화면입니다. 본 브랜드는 가상 예시이며 실제 의료기관이나 의료서비스를 뜻하지 않습니다.",
+    "servicesTitle": "진료 전 확인할 정보",
     "services": [
       {
         "title": "진료과목 안내",
-        "description": "실제 운영 과목과 진료시간 표기"
+        "description": "실제 제공하는 진료과목과 진료시간을 기재할 영역"
       },
       {
         "title": "의료진 소개",
-        "description": "자격 및 진료 담당 영역 소개"
+        "description": "면허·전문의 자격 등 검증된 정보를 기재할 영역"
       },
       {
-        "title": "방문·예약 안내",
-        "description": "주소·주차·예약 방법 정리"
+        "title": "예약·오시는 길",
+        "description": "방문 위치, 주차, 접수 절차를 안내할 영역"
       }
     ],
-    "galleryTitle": "공간과 경험을 소개합니다.",
+    "galleryTitle": "방문 공간 미리 보기",
     "gallery": [
       {
-        "title": "브랜드 스토리",
-        "description": "이야기를 담는 화면",
+        "title": "대기 및 접수 공간",
+        "description": "사진과 실제 정보를 연결해 보여주는 영역",
         "image": "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "서비스 경험",
-        "description": "고객을 위한 안내",
+        "title": "진료 공간 안내",
+        "description": "콘텐츠에 맞는 이미지를 교체하는 영역",
         "image": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "매장의 분위기",
-        "description": "사진과 콘텐츠",
+        "title": "방문 편의 정보",
+        "description": "실제 사업장의 분위기로 바꾸는 영역",
         "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=84"
       }
     ],
@@ -316,15 +319,15 @@
     "faq": [
       {
         "question": "진료예약은 어떻게 하나요?",
-        "answer": "의료기관이 실제 제공하는 예약수단과 운영시간을 기재하는 자리입니다."
+        "answer": "의료기관에서 실제 제공하는 예약 수단과 운영시간을 기재해 주세요."
       },
       {
-        "question": "진료 과목·비용은 어디서 보나요?",
-        "answer": "의료기관이 확인한 진료과목과 비급여 정보를 적법한 범위에서 제공합니다."
+        "question": "진료 과목·비용은 어디서 확인하나요?",
+        "answer": "의료기관이 검토한 진료과목과 비급여 정보를 관련 규정에 따라 표시해 주세요."
       }
     ],
-    "contactTitle": "편안한 방문을 돕겠습니다.",
-    "contactText": "문의할 내용이 있다면 편하게 연락해 주세요.",
+    "contactTitle": "방문에 필요한 정보를<br>안내하겠습니다.",
+    "contactText": "운영시간·주소·전화번호 등 실제 정보를 확인한 뒤 게시하세요.",
     "sectionOrder": [
       "about",
       "services",
@@ -341,17 +344,18 @@
     },
     "headingFont": "sans",
     "heroLayout": "split",
-    "navText": "MENU"
+    "navText": "메뉴",
+    "demoMode": true
   },
   {
     "id": "corporate",
-    "label": "B2B 코퍼레이트",
+    "label": "지음 테크 기업형",
     "industry": "기업·B2B",
     "style": "corporate",
-    "brand": "AXIOM WORKS",
-    "tagline": "ENGINEERED FOR PROGRESS",
-    "headline": "복잡한 문제를<br>명확한 솔루션으로.",
-    "description": "기술, 사람, 실행을 연결합니다. 기업의 제품과 역량을 명료하게 전달하는 B2B 브랜드 웹사이트.",
+    "brand": "지음 테크",
+    "tagline": "기술과 실행을 잇는 파트너",
+    "headline": "기술은 복잡해도<br>설명은 명확하게.",
+    "description": "회사의 핵심 역량과 사업 분야, 문의 절차를 명확하게 전달하도록 구성한 제조·기술기업 샘플입니다.",
     "colors": {
       "ink": "#111E30",
       "background": "#EDF2F6",
@@ -360,57 +364,57 @@
     },
     "heroImage": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=84",
     "aboutImage": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=84",
-    "cta": "상담 문의",
+    "cta": "사업 문의하기",
     "phone": "",
     "email": "",
-    "aboutTitle": "기술을 설명하는 가장 명확한 방식.",
-    "aboutText": "고객에게 중요한 정보와 브랜드의 분위기가 자연스럽게 전달되도록 설계한 업종별 홈페이지 샘플입니다.",
-    "servicesTitle": "고객이 찾는 서비스",
+    "aboutTitle": "현장의 요구를 이해하고<br>실행의 과정을 설계합니다.",
+    "aboutText": "기업이 어떤 기술을 다루는지, 무엇을 제공하고 어떻게 협업할 수 있는지 단계별로 안내하는 B2B 웹사이트 디자인 예시입니다. 표시된 사업명과 내용은 실제 실적이 아닙니다.",
+    "servicesTitle": "핵심 사업 분야",
     "services": [
       {
-        "title": "기업 소개",
-        "description": "핵심 역량과 비전 정리"
+        "title": "기술 솔루션",
+        "description": "실제 제공하는 기술과 적용 분야를 소개하는 영역"
       },
       {
-        "title": "제품 및 솔루션",
-        "description": "산업별 제공 서비스"
+        "title": "설계·개발 협업",
+        "description": "프로젝트 접근 방식과 작업 범위를 안내하는 영역"
       },
       {
-        "title": "파트너십",
-        "description": "협업과 프로젝트 문의"
+        "title": "견적·파트너십",
+        "description": "문의에 필요한 기본자료와 회신 절차를 안내하는 영역"
       }
     ],
-    "galleryTitle": "공간과 경험을 소개합니다.",
+    "galleryTitle": "역량을 보여주는 프로젝트",
     "gallery": [
       {
-        "title": "브랜드 스토리",
-        "description": "이야기를 담는 화면",
+        "title": "주요 기술과 설비",
+        "description": "사진과 실제 정보를 연결해 보여주는 영역",
         "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "서비스 경험",
-        "description": "고객을 위한 안내",
+        "title": "현장 및 협업 과정",
+        "description": "콘텐츠에 맞는 이미지를 교체하는 영역",
         "image": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=84"
       },
       {
-        "title": "매장의 분위기",
-        "description": "사진과 콘텐츠",
+        "title": "제품·프로젝트 소개",
+        "description": "실제 사업장의 분위기로 바꾸는 영역",
         "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=84"
       }
     ],
     "faqTitle": "방문 전 확인해 주세요",
     "faq": [
       {
-        "question": "예약이나 문의는 어떻게 하나요?",
-        "answer": "전화 또는 공식 문의 채널을 통해 안내받을 수 있습니다."
+        "question": "견적 요청 시 어떤 자료가 필요한가요?",
+        "answer": "실제 기업의 견적 절차와 필요한 사양·수량·납기를 기재해 주세요."
       },
       {
-        "question": "이용 전 무엇을 확인해야 하나요?",
-        "answer": "상품·서비스 내용과 운영시간을 확인해 주세요."
+        "question": "협업 가능 분야는 어디까지인가요?",
+        "answer": "제공 가능한 사업 분야와 지역·납기 조건을 실제 기준으로 수정해 주세요."
       }
     ],
-    "contactTitle": "새로운 협업을 시작하세요.",
-    "contactText": "문의할 내용이 있다면 편하게 연락해 주세요.",
+    "contactTitle": "좋은 협업은<br>명확한 대화에서 시작합니다.",
+    "contactText": "사업 관련 문의 채널과 담당 부서를 등록하세요.",
     "sectionOrder": [
       "about",
       "services",
@@ -427,6 +431,7 @@
     },
     "headingFont": "sans",
     "heroLayout": "full",
-    "navText": "MENU"
+    "navText": "메뉴",
+    "demoMode": true
   }
 ]
