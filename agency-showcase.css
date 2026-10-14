@@ -160,3 +160,14 @@ html.has-motion [data-reveal]:not(.is-revealed){opacity:0;transform:translateY(2
 .agency-work-photo-beauty .work-visual-name>span{color:#fff1dd}
 .agency-work-photo-beauty .work-visual-name>small{color:#f6e9df}
 @media(max-width:760px){.work-visual-name>strong{font-size:clamp(37px,10vw,70px)}.agency-work-photo-beauty .work-visual-name>strong{font-size:clamp(37px,9vw,58px)}}
+
+/* Verified website captures replace the earlier concept art. */
+.agency-work-photo.actual-portfolio-image:before,
+.agency-work-photo.actual-portfolio-image:after{content:none!important;display:none!important}
+.agency-work-photo.actual-portfolio-image{background:#142c3c}
+.agency-work-photo.actual-portfolio-image img{display:block;position:relative;z-index:0;width:100%;height:100%;object-fit:cover;object-position:left top;filter:none}
+.agency-work-photo-beauty.actual-portfolio-image{background:#173a30}
+.agency-work-photo-beauty.actual-portfolio-image img{object-position:center 20%}
+.work-capture-label{position:absolute;bottom:17px;left:18px;z-index:3;border-radius:5px;background:rgba(15,23,42,.85);color:#fff;font-size:10px;font-weight:750;letter-spacing:.01em;padding:8px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.agency-work-photo.actual-portfolio-image .work-launch{background:#fff;color:#152139}
+@media(max-width:760px){.agency-work-card-primary .agency-work-photo.actual-portfolio-image{height:360px}}

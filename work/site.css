@@ -15,3 +15,11 @@
 .case-highlight p{margin:0;color:#62738b;font-size:13px;line-height:1.75}
 .case-link{color:#365be6;text-decoration:underline;text-underline-offset:5px;font-weight:800}
 @media(max-width:750px){.case-brief{grid-template-columns:1fr;gap:18px}.case-highlights{grid-template-columns:1fr}.case-highlight{min-height:0}}
+
+.case-screenshot{background:#f5f8fc;padding:66px 0}
+.case-screenshot h2{margin:11px 0 23px}
+.case-capture{margin:0;max-width:1050px;background:#fff;border:1px solid #dce5f1;border-radius:15px;overflow:hidden;box-shadow:0 25px 65px rgba(12,34,68,.09)}
+.case-capture img{display:block;width:100%;height:auto;object-fit:contain;background:#133047}
+.case-capture figcaption{padding:15px 20px;font-size:12px;line-height:1.75;color:#63738b;border-top:1px solid #e4e9f1}
+.case-hero.balmong+.case-screenshot .case-capture{max-width:800px}
+@media(max-width:760px){.case-screenshot{padding:44px 0}.case-capture{border-radius:11px}}

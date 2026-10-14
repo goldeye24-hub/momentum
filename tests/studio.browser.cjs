@@ -173,6 +173,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
     assert.equal(await agencyHome.locator('#work .agency-work-card').count(),3);
+    for(const type of ['seafood','beauty']){
+      const preview=agencyHome.locator('.agency-work-photo-'+type+' img');
+      await preview.scrollIntoViewIfNeeded();
+      await preview.evaluate(img=>img.decode());
+      const dimensions=await preview.evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,source:img.currentSrc}));
+      assert.ok(dimensions.width>=700&&dimensions.height>=800,'Real screenshot is broken: '+type+' '+JSON.stringify(dimensions));
+      assert.ok(dimensions.source.includes('/assets/portfolio-'),'Unexpected preview source: '+type);
+    }
+
     assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
     assert.equal(await agencyHome.locator('#services .service-card').count(),9);
     const customCss=await agencyHome.evaluate(async()=>{
@@ -210,6 +219,11 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const response=await landing.goto('http://127.0.0.1:'+port+'/work/'+slug+'/',{waitUntil:'load'});
       assert.equal(response.status(),200,'Case-study unavailable: '+slug);
       assert.equal(await landing.locator('.case-highlight').count(),3);
+      const capture=landing.locator('.case-capture img');
+      await capture.scrollIntoViewIfNeeded();
+      await capture.evaluate(img=>img.decode());
+      assert.ok(await capture.evaluate(img=>img.naturalWidth>=700),'No authentic screenshot on case detail: '+slug);
+
       const dims=await landing.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile case study overflow: '+slug);
     }
