@@ -247,14 +247,37 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile sample overflow '+id+' '+JSON.stringify(dims));
     }
+    // Ten new real websites: food/franchise, lodging, pet grooming and local services.
+    for(const id of ['foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon']){
+      const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      assert.equal(response.status(),200,'New sample route '+id);
+      await templatePage.waitForSelector('.ind-hero h1',{timeout:10000});
+      assert.ok((await templatePage.locator('h1').innerText()).length>7,'New sample heading '+id);
+      assert.equal(await templatePage.locator('.ind-feature').count(),3,'New services '+id);
+      assert.equal(await templatePage.locator('.ind-shot').count(),3,'New gallery '+id);
+      assert.match(await templatePage.locator('.industry-demo').innerText(),/가상 브랜드/);
+      assert.match(await templatePage.locator('.ind-final a').getAttribute('href'),new RegExp('design='+id));
+      await templatePage.setViewportSize({width:390,height:844});
+      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'New sample mobile overflow '+id+' '+JSON.stringify(dims));
+    }
     assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
-    assert.equal(await templatePage.locator('.sample-card').count(),5);
+    assert.equal(await templatePage.locator('.sample-card').count(),15);
     assert.match(await templatePage.locator('h1').innerText(),/선택하고 싶은/);
+    await templatePage.locator('[data-filter="food"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    await templatePage.locator('[data-filter="stay"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    await templatePage.locator('[data-filter="services"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),4);
     await templatePage.locator('[data-filter="professional"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),2);
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
     await templatePage.locator('[data-filter="all"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),5);
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),15);
+    await templatePage.locator('[data-choose="franchise"]').click();
+    assert.match(await templatePage.locator('#selectedDesignName').innerText(),/프랜차이즈/);
+    assert.match(await templatePage.locator('#selectedDesignConsult').getAttribute('href'),/design=franchise/);
     await templatePage.screenshot({path:path.join(root,'artifacts/momentum-website-samples.png'),fullPage:true});
     await templatePage.close();
 
@@ -313,7 +336,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(jsonExport[0].suggestedFilename(),/테스트-브랜드\.json/);
     assert.equal(builderErrors.length,0,'Builder errors: '+builderErrors.join(' | '));
     await builder.close();
-    console.log('PASS: five actual sample sites, sample gallery filter, editor live changes, autosave, export and mobile preview');
+    console.log('PASS: fifteen real industry sample sites, filtered galleries, consultation selection, editor exports and mobile preview');
 
     // Internal CRM smoke checks: 18 services, real client input, two renewal dates, calendar export.
     const crm=await ctx.newPage();

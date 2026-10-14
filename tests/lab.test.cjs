@@ -387,11 +387,20 @@ test('page builder has real section, image, style, reorder, persistence and expo
  assert.doesNotThrow(()=>new vm.Script(js));
  for(const marker of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])
   assert.ok(js.includes(marker),marker);
- assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,5);
+ assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,15);
  assert.match(gallery,/data-filter/);
  assert.match(gallery,/data-choose="restaurant"/);
+ for(const id of ['foodie','franchise','poolvilla','pension','petgroom','ladder','movers','cleaning','glamping','aircon']){
+  assert.match(gallery,new RegExp('data-choose="'+id+'"'));
+  const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+  assert.match(page,/class="ind-hero"/);
+  assert.match(page,/class="ind-feature"/);
+  assert.match(page,/class="ind-shot"/);
+  assert.match(page,/가상 브랜드|가상의 브랜드/);
+ }
+ assert.equal((gallery.match(/class="filter-tabs"/g)||[]).length,1);
  assert.doesNotMatch(gallery,/href="\/site-builder/);
- assert.equal((gallery.match(/class="card-visual"/g)||[]).length,5);
+ assert.equal((gallery.match(/class="card-visual"/g)||[]).length,15);
  assert.doesNotMatch(gallery,/<iframe/i);
 
  assert.match(gallery,/실제 고객 납품 실적이나 디자인 어워드 수상작이 아닙니다/);
