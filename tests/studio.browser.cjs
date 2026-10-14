@@ -244,7 +244,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
     assert.equal(await templatePage.locator('.sample-card').count(),5);
-    assert.match(await templatePage.locator('h1').innerText(),/좋은 디자인/);
+    assert.match(await templatePage.locator('h1').innerText(),/선택하고 싶은/);
     await templatePage.locator('[data-filter="professional"]').click();
     assert.equal(await templatePage.locator('.sample-card:visible').count(),2);
     await templatePage.locator('[data-filter="all"]').click();
