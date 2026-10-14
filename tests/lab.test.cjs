@@ -411,6 +411,24 @@ test('page builder has real section, image, style, reorder, persistence and expo
   assert.match(page,/가상 브랜드|가상의 브랜드/);
  }
  assert.equal((gallery.match(/class="filter-tabs"/g)||[]).length,1);
+
+ const thumbStyles=fs.readFileSync('website-samples/gallery-distinct.css','utf8');
+ for(const id of ['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate']){
+   assert.match(gallery,new RegExp('preview-'+id+'(?:\\s|\\")'));
+   assert.ok(thumbStyles.includes('.preview-'+id),id+' gallery preview not distinct');
+ }
+ assert.match(gallery,/gallery-distinct\.css/);
+ const sampleOrder=new Set();
+ for(const id of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+   const html=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+   const order=[...html.matchAll(/<section class="ind-section" id="([^"]+)"/g)].map(x=>x[1]);
+   assert.equal(order.length,5);
+   assert.equal(new Set(order).size,5);
+   assert.equal(order[4],'contact');
+   sampleOrder.add(order.slice(0,3).join('|'));
+ }
+ assert.ok(sampleOrder.size>=4,'Industry information architectures must meaningfully differ');
+
  assert.doesNotMatch(gallery,/href="\/site-builder/);
  assert.equal((gallery.match(/class="card-visual"/g)||[]).length,15);
  assert.doesNotMatch(gallery,/<iframe/i);
