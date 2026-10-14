@@ -377,6 +377,18 @@ test('page builder has real section, image, style, reorder, persistence and expo
  const html=fs.readFileSync('site-builder/index.html','utf8');
  const js=fs.readFileSync('site-builder/editor.js','utf8');
  const gallery=fs.readFileSync('website-samples/index.html','utf8');
+ const distinctCss=fs.readFileSync('website-samples/industry-distinct.css','utf8');
+ const originalCss=fs.readFileSync('website-samples/original-distinct.css','utf8');
+ for(const name of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+  assert.ok(distinctCss.includes('.theme-'+name),name+' missing bespoke direction');
+  const html=fs.readFileSync('website-samples/'+name+'/index.html','utf8');
+  assert.match(html,/industry-distinct\.css/);
+ }
+ for(const name of ['restaurant','beauty','academy','clinic','corporate']){
+  assert.ok(originalCss.includes('.style-'+name),name+' missing distinct layout');
+  assert.match(fs.readFileSync('website-samples/'+name+'/index.html','utf8'),/original-distinct\.css/);
+ }
+
  assert.match(html,/id="sitePreview"/);
  assert.match(html,/data-tab="sections"/);
  assert.match(html,/data-tab="gallery"/);

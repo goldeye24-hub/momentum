@@ -261,6 +261,23 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(dims.scrollWidth<=dims.viewport+3,'New sample mobile overflow '+id+' '+JSON.stringify(dims));
     }
+    // Layout diversity: the portfolio must NOT be one wireframe with changed photos/colors.
+    const designSignatures=new Map();
+    await templatePage.setViewportSize({width:1440,height:900});
+    for(const id of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      const shape=await templatePage.evaluate(()=>{
+        const hero=document.querySelector('.ind-hero'),copy=hero.querySelector('.ind-copy'),media=hero.querySelector('.ind-media');
+        const a=copy.getBoundingClientRect(),b=media.getBoundingClientRect();
+        return {layout:getComputedStyle(hero).display,position:getComputedStyle(copy).position,photo:getComputedStyle(media).position,
+          copyX:Math.round(a.x/30),photoX:Math.round(b.x/30),photoY:Math.round(b.y/30),copyY:Math.round(a.y/30)};
+      });
+      designSignatures.set(id,JSON.stringify(shape));
+      if(['poolvilla','petgroom','ladder','foodie','franchise'].includes(id)){
+        await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
+      }
+    }
+    assert.ok(new Set(designSignatures.values()).size>=6,'Portfolio design layouts too similar: '+JSON.stringify([...designSignatures]));
     assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
     assert.equal(await templatePage.locator('.sample-card').count(),15);
