@@ -347,7 +347,7 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   assert.match(page,/noindex,follow/);
   const rendered=kit.render(preset,design);
   assert.match(rendered,/<html lang="ko">/);
-  assert.match(rendered,/DESIGN SAMPLE/);
+  assert.match(rendered,/디자인 시안/);
   assert.match(rendered,/class="site-shell site-hero"/);
   assert.match(rendered,/class="services-grid"/);
   assert.match(rendered,/id="contact"/);
