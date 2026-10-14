@@ -16,3 +16,13 @@
 .selected-design-panel{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:40px;background:#e7efd5;border-radius:6px;padding:25px 30px;border:1px solid #c9d8a9}
 .selected-design-panel[hidden]{display:none!important}.selected-design-panel span{font-size:12px;color:#536447;font-weight:800}.selected-design-panel strong{display:block;font-size:24px;margin-top:5px}.selected-design-panel p{margin:7px 0 0;color:#52634c;font-size:13px}.selected-design-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.selected-design-actions a{background:#222e22;color:#fff;padding:17px 22px;font-size:13px;font-weight:800;border-radius:3px}.selected-design-actions button{border:1px solid #9cae8e;background:transparent;padding:15px 17px;border-radius:3px}
 @media(max-width:760px){.selected-design-panel{display:block;padding:22px}.selected-design-actions{margin-top:20px}.selected-design-actions a{flex:1;text-align:center}}
+
+/* 15-page industry showcase: reliable sequential counts and compact filtering */
+.sample-grid{counter-reset:sample}
+.sample-card{counter-increment:sample}
+.card-counter:before{content:counter(sample,decimal-leading-zero) " / 15"}
+.filter-tabs button{padding:11px 14px;font-size:12px}
+.filter-tabs{gap:6px}
+.theme-warm .card-visual,.theme-bright .card-visual,.theme-cream .card-visual,.theme-mint .card-visual,.theme-steel .card-visual{height:415px}
+@media(max-width:740px){.theme-warm .card-visual,.theme-bright .card-visual,.theme-cream .card-visual,.theme-mint .card-visual,.theme-steel .card-visual{height:360px}}
+@media(max-width:420px){.theme-warm .card-visual,.theme-bright .card-visual,.theme-cream .card-visual,.theme-mint .card-visual,.theme-steel .card-visual{height:310px}}
