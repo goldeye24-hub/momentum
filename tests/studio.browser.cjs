@@ -10,6 +10,18 @@ const root=path.resolve(__dirname,'..');
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.png':'image/png'};
 function localServer(){
   return http.createServer((req,res)=>{
+    if(req.method==='POST' && req.url==='/api/own-intelligence'){
+      let body='';
+      req.on('data',chunk=>{body+=chunk;if(body.length>10000)req.destroy()});
+      req.on('end',async()=>{
+        let status=200;
+        const adapter={setHeader(){},status(n){status=n;return this},json(data){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return this}};
+        try{
+          await require('../api/own-intelligence.js')({method:'POST',headers:{'x-forwarded-for':'127.0.0.1'},body:JSON.parse(body)},adapter);
+        }catch(err){res.writeHead(500);res.end(JSON.stringify({error:String(err)}))}
+      });
+      return;
+    }
     let target;
     try{
       const u=new URL(req.url,'http://localhost');
@@ -41,6 +53,17 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     page.on('pageerror',e=>errors.push(String(e)));
     await page.goto('http://127.0.0.1:'+port+'/lab/',{waitUntil:'load'});
     await page.fill('#storeName','포항 묵돌이');
+    await page.fill('#placeUrl','https://m.place.naver.com/restaurant/12345678/home');
+    await page.locator('#start').click();
+    await page.waitForFunction(()=>document.getElementById('ownIntelStatus')?.classList.contains('ready'));
+    assert.match(await page.locator('#ownIntelFacts').innerText(),/12345678/);
+    assert.match(await page.locator('#ownIntelKeywords').innerText(),/포항 맛집/);
+    assert.match(await page.locator('#keywordIdeas').innerText(),/포항 맛집/);
+    await page.locator('#makeReport').click();
+    assert.match(await page.locator('#reportText').innerText(),/모멘텀 독립 진단/);
+    assert.match(await page.locator('#reportText').innerText(),/실제 검색량 미측정/);
+    console.log('PASS: self-owned business and link-only engine generated keywords and printable report without Naver API');
+
     await page.locator('[data-view="creative"]').click();
     await page.waitForSelector('.studio-template',{state:'visible'});
     assert.equal(await page.locator('.studio-template').count(),8);
