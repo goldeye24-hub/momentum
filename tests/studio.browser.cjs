@@ -69,9 +69,9 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await page.waitForFunction(()=>document.querySelector('#studioLogoName').textContent.includes('test-logo.png'));
     await page.fill('#studioHeadline','신선함을 담은 특별한 한상');
     await page.fill('#studioPrice','30,000원');
-    await page.locator('#studioZoom').fill('160');
-    await page.locator('#studioPanX').fill('25');
-    await page.locator('#studioBrightness').fill('120');
+    await page.locator('#studioZoom').evaluate(el=>{el.value='160';el.dispatchEvent(new Event('input',{bubbles:true}))});
+    await page.locator('#studioPanX').evaluate(el=>{el.value='25';el.dispatchEvent(new Event('input',{bubbles:true}))});
+    await page.locator('#studioBrightness').evaluate(el=>{el.value='120';el.dispatchEvent(new Event('input',{bubbles:true}))});
     await page.waitForTimeout(120);
     assert.equal(await page.locator('#studioZoomValue').textContent(),'160%');
     assert.equal(await page.locator('#studioBrightnessValue').textContent(),'120%');
