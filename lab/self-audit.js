@@ -83,6 +83,6 @@
     // Allow visitors to clear browser-only answers for this store.
     el('selfAuditReset')?.addEventListener('click',()=>{answers={};persist();paint()});
   }
-  window.MomentumSelfAudit={reportLines:lines};
+  window.MomentumSelfAudit={reportLines:lines,isActive:()=>Boolean(key)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
