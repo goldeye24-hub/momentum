@@ -125,7 +125,7 @@ async function sourceFetch(){
  }
  renderCompetitors();renderRanking();
  const site=p.google?.store?.website;
- if(site&&/^https:\/\//i.test(site)&&!/(naver\.com|google\.com|kakao\.com)/.test(new URL(site).hostname)){
+ let websiteHost="";try{websiteHost=new URL(site||"").hostname}catch{}\n if(site&&/^https:\/\//i.test(site)&&websiteHost&&!/(naver\.com|google\.com|kakao\.com)/.test(websiteHost)){
   try{
     const r=await fetch("/api/website-seo?"+new URLSearchParams({url:site,strategy:"mobile"}),{headers:{Accept:"application/json"}});
     if(r.ok)state.seo=await r.json();
@@ -198,8 +198,8 @@ function drawPoster(){
  if(uploaded){const dw=size,dh=size,iw=uploaded.naturalWidth,ih=uploaded.naturalHeight,ratio=Math.max(dw/iw,dh/ih);ctx.drawImage(uploaded,(dw-iw*ratio)/2,(dh-ih*ratio)/2,iw*ratio,ih*ratio);ctx.fillStyle="rgba(8,23,44,.63)";ctx.fillRect(0,0,size,size)}
  ctx.fillStyle="#ffac76";ctx.fillRect(88,250,95,8);ctx.fillStyle="#fff";
  const title=v("posterTitle")||"우리 매장의 새로운 소식";
- const wrap=(t,sz,max)=>{let lines=[],s="";for(let x of t){if((s+x).length>max){lines.push(s);s=""}s+=x}if(s)lines.push(s);ctx.font="bold "+sz+"px sans-serif";lines.slice(0,4).forEach((x,i)=>ctx.fillText(x,88,340+i*(sz+23),890))};
- wrap(title,72,12);ctx.font="500 35px sans-serif";ctx.fillStyle="#e3ebf3";wrap(v("posterDesc")||"특별한 소식을 전해드립니다.",35,25);
+ const wrap=(t,sz,max,startY)=>{let lines=[],s="";for(let x of t){if((s+x).length>max){lines.push(s);s=""}s+=x}if(s)lines.push(s);ctx.font="bold "+sz+"px sans-serif";lines.slice(0,4).forEach((x,i)=>ctx.fillText(x,88,startY+i*(sz+23),890))};
+ wrap(title,72,12,340);ctx.font="500 35px sans-serif";ctx.fillStyle="#e3ebf3";wrap(v("posterDesc")||"특별한 소식을 전해드립니다.",35,25,740);
  ctx.fillStyle="#ffc094";ctx.font="bold 36px sans-serif";ctx.fillText(state.company||"모멘텀마케팅",88,955,890);
 }
 function calc(){
