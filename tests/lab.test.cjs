@@ -225,3 +225,26 @@ test('homepage offers the approved Momentum marketing products and two open pack
  assert.match(h,/매체 광고비 별도/);
  assert.doesNotMatch(h,/파워패키지|신규고객 패키지|샤오홍슈/);
 });
+
+test('industry FAQ, 28 industry category directory, and four useful dedicated sector pages',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const directory=fs.readFileSync('industries/index.html','utf8');
+ const sectors=['restaurant','hairshop','hospital','academy'];
+ assert.match(home,/id="industries"/);
+ assert.match(home,/음식점·카페·외식업/);
+ assert.match(home,/개인사업자부터 법인·기업까지 상담 가능합니다/);
+ assert.match(home,/상담 가능 업종 전체 보기/);
+ assert.match(home,/href="\/industries\/"/);
+ assert.match(directory,/상담 가능한 28개 업종군/);
+ assert.equal((directory.match(/<article class="card"><h3>/g)||[]).length,28);
+ for(const slug of sectors){
+  const url='/industries/'+slug+'/';
+  assert.ok(home.includes('href="'+url+'"'),'Homepage sector link '+slug);
+  assert.ok(directory.includes('href="'+url+'"'),'Directory sector link '+slug);
+  const detail=fs.readFileSync('industries/'+slug+'/index.html','utf8');
+  for(const fragment of ['<title>','<meta name="description"','<h1>','<h2>','href="/#contact"','진단부터 실행까지']){
+   assert.ok(detail.includes(fragment),'Sector '+slug+' missing '+fragment);
+  }
+ }
+ assert.match(directory,/의료·법률·금융·주류/);
+});
