@@ -315,6 +315,44 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await builder.close();
     console.log('PASS: five actual sample sites, sample gallery filter, editor live changes, autosave, export and mobile preview');
 
+    // Internal CRM smoke checks: 18 services, real client input, two renewal dates, calendar export.
+    const crm=await ctx.newPage();
+    const crmErrors=[];
+    crm.on('pageerror',e=>crmErrors.push(String(e)));
+    const crmResponse=await crm.goto('http://127.0.0.1:'+port+'/site-builder/crm-index.html',{waitUntil:'load'});
+    assert.equal(crmResponse.status(),200);
+    await crm.waitForFunction(()=>document.querySelectorAll('#productGrid .product').length===18,{timeout:15000});
+    assert.equal(await crm.locator('#totalCustomers').innerText(),'0');
+    await crm.locator('#businessName').fill('테스트 소형이사');
+    await crm.locator('#customerForm [name="industry"]').fill('소규모 이삿짐');
+    await crm.locator('#customerForm [name="referredBy"]').fill('부산 사다리차');
+    await crm.locator('#customerForm button[type="submit"]').click();
+    assert.equal(await crm.locator('#totalCustomers').innerText(),'1');
+    await crm.locator('#contractCustomer').selectOption({label:'테스트 소형이사'});
+    await crm.locator('#contractProduct').selectOption('website-renewal');
+    const soon=new Date(Date.now()+12*86400000).toISOString().slice(0,10);
+    const later=new Date(Date.now()+22*86400000).toISOString().slice(0,10);
+    await crm.locator('#contractForm [name="status"]').selectOption('계약');
+    await crm.locator('#contractForm [name="endDate"]').fill(later);
+    await crm.locator('#contractForm [name="domainEnd"]').fill(soon);
+    await crm.locator('#contractForm [name="amount"]').fill('120000');
+    await crm.locator('#contractForm button[type="submit"]').click();
+    assert.equal(await crm.locator('#activeContracts').innerText(),'1');
+    assert.equal(await crm.locator('#dueSoon').innerText(),'2');
+    assert.equal(await crm.locator('#renewalList .alert').count(),2);
+    assert.match(await crm.locator('#recordList').innerText(),/부산 사다리차/);
+    const calendar=await Promise.all([crm.waitForEvent('download'),crm.locator('#exportCalendar').click()]);
+    assert.match(calendar[0].suggestedFilename(),/renewals\.ics$/);
+    const backup=await Promise.all([crm.waitForEvent('download'),crm.locator('#exportData').click()]);
+    assert.match(backup[0].suggestedFilename(),/momentum-crm.*\.json$/);
+    await crm.screenshot({path:path.join(root,'artifacts/momentum-internal-crm.png'),fullPage:true});
+    await crm.setViewportSize({width:390,height:844});
+    const crmDims=await crm.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+    assert.ok(crmDims.scrollWidth<=crmDims.viewport+3,'CRM mobile overflow '+JSON.stringify(crmDims));
+    assert.equal(crmErrors.length,0,'CRM errors: '+crmErrors.join(' | '));
+    await crm.close();
+    console.log('PASS: admin CRM 18 products, referrals, customer contracts, renewal alerts, calendar, backup and mobile');
+
     // Home-page product redesign: service CTAs must target the correctly preselected inquiry product.
     const publicPage=await ctx.newPage();
     const publicErrors=[];

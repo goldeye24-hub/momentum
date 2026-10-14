@@ -423,3 +423,52 @@ test('admin studio supports safe scoped editing without changing other sections'
  assert.match(ui,/id="undoEdit"/);
  assert.match(ui,/sandbox="allow-scripts"/);
 });
+
+
+test('internal CRM product catalog and admin-only authentication protect private files',()=>{
+ const catalog=JSON.parse(fs.readFileSync('site-builder/products.json','utf8')).products;
+ const names=catalog.map(x=>x.name);
+ assert.equal(catalog.length,18);
+ assert.equal(new Set(names).size,18);
+ for(const name of ['블로그체험단','블로그기자단','카페상위노출','플레이스트래픽','블로그배포','카페건바이','네이버광고대행','블로그상위노출','클립대행','인스타건바이','인스타상위노출','인스타계정대행','쓰레드대행','인플루언서 섭외','외국인 인플루언서 섭외','홈페이지제작','홈페이지재연장','상세페이지제작']){
+  assert.ok(names.includes(name),name);
+ }
+ for(const file of ['crm-index.html','crm.css','crm.js']){
+  assert.ok(fs.statSync('site-builder/'+file).size>200,file);
+ }
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('site-builder/crm.js','utf8')));
+ const html=fs.readFileSync('site-builder/crm-index.html','utf8');
+ for(const id of ['customerForm','contractForm','renewalList','catalogFilters','productGrid','recordList','exportCalendar','exportData','importData']){
+  assert.ok(html.includes('id="'+id+'"'),id);
+ }
+ const v=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+ assert.ok(v.rewrites.some(x=>x.source==='/admin/crm/'&&x.destination.includes('view=crm')));
+ const handler=require('../api/admin-site-builder.js');
+ const password=process.env.MOMENTUM_ADMIN_PASSWORD,secret=process.env.MOMENTUM_SESSION_SECRET;
+ const request=(req)=>{
+  const res={statusCode:200,headers:{},body:'',setHeader(k,v){this.headers[k.toLowerCase()]=v},end(body){this.body=body==null?'':String(body);return this}};
+  handler(req,res);return res;
+ };
+ try{
+  process.env.MOMENTUM_ADMIN_PASSWORD='very-long-test-admin-password';
+  process.env.MOMENTUM_SESSION_SECRET='test_secret_0123456789_AABBCC_DDEEFF_XXYY';
+  const base={method:'GET',headers:{host:'momentum.test',cookie:''},query:{view:'crm'}};
+  const before=request(base);
+  assert.equal(before.statusCode,200);
+  assert.match(before.body,/관리자 로그인/);
+  const blocked=request({...base,query:{asset:'products.json'}});
+  assert.equal(blocked.statusCode,401);
+  const login=request({method:'POST',headers:{host:'momentum.test',origin:'https://momentum.test'},query:{action:'login'},body:{password:process.env.MOMENTUM_ADMIN_PASSWORD}});
+  assert.equal(login.statusCode,303);
+  assert.ok(String(login.headers['set-cookie']).includes('HttpOnly'));
+  const cookie=String(login.headers['set-cookie']).split(';')[0];
+  const authorized=request({...base,headers:{host:'momentum.test',cookie}});
+  assert.match(authorized.body,/id="customerForm"/);
+  const asset=request({...base,headers:{host:'momentum.test',cookie},query:{asset:'products.json'}});
+  assert.equal(asset.statusCode,200);
+  assert.equal(JSON.parse(asset.body).products.length,18);
+ }finally{
+  if(password===undefined)delete process.env.MOMENTUM_ADMIN_PASSWORD;else process.env.MOMENTUM_ADMIN_PASSWORD=password;
+  if(secret===undefined)delete process.env.MOMENTUM_SESSION_SECRET;else process.env.MOMENTUM_SESSION_SECRET=secret;
+ }
+});
