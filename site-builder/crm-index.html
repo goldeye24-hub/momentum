@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>거래처·상품 관리 | 모멘텀마케팅 관리자</title>
+<link rel="stylesheet" href="/admin/assets/crm.css"></head>
+<body>
+<header class="topbar"><div class="shell topbar-inner"><a class="brand" href="/admin/">M<span>↗</span> 모멘텀마케팅</a><nav><a href="/admin/">홈페이지 제작툴</a><a class="on" href="/admin/crm/">거래처·상품 관리</a></nav><form action="/admin/logout" method="post"><button class="logout" type="submit">로그아웃</button></form></div></header>
+<main class="shell">
+<div class="intro"><div><div class="kicker">MOMENTUM OPERATIONS / PRIVATE CRM</div><h1>거래처와 계약,<br><em>한곳에서 관리합니다.</em></h1><p>고객별 상품 계약, 미수금, 만료일, 소개 거래처 및 홈페이지 재연장을 한눈에 확인하세요.</p></div><div class="intro-actions"><button id="exportData" type="button" class="outline">데이터 백업 ↓</button><button id="importData" type="button" class="outline">백업 복원 ↑</button><input type="file" id="importFile" accept=".json,application/json" hidden><button id="exportCalendar" type="button" class="dark">만료 일정 캘린더 저장 ↗</button></div></div>
+<div class="local-warning" role="note"><strong>초기 내부 관리 버전</strong> — 현재 입력 정보는 이 브라우저에만 저장됩니다. 기기 변경이나 브라우저 데이터 삭제에 대비해 <b>데이터 백업</b>을 사용하세요. 서버 저장·문자/이메일 자동발송은 아직 연결되지 않았습니다.</div>
+<div id="notice" class="notice" role="status" aria-live="polite"></div>
+<section class="stats" aria-label="거래처 현황">
+<div class="stat"><span>등록 거래처</span><strong id="totalCustomers">0</strong><small>중복 업체 구분</small></div>
+<div class="stat"><span>진행 계약</span><strong id="activeContracts">0</strong><small>상품별 별도 계약</small></div>
+<div class="stat attention"><span>30일 내 만료</span><strong id="dueSoon">0</strong><small>7·30·60일 알림</small></div>
+<div class="stat"><span>미수금</span><strong id="outstanding">0원</strong><small>결제상태 미입금 계약</small></div>
+</section>
+<section class="section reminder"><div class="section-head"><div><span class="kicker">RENEWALS</span><h2>계약 만료 · 재연장 알림</h2></div><p>매번 관리자 화면을 열면 오늘 날짜를 기준으로 자동 계산합니다.</p></div><div id="renewalList" class="alerts"><p class="empty">등록된 만료 예정 계약이 없습니다.</p></div></section>
+<section class="grid-section">
+<div class="section" id="customerSection"><div class="section-head"><div><span class="kicker">CLIENTS</span><h2>거래처 등록</h2></div></div>
+<form id="customerForm" autocomplete="off">
+<input type="hidden" name="id" id="customerId">
+<div class="form-grid">
+<label>업체명 <b>*</b><input id="businessName" name="name" required maxlength="90" placeholder="예: 부산 원룸용달"></label>
+<label>업종<input name="industry" maxlength="70" placeholder="예: 소규모 이삿짐"></label>
+<label>담당자<input name="manager" maxlength="60" placeholder="예: 대표자"></label>
+<label>연락처<input name="phone" maxlength="40" placeholder="예: 010-0000-0000"></label>
+<label>지역<input name="region" maxlength="80" placeholder="예: 부산 사상구"></label>
+<label>유입 경로<select name="source"><option value="">선택</option><option>직접영업</option><option>검색광고</option><option>홈페이지 문의</option><option>지인 소개</option><option>기존 거래처 소개</option><option>기타</option></select></label>
+<label>소개해 준 업체<input name="referredBy" maxlength="90" placeholder="고객 소개 추적"></label>
+<label>거래처 반응<select name="feedback"><option>보통</option><option>좋음</option><option>미흡</option><option>불만</option></select></label>
+<label class="wide">메모<textarea name="notes" rows="2" maxlength="1000" placeholder="상담·소개 경위, 특이사항"></textarea></label>
+</div><div class="actions"><button class="primary" type="submit">거래처 저장</button><button id="customerReset" class="outline" type="button">입력 초기화</button></div>
+</form></div>
+<div class="section" id="contractSection"><div class="section-head"><div><span class="kicker">CONTRACTS</span><h2>상품별 계약 등록</h2></div></div>
+<form id="contractForm" autocomplete="off"><input type="hidden" name="id" id="contractId"><div class="form-grid">
+<label>거래처 <b>*</b><select name="customerId" id="contractCustomer" required><option value="">먼저 거래처 등록</option></select></label>
+<label>계약 상품 <b>*</b><select name="productId" id="contractProduct" required><option value="">상품 선택</option></select></label>
+<label>계약 시작일<input name="startDate" type="date"></label>
+<label>계약 만료일<input name="endDate" type="date"></label>
+<label>도메인 만료일<input name="domainEnd" type="date"></label>
+<label>계약 금액 (원)<input name="amount" type="number" min="0" max="10000000000" step="1000" placeholder="예: 330000"></label>
+<label>진행 상태<select name="status"><option value="문의">문의</option><option value="시안">시안</option><option value="계약">계약</option><option value="진행중">진행중</option><option value="완료">완료</option><option value="갱신완료">갱신완료</option><option value="보류">보류</option><option value="종료">종료</option></select></label>
+<label>수금 상태<select name="payment"><option value="미입금">미입금</option><option value="일부입금">일부입금</option><option value="완납">완납</option></select></label>
+<label>무료 수정 약정 횟수<input name="includedEdits" type="number" min="0" max="100" value="0"></label>
+<label>수정 사용 횟수<input name="usedEdits" type="number" min="0" max="100" value="0"></label>
+<label class="wide">사이트·상품 관련 링크<input name="link" type="url" maxlength="300" placeholder="https://..."></label>
+<label class="wide">계약 메모<textarea name="notes" rows="2" maxlength="1000" placeholder="수정 요청, 작업 범위, 재계약 조건 등"></textarea></label>
+</div><p id="policyNote" class="policy" hidden>이 상품은 플랫폼 정책·광고 표시·성과보장 문구를 계약 전 검토하세요. 인위적 노출·허위 트래픽을 약속하지 않습니다.</p><div class="actions"><button class="primary" type="submit">계약 저장</button><button id="contractReset" class="outline" type="button">입력 초기화</button></div></form>
+</div>
+</section>
+<section class="section" id="catalogSection"><div class="section-head"><div><span class="kicker">PRODUCT CATALOG</span><h2>모멘텀 상품 목록 <span id="productCount"></span></h2></div><div class="catalog-add"><label for="newProductName" class="sr-only">추가 상품명</label><input id="newProductName" maxlength="70" placeholder="새 상품명"><button type="button" id="addProduct" class="outline">+ 상품 추가</button></div></div>
+<div class="catalog-filters" id="catalogFilters"></div><div class="product-grid" id="productGrid"></div></section>
+<section class="section"><div class="section-head"><div><span class="kicker">CUSTOMER RECORDS</span><h2>거래처 · 계약 목록</h2></div><label class="search">검색<input id="searchRecords" type="search" placeholder="업체명·상품명·지역"></label></div>
+<div id="recordList" class="records"><p class="empty">아직 거래처가 없습니다. 위에서 첫 거래처를 등록하세요.</p></div></section>
+</main>
+<footer class="shell foot">모멘텀마케팅 관리자 · 고객용 공개 페이지가 아닙니다. <span>고객 정보의 안전한 운영을 위해 정식 서버 저장 도입 전에는 시험 데이터 사용을 권장합니다.</span></footer>
+<script defer src="/admin/assets/crm.js"></script>
+</body></html>
