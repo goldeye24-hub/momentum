@@ -302,48 +302,86 @@ test('integrated agency visual redesign retains accurate products and live inqui
  assert.match(industry,/Cross-site agency brand/);
 });
 
-test('editorial work archive, four service pillars and privacy-safe case studies',()=>{
+
+test('homepage displays editable original templates instead of confusing client screenshots',()=>{
  const home=fs.readFileSync('index.html','utf8');
- const style=fs.readFileSync('agency-showcase.css','utf8');
- const experience=fs.readFileSync('agency-experience.js','utf8');
+ const css=fs.readFileSync('website-samples/home-showcase.css','utf8');
  assert.match(home,/id="work"/);
- assert.match(home,/href="\/work\/mukdori\/"/);
- assert.match(home,/href="\/work\/balmonghair\/"/);
- assert.match(home,/실제 홈페이지 화면/);
- assert.doesNotMatch(home,/class="work-visual-name"/);
- for(const id of ['mukdori','balmonghair']){
-  const file='assets/portfolio-'+id+'.jpg';
-  const buffer=fs.readFileSync(file);
-  assert.ok(buffer.length>20000,'Screenshot missing or empty: '+file);
-  assert.equal(buffer[0],255,'Not a JPEG: '+file);
-  assert.equal(buffer[1],216,'Not a JPEG: '+file);
-  assert.ok(home.includes('src="/'+file+'"'),'Card missing actual screenshot: '+id);
- }
- assert.equal((home.match(/class="agency-work-card /g)||[]).length,3);
+ assert.match(home,/실제 고객 제작 실적이 아닌 편집 가능한 디자인 샘플/);
+ assert.match(home,/href="\/website-samples\/"/);
+ assert.match(home,/href="\/site-builder\/"/);
+ assert.equal((home.match(/class="agency-sample-card"/g)||[]).length,3);
+ assert.doesNotMatch(home,/class="agency-work-card /);
+ assert.doesNotMatch(home,/src="\/assets\/portfolio-mukdori\.jpg"/);
+ assert.match(home,/href="\/website-samples\/restaurant\/"/);
+ assert.match(home,/href="\/site-builder\/\?template=beauty"/);
+ assert.match(home,/href="\/website-samples\/home-showcase\.css"/);
+ assert.match(css,/agency-sample-viewport/);
  assert.equal((home.match(/class="agency-service-family"/g)||[]).length,4);
  assert.equal((home.match(/class="card service-card/g)||[]).length,9);
- assert.match(home,/href="\/agency-showcase\.css"/);
- assert.match(home,/src="\/agency-experience\.js"/);
- assert.match(home,/aria-controls="agencyNav"/);
- assert.doesNotMatch(home,/href="https:\/\/(mukdori-pohang|balmonghair-busan)\.vercel\.app\//);
- for(const slug of ['search-ads','viral','place-seo','creative']){
-  assert.ok(home.includes('href="/services/'+slug+'/";')||home.includes('href="/services/'+slug+'/"'));
-  const page=fs.readFileSync('services/'+slug+'/index.html','utf8');
-  assert.match(page,/<h1>/);
-  assert.match(page,/href="\/\?service=/);
-  assert.match(page,/href="\/services\/site\.css"/);
-  assert.match(page,/WHAT WE DELIVER/);
- }
+ // Original verified screenshots/case pages remain separately available; never mislabel mockups as paid work.
  for(const slug of ['mukdori','balmonghair']){
   const page=fs.readFileSync('work/'+slug+'/index.html','utf8');
   assert.match(page,/PROJECT OVERVIEW/);
-  assert.match(page,/실제 제작 구성/);
-  assert.match(page,/실제 제작 화면/);
-  assert.ok(page.includes('src="/assets/portfolio-'+slug+'.jpg"'));
-  assert.doesNotMatch(page,/검색순위가.*상승|매출.*증가/);
+  const buffer=fs.readFileSync('assets/portfolio-'+slug+'.jpg');
+  assert.ok(buffer.length>20000);
  }
- assert.match(style,/\.agency-work-card/);
- assert.match(style,/\.agency-service-family/);
- assert.match(style,/prefers-reduced-motion/);
- assert.doesNotThrow(()=>new vm.Script(experience));
+});
+
+test('five distinct industry websites are real navigable demo pages with safe HTML builder core',()=>{
+ const presets=JSON.parse(fs.readFileSync('site-builder/presets.json','utf8'));
+ const code=fs.readFileSync('site-builder/kit.js','utf8');
+ const design=fs.readFileSync('site-builder/site-template.css','utf8');
+ assert.equal(presets.length,5);
+ assert.doesNotThrow(()=>new vm.Script(code));
+ const context={window:{}};
+ vm.runInNewContext(code,context);
+ const kit=context.window.MomentumSiteKit;
+ assert.equal(typeof kit.render,'function');
+ for(const id of ['restaurant','beauty','academy','clinic','corporate']){
+  const preset=presets.find(x=>x.id===id);
+  assert.ok(preset,id);
+  const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+  assert.match(page,/site-builder\/kit\.js/);
+  assert.match(page,/site-template\.css/);
+  assert.match(page,/noindex,follow/);
+  const rendered=kit.render(preset,design);
+  assert.match(rendered,/<html lang="ko">/);
+  assert.match(rendered,/DESIGN SAMPLE/);
+  assert.match(rendered,/class="site-shell site-hero"/);
+  assert.match(rendered,/class="services-grid"/);
+  assert.match(rendered,/id="contact"/);
+  assert.match(rendered,/src="https:\/\/images\.unsplash\.com\//);
+ }
+ const sample=kit.copy(presets[0]);
+ sample.brand='<script>alert(1)</script>';
+ sample.heroImage='javascript:alert(1)';
+ sample.services[0].title='<img src=x onerror=alert(2)>';
+ const html=kit.render(sample,design);
+ assert.doesNotMatch(html,/<script>/);
+ assert.doesNotMatch(html,/src="javascript:/);
+ assert.match(html,/&lt;script&gt;alert/);
+ assert.match(html,/&lt;img src=x onerror/);
+ sample.demoMode=false;
+ const productionHtml=kit.render(sample,design);
+ assert.doesNotMatch(productionHtml,/class="sample-ribbon"/);
+ assert.match(productionHtml,/공식 홈페이지/);
+});
+test('page builder has real section, image, style, reorder, persistence and export controls',()=>{
+ const html=fs.readFileSync('site-builder/index.html','utf8');
+ const js=fs.readFileSync('site-builder/editor.js','utf8');
+ const gallery=fs.readFileSync('website-samples/index.html','utf8');
+ assert.match(html,/id="sitePreview"/);
+ assert.match(html,/data-tab="sections"/);
+ assert.match(html,/data-tab="gallery"/);
+ assert.match(html,/id="downloadHtml"/);
+ assert.match(html,/id="saveConfig"/);
+ assert.match(html,/id="loadConfig"/);
+ assert.match(html,/data-viewport="mobile"/);
+ assert.doesNotThrow(()=>new vm.Script(js));
+ for(const marker of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])
+  assert.ok(js.includes(marker),marker);
+ assert.equal((gallery.match(/class="sample-card"/g)||[]).length,5);
+ assert.match(gallery,/data-filter/);
+ assert.match(gallery,/샘플은 실제 업체 포트폴리오와 별도로 관리/);
 });
