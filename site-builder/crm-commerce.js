@@ -311,7 +311,7 @@ function quoteData(b){
 }
 function printQuote(b){
  if(!b?.lines.length||!b.customerId){notice('거래처와 상품을 먼저 선택하세요.');return}
- const w=window.open('','_blank','noopener,noreferrer');
+ const w=window.open('','_blank');
  if(!w){notice('팝업 차단을 해제한 뒤 견적서 출력을 다시 눌러주세요.');return}
  w.document.open();w.document.write(quoteData(b));w.document.close();
  w.addEventListener('load',()=>w.print(),{once:true});
@@ -335,7 +335,7 @@ function init(){
   db=validate(input);if(!persist())throw Error('저장 실패');renderSuppliers();renderBundles();renderBundleSelects();notify();
  }};
  fetch('/admin/assets/products.json',{credentials:'same-origin',cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{
-  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();
+  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();notify();
  }).catch(()=>{rateRow();resetBundle();renderSuppliers();notice('상품 목록 로딩에 실패했습니다. 관리자 로그인을 다시 확인하세요.')});
  $('supplierForm').addEventListener('submit',saveSupplier);
  $('clearSupplier').addEventListener('click',resetSupplier);$('resetSupplier').addEventListener('click',resetSupplier);

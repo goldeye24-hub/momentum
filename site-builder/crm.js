@@ -53,7 +53,7 @@ function normalizeData(raw){
  return {version:2,customers:cs,contracts,tasks,customProducts:custom};
 }
 function persist(){
- try{localStorage.setItem(DB_KEY,JSON.stringify(db));return true}
+ try{localStorage.setItem(DB_KEY,JSON.stringify(db));window.dispatchEvent(new CustomEvent('momentum-crm-updated'));return true}
  catch(e){message('저장 실패: 브라우저 저장 공간 문제입니다. 데이터를 백업하세요.');return false}
 }
 function getProducts(){return catalog.concat(db.customProducts)}
@@ -104,13 +104,17 @@ function renderClientDropdown(){
 }
 function renderStats(){
  el('totalCustomers').textContent=String(db.customers.length);
- el('activeContracts').textContent=String(db.contracts.filter(x=>!['종료','보류','문의'].includes(x.status)).length);
- el('dueSoon').textContent=String(reminderEvents().filter(x=>x.days>=0&&x.days<=30).length);
+ const bundleData=window.MomentumCommerce?.read()?.bundles||[];
+ const activeBundles=bundleData.filter(b=>['계약','진행중','완료'].includes(b.status));
+ const bundleTotals=activeBundles.map(b=>{const subtotal=Math.round(b.lines.reduce((n,l)=>n+l.quantity*l.unitPrice,0));const cost=Math.round(b.lines.reduce((n,l)=>n+l.quantity*l.unitCost,0));return {total:Math.max(0,subtotal-b.discount),cost,paid:b.paid};});
+ el('activeContracts').textContent=String(db.contracts.filter(x=>!['종료','보류','문의'].includes(x.status)).length+activeBundles.length);
+ const bundleRenewals=bundleData.filter(b=>b.status!=='종료').flatMap(b=>b.lines.map(l=>({type:'묶음상품 만료',date:l.endDate||b.endDate,business:customer(b.customerId)?.name||'거래처',product:l.productName})).filter(r=>r.date&&daysUntil(r.date)<=60));
+ el('dueSoon').textContent=String(reminderEvents().filter(x=>x.days>=0&&x.days<=30).length+bundleRenewals.filter(x=>daysUntil(x.date)>=0&&daysUntil(x.date)<=30).length);
  const billable=db.contracts.filter(x=>!['종료','보류','문의','시안'].includes(x.status));
- el('outstanding').textContent=money(billable.reduce((sum,x)=>sum+Math.max(0,x.amount-x.paid),0));
- el('grossProfit').textContent=money(billable.reduce((sum,x)=>sum+x.amount-x.cost,0));
+ el('outstanding').textContent=money(billable.reduce((sum,x)=>sum+Math.max(0,x.amount-x.paid),0)+bundleTotals.reduce((n,t)=>n+Math.max(0,t.total-t.paid),0));
+ el('grossProfit').textContent=money(billable.reduce((sum,x)=>sum+x.amount-x.cost,0)+bundleTotals.reduce((n,t)=>n+t.total-t.cost,0));
  el('openTasks').textContent=String(db.tasks.filter(t=>!t.done).length);
- const upcoming=reminderEvents();
+ const upcoming=reminderEvents().concat(bundleRenewals.map(x=>({...x,days:daysUntil(x.date)}))).sort((a,b)=>a.days-b.days);
  el('renewalList').innerHTML=upcoming.length?upcoming.map(x=>{
   const urgent=x.days<0||x.days<=7,soon=x.days<=30;
   const badge=x.days<0?Math.abs(x.days)+'일 지남':x.days===0?'오늘 만료':x.days+'일 남음';
@@ -232,17 +236,33 @@ function dl(name,text,mime){
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function backup(){
- dl('momentum-crm-'+todayKey()+'.json',JSON.stringify(db,null,2),'application/json');
- message('로컬 거래처·계약 데이터 백업 파일을 저장했습니다. 고객정보가 포함되므로 안전하게 보관하세요.');
+ const commerce=window.MomentumCommerce?.read()||null;
+ dl('momentum-crm-'+todayKey()+'.json',JSON.stringify({...db,commerce},null,2),'application/json');
+ message('거래처·단일 계약·묶음 견적·외주업체를 포함한 JSON 백업을 저장했습니다. 안전하게 보관하세요.');
 }
 function restore(file){
  if(!file||file.size>5000000){message('5MB 이하 JSON 파일만 사용할 수 있습니다.');return;}
  const reader=new FileReader();
  reader.onload=()=>{
   try{
-   const input=normalizeData(JSON.parse(String(reader.result)));
-   if(!confirm('현재 이 브라우저의 모든 거래처·계약 정보를 백업 파일 내용으로 교체할까요?'))return;
-   db=input;persist();render();resetCustomer();resetContract();message('백업을 복원했습니다.');
+   const raw=JSON.parse(String(reader.result));
+   const input=normalizeData(raw);
+   const commerce=raw.commerce?window.MomentumCommerce?.validate(raw.commerce):null;
+   if(raw.commerce&&!commerce)throw Error('묶음계약 모듈을 불러오지 못했습니다.');
+   if(!confirm('현재 이 브라우저의 거래처·계약 데이터를 백업 내용으로 교체할까요?'))return;
+   const previous=localStorage.getItem(DB_KEY);
+   const prevCommerce=localStorage.getItem('momentum-internal-crm-commerce-v1');
+   try{
+    localStorage.setItem(DB_KEY,JSON.stringify(input));
+    if(commerce)window.MomentumCommerce.replace(commerce);
+    db=input;render();resetCustomer();resetContract();
+    window.dispatchEvent(new CustomEvent('momentum-crm-updated'));
+    message(commerce?'전체 CRM 백업을 복원했습니다.':'기존 형식의 거래처·단일 계약 백업을 복원했습니다. 묶음 계약 데이터는 유지했습니다.');
+   }catch(err){
+    if(previous===null)localStorage.removeItem(DB_KEY);else localStorage.setItem(DB_KEY,previous);
+    if(prevCommerce===null)localStorage.removeItem('momentum-internal-crm-commerce-v1');else localStorage.setItem('momentum-internal-crm-commerce-v1',prevCommerce);
+    throw err;
+   }
   }catch(e){message('백업 파일 형식이 올바르지 않습니다. '+e.message)}
  };
  reader.readAsText(file);
@@ -303,6 +323,7 @@ function setup(){
  el('importData').addEventListener('click',()=>el('importFile').click());
  el('importFile').addEventListener('change',e=>{restore(e.target.files?.[0]);e.target.value='';});
  el('exportCalendar').addEventListener('click',calendar);
+ window.addEventListener('momentum-commerce-updated',renderStats);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
