@@ -285,7 +285,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     // Selecting an element within the sandboxed preview opens its matching field.
     const previewFrame=builder.frameLocator('#sitePreview');
     await previewFrame.locator('.site-hero h1').click();
-    assert.equal(await builder.locator('[data-tab="hero"]').getAttribute('aria-selected'),'true');
+    await builder.waitForFunction(()=>document.querySelector('[data-tab="hero"]')?.getAttribute('aria-selected')==='true',{timeout:6000});
     assert.ok(await builder.locator('[data-field="headline"]').count()===1);
     const priorDescription=await builder.locator('[data-field="description"]').inputValue();
     await builder.locator('[data-field="headline"]').fill('요청한 제목만 바꾸기');
