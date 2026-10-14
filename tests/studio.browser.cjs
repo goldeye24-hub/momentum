@@ -406,7 +406,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await crm.locator('#usageForm button[type="submit"]').click();
     assert.match(await crm.locator('#usageStatus').innerText(),/잔여 7건/);
     await crm.locator('#closeUsage').click();
-    assert.match(await crm.locator('#bundleRecords').innerText(),/잔여 7건/);
+    assert.match(await crm.locator('#bundleRecords').innerText(),/잔여 7\s*건/);
     await crm.locator('#bundleRecords [data-edit-bundle]').click();
     await crm.locator('#bundleLines .bundle-line').nth(0).locator('[data-line="unitPrice"]').fill('16000');
     await crm.locator('#bundleForm button[type="submit"]').click();
