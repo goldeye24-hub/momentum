@@ -59,6 +59,20 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await page.locator('#ownIntelFacts').innerText(),/12345678/);
     assert.match(await page.locator('#ownIntelKeywords').innerText(),/포항 맛집/);
     assert.match(await page.locator('#keywordIdeas').innerText(),/포항 맛집/);
+
+    // Real SEO/GEO actionability when all provider API keys are absent:
+    // every issue must be identified by the checker, not invented by a model.
+    await page.waitForSelector('#selfAudit:not([hidden])');
+    assert.equal(await page.locator('#selfAudit [data-check]').count(),12);
+    assert.match(await page.locator('#selfAuditStatus').innerText(),/확인 0\/12개/);
+    await page.locator('#selfAudit [data-check="contacts"] [data-choice="problem"]').click();
+    assert.match(await page.locator('#selfAuditFindings').innerText(),/주소·전화번호·영업시간/);
+    assert.match(await page.locator('#selfAuditStatus').innerText(),/개선 필요 1개/);
+    await page.locator('#makeReport').click();
+    assert.match(await page.locator('#reportText').innerText(),/직접 확인 점검/);
+    assert.match(await page.locator('#reportText').innerText(),/실제 출입구/);
+    // An unconfirmed item must stay unconfirmed, never classified as an observed defect.
+    assert.match(await page.locator('#reportText').innerText(),/\[미확인\]/);
     await page.locator('#makeReport').click();
     assert.match(await page.locator('#reportText').innerText(),/모멘텀 독립 진단/);
     assert.match(await page.locator('#reportText').innerText(),/실제 검색량 미측정/);
