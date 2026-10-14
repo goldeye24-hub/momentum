@@ -29,6 +29,19 @@ function normalize(d){
   n.sectionEnabled=n.sectionEnabled&&typeof n.sectionEnabled==='object'?n.sectionEnabled:{};
   for(var a of allowed)if(typeof n.sectionEnabled[a]!=='boolean')n.sectionEnabled[a]=true;
   if(typeof n.demoMode!=='boolean')n.demoMode=true;
+  // Per-section overrides stay independent from the chosen industry design system.
+  n.sectionStyles=n.sectionStyles&&typeof n.sectionStyles==='object'?n.sectionStyles:{};
+  for(var key of ['hero','about','services','gallery','faq','contact']){
+    var v=n.sectionStyles[key];
+    if(!v||typeof v!=='object'||Array.isArray(v))v={};
+    var bg=/^#[0-9a-f]{6}$/i.test(String(v.background||''))?String(v.background):'';
+    var title=Number(v.titleSize),spacing=Number(v.spacing);
+    n.sectionStyles[key]={
+      background:bg,
+      titleSize:Number.isFinite(title)&&title>=18&&title<=120?Math.round(title):0,
+      spacing:Number.isFinite(spacing)&&spacing>=10&&spacing<=200?Math.round(spacing):0
+    };
+  }
   n.heroImage=image(n.heroImage);n.aboutImage=image(n.aboutImage);
   return n;
 }
@@ -55,6 +68,14 @@ function render(d,css){
  var footer=c.demoMode===false?'<div class="site-shell"><footer class="site-footer"><span>© '+name+' · All rights reserved.</span></footer></div>':'<div class="site-shell"><footer class="site-footer"><span>© '+name+' · <strong>업종별 홈페이지 제작 샘플</strong></span><a href="https://momentum-goldeye24-hubs-projects.vercel.app/website-samples/" target="_blank" rel="noopener noreferrer">모멘텀마케팅 제작툴 ↗</a></footer></div>';
  var quick=(phone(c.phone)||mail(c.email))?'<div class="mobile-quick-contact"><a href="'+esc(contactUrl)+'">'+esc(c.cta||'문의하기')+' ↗</a></div>':'';
  var rule=':root{--ink:'+color.ink+';--bg:'+color.background+';--accent:'+color.accent+';--panel:'+color.panel+'}';
+ // Generate only scoped CSS for the touched section. All other sections retain the template.
+ Object.keys(c.sectionStyles).forEach(function(id){
+  if(!['hero','about','services','gallery','faq','contact'].includes(id))return;
+  var v=c.sectionStyles[id],selector=id==='hero'?'#top':'#'+id;
+  if(v.background)rule+=selector+'{background:'+v.background+';}';
+  if(v.titleSize)rule+=selector+' h1,'+selector+' h2{font-size:clamp(25px,6vw,'+v.titleSize+'px)!important;}';
+  if(v.spacing)rule+=selector+'{padding-top:'+v.spacing+'px!important;padding-bottom:'+v.spacing+'px!important;}';
+ });
  return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+name+(c.demoMode===false?' | 공식 홈페이지':' | 홈페이지 디자인 샘플')+'</title><meta name="description" content="'+esc(String(c.description||'').slice(0,145))+'"><meta property="og:locale" content="ko_KR"><meta property="og:type" content="website"><meta property="og:title" content="'+name+'"><meta property="og:description" content="'+esc(String(c.description||'').slice(0,145))+'"><style>'+String(css||'')+'\n'+rule+'</style></head><body class="style-'+esc(c.style)+'">'+ribbon+nav+'<main>'+hero+ticker+blocks+'</main>'+quick+footer+'</body></html>';
 }
 window.MomentumSiteKit={normalize:normalize,render:render,sectionNames:sectionNames,copy:copy};
