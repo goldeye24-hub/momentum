@@ -156,7 +156,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.equal(response.status(),200,'Invalid route '+route);
       assert.ok((await industryPage.locator('h1').innerText()).length>5);
       assert.ok(await industryPage.locator('a[href="/#contact"]').count()>=1);
-      assert.equal(await industryPage.locator('h2').count(),3);
+      assert.ok(await industryPage.locator('h2').count()>=4);
     }
     await industryPage.goto('http://127.0.0.1:'+port+'/industries/',{waitUntil:'load'});
     await industryPage.setViewportSize({width:390,height:844});
