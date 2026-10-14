@@ -191,18 +191,6 @@ async function reply(){
  }catch(err){showReplies(reviewFallback(review,name),"AI 서버 연결 전: 리뷰 핵심 표현을 반영한 기본 문안 (AI 생성 아님)");$("reviewState").textContent="기본 문안으로 제공 중 · AI 연결은 모멘텀 내부 설정에서 처리";}
  finally{$("reviewRun").disabled=false}
 }
-let uploaded=null;
-function drawPoster(){
- const c=$("poster"),ctx=c.getContext("2d"),size=1080;c.width=size;c.height=size;
- const g=ctx.createLinearGradient(0,0,size,size);g.addColorStop(0,"#0b1e35");g.addColorStop(1,"#2c4967");
- ctx.fillStyle=g;ctx.fillRect(0,0,size,size);
- if(uploaded){const dw=size,dh=size,iw=uploaded.naturalWidth,ih=uploaded.naturalHeight,ratio=Math.max(dw/iw,dh/ih);ctx.drawImage(uploaded,(dw-iw*ratio)/2,(dh-ih*ratio)/2,iw*ratio,ih*ratio);ctx.fillStyle="rgba(8,23,44,.63)";ctx.fillRect(0,0,size,size)}
- ctx.fillStyle="#ffac76";ctx.fillRect(88,250,95,8);ctx.fillStyle="#fff";
- const title=v("posterTitle")||"우리 매장의 새로운 소식";
- const wrap=(t,sz,max,startY)=>{let lines=[],s="";for(let x of t){if((s+x).length>max){lines.push(s);s=""}s+=x}if(s)lines.push(s);ctx.font="bold "+sz+"px sans-serif";lines.slice(0,4).forEach((x,i)=>ctx.fillText(x,88,startY+i*(sz+23),890))};
- wrap(title,72,12,340);ctx.font="500 35px sans-serif";ctx.fillStyle="#e3ebf3";wrap(v("posterDesc")||"특별한 소식을 전해드립니다.",35,25,740);
- ctx.fillStyle="#ffc094";ctx.font="bold 36px sans-serif";ctx.fillText(state.company||"모멘텀마케팅",88,955,890);
-}
 function calc(){
  const t=Number(v("ticket")),m=Number(v("margin")),c=Number(v("conversion"));
  if(![t,m,c].every(Number.isFinite)||t<=0||m<=0||m>100||c<=0||c>100){$("calculatorResult").textContent="객단가와 0~100% 이내 비율을 입력하세요.";return}
@@ -214,10 +202,7 @@ function main(){
  $("auditForm").onsubmit=ev=>{ev.preventDefault();runAudit()};
  $("makeReport").onclick=generateReport;$("copyReport").onclick=()=>copy(state.report);$("printReport").onclick=()=>window.print();
  $("reviewRun").onclick=reply;
- $("posterImage").onchange=ev=>{const f=ev.target.files?.[0];if(!f)return;if(f.size>8e6){alert("8MB 이하 이미지를 사용하세요.");return}
- const obj=URL.createObjectURL(f),img=new Image();img.onload=()=>{uploaded=img;drawPoster();URL.revokeObjectURL(obj)};img.src=obj};
- $("drawPoster").onclick=drawPoster;$("downloadPoster").onclick=()=>{drawPoster();$("poster").toBlob(blob=>{if(!blob)return;const x=URL.createObjectURL(blob),a=document.createElement("a");a.href=x;a.download="momentum-marketing.png";a.click();setTimeout(()=>URL.revokeObjectURL(x),1300)},"image/png")};
- $("calculate").onclick=calc;calc();drawPoster();calendar();
+ $("calculate").onclick=calc;calc();calendar();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",main,{once:true});else main();
 })();
