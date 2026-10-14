@@ -143,3 +143,20 @@ html.has-motion [data-reveal]:not(.is-revealed){opacity:0;transform:translateY(2
  .agency-work .eyebrow{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){html.has-motion [data-reveal]:not(.is-revealed){opacity:1;transform:none}[data-reveal]{transition:none}.agency-visual{transform:none}}
+
+/* Intentional editorial project concept graphics: no inaccessible client photography. */
+.agency-work-photo-seafood{background:radial-gradient(ellipse at 69% 32%,#315e79 0%,#12384e 32%,#0d2a3f 76%)}
+.agency-work-photo-seafood:before{content:"";position:absolute;z-index:0;width:500px;height:500px;left:29%;top:6%;border:1px solid rgba(188,221,224,.43);border-radius:50%;box-shadow:0 0 0 58px rgba(189,221,225,.065),0 0 0 120px rgba(189,221,225,.04)}
+.agency-work-photo-seafood:after{content:"";position:absolute;z-index:0;inset:0;background-image:linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:94px 100%;opacity:.22}
+.agency-work-photo-beauty{background:linear-gradient(115deg,#cec1b5 0%,#a79184 44%,#65585c 100%)}
+.agency-work-photo-beauty:before{content:"";position:absolute;z-index:0;width:380px;height:480px;border:42px solid rgba(243,225,209,.22);border-radius:48% 52% 45% 48%;left:55%;top:-44%;transform:rotate(18deg)}
+.agency-work-photo-beauty:after{content:"";position:absolute;z-index:0;width:310px;height:390px;border:1px solid rgba(255,248,240,.32);border-radius:47%;left:30%;top:17%;transform:rotate(-25deg)}
+.work-visual-name{position:absolute;z-index:2;left:7%;top:45%;transform:translateY(-35%);color:white;display:flex;flex-direction:column;gap:9px;max-width:90%;text-shadow:0 6px 30px rgba(0,0,0,.1)}
+.work-visual-name>span{font-size:12px;letter-spacing:.32em;font-weight:900;color:#c1dee2}
+.work-visual-name>strong{font-size:clamp(44px,6vw,91px);font-weight:900;letter-spacing:-.09em;line-height:1.02;white-space:nowrap}
+.work-visual-name>small{font-size:10px;letter-spacing:.16em;font-weight:850;color:#dcebf1}
+.agency-work-photo-beauty .work-visual-name{left:7%;top:52%}
+.agency-work-photo-beauty .work-visual-name>strong{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:clamp(40px,4.1vw,62px);letter-spacing:-.065em}
+.agency-work-photo-beauty .work-visual-name>span{color:#fff1dd}
+.agency-work-photo-beauty .work-visual-name>small{color:#f6e9df}
+@media(max-width:760px){.work-visual-name>strong{font-size:clamp(37px,10vw,70px)}.agency-work-photo-beauty .work-visual-name>strong{font-size:clamp(37px,9vw,58px)}}
