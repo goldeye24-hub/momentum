@@ -22,6 +22,14 @@
       "destination": "/api/admin-site-builder"
     },
     {
+      "source": "/admin/crm",
+      "destination": "/api/admin-site-builder?view=crm"
+    },
+    {
+      "source": "/admin/crm/",
+      "destination": "/api/admin-site-builder?view=crm"
+    },
+    {
       "source": "/admin/login",
       "destination": "/api/admin-site-builder?action=login"
     },
