@@ -67,6 +67,7 @@ function drawPlatforms(){
  $("consistency").innerHTML=check.join("");
 }
 function suggestions(){
+ if(window.MomentumIntel?.renderKeywords?.())return;
  const category=inferredCategory(),city=inferredCity(),s=new Set();
  if(category){s.add(category);if(city)s.add(city+" "+category);s.add(category+" 추천");s.add(category+" 후기");if(city)s.add(city+" "+category+" 예약")}
  if(!s.size){s.add(state.company);s.add(state.company+" 메뉴");s.add(state.company+" 후기");s.add(state.company+" 예약")}
@@ -113,22 +114,43 @@ function calendar(){
  $("calendarIdeas").innerHTML=(basic[month]||[]).map(x=>detail(x,"업종별 적용 여부와 실제 행사 일정은 확인이 필요합니다.")).join("");
 }
 function generateReport(){
- const d=state.audit;if(!d){$("reportText").textContent="진단을 먼저 시작하세요.";return}
- const t=["모멘텀마케팅 매장 통합진단", "작성 시각: "+fmt(d.checkedAt),"매장명: "+state.company,"입력 플레이스: "+state.placeUrl,"","[공개 정보 출처]"];
- for(const [id,p] of Object.entries(d.platforms||{})){
- t.push(platformName[id]+": "+(statusLabel[p.status]||p.status||"미확인"));
- if(p.store)t.push("  상호 후보: "+p.store.name+" / 주소: "+p.store.address+" / "+(p.store.url||""));
- if(p.note||p.message)t.push("  "+(p.note||p.message));
+ const d=state.audit,own=window.MomentumIntel?.getResult?.();
+ if(!d&&!own){$("reportText").textContent="진단을 먼저 시작하세요.";return}
+ const t=["모멘텀마케팅 매장 통합진단","작성 시각: "+fmt(d?.checkedAt||own?.createdAt||new Date().toISOString()),"매장명: "+(state.company||own?.merchant?.name||v("storeName")),"입력 플레이스: "+(state.placeUrl||v("placeUrl"))];
+ if(own){
+  const m=own.merchant;
+  t.push("","[모멘텀 독립 진단 · 이용자 입력값만 활용]",
+    "분석근거: "+own.method,
+    "링크 서비스: "+(m.identity.provider||"미확인"),
+    "숫자형 플레이스 ID: "+(m.identity.placeId||"URL에서 확인 불가"),
+    "지역 추정: "+(m.region.value||"미확인")+" (상호명 추정)",
+    "업종 추정: "+(m.industry.label||"미확인")+" (입력 텍스트 기반)",
+    "검색량/순위: 실제 측정하지 않음","",
+    "[자체 생성 키워드 후보]");
+  for(const x of own.keywords||[])t.push("• "+x.keyword+" ["+x.group+"] / 생성 후보, 실제 검색량 미측정");
+  t.push("","[자체 실행 계획]");
+  for(const x of own.actions||[])t.push("• "+x.headline+": "+x.detail);
+  t.push("","[자체 홍보 콘텐츠 기획]");
+  for(const x of own.campaigns||[])t.push("• "+x.channel+" — "+x.headline+" / "+x.body);
  }
- t.push("","[확인된 관측 정보]");
- for(const x of d.observations||[])t.push("• "+x.label+" — "+x.text+(x.source?" | 출처: "+x.source:""));
- t.push("","[검토 및 개선 과제]");
- for(const x of d.improvements||[])t.push("• "+x.title+" — "+x.reason);
+ if(d){
+  t.push("","[연동된 공개 정보 출처]");
+  for(const [id,p] of Object.entries(d.platforms||{})){
+   t.push(platformName[id]+": "+(statusLabel[p.status]||p.status||"미확인"));
+   if(p.store)t.push("  상호 후보: "+p.store.name+" / 주소: "+p.store.address+" / "+(p.store.url||""));
+   if(p.note||p.message)t.push("  "+(p.note||p.message));
+  }
+  t.push("","[연동 API에서 확인된 관측 정보]");
+  for(const x of d.observations||[])t.push("• "+x.label+" — "+x.text+(x.source?" | 출처: "+x.source:""));
+  t.push("","[추가 검토 과제]");
+  for(const x of d.improvements||[])t.push("• "+x.title+" — "+x.reason);
+ }
  if(state.seo?.score)t.push("","[홈페이지 기술 SEO]","Google Lighthouse: "+state.seo.score.seo+"/100");
  if(state.competitors?.places?.length)t.push("","[카카오 장소 API 검색]","검색어: "+state.competitors.keyword+" / API 결과 수: "+state.competitors.places.length);
- t.push("","[한계]","플레이스 URL은 점주 비공개 조회수에 접근할 권한이 아닙니다.","네이버 지도 실제 순위·AI 추천률·실시간 매장 방문객 수는 측정되지 않았습니다.","공식 검색 API의 업체명 일치 후보는 주소와 실제 매장 여부를 대조해야 합니다.");
+ t.push("","[한계]","입력정보 기반의 자체 생성 키워드와 실제 네이버 검색량은 별개입니다.","플레이스 URL만으로 점주 비공개 조회수나 실제 순위를 측정하지 않습니다.","네이버 지도 실제 순위·AI 추천률·실시간 매장 방문객 수는 측정되지 않았습니다.");
  state.report=t.join("\n");$("reportText").textContent=state.report;
 }
+window.MomentumCustomerReport=generateReport;
 async function sourceFetch(){
  const data=state.audit,p=data?.platforms||{},store=p.kakao?.store||p.google?.store;
  const cat=inferredCategory(),city=inferredCity();
