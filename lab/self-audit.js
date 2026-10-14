@@ -75,7 +75,7 @@
       try{
         const u=new URL(enteredUrl);
         const host=u.hostname.toLowerCase();
-        const supported=/(^|\\.)(naver\\.com|naver\\.me|kakao\\.com|google\\.com|google\\.co\\.kr|goo\\.gl|maps\\.app\\.goo\\.gl)$/.test(host);
+        const supported=/(^|\.)(naver\.com|naver\.me|kakao\.com|google\.com|google\.co\.kr|goo\.gl|maps\.app\.goo\.gl)$/.test(host);
         if(u.protocol==='https:'&&supported&&enteredName.length>=2)activate({name:enteredName,placeUrl:enteredUrl});
       }catch{}
     });
