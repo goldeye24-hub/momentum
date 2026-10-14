@@ -1,0 +1,115 @@
+/* PORTFOLIO CARDS — each industry art direction previews its real sample page */
+.sample-card .card-visual{isolation:isolate}
+.sample-card .card-visual:after{z-index:0}
+.sample-card .card-visual-top,.sample-card .card-visual-text{z-index:2}
+.sample-card .card-visual-text h3{overflow-wrap:anywhere}
+.sample-card .card-visual-top span{max-width:60%}
+.sample-card .card-visual:before{content:"";position:absolute;z-index:1;pointer-events:none}
+.sample-card.preview-poolvilla .card-visual{height:450px;border-radius:3px}
+.preview-poolvilla .card-visual:after{background:linear-gradient(90deg,#072e36d4,#082f3500 93%)}
+.preview-poolvilla .card-visual-text{bottom:65px;left:41px}
+.preview-poolvilla .card-visual-text h3{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(45px,5vw,73px);font-weight:500}
+.preview-poolvilla .card-visual:before{bottom:0;left:0;right:0;height:24px;background:#cde7db}
+.preview-poolvilla .card-visual-top{top:36px;left:42px}
+.preview-pension .card-visual{background:#f3f0e5;display:grid;grid-template-columns:.58fr .42fr}
+.preview-pension .card-visual img{width:47%;margin-left:auto;object-position:center}
+.preview-pension .card-visual:after{background:transparent}
+.preview-pension .card-visual-text{color:#314939;left:28px;right:49%;bottom:65px}
+.preview-pension .card-visual-text h3{font-family:Georgia,"Noto Serif KR",serif;font-weight:500;letter-spacing:-.04em;font-size:clamp(40px,4vw,58px)}
+.preview-pension .card-visual-top{color:#30483e;left:27px;right:52%}
+.preview-pension .card-visual-top span:last-child{display:none}
+.preview-glamping .card-visual{background:#0f2016}
+.preview-glamping .card-visual img{filter:brightness(.64) contrast(1.05)}
+.preview-glamping .card-visual:after{background:linear-gradient(90deg,#0d1b15aa,#0d1b152f),linear-gradient(0deg,#0d1b15a3,transparent)}
+.preview-glamping .card-visual-text{text-align:center;left:20px;right:20px;bottom:105px}
+.preview-glamping .card-visual-text h3{font-family:Georgia,"Noto Serif KR",serif;font-weight:450;color:#fbf9e7}
+.preview-glamping .card-visual:before{border:1px solid #e2e4bd99;inset:20px}
+.preview-glamping .card-visual-top{justify-content:center}
+.preview-glamping .card-visual-top span:last-child{display:none}
+.preview-petgroom .card-visual{background:#fce8ed}
+.preview-petgroom .card-visual img{width:49%;height:88%;top:6%;left:auto;right:5%;border-radius:50% 50% 32% 32%;border:7px solid #fff}
+.preview-petgroom .card-visual:after{display:none}
+.preview-petgroom .card-visual-text{bottom:80px;left:23px;right:53%;color:#9d4d64}
+.preview-petgroom .card-visual-text h3{font-size:clamp(36px,4vw,56px);font-weight:900}
+.preview-petgroom .card-visual-top{color:#9d4d64;left:25px;right:52%}
+.preview-petgroom .card-visual-top span:last-child{display:none}
+.preview-petgroom .card-visual{border-radius:25px}
+.preview-ladder .card-visual{background:#243443}
+.preview-ladder .card-visual img{width:54%;left:auto;right:0}
+.preview-ladder .card-visual:after{background:linear-gradient(90deg,#243443 42%,#2434437a 65%,transparent)}
+.preview-ladder .card-visual:before{bottom:0;left:0;right:0;height:13px;background:repeating-linear-gradient(110deg,#f58c43 0 24px,#263443 24px 47px)}
+.preview-ladder .card-visual-text{bottom:64px;right:38%}
+.preview-ladder .card-visual-text h3{font-weight:950;font-size:clamp(42px,4.4vw,66px)}
+.preview-ladder .card-kicker{color:#fdac65}
+.preview-movers .card-visual{background:#164d8d}
+.preview-movers .card-visual img{width:52%;left:auto;right:0}
+.preview-movers .card-visual:after{background:linear-gradient(90deg,#174e8a 35%,#174e8abb 59%,transparent)}
+.preview-movers .card-visual-text{left:35px;right:44%;bottom:55px}
+.preview-movers .card-visual-text h3{font-size:clamp(39px,4vw,61px)}
+.preview-movers .card-visual:before{inset:21px;border:1px solid #a5d1f788;border-radius:9px}
+.preview-cleaning .card-visual{background:#d1f0e4}
+.preview-cleaning .card-visual img{width:53%;left:auto;right:0}
+.preview-cleaning .card-visual:after{display:none}
+.preview-cleaning .card-visual-top{color:#347f69;right:55%;left:25px}
+.preview-cleaning .card-visual-top span:last-child{display:none}
+.preview-cleaning .card-visual-text{color:#255e4e;left:27px;right:54%;bottom:75px}
+.preview-cleaning .card-visual-text h3{font-size:clamp(38px,4.1vw,62px)}
+.preview-aircon .card-visual{background:#e2f0f7}
+.preview-aircon .card-visual img{width:54%;left:auto;right:0}
+.preview-aircon .card-visual:after{display:none}
+.preview-aircon .card-visual:before{left:0;top:0;bottom:0;width:44%;border-left:12px solid #3f8ab0}
+.preview-aircon .card-visual-text{color:#1c5d87;left:36px;right:50%;bottom:75px}
+.preview-aircon .card-visual-text h3{font-size:clamp(38px,4vw,59px)}
+.preview-aircon .card-visual-top{color:#28678e;left:38px;right:53%}
+.preview-aircon .card-visual-top span:last-child{display:none}
+.preview-foodie .card-visual img{filter:saturate(1.08)}
+.preview-foodie .card-visual:after{background:linear-gradient(90deg,#341b13c4,#391b1370 60%,transparent)}
+.preview-foodie .card-visual-text{left:38px;bottom:70px}
+.preview-foodie .card-visual-text h3{font-family:Georgia,"Noto Serif KR",serif;font-weight:530;font-size:clamp(65px,6vw,86px)}
+.preview-foodie .card-visual:before{left:27px;right:27px;top:27px;bottom:27px;border:1px solid #f8dfc37a}
+.preview-franchise .card-visual{background:#1c4934}
+.preview-franchise .card-visual img{width:49%;left:auto;right:0;object-position:center}
+.preview-franchise .card-visual:after{background:linear-gradient(90deg,#194334 43%,#1943346a 66%,transparent)}
+.preview-franchise .card-visual-text{bottom:74px;left:27px;right:47%}
+.preview-franchise .card-visual-text h3{color:#e7f4c7;font-weight:950;font-size:clamp(42px,4.1vw,63px)}
+.preview-franchise .card-kicker{color:#d6eb85}
+.preview-franchise .card-visual:before{left:0;bottom:0;right:0;height:12px;background:#bfdc7c}
+.preview-restaurant .card-visual-text h3{font-family:Georgia,"Noto Serif KR",serif;font-weight:500;font-size:clamp(47px,5vw,75px)}
+.preview-restaurant .card-visual:before{inset:15px;border:1px solid #fff9}
+.preview-beauty .card-visual{background:#eedfe5}
+.preview-beauty .card-visual img{width:70%;left:auto;right:0;border-radius:140px 140px 0 0}
+.preview-beauty .card-visual:after{background:linear-gradient(90deg,#533041af,#5330412e 72%,transparent)}
+.preview-beauty .card-visual-text{left:30px;right:29%;bottom:60px}
+.preview-beauty .card-visual-text h3{font-family:Georgia,serif;font-weight:500}
+.preview-academy .card-visual{background:#173d89}
+.preview-academy .card-visual img{width:46%;left:auto;right:0}
+.preview-academy .card-visual:after{background:linear-gradient(90deg,#163b85 50%,#163b8595 76%,transparent)}
+.preview-academy .card-visual-text{left:30px;right:41%;bottom:66px}
+.preview-academy .card-visual-text h3{font-size:clamp(40px,4vw,57px);font-weight:950}
+.preview-academy .card-visual:before{bottom:0;left:0;right:0;height:13px;background:#f8d06b}
+.preview-clinic .card-visual{background:#e8f4ee}
+.preview-clinic .card-visual img{width:50%;left:auto;right:0}
+.preview-clinic .card-visual:after{display:none}
+.preview-clinic .card-visual-text{left:30px;right:50%;bottom:70px;color:#336257}
+.preview-clinic .card-visual-text h3{font-size:clamp(40px,4vw,60px)}
+.preview-clinic .card-visual-top{color:#336257;right:52%}
+.preview-clinic .card-visual-top span:last-child{display:none}
+.preview-corporate .card-visual{background:#1c3248}
+.preview-corporate .card-visual img{width:58%;left:auto;right:0}
+.preview-corporate .card-visual:after{background:linear-gradient(90deg,#142b42 35%,#142b425d 80%,transparent)}
+.preview-corporate .card-visual-text{left:27px;right:39%;bottom:65px}
+.preview-corporate .card-visual-text h3{font-size:clamp(45px,4.6vw,69px)}
+@media(max-width:740px){
+ .preview-poolvilla .card-visual{height:380px}
+ .sample-card .card-visual-text h3{font-size:clamp(34px,8vw,60px)}
+ .sample-card.preview-petgroom .card-visual img{width:54%}
+ .sample-card.preview-pension .card-visual img{width:48%}
+}
+@media(max-width:420px){
+ .preview-poolvilla .card-visual{height:320px}
+ .sample-card .card-visual-text{left:20px;bottom:43px}
+ .sample-card.preview-glamping .card-visual-text{left:20px;bottom:80px}
+ .sample-card.preview-petgroom .card-visual-text,.sample-card.preview-pension .card-visual-text,.sample-card.preview-clinic .card-visual-text,.sample-card.preview-cleaning .card-visual-text,.sample-card.preview-aircon .card-visual-text{left:17px;right:54%;bottom:45px}
+ .sample-card .card-visual-text h3{font-size:clamp(29px,8vw,47px)}
+ .sample-card .card-visual-top{left:17px;right:17px}
+}
