@@ -309,7 +309,16 @@ test('editorial work archive, four service pillars and privacy-safe case studies
  assert.match(home,/id="work"/);
  assert.match(home,/href="\/work\/mukdori\/"/);
  assert.match(home,/href="\/work\/balmonghair\/"/);
- assert.match(home,/프로젝트 소개용 그래픽/);
+ assert.match(home,/실제 홈페이지 화면/);
+ assert.doesNotMatch(home,/class="work-visual-name"/);
+ for(const id of ['mukdori','balmonghair']){
+  const file='assets/portfolio-'+id+'.jpg';
+  const buffer=fs.readFileSync(file);
+  assert.ok(buffer.length>20000,'Screenshot missing or empty: '+file);
+  assert.equal(buffer[0],255,'Not a JPEG: '+file);
+  assert.equal(buffer[1],216,'Not a JPEG: '+file);
+  assert.ok(home.includes('src="/'+file+'"'),'Card missing actual screenshot: '+id);
+ }
  assert.equal((home.match(/class="agency-work-card /g)||[]).length,3);
  assert.equal((home.match(/class="agency-service-family"/g)||[]).length,4);
  assert.equal((home.match(/class="card service-card/g)||[]).length,9);
@@ -329,6 +338,8 @@ test('editorial work archive, four service pillars and privacy-safe case studies
   const page=fs.readFileSync('work/'+slug+'/index.html','utf8');
   assert.match(page,/PROJECT OVERVIEW/);
   assert.match(page,/실제 제작 구성/);
+  assert.match(page,/실제 제작 화면/);
+  assert.ok(page.includes('src="/assets/portfolio-'+slug+'.jpg"'));
   assert.doesNotMatch(page,/검색순위가.*상승|매출.*증가/);
  }
  assert.match(style,/\.agency-work-card/);
