@@ -114,7 +114,7 @@ function brand(ctx,atY,color,center=false){
  const logo=state.logo;
  let nameX=x;
  if(logo&&center){const w=clamp(logo.naturalWidth*(52/logo.naturalHeight),16,105);ctx.drawImage(logo,500-w/2,atY-65,w,52);atY+=14}
- else if(logo){const w=clamp(logo.naturalWidth*(50/logo.naturalHeight),16,115);ctx.drawImage(logo,82,atY-23,w,46);nameX=82+w+16}
+ else if(logo && ["notice","review","booking"].includes(state.template)){const w=clamp(logo.naturalWidth*(50/logo.naturalHeight),16,115);ctx.drawImage(logo,82,atY-23,w,46);nameX=82+w+16}
  ctx.fillText(s,nameX,atY,center?790:Math.max(330,900-nameX));ctx.restore();
 }
 function line(ctx,x1,y1,x2,y2,c,width=3){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=c;ctx.lineWidth=width;ctx.stroke()}
@@ -240,7 +240,7 @@ function draw(){
  $("studioDimensions").textContent=W+" × "+H+" px · "+form.label;
 }
 function getData(){
- return {template:state.template,format:state.format,accent:state.accent,overlay:state.overlay,brightness:state.brightness,zoom:state.zoom,panX:state.panX,panY:state.panY,...Object.fromEntries(["studioBusiness","studioEyebrow","studioHeadline","studioSubline","studioPrice","studioCTA","studioFootnote"].map(k=>[k,pick(k)]))};
+ return {template:state.template,format:state.format,accent:state.accent,overlay:state.overlay,brightness:state.brightness,zoom:state.zoom,panX:state.panX,panY:state.panY,brandManual:state.editBrand,...Object.fromEntries(["studioBusiness","studioEyebrow","studioHeadline","studioSubline","studioPrice","studioCTA","studioFootnote"].map(k=>[k,pick(k)]))};
 }
 function saveSettings(silent=false){
  try{localStorage.setItem("momentum-studio-v3",JSON.stringify(getData()));if(!silent)alert("디자인 설정을 이 브라우저에 저장했습니다. 사진·로고 파일은 저장되지 않으니 다시 방문할 때 재업로드해야 합니다.")}
@@ -336,7 +336,7 @@ function autoBrand(){
  const storeInput=document.getElementById("storeName");
  let name=String(storeInput?.value||"").trim();
  if(!name){try{name=JSON.parse(localStorage.getItem("momentum-2026-lastProfile")||"{}").company||""}catch{}}
- if(name&&!pick("studioBusiness")){$("studioBusiness").value=name;caption();requestDraw()}
+ if(name&&!state.editBrand&&pick("studioBusiness")!==name){$("studioBusiness").value=name;caption();saveSettings(true);requestDraw()}
 }
 function loadSettings(){
  let data=null;try{data=JSON.parse(localStorage.getItem("momentum-studio-v3")||"null")}catch{}
@@ -350,7 +350,7 @@ function loadSettings(){
  for(const id of ["studioBusiness","studioEyebrow","studioHeadline","studioSubline","studioPrice","studioCTA","studioFootnote"])
   if(typeof data[id]==="string")$(id).value=data[id].slice(0,160);
  $("studioAccent").value=state.accent;
- $("studioFormat").value=state.format;state.editBrand=Boolean(pick("studioBusiness"));
+ $("studioFormat").value=state.format;state.editBrand=Boolean(data.brandManual);
  return true;
 }
 function init(){
