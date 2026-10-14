@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10243c"><meta name="description" content="모멘텀마케팅 무료 매장진단. 상호명과 플레이스 URL만 입력하면 연동된 공식 데이터로 매장 현황, SEO·GEO, 경쟁매장 등 분석 결과를 확인할 수 있습니다.">
-<title>모멘텀마케팅 | 무료 매장 분석실</title><link rel="stylesheet" href="/lab/customer.css"><link rel="stylesheet" href="/lab/studio.css"></head><body>
+<title>모멘텀마케팅 | 무료 매장 분석실</title><link rel="stylesheet" href="/lab/customer.css"><link rel="stylesheet" href="/lab/studio.css"><link rel="stylesheet" href="/lab/intel.css"></head><body>
 <header class="top"><div class="container top-inner"><a href="/" class="wordmark">MOMENTUM <b>MARKETING</b></a><nav class="mainnav"><a href="/">회사소개</a><a href="/#services">전문 서비스</a><a href="/lab/" aria-current="page">무료 작업실</a><a href="/#contact">문의하기</a></nav><a class="pill-btn" href="/#contact">마케팅 상담 ↗</a></div></header>
 <section class="hero"><div class="container hero-row"><div><span class="eyebrow">NAVER-FIRST LOCAL ANALYTICS</span><h1>우리 매장의 온라인 경쟁력,<br>두 가지 정보로 진단하세요.</h1><p>상호명과 플레이스 링크만 입력하면 네이버 플레이스를 우선 조사하고, 연결된 공식 데이터로 매장정보·검색 수요·경쟁 현황을 비교합니다. 모든 API 설정은 모멘텀이 관리합니다.</p></div><div class="features"><span>✓ 3사 사업장 정보</span><span>✓ 키워드·노출 조사</span><span>✓ SEO·GEO 진단</span><span>✓ 경쟁현황과 개선안</span></div></div></section>
 <div class="container layout"><aside class="side" aria-label="진단 메뉴"><div class="sidehead">MOMENTUM ANALYTICS</div>
@@ -24,7 +24,15 @@
 </section>
 <section id="overview" class="section active"><div class="sectionhead"><div><h2>매장 종합진단</h2><p>실제로 확인된 정보와 아직 확인하지 못한 항목을 분리합니다.</p></div><span class="tag">자동 진단 보고서</span></div>
 <div id="stats" class="grid3"><div class="stat"><div class="label">검증된 플랫폼</div><strong>—</strong><div class="sub">검색 전</div></div><div class="stat"><div class="label">확인된 정보</div><strong>—</strong><div class="sub">공식 출처 기준</div></div><div class="stat"><div class="label">마지막 검사</div><strong>—</strong><div class="sub">검색 전</div></div></div>
-<div class="card" id="naverFocus" style="margin-top:16px;border-left:4px solid #12a859"><h3>네이버 플레이스 집중 진단</h3><p>입력한 네이버 플레이스 링크를 우선 확인합니다.</p></div><div class="grid2" style="margin-top:16px"><div class="card"><h3>확인된 매장 정보</h3><div id="findings" class="empty">먼저 상호명과 플레이스 링크로 진단을 시작하세요.</div></div><div class="card"><h3>우선 확인할 개선 과제</h3><div id="improvements" class="empty">데이터를 조회한 뒤 근거 있는 과제만 표시됩니다.</div></div></div>
+<div class="card" id="naverFocus" style="margin-top:16px;border-left:4px solid #12a859"><h3>네이버 플레이스 집중 진단</h3><p>입력한 네이버 플레이스 링크를 우선 확인합니다.</p></div><div class="card own-intel" id="ownIntel">
+  <div class="own-intel-header"><div><span class="own-chip">MOMENTUM ORIGINAL ENGINE · V1</span><h3>자체 로컬 키워드·마케팅 전략 엔진</h3><p>네이버 검색결과를 무단 수집하지 않고, 입력하신 상호와 링크만으로 탐색 키워드 후보와 실행안을 만듭니다.</p></div><span class="own-privacy">외부 API 없이 분석</span></div>
+  <div id="ownIntelStatus" class="own-intel-status">상호명과 플레이스 URL을 입력하면 독립 진단 엔진이 작동합니다.</div>
+  <div id="ownIntelFacts" class="own-facts"></div>
+  <div class="own-intel-grid"><div><h4>고객 검색 의도별 키워드</h4><div id="ownIntelKeywords" class="own-placeholder">분석 전</div></div><div><h4>이번 주 우선 실행 과제</h4><div id="ownIntelActions" class="own-placeholder">분석 전</div></div></div>
+  <div id="ownIntelCampaigns" class="own-intel-campaigns"></div>
+  <p class="own-disclosure">자체 생성 후보는 실제 네이버 월간 검색량·플레이스 노출순위가 아닙니다. 지역과 업종 역시 입력값만으로 추정하면 정확하지 않을 수 있습니다.</p>
+</div>
+<div class="grid2" style="margin-top:16px"><div class="card"><h3>확인된 매장 정보</h3><div id="findings" class="empty">먼저 상호명과 플레이스 링크로 진단을 시작하세요.</div></div><div class="card"><h3>우선 확인할 개선 과제</h3><div id="improvements" class="empty">데이터를 조회한 뒤 근거 있는 과제만 표시됩니다.</div></div></div>
 <div class="card"><h3>진단 보고서</h3><p>실제 조회한 출처와 확인하지 못한 정보까지 구분해 정리합니다.</p><div class="actions"><button class="btn" type="button" id="makeReport">보고서 생성</button><button class="btn alt" type="button" id="copyReport">보고서 복사</button><button class="btn alt" type="button" id="printReport">인쇄 / PDF</button></div><pre id="reportText" class="copybox" style="margin-top:13px;max-height:300px;overflow:auto">진단 전입니다.</pre></div>
 <div class="callout"><h3>진단부터 실제 개선까지</h3><p>검색 노출·지도 정보·홈페이지 제작·블로그 운영과 광고 전략을 매장별로 설계합니다.</p><a href="/#contact">모멘텀 맞춤 상담 신청 →</a></div></section>
 <section id="places" class="section"><div class="sectionhead"><div><h2>네이버 플레이스 · 3사 정보 비교</h2><p>네이버를 먼저 확인하고 구글·카카오의 공개정보를 교차 비교합니다.</p></div></div>
@@ -82,4 +90,4 @@
 <section id="calendar" class="section"><div class="sectionhead"><div><h2>맞춤 홍보 캘린더</h2><p>확인된 업종과 해당 월을 기준으로 적용해 볼 홍보 주제를 안내합니다.</p></div></div><div class="card"><h3 id="calendarTitle">이번 달 홍보 아이디어</h3><div id="calendarIdeas" class="empty">매장 진단을 시작하면 월별 아이디어를 표시합니다.</div></div></section>
 </main></div>
 <footer class="container">ⓒ MOMENTUM MARKETING · 각 데이터 제공업체의 이용약관에 따른 서비스 · 진단 정보는 사장님의 요청 범위에서만 처리합니다.</footer>
-<script defer src="/lab/customer.js"></script><script defer src="/lab/studio.js"></script></body></html>
+<script defer src="/lab/customer.js"></script><script defer src="/lab/studio.js"></script><script defer src="/lab/intel.js"></script></body></html>
