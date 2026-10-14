@@ -17,11 +17,12 @@ const safePlaceLink = s=>{
 };
 const resultsAs = (items,name)=>{
   const target=same(name);
-  let exact=items.find(x=>same(x.name)===target);
-  const choices=exact?[exact]:items.filter(x=>target.length>=3&&(same(x.name).includes(target)||target.includes(same(x.name))&&same(x.name).length>2));
-  if(choices.length===1)return {status:"matched",store:choices[0],matchType:exact?"exactName":"nameCandidate",note:exact?"상호명이 일치하는 업체입니다. 주소도 확인하세요.":"이름이 유사한 업체입니다. 같은 매장인지 주소 확인이 필요합니다."};
-  if(choices.length>1)return {status:"ambiguous",candidates:choices.slice(0,3),note:"동일하거나 유사한 이름의 매장이 여러 개입니다. 주소를 확인해야 합니다."};
-  return {status:"not_found",note:"이번 API 검색결과 범위에서 해당 이름의 매장을 찾지 못했습니다. 실제 미노출을 의미하지 않습니다."};
+  const exact=items.filter(x=>same(x.name)===target);
+  const choices=exact.length?exact:items.filter(x=>target.length>=3&&(same(x.name).includes(target)||target.includes(same(x.name))&&same(x.name).length>2));
+  if(choices.length>1)return {status:"ambiguous",candidates:choices.slice(0,5),note:"동일하거나 유사한 업체가 여럿입니다. 링크와 주소가 맞는지 대조하기 전에는 특정 업체로 확정할 수 없습니다."};
+  if(choices.length===1 && exact.length===1)return {status:"matched",store:choices[0],matchType:"exactName",note:"공식 API에서 상호명이 일치하는 업체 후보를 확인했습니다. 동일한 상호의 다른 매장일 수 있으므로 입력된 플레이스 링크와 주소를 비교하세요."};
+  if(choices.length===1)return {status:"name_candidate",candidates:choices,note:"유사한 업체명만 확인했습니다. 동일 업체 여부를 확정하지 않습니다."};
+  return {status:"not_found",note:"검색 API 결과 범위에서 일치 업체를 확인하지 못했습니다. 실제 미노출을 뜻하지 않습니다."};
 };
 async function kakaoLookup(name,region){
  const key=process.env.KAKAO_REST_API_KEY;

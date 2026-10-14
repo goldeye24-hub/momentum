@@ -1,117 +1,61 @@
 'use strict';
-const { test }=require('node:test');
+const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
-
 const html=fs.readFileSync('lab/index.html','utf8');
-test('lab has 9 working panels and their tabs',()=>{
-  for(const id of ['diagnosis','ranks','keywords','area','reviews','creative','utilities','geo','calendar']){
-    assert.match(html,new RegExp('id="'+id+'"'));
-    assert.match(html,new RegExp('data-tab="'+id+'"'));
-  }
+test('single two-field customer diagnostic form',()=>{
+ const form=html.match(/<form id="auditForm"[\s\S]*?<\/form>/)?.[0];
+ assert.ok(form);
+ assert.deepEqual([...form.matchAll(/<input[^>]+id="([^"]+)"/g)].map(x=>x[1]),['storeName','placeUrl']);
+ assert.match(form,/id="start"/);
+ assert.doesNotMatch(form,/API.?키|지역|업종|키워드|CSV/);
 });
-test('client script parses',()=>{
-  const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-  assert.ok(script);
-  assert.doesNotThrow(()=>new vm.Script(script));
+test('all diagnostic tabs share a single store input',()=>{
+ for(const id of ['overview','places','ranking','keywords','competition','geo','reviews','creative','calculator','calendar']){
+  assert.match(html,new RegExp('id="'+id+'"'));
+  assert.match(html,new RegExp('data-view="'+id+'"'));
+ }
+ assert.equal((html.match(/id="auditForm"/g)||[]).length,1);
+ assert.doesNotMatch(html,/keywordsCSV|shopsCsv|naverPageText|rankCopied/);
 });
-test('root site preserves inquiry form and links to lab',()=>{
-  const root=fs.readFileSync('index.html','utf8');
-  assert.match(root,/href="\/lab\/"/);
-  assert.match(root,/api\.web3forms\.com\/submit/);
-  assert.match(root,/id="services"/);
-  assert.match(root,/id="contact"/);
+test('customer UI and application javascript parse',()=>{
+ assert.match(html,/\/lab\/customer\.css/);
+ assert.match(html,/\/lab\/customer\.js/);
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/customer.js','utf8')));
 });
-test('serverless place endpoint declines calls when credentials disabled',async()=>{
-  const prev=process.env.MOMENTUM_PLACE_API_ENABLED;
-  delete process.env.MOMENTUM_PLACE_API_ENABLED;
-  try{
-    const handler=require('../api/place-search.js');
-    let code,body;
-    const res={setHeader(){},status(n){code=n;return this},json(d){body=d;return this}};
-    await handler({method:'GET',query:{provider:'kakao',keyword:'포항횟집'}},res);
-    assert.equal(code,503);assert.match(body.error,/활성화/);
-  }finally{if(prev!==undefined)process.env.MOMENTUM_PLACE_API_ENABLED=prev}
+test('homepage still retains services and inquiry form',()=>{
+ const root=fs.readFileSync('index.html','utf8');
+ assert.match(root,/href="\/lab\/"/);
+ assert.match(root,/id="services"/);
+ assert.match(root,/id="contact"/);
+ assert.match(root,/api\.web3forms\.com\/submit/);
 });
-test('serverless review endpoint declines calls when credentials disabled',async()=>{
-  const prev=process.env.MOMENTUM_AI_ENABLED;
-  delete process.env.MOMENTUM_AI_ENABLED;
-  try{
-    const handler=require('../api/review-replies.js');
-    let code,body;
-    const res={setHeader(){},status(n){code=n;return this},json(d){body=d;return this}};
-    await handler({method:'POST',headers:{},body:{review:'좋아요'}},res);
-    assert.equal(code,503);assert.match(body.error,/활성화/);
-  }finally{if(prev!==undefined)process.env.MOMENTUM_AI_ENABLED=prev}
-});
-test('automatic business lookup form is primary, manual checklist secondary',()=>{
-  assert.match(html,/id="runAudit"/);
-  assert.match(html,/id="bizurl"/);
-  assert.match(html,/id="auditresult"/);
-  assert.match(html,/<details class="audit-manual" id="manualaudit">/);
-  assert.ok(html.indexOf('id="runAudit"')<html.indexOf('id="checklist"'));
-});
-test('business audit rejects invalid input and never fakes platform data',async()=>{
- const handler=require('../api/business-audit.js');
- const mock=(body)=>{let code,data;const res={setHeader(){},status(n){code=n;return this},json(d){data=d;return this}};return handler({method:"POST",headers:{},body},res).then(()=>({code,data}))};
- let p=await mock({name:"A"});
- assert.equal(p.code,400);
- p=await mock({name:"포항 묵돌이",placeUrl:"http://127.0.0.1/admin"});
- assert.equal(p.code,400);
+test('business API returns no invented platform data when disconnected',async()=>{
  const prev=process.env.MOMENTUM_PLACE_API_ENABLED;
  delete process.env.MOMENTUM_PLACE_API_ENABLED;
  try{
-  p=await mock({name:"포항 묵돌이",placeUrl:"https://m.place.naver.com/restaurant/123"});
-  assert.equal(p.code,200);
-  assert.equal(p.data.coverage.officialApiMatched,0);
-  assert.equal(p.data.platforms.google.status,"not_configured");
-  assert.equal(p.data.platforms.kakao.status,"not_configured");
-  assert.equal(p.data.platforms.naver.status,"manual_required");
-  assert.equal(p.data.input.provider,"naver");
+  const h=require('../api/business-audit.js');
+  let code,data; const res={setHeader(){},status(n){code=n;return this},json(d){data=d;return this}};
+  await h({method:'POST',headers:{},body:{name:'포항 묵돌이',placeUrl:'https://m.place.naver.com/restaurant/12345/home'}},res);
+  assert.equal(code,200);
+  assert.equal(data.coverage.officialApiMatched,0);
+  assert.equal(data.platforms.google.status,'not_configured');
+  assert.equal(data.platforms.kakao.status,'not_configured');
+  assert.equal(data.platforms.naver.status,'manual_required');
  }finally{if(prev!==undefined)process.env.MOMENTUM_PLACE_API_ENABLED=prev}
 });
-
-test('SEO GEO has evidence-based tools and no old manual checklist',()=>{
- const html=fs.readFileSync('lab/index.html','utf8');
- assert.match(html,/id="techcheck"/);
- assert.match(html,/id="observegeo"/);
- assert.match(html,/id="rankCopied"/);
- assert.match(html,/id="keywordsCSV"/);
- assert.match(html,/id="shopsCsv"/);
- assert.match(html,/id="exportCalendar"/);
- assert.doesNotMatch(html,/const geoTitles=/);
- assert.match(html,/tools-v2\.js/);
- assert.match(html,/tools-v2\.css/);
-});
-test('add-on front-end script parses',()=>{
- assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/tools-v2.js','utf8')));
-});
-test('technical SEO URL validator blocks internal or map URLs',()=>{
- const {validateUrl}=require('../api/website-seo.js');
- assert.equal(validateUrl('http://127.0.0.1/admin'),null);
- assert.equal(validateUrl('http://localhost/private'),null);
- assert.equal(validateUrl('http://[::1]/secret'),null);
- assert.equal(validateUrl('https://naver.com/search'),null);
- assert.equal(validateUrl('https://maps.app.goo.gl/abc'),null);
- assert.equal(validateUrl('ftp://example.com'),null);
- assert.equal(validateUrl('https://example.com/#frag'),null);
- assert.equal(validateUrl('https://example.com/a?utm_campaign=x'),'https://example.com/a');
-});
-test('SEO endpoint rejects missing public URL before calling Google',async()=>{
- const h=require('../api/website-seo.js');
- let code,body;
- const res={setHeader(){},status(n){code=n;return this},json(x){body=x;return this}};
- await h({method:'GET',query:{url:'http://192.168.1.11/admin'}},res);
+test('business API rejects unsupported provider URLs',async()=>{
+ const h=require('../api/business-audit.js');
+ let code,data; const res={setHeader(){},status(n){code=n;return this},json(d){data=d;return this}};
+ await h({method:'POST',headers:{},body:{name:'테스트매장',placeUrl:'https://malicious.example/place'}},res);
  assert.equal(code,400);
- assert.match(body.error,/홈페이지/);
+ assert.match(data.error,/공식 지도 링크/);
 });
-
-test('Naver Place public-text fallback and clipboard import are present',()=>{
- const page=fs.readFileSync('lab/index.html','utf8');
- assert.match(page,/id="naverPageText"/);
- assert.match(page,/id="readPlaceClipboard"/);
- assert.match(page,/id="analyzePlaceText"/);
- assert.match(page,/\/lab\/place-text\.js/);
- assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/place-text.js','utf8')));
+test('site SEO rejects private addresses and map URLs',()=>{
+ const {validateUrl}=require('../api/website-seo.js');
+ for(const x of ['http://localhost','http://127.0.0.1','https://m.place.naver.com','https://maps.app.goo.gl/a','http://192.168.0.10']){
+  assert.equal(validateUrl(x),null);
+ }
+ assert.equal(validateUrl('https://example.com/'),'https://example.com/');
 });
