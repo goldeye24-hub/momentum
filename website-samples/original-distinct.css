@@ -1,0 +1,125 @@
+/* Distinct layouts for the five original fully functional portfolio demos.
+   These are deliberately different compositions, not shared color presets. */
+
+/* FINE DINING: elegant book-like columns, reverse image order and editorial separator */
+.style-restaurant{--ink:#352326;--bg:#f7f1ea;--accent:#a75b44;--panel:#e5d7c7}
+.style-restaurant .site-header{padding:26px 0;border-bottom:1px solid #c7b3a9}
+.style-restaurant .site-logo{font-family:Georgia,"Noto Serif KR",serif;font-size:32px;font-weight:500}
+.style-restaurant .site-nav a{font-size:11px;letter-spacing:.11em}
+.style-restaurant .site-hero{min-height:660px;grid-template-columns:1.06fr .94fr;gap:65px}
+.style-restaurant .hero-media{order:-1;height:585px;border-radius:0}
+.style-restaurant .hero-media:before{inset:14px;border-color:#f7f1eaad}
+.style-restaurant .hero-text h1{font-family:Georgia,"Noto Serif KR",serif;font-weight:400!important;font-size:clamp(62px,6vw,95px);letter-spacing:-.07em;line-height:1.13}
+.style-restaurant .hero-label{font-family:Georgia,serif;letter-spacing:.09em;font-size:11px}
+.style-restaurant .site-ticker{font-family:Georgia,serif;font-size:13px;letter-spacing:.06em}
+.style-restaurant .about-grid{grid-template-columns:.86fr 1.14fr;gap:90px}
+.style-restaurant .about-photo{height:500px}
+.style-restaurant .services-grid{grid-template-columns:1.3fr .85fr .85fr}
+.style-restaurant .service-card{border:0;border-top:1px solid #bda99f;padding:28px 22px}
+.style-restaurant .service-card h3{font-family:Georgia,"Noto Serif KR",serif;font-weight:450;font-size:28px}
+.style-restaurant .contact-panel{background:#492a2b}
+.style-restaurant .gallery-grid{grid-template-columns:.8fr 1.15fr .85fr}
+
+/* SALON: portrait cover, generous asymmetry, blush editorial typography */
+.style-beauty{--ink:#433039;--bg:#fcf7f6;--accent:#b86f86;--panel:#eadbdc}
+.style-beauty .site-header{border:0;min-height:100px}
+.style-beauty .site-logo{font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:38px}
+.style-beauty .site-hero{background:#f9e8ea;width:min(1330px,calc(100% - 38px));padding:30px 4% 30px 7%;grid-template-columns:1.1fr .9fr;min-height:635px;border-radius:220px 15px 15px 15px}
+.style-beauty .hero-media{height:560px!important;border-radius:200px 200px 9px 9px!important;border:10px solid #fcf7f4;transform:rotate(3deg)}
+.style-beauty .hero-text h1{font-family:Georgia,"Noto Serif KR",serif;font-weight:450!important;font-size:clamp(58px,6.6vw,104px);line-height:1.19}
+.style-beauty .hero-text p{max-width:420px}
+.style-beauty .site-primary{background:#b86f86;border-radius:99px}
+.style-beauty .site-ticker{border:0;justify-content:center;gap:35px;font-size:11px}
+.style-beauty .site-section{padding:110px 0}
+.style-beauty .about-grid{grid-template-columns:.85fr 1.15fr}
+.style-beauty .about-photo{border-radius:200px 200px 0 0;height:535px}
+.style-beauty .services-grid{grid-template-columns:1fr 1fr 1fr}
+.style-beauty .service-card{border:0;background:#f9e8e9;border-radius:22px}
+.style-beauty .gallery-grid{grid-template-columns:.85fr 1.15fr .85fr}
+.style-beauty .gallery-image{border-radius:150px 150px 8px 8px}
+.style-beauty .contact-panel{background:#5c394d;border-radius:25px}
+
+/* ACADEMY: graphic asymmetric blue callouts and curriculum blocks */
+.style-academy{--ink:#102f5a;--bg:#f5f8ff;--accent:#244cd1;--panel:#e0eafe}
+.style-academy .site-header{border-bottom:3px solid #244cd1}
+.style-academy .site-logo{font-weight:950;letter-spacing:-.065em}
+.style-academy .site-hero{min-height:650px;grid-template-columns:1.2fr .8fr;gap:0;width:min(1370px,calc(100% - 28px));background:#132b72;color:#fff;border-radius:0 0 70px 0}
+.style-academy .hero-text{padding:65px 20px 65px max(26px,calc((100vw - 1250px)/2));display:flex;flex-direction:column;justify-content:center}
+.style-academy .hero-label{color:#f8d876}
+.style-academy .hero-text h1{font-size:clamp(55px,6vw,91px)!important;color:#fff;font-weight:950;letter-spacing:-.085em}
+.style-academy .hero-text p{color:#c4d1f7}
+.style-academy .site-primary{background:#f9d369;color:#162c5d;border-radius:999px}
+.style-academy .hero-media{border-radius:0 0 70px 0!important;height:650px}
+.style-academy .site-ticker{background:#e0e9ff;border:0;color:#244cd1;padding:21px}
+.style-academy .about-grid{grid-template-columns:.8fr 1.2fr}
+.style-academy .about-photo{height:460px;border-radius:0 100px 0 0}
+.style-academy .services-grid{grid-template-columns:1.25fr .85fr .85fr}
+.style-academy .service-card{background:#dce7ff;border-top:5px solid #244cd1;border-radius:0}
+.style-academy .service-card h3{font-weight:920}
+.style-academy .gallery-grid{grid-template-columns:.9fr .9fr 1.2fr}
+.style-academy .contact-panel{background:#142e70;border-radius:0 75px 0 0}
+
+/* CLINIC: trustworthy service portal, structured information, generous whitespace */
+.style-clinic{--ink:#214a49;--bg:#f7fbfb;--accent:#5c9284;--panel:#deeeea}
+.style-clinic .site-header{background:#fff;border-bottom:1px solid #d4e6e4}
+.style-clinic .site-logo{font-size:27px;font-weight:800}
+.style-clinic .site-hero{min-height:625px;grid-template-columns:1fr 1fr;gap:52px;padding-top:45px}
+.style-clinic .hero-text h1{font-size:clamp(53px,5.5vw,80px);font-weight:850;line-height:1.18}
+.style-clinic .hero-media{border-radius:18px 18px 210px 18px!important;height:530px}
+.style-clinic .site-primary{border-radius:8px;background:#367867}
+.style-clinic .site-ticker{border-radius:10px;background:#e4f2ef;border:0;padding:22px 30px}
+.style-clinic .site-section{padding:90px 0}
+.style-clinic .about-grid{grid-template-columns:1.15fr .85fr}
+.style-clinic .about-photo{height:450px;border-radius:16px}
+.style-clinic .services-grid{grid-template-columns:repeat(3,1fr)}
+.style-clinic .service-card{background:#fff;border:1px solid #d7e9e6;border-radius:16px;min-height:215px}
+.style-clinic .service-card .number{font-size:14px}
+.style-clinic .gallery-grid{grid-template-columns:1.2fr .8fr .8fr}
+.style-clinic .gallery-image{border-radius:12px}
+.style-clinic .contact-panel{background:#245652;border-radius:20px}
+
+/* CORPORATE: dark full-width B2B tech cover, asym column grid and capability blocks */
+.style-corporate{--ink:#162839;--bg:#f2f5f8;--accent:#7cb6d3;--panel:#d3dee7}
+.style-corporate .site-header{border-bottom:1px solid #a8bac7}
+.style-corporate .site-logo{font-size:31px;font-weight:950}
+.style-corporate .site-hero{width:min(1370px,calc(100% - 24px));background:#172d43;color:#fff;grid-template-columns:1.16fr .84fr;gap:0;min-height:650px}
+.style-corporate .hero-text{display:flex;flex-direction:column;justify-content:center;padding:65px 30px 65px max(30px,calc((100vw - 1250px)/2))}
+.style-corporate .hero-label{color:#99e0e8}
+.style-corporate .hero-text h1{font-size:clamp(62px,6.3vw,96px);font-weight:950;line-height:1.09;letter-spacing:-.085em;color:#fff}
+.style-corporate .hero-text p{color:#c5d4e3}
+.style-corporate .site-primary{background:#a9d6e6;color:#17293b;border-radius:2px}
+.style-corporate .hero-media{height:650px;border-radius:0}
+.style-corporate .site-ticker{background:#d8e4ed;border:0;padding:23px;color:#2b617e}
+.style-corporate .about-grid{grid-template-columns:.8fr 1.2fr}
+.style-corporate .services-grid{grid-template-columns:.8fr 1.2fr .8fr}
+.style-corporate .service-card{border:0;border-top:5px solid #35779d;background:#fff;min-height:250px}
+.style-corporate .service-card h3{font-weight:920}
+.style-corporate .gallery-grid{grid-template-columns:.7fr 1.4fr .9fr}
+.style-corporate .contact-panel{background:#152c41}
+
+@media(max-width:900px){
+ .style-restaurant .site-hero,.style-beauty .site-hero,.style-academy .site-hero,.style-clinic .site-hero,.style-corporate .site-hero{grid-template-columns:1fr;gap:20px}
+ .style-restaurant .hero-media{order:0;height:400px}
+ .style-beauty .site-hero{padding:35px 7%;border-radius:100px 10px 10px 10px}
+ .style-beauty .hero-media{transform:none;height:395px!important}
+ .style-academy .hero-text,.style-corporate .hero-text{padding:42px 30px}
+ .style-academy .hero-media,.style-corporate .hero-media{height:410px}
+ .style-beauty .hero-text h1,.style-academy .hero-text h1,.style-corporate .hero-text h1{font-size:clamp(50px,7vw,85px)!important}
+}
+@media(max-width:580px){
+ .style-restaurant .site-logo,.style-beauty .site-logo{font-size:25px}
+ .style-restaurant .site-hero{gap:24px}
+ .style-restaurant .hero-media{height:320px}
+ .style-beauty .site-hero{width:calc(100% - 18px);padding:28px 8%;border-radius:55px 12px 12px 12px}
+ .style-beauty .hero-media{height:290px!important}
+ .style-academy .site-hero,.style-corporate .site-hero{width:calc(100% - 18px)}
+ .style-academy .hero-text,.style-corporate .hero-text{padding:30px 20px}
+ .style-academy .hero-media,.style-corporate .hero-media{height:280px}
+ .style-clinic .site-hero{gap:12px}.style-clinic .hero-media{height:315px!important}
+ .style-restaurant .about-grid,.style-beauty .about-grid,.style-academy .about-grid,.style-clinic .about-grid,.style-corporate .about-grid{grid-template-columns:1fr}
+ .style-restaurant .services-grid,.style-beauty .services-grid,.style-academy .services-grid,.style-clinic .services-grid,.style-corporate .services-grid{grid-template-columns:1fr}
+ .style-restaurant .gallery-grid,.style-beauty .gallery-grid,.style-academy .gallery-grid,.style-clinic .gallery-grid,.style-corporate .gallery-grid{grid-template-columns:1fr}
+ .style-restaurant .gallery-tile:first-child,.style-beauty .gallery-tile:first-child,.style-academy .gallery-tile:first-child,.style-clinic .gallery-tile:first-child,.style-corporate .gallery-tile:first-child{grid-column:auto}
+ .style-beauty .site-section{padding:60px 0}
+ .style-academy .site-hero{border-radius:0 0 38px 0}
+}
