@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "products": [
+    {
+      "id": "blog-experience",
+      "name": "블로그체험단",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "blog-reporters",
+      "name": "블로그기자단",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "cafe-ranking",
+      "name": "카페상위노출",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": true
+    },
+    {
+      "id": "place-traffic",
+      "name": "플레이스트래픽",
+      "category": "네이버·검색",
+      "cycle": "campaign",
+      "requiresPolicyReview": true
+    },
+    {
+      "id": "blog-distribution",
+      "name": "블로그배포",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "cafe-placements",
+      "name": "카페건바이",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": true
+    },
+    {
+      "id": "naver-ads",
+      "name": "네이버광고대행",
+      "category": "네이버·검색",
+      "cycle": "recurring",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "blog-ranking",
+      "name": "블로그상위노출",
+      "category": "블로그·카페",
+      "cycle": "campaign",
+      "requiresPolicyReview": true
+    },
+    {
+      "id": "naver-clips",
+      "name": "클립대행",
+      "category": "SNS·숏폼",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "instagram-placement",
+      "name": "인스타건바이",
+      "category": "SNS·숏폼",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "instagram-ranking",
+      "name": "인스타상위노출",
+      "category": "SNS·숏폼",
+      "cycle": "campaign",
+      "requiresPolicyReview": true
+    },
+    {
+      "id": "instagram-account",
+      "name": "인스타계정대행",
+      "category": "SNS·숏폼",
+      "cycle": "recurring",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "threads-management",
+      "name": "쓰레드대행",
+      "category": "SNS·숏폼",
+      "cycle": "recurring",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "influencer-matching",
+      "name": "인플루언서 섭외",
+      "category": "인플루언서",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "foreign-influencer",
+      "name": "외국인 인플루언서 섭외",
+      "category": "인플루언서",
+      "cycle": "campaign",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "website-production",
+      "name": "홈페이지제작",
+      "category": "제작·유지관리",
+      "cycle": "oneoff",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "website-renewal",
+      "name": "홈페이지재연장",
+      "category": "제작·유지관리",
+      "cycle": "annual",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "product-detail-page",
+      "name": "상세페이지제작",
+      "category": "제작·유지관리",
+      "cycle": "oneoff",
+      "requiresPolicyReview": false
+    }
+  ]
+}
