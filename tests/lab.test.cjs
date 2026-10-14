@@ -345,6 +345,12 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   assert.match(page,/site-builder\/kit\.js/);
   assert.match(page,/site-template\.css/);
   assert.match(page,/noindex,follow/);
+  assert.match(page,/<section class="site-shell site-hero"/);
+  assert.match(page,/class="services-grid"/);
+  assert.match(page,/class="gallery-grid"/);
+  assert.doesNotMatch(page,/홈페이지 디자인 샘플을 불러오는 중입니다/);
+  assert.doesNotMatch(page,/document\.write\(/);
+
   const rendered=kit.render(preset,design);
   assert.match(rendered,/<html lang="ko">/);
   assert.match(rendered,/디자인 시안/);
@@ -383,5 +389,8 @@ test('page builder has real section, image, style, reorder, persistence and expo
   assert.ok(js.includes(marker),marker);
  assert.equal((gallery.match(/class="sample-card"/g)||[]).length,5);
  assert.match(gallery,/data-filter/);
+ assert.equal((gallery.match(/class="card-visual"/g)||[]).length,5);
+ assert.doesNotMatch(gallery,/<iframe/i);
+
  assert.match(gallery,/샘플은 실제 업체 포트폴리오와 별도로 관리/);
 });
