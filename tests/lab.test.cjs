@@ -393,7 +393,7 @@ test('page builder has real section, image, style, reorder, persistence and expo
  for(const id of ['foodie','franchise','poolvilla','pension','petgroom','ladder','movers','cleaning','glamping','aircon']){
   assert.match(gallery,new RegExp('data-choose="'+id+'"'));
   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-  assert.match(page,/class="ind-hero"/);
+  assert.match(page,/class="ind-wrap ind-hero"/);
   assert.match(page,/class="ind-feature"/);
   assert.match(page,/class="ind-shot"/);
   assert.match(page,/가상 브랜드|가상의 브랜드/);
