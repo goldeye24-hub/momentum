@@ -8,8 +8,11 @@ const id=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():
 const clean=(v,n=120)=>String(v==null?'':v).trim().slice(0,n);
 const allowedStatus=new Set(['문의','시안','계약','진행중','완료','갱신완료','보류','종료']);
 const allowedPayments=new Set(['미입금','일부입금','완납']);
-const empty=()=>({version:1,customers:[],contracts:[],customProducts:[]});
-let db=empty(),catalog=[],category='전체',filterText='';
+const allowedStages=new Set(['잠재고객','상담중','견적중','계약고객','보류']);
+const MAX_AMOUNT=10000000000;
+const amount=v=>Math.max(0,Math.min(MAX_AMOUNT,Math.floor(Number(v)||0)));
+const empty=()=>({version:2,customers:[],contracts:[],tasks:[],customProducts:[]});
+let db=empty(),catalog=[],category='전체',filterText='',taskFilter='open';
 function message(str){el('notice').textContent=str}
 function normalizeDate(value){
  const v=clean(value,10);
@@ -23,6 +26,7 @@ function normalizeData(raw){
  const cs=raw.customers.map(x=>({
   id:clean(x.id,100),name:clean(x.name,90),industry:clean(x.industry,70),manager:clean(x.manager,60),phone:clean(x.phone,40),
   region:clean(x.region,80),source:clean(x.source,70),referredBy:clean(x.referredBy,90),feedback:clean(x.feedback,30),notes:clean(x.notes,1000),
+  email:clean(x.email,120),stage:allowedStages.has(x.stage)?x.stage:'잠재고객',nextContact:normalizeDate(x.nextContact),
   createdAt:clean(x.createdAt,40)
  })).filter(x=>x.id&&x.name);
  const ids=new Set(cs.map(x=>x.id));
@@ -32,7 +36,8 @@ function normalizeData(raw){
  const contracts=raw.contracts.map(x=>({
   id:clean(x.id,100),customerId:clean(x.customerId,100),productId:clean(x.productId,100),
   startDate:normalizeDate(x.startDate),endDate:normalizeDate(x.endDate),domainEnd:normalizeDate(x.domainEnd),
-  amount:Math.max(0,Math.min(10000000000,Math.floor(Number(x.amount)||0))),
+  amount:amount(x.amount),cost:amount(x.cost),paid:amount(x.paid===undefined?(x.payment==='완납'?x.amount:0):x.paid),
+  supplier:clean(x.supplier,90),owner:clean(x.owner,60),
   status:allowedStatus.has(x.status)?x.status:'문의',
   payment:allowedPayments.has(x.payment)?x.payment:'미입금',
   includedEdits:Math.max(0,Math.min(100,Math.floor(Number(x.includedEdits)||0))),
@@ -40,7 +45,12 @@ function normalizeData(raw){
   link:/^https:\/\//i.test(String(x.link||''))?clean(x.link,300):'',
   notes:clean(x.notes,1000),createdAt:clean(x.createdAt,40)
  })).filter(x=>x.id&&ids.has(x.customerId));
- return {version:1,customers:cs,contracts,customProducts:custom};
+ const tasks=(Array.isArray(raw.tasks)?raw.tasks:[]).slice(0,30000).map(x=>({
+  id:clean(x.id,100),title:clean(x.title,150),customerId:ids.has(x.customerId)?x.customerId:'',
+  dueDate:normalizeDate(x.dueDate),priority:x.priority==='높음'?'높음':'보통',
+  done:!!x.done,notes:clean(x.notes,800),createdAt:clean(x.createdAt,40)
+ })).filter(x=>x.id&&x.title);
+ return {version:2,customers:cs,contracts,tasks,customProducts:custom};
 }
 function persist(){
  try{localStorage.setItem(DB_KEY,JSON.stringify(db));return true}
@@ -88,12 +98,18 @@ function renderClientDropdown(){
  const val=el('contractCustomer').value;
  el('contractCustomer').innerHTML='<option value="">거래처 선택</option>'+db.customers.slice().sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>'<option value="'+escapeHtml(c.id)+'">'+escapeHtml(c.name)+'</option>').join('');
  if(db.customers.some(x=>x.id===val))el('contractCustomer').value=val;
+ const taskVal=el('taskCustomer').value;
+ el('taskCustomer').innerHTML='<option value="">공통 업무</option>'+db.customers.slice().sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>'<option value="'+escapeHtml(c.id)+'">'+escapeHtml(c.name)+'</option>').join('');
+ if(db.customers.some(x=>x.id===taskVal))el('taskCustomer').value=taskVal;
 }
 function renderStats(){
  el('totalCustomers').textContent=String(db.customers.length);
  el('activeContracts').textContent=String(db.contracts.filter(x=>!['종료','보류','문의'].includes(x.status)).length);
  el('dueSoon').textContent=String(reminderEvents().filter(x=>x.days>=0&&x.days<=30).length);
- el('outstanding').textContent=money(db.contracts.filter(x=>x.payment==='미입금'&&!['종료','보류'].includes(x.status)).reduce((sum,x)=>sum+x.amount,0));
+ const billable=db.contracts.filter(x=>!['종료','보류','문의','시안'].includes(x.status));
+ el('outstanding').textContent=money(billable.reduce((sum,x)=>sum+Math.max(0,x.amount-x.paid),0));
+ el('grossProfit').textContent=money(billable.reduce((sum,x)=>sum+x.amount-x.cost,0));
+ el('openTasks').textContent=String(db.tasks.filter(t=>!t.done).length);
  const upcoming=reminderEvents();
  el('renewalList').innerHTML=upcoming.length?upcoming.map(x=>{
   const urgent=x.days<0||x.days<=7,soon=x.days<=30;
@@ -112,12 +128,12 @@ function renderRecords(){
   const contracts=db.contracts.filter(x=>x.customerId===c.id);
   const rows=contracts.length?contracts.map(x=>{
    const remain=Math.max(0,x.includedEdits-x.usedEdits);
-   return '<div class="contract-line"><div><strong>'+escapeHtml(product(x.productId).name)+'</strong> <span class="contract-meta">'+escapeHtml(x.status)+' · '+escapeHtml(x.payment)+' · '+money(x.amount)+'</span><div class="contract-meta">'+(x.endDate?'계약 만료 '+escapeHtml(x.endDate)+'　':'')+(x.domainEnd?'도메인 만료 '+escapeHtml(x.domainEnd)+'　':'')+'무료수정 '+x.usedEdits+'/'+x.includedEdits+'회 · 잔여 '+remain+'회</div></div><div class="contract-ops"><button type="button" data-edit-contract="'+escapeHtml(x.id)+'">계약 수정</button><button type="button" data-delete-contract="'+escapeHtml(x.id)+'">삭제</button></div></div>';
+   return '<div class="contract-line"><div><strong>'+escapeHtml(product(x.productId).name)+'</strong> <span class="contract-meta">'+escapeHtml(x.status)+' · '+escapeHtml(x.payment)+' · '+money(x.amount)+'</span><div class="contract-meta">'+(x.endDate?'계약 만료 '+escapeHtml(x.endDate)+'　':'')+(x.domainEnd?'도메인 만료 '+escapeHtml(x.domainEnd)+'　':'')+'무료수정 '+x.usedEdits+'/'+x.includedEdits+'회 · 잔여 '+remain+'회</div><div class="contract-meta">매입 '+money(x.cost)+' · 수금 '+money(x.paid)+' · 미수 '+money(Math.max(0,x.amount-x.paid))+' · 예상이익 '+money(x.amount-x.cost)+'</div></div><div class="contract-ops"><button type="button" data-edit-contract="'+escapeHtml(x.id)+'">계약 수정</button><button type="button" data-delete-contract="'+escapeHtml(x.id)+'">삭제</button></div></div>';
   }).join(''):'<p class="empty">등록된 계약 상품이 없습니다.</p>';
-  return '<article class="record"><div class="record-head"><div><div class="record-title">'+escapeHtml(c.name)+'</div><div class="record-sub">'+escapeHtml([c.industry,c.region,c.manager,c.phone].filter(Boolean).join(' · '))+(c.referredBy?'<br>소개 업체: '+escapeHtml(c.referredBy):'')+(c.feedback?' · 반응 '+escapeHtml(c.feedback):'')+'</div></div><div class="record-actions"><button type="button" data-add-contract="'+escapeHtml(c.id)+'">+ 상품 계약</button><button type="button" data-edit-customer="'+escapeHtml(c.id)+'">업체 수정</button><button type="button" data-delete-customer="'+escapeHtml(c.id)+'">삭제</button></div></div><div class="contracts">'+rows+'</div></article>';
+  return '<article class="record"><div class="record-head"><div><div class="record-title">'+escapeHtml(c.name)+'</div><div class="record-sub">'+escapeHtml([c.industry,c.region,c.manager,c.phone,c.stage].filter(Boolean).join(' · '))+(c.referredBy?'<br>소개 업체: '+escapeHtml(c.referredBy):'')+(c.feedback?' · 반응 '+escapeHtml(c.feedback):'')+(c.nextContact?' · 다음 연락 '+escapeHtml(c.nextContact):'')+'</div></div><div class="record-actions"><button type="button" data-add-contract="'+escapeHtml(c.id)+'">+ 상품 계약</button><button type="button" data-edit-customer="'+escapeHtml(c.id)+'">업체 수정</button><button type="button" data-delete-customer="'+escapeHtml(c.id)+'">삭제</button></div></div><div class="contracts">'+rows+'</div></article>';
  }).join(''):'<p class="empty">'+(q?'검색 결과가 없습니다.':'아직 거래처가 없습니다. 위에서 첫 거래처를 등록하세요.')+'</p>';
 }
-function render(){renderCatalog();renderClientDropdown();renderStats();renderRecords();}
+function render(){renderCatalog();renderClientDropdown();renderStats();renderRecords();renderTasks();}
 function resetCustomer(){el('customerForm').reset();el('customerId').value='';}
 function resetContract(){el('contractForm').reset();el('contractId').value='';}
 function goTo(id){el(id).scrollIntoView({behavior:'smooth',block:'start'});}
@@ -128,7 +144,9 @@ function saveCustomer(ev){
  const old=db.customers.find(x=>x.id===d.id);
  const row={id:old?old.id:id(),name:clean(d.name,90),industry:clean(d.industry,70),manager:clean(d.manager,60),phone:clean(d.phone,40),
  region:clean(d.region,80),source:clean(d.source,70),referredBy:clean(d.referredBy,90),feedback:clean(d.feedback,30),
- notes:clean(d.notes,1000),createdAt:old?old.createdAt:new Date().toISOString()};
+ notes:clean(d.notes,1000),email:clean(d.email,120),
+ stage:allowedStages.has(d.stage)?d.stage:'잠재고객',nextContact:normalizeDate(d.nextContact),
+ createdAt:old?old.createdAt:new Date().toISOString()};
  if(old)db.customers[db.customers.indexOf(old)]=row;else db.customers.push(row);
  persist();render();resetCustomer();message('거래처가 저장되었습니다.');
 }
@@ -141,11 +159,16 @@ function saveContract(ev){
  const row={
  id:old?old.id:id(),customerId:d.customerId,productId:d.productId,startDate:normalizeDate(d.startDate),
  endDate:normalizeDate(d.endDate),domainEnd:normalizeDate(d.domainEnd),
- amount:Math.max(0,Math.min(10000000000,Math.floor(Number(d.amount)||0))),
+ amount:amount(d.amount),cost:amount(d.cost),paid:amount(d.paid),
+ supplier:clean(d.supplier,90),owner:clean(d.owner,60),
  status:allowedStatus.has(d.status)?d.status:'문의',payment:allowedPayments.has(d.payment)?d.payment:'미입금',
  includedEdits:Math.max(0,Math.min(100,Number(d.includedEdits)||0)),usedEdits:Math.max(0,Math.min(100,Number(d.usedEdits)||0)),
  link:/^https:\/\//i.test(d.link||'')?clean(d.link,300):'',notes:clean(d.notes,1000),
  createdAt:old?old.createdAt:new Date().toISOString()};
+ if(row.payment==='완납'&&row.paid===0&&row.amount>0)row.paid=row.amount;
+ if(row.paid>row.amount){message('수금액은 계약금액을 초과할 수 없습니다.');return;}
+ row.payment=row.paid>=row.amount&&row.amount>0?'완납':row.paid>0?'일부입금':'미입금';
+ if(row.endDate&&row.startDate&&row.endDate<row.startDate){message('계약 만료일은 시작일보다 빠를 수 없습니다.');return;}
  if(old)db.contracts[db.contracts.indexOf(old)]=row;else db.contracts.push(row);
  persist();render();resetContract();message('상품별 계약이 저장되었습니다. 만료일을 입력했다면 알림 대상에 자동 반영됩니다.');
 }
@@ -163,9 +186,45 @@ function handleRecords(ev){
  }
  if(customerDelete){
   const row=customer(customerDelete);if(!row||!confirm(row.name+' 거래처와 연결된 계약을 모두 삭제할까요?'))return;
-  db.customers=db.customers.filter(x=>x.id!==customerDelete);db.contracts=db.contracts.filter(x=>x.customerId!==customerDelete);
+  db.customers=db.customers.filter(x=>x.id!==customerDelete);db.contracts=db.contracts.filter(x=>x.customerId!==customerDelete);db.tasks=db.tasks.filter(t=>t.customerId!==customerDelete);
   persist();render();message('거래처와 해당 계약이 삭제되었습니다.');
  }
+}
+function renderTasks(){
+ const list=db.tasks.slice().filter(x=>taskFilter==='all'||(taskFilter==='done'?x.done:!x.done)).sort((a,b)=>Number(a.done)-Number(b.done)||(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+ el('taskList').innerHTML=list.length?list.map(t=>{
+  const c=customer(t.customerId);const due=t.dueDate?daysUntil(t.dueDate):null;
+  const urgent=!t.done&&due!==null&&due<=1;
+  return '<div class="task-item '+(t.done?'complete':'')+(urgent?' urgent':'')+'"><button type="button" class="task-check" data-task-toggle="'+escapeHtml(t.id)+'" aria-label="'+(t.done?'미완료 전환':'완료 처리')+'">'+(t.done?'✓':'')+'</button><div class="task-meta"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(c?.name||'공통 업무')+' · '+escapeHtml(t.dueDate||'기한 없음')+' · '+escapeHtml(t.priority)+(t.notes?' · '+escapeHtml(t.notes):'')+'</small></div><div class="task-ops"><button type="button" data-task-edit="'+escapeHtml(t.id)+'">수정</button><button type="button" data-task-delete="'+escapeHtml(t.id)+'">삭제</button></div></div>';
+ }).join(''):'<p class="empty">해당 업무가 없습니다.</p>';
+ el('openTasks').textContent=String(db.tasks.filter(t=>!t.done).length);
+ el('taskList').querySelectorAll('button').forEach(b=>{b.addEventListener('click',()=>taskAction(b))});
+}
+function taskAction(target){
+ const toggle=target.dataset.taskToggle,edit=target.dataset.taskEdit,drop=target.dataset.taskDelete;
+ if(toggle){const t=db.tasks.find(x=>x.id===toggle);if(t){t.done=!t.done;persist();render();message(t.done?'업무를 완료했습니다.':'업무를 다시 미완료로 변경했습니다.')}return;}
+ if(edit){const t=db.tasks.find(x=>x.id===edit);if(!t)return;resetTask();toForm(el('taskForm'),t);goTo('pipelineSection');return;}
+ if(drop){if(!confirm('업무를 삭제할까요?'))return;db.tasks=db.tasks.filter(x=>x.id!==drop);persist();render();message('업무를 삭제했습니다.');}
+}
+function resetTask(){el('taskForm').reset();el('taskId').value='';}
+function saveTask(ev){
+ ev.preventDefault();const d=fromForm(el('taskForm'));if(!clean(d.title)){message('업무명을 입력하세요.');return;}
+ const old=db.tasks.find(x=>x.id===d.id);
+ const t={id:old?old.id:id(),title:clean(d.title,150),customerId:customer(d.customerId)?d.customerId:'',
+ dueDate:normalizeDate(d.dueDate),priority:d.priority==='높음'?'높음':'보통',notes:clean(d.notes,800),done:old?old.done:false,createdAt:old?old.createdAt:new Date().toISOString()};
+ if(old)db.tasks[db.tasks.indexOf(old)]=t;else db.tasks.push(t);
+ persist();render();resetTask();message('업무가 저장되었습니다.');
+}
+function csvCell(value){
+ const input=String(value??'');
+ const excelSafe=/^[=+\-@\t\r]/.test(input)?"'"+input:input;
+ return '"'+excelSafe.replace(/"/g,'""')+'"';
+}
+function exportCsv(){
+ const rows=[['업체명','업종','지역','담당자','연락처','이메일','영업 단계','유입경로','소개 업체','거래처 반응','다음 연락일']];
+ db.customers.forEach(c=>rows.push([c.name,c.industry,c.region,c.manager,c.phone,c.email,c.stage,c.source,c.referredBy,c.feedback,c.nextContact]));
+ dl('momentum-clients-'+todayKey()+'.csv','\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');
+ message('거래처 CSV를 저장했습니다. 연락처가 포함되므로 안전하게 보관하세요.');
 }
 function dl(name,text,mime){
  const blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),link=document.createElement('a');
@@ -214,6 +273,14 @@ function setup(){
   catalog=data.products;render();
  }).catch(()=>{message('상품 카탈로그를 불러오지 못했습니다. 관리자 로그인을 확인하세요.');render();});
  el('customerForm').addEventListener('submit',saveCustomer);
+ el('taskForm').addEventListener('submit',saveTask);
+ el('taskReset').addEventListener('click',resetTask);
+ el('exportCsv').addEventListener('click',exportCsv);
+ document.querySelectorAll('[data-tasks]').forEach(button=>button.addEventListener('click',()=>{
+  taskFilter=button.dataset.tasks;
+  document.querySelectorAll('[data-tasks]').forEach(el=>el.classList.toggle('active',el===button));
+  renderTasks();
+ }));
  el('contractForm').addEventListener('submit',saveContract);
  el('customerReset').addEventListener('click',resetCustomer);
  el('contractReset').addEventListener('click',resetContract);
