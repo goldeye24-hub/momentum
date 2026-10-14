@@ -25,7 +25,12 @@ function localServer(){
     let target;
     try{
       const u=new URL(req.url,'http://localhost');
-      target=path.resolve(root,'.'+decodeURIComponent(u.pathname).replace(/\/$/,'/index.html'));
+      // The production build serves these assets only after authentication.
+      // CI maps them locally to exercise the editor without production credentials.
+      const pathname=decodeURIComponent(u.pathname);
+      target=pathname.startsWith('/admin/assets/')?
+        path.resolve(root,'site-builder',pathname.slice('/admin/assets/'.length)):
+        path.resolve(root,'.'+pathname.replace(/\/$/,'/index.html'));
       if(!target.startsWith(root+path.sep))throw Error('outside root');
     }catch{res.writeHead(400);res.end('Bad request');return;}
     fs.readFile(target,(err,data)=>{
@@ -174,7 +179,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
     assert.equal(await agencyHome.locator('#work .agency-sample-card').count(),3);
     assert.match(await agencyHome.locator('#work').innerText(),/디자인 샘플/);
-    assert.ok(await agencyHome.locator('#work a[href="/site-builder/"]').count()>=1);
+    assert.equal(await agencyHome.locator('#work a[href="/site-builder/"]').count(),0);
+    assert.ok(await agencyHome.locator('#work a[href*="design=restaurant"]').count()>=1);
     assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
     assert.equal(await agencyHome.locator('#services .service-card').count(),9);
     const customCss=await agencyHome.evaluate(async()=>{
@@ -275,6 +281,25 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await builder.locator('[data-tab="style"]').click();
     await builder.locator('[data-field="colors.accent"]').fill('#113399');
     await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('--accent:#113399'),{timeout:10000});
+
+    // Selecting an element within the sandboxed preview opens its matching field.
+    const previewFrame=builder.frameLocator('#sitePreview');
+    await previewFrame.locator('.site-hero h1').click();
+    assert.equal(await builder.locator('[data-tab="hero"]').getAttribute('aria-selected'),'true');
+    assert.ok(await builder.locator('[data-field="headline"]').count()===1);
+    const priorDescription=await builder.locator('[data-field="description"]').inputValue();
+    await builder.locator('[data-field="headline"]').fill('요청한 제목만 바꾸기');
+    await builder.waitForFunction(()=>document.getElementById('sitePreview')?.srcdoc?.includes('요청한 제목만 바꾸기'));
+    assert.equal(await builder.locator('[data-field="description"]').inputValue(),priorDescription);
+    await builder.locator('#undoEdit').click();
+    await builder.waitForFunction(()=>!document.getElementById('sitePreview')?.srcdoc?.includes('요청한 제목만 바꾸기'));
+
+    await builder.locator('[data-tab="part"]').click();
+    await builder.locator('#sectionScope').selectOption('about');
+    await builder.locator('[data-field="sectionStyles.about.titleSize"]').fill('44');
+    await builder.waitForFunction(()=>document.getElementById('sitePreview')?.srcdoc?.includes('#about h1,#about h2{font-size:clamp(25px,6vw,44px)!important;}'));
+    const scopedHtml=await builder.locator('#sitePreview').evaluate(el=>el.srcdoc);
+    assert.ok(!scopedHtml.includes('#services h1,#services h2{font-size:clamp(25px,6vw,44px)'));
     await builder.locator('[data-viewport="mobile"]').click();
     assert.match(await builder.locator('.preview-stage').getAttribute('class'),/mobile/);
     await builder.screenshot({path:path.join(root,'artifacts/momentum-site-builder.png'),fullPage:true});

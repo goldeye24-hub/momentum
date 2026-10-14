@@ -309,12 +309,12 @@ test('homepage displays editable original templates instead of confusing client 
  assert.match(home,/id="work"/);
  assert.match(home,/실제 고객 제작 실적이 아닌 편집 가능한 디자인 샘플/);
  assert.match(home,/href="\/website-samples\/"/);
- assert.match(home,/href="\/site-builder\/"/);
+ assert.doesNotMatch(home,/href="\/site-builder\//);
  assert.equal((home.match(/class="agency-sample-card"/g)||[]).length,3);
  assert.doesNotMatch(home,/class="agency-work-card /);
  assert.doesNotMatch(home,/src="\/assets\/portfolio-mukdori\.jpg"/);
  assert.match(home,/href="\/website-samples\/restaurant\/"/);
- assert.match(home,/href="\/site-builder\/\?template=beauty"/);
+ assert.match(home,/design=beauty#contact/);
  assert.match(home,/href="\/website-samples\/home-showcase\.css"/);
  assert.match(css,/agency-sample-viewport/);
  assert.equal((home.match(/class="agency-service-family"/g)||[]).length,4);
@@ -342,7 +342,7 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   const preset=presets.find(x=>x.id===id);
   assert.ok(preset,id);
   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-  assert.match(page,/site-builder\/kit\.js/);
+  assert.doesNotMatch(page,/site-builder\/kit\.js/);
   assert.match(page,/site-template\.css/);
   assert.match(page,/noindex,follow/);
   assert.match(page,/<section class="site-shell site-hero"/);
@@ -389,8 +389,37 @@ test('page builder has real section, image, style, reorder, persistence and expo
   assert.ok(js.includes(marker),marker);
  assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,5);
  assert.match(gallery,/data-filter/);
+ assert.match(gallery,/data-choose="restaurant"/);
+ assert.doesNotMatch(gallery,/href="\/site-builder/);
  assert.equal((gallery.match(/class="card-visual"/g)||[]).length,5);
  assert.doesNotMatch(gallery,/<iframe/i);
 
  assert.match(gallery,/실제 고객 납품 실적이나 디자인 어워드 수상작이 아닙니다/);
+});
+
+test('admin studio supports safe scoped editing without changing other sections',()=>{
+ const presets=JSON.parse(fs.readFileSync('site-builder/presets.json','utf8'));
+ const code=fs.readFileSync('site-builder/kit.js','utf8');
+ const context={window:{}};vm.runInNewContext(code,context);
+ const kit=context.window.MomentumSiteKit;
+ const a=kit.normalize(presets[0]);
+ const before=kit.render(a,'');
+ a.sectionStyles.about={background:'#e4e4dd',titleSize:44,spacing:90};
+ const after=kit.render(a,'');
+ assert.notEqual(before,after);
+ assert.match(after,/#about\{background:#e4e4dd/);
+ assert.match(after,/#about h1,#about h2\{font-size:clamp\(25px,6vw,44px\)!important/);
+ assert.doesNotMatch(after,/#services\{background:/);
+ assert.match(after,/오늘의 계절 메뉴/);
+ a.sectionStyles.about.titleSize='9999';
+ const invalid=kit.render(a,'');
+ assert.doesNotMatch(invalid,/9999px/);
+ const editor=fs.readFileSync('site-builder/editor.js','utf8');
+ assert.match(editor,/interactivePreview/);
+ assert.match(editor,/undoStack/);
+ assert.match(editor,/momentum-preview-select/);
+ const ui=fs.readFileSync('site-builder/index.html','utf8');
+ assert.match(ui,/data-tab="part"/);
+ assert.match(ui,/id="undoEdit"/);
+ assert.match(ui,/sandbox="allow-scripts"/);
 });
