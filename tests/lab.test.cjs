@@ -450,6 +450,13 @@ test('internal CRM product catalog and admin-only authentication protect private
   handler(req,res);return res;
  };
  try{
+  delete process.env.MOMENTUM_ADMIN_PASSWORD;
+  delete process.env.MOMENTUM_SESSION_SECRET;
+  const setup=request({method:'GET',headers:{host:'momentum.test'},query:{view:'crm'}});
+  assert.equal(setup.statusCode,503);
+  assert.match(setup.body,/MOMENTUM_ADMIN_PASSWORD/);
+  assert.match(setup.body,/MOMENTUM_SESSION_SECRET/);
+  assert.doesNotMatch(setup.body,/id="customerForm"/);
   process.env.MOMENTUM_ADMIN_PASSWORD='very-long-test-admin-password';
   process.env.MOMENTUM_SESSION_SECRET='test_secret_0123456789_AABBCC_DDEEFF_XXYY';
   const base={method:'GET',headers:{host:'momentum.test',cookie:''},query:{view:'crm'}};
