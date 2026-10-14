@@ -21,3 +21,15 @@ body{background:#f4f6f5}
 .supplier-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.9fr);gap:28px}.supplier-grid{grid-template-columns:1fr 1fr}.supplier-grid .wide{grid-column:span 2}.supplier-grid input:disabled{background:#f1f3f4;color:#80909c}.supplier-rate{background:#f7f9fa;border:1px solid #dfe7eb;padding:11px;border-radius:8px;display:grid;grid-template-columns:2fr .65fr 1fr auto;gap:10px;align-items:end}.supplier-rate-heading{margin-top:17px}.supplier-directory{border-left:1px solid #e3ebef;padding-left:22px}.supplier-directory h3{margin:0 0 14px!important}.supplier-directory h3 span{font-size:13px;color:#7c8e9a}.supplier-card{border:1px solid #e0e8ed;padding:14px;border-radius:8px;margin:10px 0}.supplier-card strong{font-size:14px}.supplier-card small{display:block;color:#7f8f9e;line-height:1.7;margin-top:7px;font-size:11px}.supplier-card p{font-size:11px;margin:9px 0;color:#586a77}.supplier-actions{display:flex;gap:6px;margin-top:9px}.supplier-actions button{font-size:11px;border:1px solid #d4e0e5;background:#fff;border-radius:5px;padding:7px 9px}.supplier-card a{color:#235d8d;text-decoration:underline}
 @media(max-width:1200px){.bundle-line-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.bundle-line-grid .line-product{grid-column:span 2}.bundle-line-grid .line-supplier,.bundle-line-grid .line-note{grid-column:span 2}.bundle-head-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.supplier-layout{grid-template-columns:1fr}.supplier-directory{border-left:0;padding-left:0;border-top:1px solid #e5ebef;padding-top:20px}}
 @media(max-width:650px){.bundle-head-grid,.bundle-side .bundle-head-grid,.supplier-grid{grid-template-columns:1fr}.supplier-grid .wide{grid-column:auto}.bundle-line-grid{grid-template-columns:1fr 1fr}.bundle-line-grid .line-product,.bundle-line-grid .line-supplier,.bundle-line-grid .line-note,.bundle-line-grid .line-date{grid-column:span 2}.bundle-bottom{grid-template-columns:1fr}.bundle-line-heading{align-items:flex-start;flex-direction:column}.bundle-record-heading{flex-direction:column}.bundle-record-actions{width:100%}.bundle-history>.section-head{align-items:stretch}.bundle-history input{max-width:none}.supplier-rate{grid-template-columns:1fr 1fr}.supplier-rate label:first-child{grid-column:span 2}.bundle-line{padding:12px}}
+
+/* Keep long quotation tables scrollable inside cards rather than stretching the viewport */
+.bundle-history,.bundle-records,.bundle-record,.bundle-table-wrap,.supplier-layout,.supplier-layout>*,.supplier-directory{min-width:0;max-width:100%}
+.bundle-record{overflow:hidden}
+.bundle-table-wrap{width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.bundle-line,.supplier-rate{min-width:0;max-width:100%}
+@media(max-width:650px){
+ .bundle-record{padding:13px}
+ .bundle-record-heading,.bundle-line-heading{min-width:0}
+ .bundle-financials{gap:9px}
+ .bundle-head-grid>label,.supplier-grid>label{min-width:0}
+}

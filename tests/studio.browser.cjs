@@ -420,7 +420,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await crm.screenshot({path:path.join(root,'artifacts/momentum-internal-crm.png'),fullPage:true});
     await crm.setViewportSize({width:390,height:844});
     const crmDims=await crm.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
-    assert.ok(crmDims.scrollWidth<=crmDims.viewport+3,'CRM mobile overflow '+JSON.stringify(crmDims));
+    const overflowing=await crm.evaluate(()=>[...document.querySelectorAll('main *')].filter(x=>x.getBoundingClientRect().right>innerWidth+6).slice(0,8).map(x=>({tag:x.tagName,cls:x.className,id:x.id,width:Math.round(x.getBoundingClientRect().width)})));
+    assert.ok(crmDims.scrollWidth<=crmDims.viewport+3,'CRM mobile overflow '+JSON.stringify({crmDims,overflowing}));
     assert.equal(crmErrors.length,0,'CRM errors: '+crmErrors.join(' | '));
     await crm.close();
     console.log('PASS: admin CRM 18 products, referrals, customer contracts, renewal alerts, calendar, backup and mobile');
