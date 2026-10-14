@@ -4,6 +4,15 @@
 모든 외부 데이터 API 인증/요금/허용범위/호출량은 운영자가 Vercel 서버 환경에서 설정합니다.
 고객에게 API 키, CSV, 키워드/지역, 로그인 자격 증명, 외부 서비스 결제를 요구하지 않습니다.
 
+## 네이버 우선 연결(2026년 NAVER API HUB)
+- `MOMENTUM_NAVER_API_ENABLED=true`: NAVER HUB 지역검색 연결 스위치. 사용권한·사업 목적 확인 전 기본 꺼짐.
+- `MOMENTUM_NAVER_PUBLIC_DISPLAY_APPROVED=true`: 고객용 검색결과 공개 표시 라이선스를 담당자가 문서로 확인한 경우에만 설정. 이 변수는 기술적 게이트이지 법적 허가를 대신하지 않습니다.
+- `NAVER_API_HUB_CLIENT_ID`, `NAVER_API_HUB_CLIENT_SECRET`: NAVER Cloud Platform > NAVER API HUB에서 발급받은 전용 키. 기존 developers.naver.com 검색 API 키와 별개.
+- 신규 인증 엔드포인트 `https://naverapihub.apigw.ntruss.com/search/v1/local`. API 결과 5개만 반환하며 실제 네이버지도 검색순위가 아닙니다.
+- 플레이스 URL의 숫자 ID는 문자열에서 추출 가능하나, 지역검색 API의 업체와 동일 ID라는 증명은 별도 교차 검증이 필요합니다.
+- 네이버 검색 API 약관은 검색 결과의 제3자 제공/AI 입력/캐시/수익화 등을 제한합니다. 모멘텀 공개 무료 분석실의 사업 이용 가능 범위는 반드시 NAVER API HUB에 서면으로 문의하고 답변 보관 후 설정하세요.
+- 네이버 검색광고 월간 검색량은 검색광고 API 별도 광고주/파트너 계정과 이용조건 확인이 필요하며, 지역검색 API의 검색결과 수를 검색량으로 표현하면 안 됩니다.
+
 ## 프로덕션 환경 변수 (Vercel 프로젝트 momentum)
 - \`MOMENTUM_PLACE_API_ENABLED=true\` : 카카오/구글 장소조회 서버 활성화 스위치. 실제 재제공 라이선스 검토 후 활성화.
 - \`KAKAO_REST_API_KEY\` : Kakao Developers → 앱 → 로컬 검색 기능 권한/할당량 확인.

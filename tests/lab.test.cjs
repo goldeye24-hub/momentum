@@ -42,7 +42,9 @@ test('business API returns no invented platform data when disconnected',async()=
   assert.equal(data.coverage.officialApiMatched,0);
   assert.equal(data.platforms.google.status,'not_configured');
   assert.equal(data.platforms.kakao.status,'not_configured');
-  assert.equal(data.platforms.naver.status,'manual_required');
+  assert.equal(data.platforms.naver.status,'not_configured');
+  assert.equal(data.input.naverPlaceId,'12345');
+  assert.equal(data.coverage.availableProviders,3);
  }finally{if(prev!==undefined)process.env.MOMENTUM_PLACE_API_ENABLED=prev}
 });
 test('business API rejects unsupported provider URLs',async()=>{
@@ -110,4 +112,31 @@ test('studio Canvas draws every preset in every export format',()=>{
  assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="beauty"/);
  assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="premium"/);
  assert.equal((inputs.studioTemplateGrid.innerHTML.match(/class="studio-template"/g)||[]).length,8);
+});
+
+
+test('Naver-first diagnostics use NAVER API HUB and protect public display rights',()=>{
+ const hub=require('../api/_naver-hub.js');
+ assert.equal(hub.placeIdFromUrl('https://m.place.naver.com/restaurant/1738191111/home'),'1738191111');
+ assert.equal(hub.placeIdFromUrl('https://map.naver.com/p/entry/place/123456789'),'123456789');
+ assert.equal(hub.placeIdFromUrl('https://naver.me/abcd1234'),null);
+ assert.equal(hub.placeIdFromUrl('https://evil.example/restaurant/123456789'),null);
+ const result=hub.matchResults([{name:'테스트 카페',address:'주소A'},{name:'테스트 카페',address:'주소B'}],'테스트 카페');
+ assert.equal(result.status,'ambiguous','Duplicate business names cannot be auto-matched');
+ const candidate=hub.matchResults([{name:'테스트 카페',address:'주소A'}],'테스트 카페');
+ assert.equal(candidate.status,'matched');
+ const prevEnable=process.env.MOMENTUM_NAVER_API_ENABLED;
+ const prevApproval=process.env.MOMENTUM_NAVER_PUBLIC_DISPLAY_APPROVED;
+ process.env.MOMENTUM_NAVER_API_ENABLED='true';
+ delete process.env.MOMENTUM_NAVER_PUBLIC_DISPLAY_APPROVED;
+ try{assert.equal(hub.rightsReady(),false)}finally{
+  if(prevEnable===undefined)delete process.env.MOMENTUM_NAVER_API_ENABLED;
+  else process.env.MOMENTUM_NAVER_API_ENABLED=prevEnable;
+  if(prevApproval===undefined)delete process.env.MOMENTUM_NAVER_PUBLIC_DISPLAY_APPROVED;
+  else process.env.MOMENTUM_NAVER_PUBLIC_DISPLAY_APPROVED=prevApproval;
+ }
+ assert.match(fs.readFileSync('api/_naver-hub.js','utf8'),/naverapihub\.apigw\.ntruss\.com\/search\/v1\/local/);
+ assert.match(html,/id="naverFocus"/);
+ const client=fs.readFileSync('lab/customer.js','utf8');
+ assert.match(client,/p\.naver\?\.store\|\|p\.google/);
 });

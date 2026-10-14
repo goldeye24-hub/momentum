@@ -14,15 +14,32 @@ const store=(key,obj)=>{try{localStorage.setItem("momentum-2026-"+key,JSON.strin
 const load=(key,fallback)=>{try{return JSON.parse(localStorage.getItem("momentum-2026-"+key))||fallback}catch{return fallback}};
 const state={company:"",placeUrl:"",audit:null,seo:null,competitors:null,improvements:[],report:"",keywords:[],busy:false};
 const platformName={naver:"네이버",google:"구글",kakao:"카카오맵"};
-const statusLabel={matched:"상호 일치 후보",ambiguous:"복수 업체 발견",not_found:"결과 내 미확인",not_configured:"모멘텀 데이터 연동 전",api_error:"데이터 조회 오류",manual_required:"공식 자동조회 제한"};
+const statusLabel={matched:"상호 일치 후보",name_candidate:"유사 상호 후보",ambiguous:"복수 업체 발견",not_found:"결과 내 미확인",not_configured:"모멘텀 데이터 연동 전",api_error:"데이터 조회 오류",manual_required:"공식 자동조회 제한"};
 const categories=[["음식점","맛집","음식점"],["횟집","횟집","대게"],["카페","카페","커피"],["미용실","미용실","헤어"],["숙박","숙박","펜션"],["치과","치과","진료"],["의원","병원","진료"],["자동차","자동차","정비"],["학원","학원","수업"]];
 function notify(message,type){$("auditMessage").className="notice "+(type||"");$("auditMessage").textContent=message}
-function findStore(){const p=state.audit?.platforms||{};return p.google?.store||p.kakao?.store||null}
+function findStore(){const p=state.audit?.platforms||{};return p.naver?.store||p.google?.store||p.kakao?.store||null}
 function inferredCategory(){const x=findStore(),s=[x?.category,x?.name,state.company].filter(Boolean).join(" ");const test=categories.find(row=>s.includes(row[0]));return test?test[1]:(x?.category||"")}
 function inferredCity(){const x=findStore(),addr=x?.address||"";const m=addr.match(/(?:서울특별시|부산광역시|대구광역시|인천광역시|대전광역시|울산광역시|광주광역시|세종특별자치시|경상북도|경상남도|전라남도|전북특별자치도|전라북도|충청북도|충청남도|경기도|강원특별자치도|강원도|제주특별자치도|제주도)?\s*([가-힣]+(?:시|군|구))/);return m?.[1]||""}
+function drawNaverFocus(){
+ const node=$("naverFocus");if(!node)return;
+ const a=state.audit?.platforms?.naver||{};
+ const placeId=state.audit?.input?.naverPlaceId||"";
+ const link=state.audit?.input?.provider==="naver"?state.audit.input.placeUrl:"";
+ let status=statusLabel[a.status]||"연결 전";
+ let intro='<div class="data"><span><b>네이버 플레이스 링크</b><br><small>사업자가 직접 제공한 주소</small></span><span>'+(link?safeLink(link,"네이버에서 보기"):"미제공")+'</span></div>';
+ if(placeId)intro+='<div class="data"><span><b>URL에서 추출한 매장 ID</b><br><small>URL 문자열에서 추출한 값이며 공식 업체 검증은 아님</small></span><span>'+esc(placeId)+'</span></div>';
+ let details='<div class="data"><span><b>네이버 공개 지역검색 상태</b><br><small>NAVER API HUB · 검색 결과 최대 5개</small></span><span class="status '+(a.status==="matched"?"ok":"warn")+'">'+esc(status)+'</span></div>';
+ if(a.store){
+  details+=detail("네이버 지역 검색 업체명 일치 후보",[a.store.name,a.store.category,a.store.address].filter(Boolean).join(" · "),a.store.url);
+  details+='<p class="hint">입력한 플레이스 ID와 API 결과가 같은 업체인지는 아직 검증되지 않았습니다.</p>';
+ } else details+='<p class="hint">'+esc(a.note||a.message||"모멘텀의 네이버 데이터 연동을 확인 중입니다.")+'</p>';
+ node.innerHTML='<h3 style="margin-bottom:4px"><span class="symbol" style="background:#11a953">N</span>네이버 플레이스 집중 진단</h3>'+
+ '<p>네이버 공개 검색데이터를 우선하고, 실제 지도 순위와 구분합니다.</p>'+intro+details+
+ '<div class="notice warn">매장 조회수·지도 앱의 실제 검색순위·리뷰 상세 통계는 현재 확인된 공식 지역 검색 API에 포함되지 않습니다. 임의 숫자로 채우지 않습니다.</div>';
+}
 function baseData(){
  if(!state.audit)return false;
- $("stats").innerHTML='<div class="stat"><div class="label">공식 API 상호 일치 후보</div><strong>'+n(state.audit.coverage?.officialApiMatched||0)+' / 2</strong><div class="sub">주소 확인 전 최종 인증 아님</div></div>'+
+ $("stats").innerHTML='<div class="stat"><div class="label">공식 API 상호 일치 후보</div><strong>'+n(state.audit.coverage?.officialApiMatched||0)+' / 3</strong><div class="sub">주소 확인 전 최종 인증 아님</div></div>'+
  '<div class="stat"><div class="label">출처가 있는 관측 항목</div><strong>'+n(state.audit.observations?.length||0)+'개</strong><div class="sub">매장 정보·링크 포함</div></div>'+
  '<div class="stat"><div class="label">마지막 확인 시각</div><strong style="font-size:16px">'+esc(fmt(state.audit.checkedAt))+'</strong><div class="sub">데이터 제공 가능 범위 기준</div></div>';
  $("findings").className="";$("findings").innerHTML=(state.audit.observations||[]).length?state.audit.observations.map(x=>detail(x.label,x.text,x.source)).join(""):empty("공식 API의 업체 일치 결과가 없습니다. 모멘텀 측 데이터 연결 전이며 확인되지 않은 수치는 표시하지 않습니다.");
@@ -115,7 +132,7 @@ function generateReport(){
 async function sourceFetch(){
  const data=state.audit,p=data?.platforms||{},store=p.kakao?.store||p.google?.store;
  const cat=inferredCategory(),city=inferredCity();
- const eligible=city&&cat&&(p.kakao?.status==="matched"||p.google?.status==="matched");
+ const eligible=city&&cat&&(p.naver?.status==="matched"||p.kakao?.status==="matched"||p.google?.status==="matched");
  if(eligible){
   try{
    const term=[city,cat].join(" ");
@@ -148,9 +165,9 @@ async function runAudit(){
  const data=await resp.json();
  if(!resp.ok)throw Error(data.error||"서버 조회에 실패했습니다.");
  state.audit=data;store("lastProfile",{company:state.company,placeUrl:state.placeUrl});
- baseData();drawPlatforms();suggestions();renderSEO();renderRanking();renderCompetitors();calendar();generateReport();
+ baseData();drawNaverFocus();drawPlatforms();suggestions();renderSEO();renderRanking();renderCompetitors();calendar();generateReport();
  const count=Number(data.coverage?.officialApiMatched||0);
- notify(count>0?"공식 검색 API에서 "+count+"개 플랫폼의 상호 일치 후보를 찾았습니다. 주소를 확인한 뒤 결과를 참고하세요.":"매장 링크 확인은 완료됐지만 포털의 실제 업체자료가 아직 연동되지 않았습니다. 모멘텀이 내부 API 설정을 완료해야 정확한 진단을 제공할 수 있습니다.",count>0?"ok":"warn");
+ notify(count>0?"공식 검색 API에서 "+count+"개 플랫폼의 상호 일치 후보를 찾았습니다. 주소를 확인한 뒤 결과를 참고하세요.":"매장 링크의 형식을 확인했습니다. 실제 네이버·구글·카카오 공개정보 조회는 내부 API와 활용 권한 설정 후 가능합니다.",count>0?"ok":"warn");
  await sourceFetch();
  }catch(err){notify("진단을 완료할 수 없습니다. "+err.message,"warn");}
  finally{state.busy=false;button.disabled=false;button.textContent="무료 진단 시작 →";}

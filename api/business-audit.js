@@ -1,4 +1,5 @@
 'use strict';
+const {lookup:naverLookup,placeIdFromUrl}=require('./_naver-hub');
 // Safe public-data business audit. No scraping of Naver/Google/Kakao web pages.
 // Real observations are only returned from explicitly enabled official APIs.
 const rate = new Map();
@@ -81,24 +82,24 @@ module.exports=async(req,res)=>{
   if(now-last<5000)return res.status(429).json({error:"5초 후 다시 조회하세요."});
   rate.set(ip,now);if(rate.size>1500)rate.clear();
   const enabled=process.env.MOMENTUM_PLACE_API_ENABLED==="true";
-  const [kakao,google]=enabled?await Promise.all([kakaoLookup(name,region),googleLookup(name,region)]):[
-   fail("not_configured","관리자가 카카오 장소 API를 연결하기 전입니다."),
-   fail("not_configured","관리자가 구글 장소 API를 연결하기 전입니다.")
-  ];
-  const platform={
-   naver:{status:"manual_required",note:"네이버 스마트플레이스의 실시간 내부 통계·지도 순위를 자동으로 조회하는 공식 범용 API를 확보하지 못했습니다. 사용자 링크를 기록했으며 자동 점검 결과로 표시하지 않습니다."},
-   kakao,google
-  };
+  const [naver,kakao,google]=await Promise.all([
+    naverLookup(name),
+    enabled?kakaoLookup(name,region):Promise.resolve(fail("not_configured","관리자가 카카오 장소 API를 연결하기 전입니다.")),
+    enabled?googleLookup(name,region):Promise.resolve(fail("not_configured","관리자가 구글 장소 API를 연결하기 전입니다."))
+  ]);
+  const naverPlaceId=link?.provider==="naver"?placeIdFromUrl(link.url):null;
+  const platform={naver,kakao,google};
   const matches=Object.entries(platform).filter(([_,p])=>p.status==="matched"&&p.matchType==="exactName");
   const observations=[],improvements=[];
-  if(link)observations.push({kind:"confirmed",label:"제공된 플레이스 링크",text:link.provider+" 지도 URL 확인",source:link.url});
+  if(link)observations.push({kind:"confirmed",label:"제공된 플레이스 링크",text:link.provider+" 지도 URL 입력",source:link.url});
+  if(naverPlaceId)observations.push({kind:"confirmed",label:"입력된 네이버 플레이스 ID",text:naverPlaceId+" (URL에서 추출한 값이며 매장 소유·실재 여부는 미확인)",source:link.url});
   for(const [p,d] of matches){
-   const n=p==="google"?"구글":"카카오";
+   const n=p==="google"?"구글":p==="naver"?"네이버":"카카오";
    observations.push({kind:"confirmed",label:n+" API 상호명 일치 후보",text:[d.store.name,d.store.address,d.store.category].filter(Boolean).join(" · "),source:d.store.url||""});
    if(d.store.phone)observations.push({kind:"confirmed",label:n+" 공개 전화번호",text:d.store.phone,source:d.store.url||""});
    if(typeof d.store.rating==="number")observations.push({kind:"confirmed",label:"구글 공개 평점",text:d.store.rating+"점 · 평가 수 "+(d.store.reviews??"미제공"),source:d.store.url||""});
   }
-  if(matches.length===2){
+  if(matches.length>=2){
    let a=matches[0][1].store,b=matches[1][1].store;
    if(a.phone&&b.phone&&a.phone.replace(/\D/g,"").slice(-8)!==b.phone.replace(/\D/g,"").slice(-8)){
     improvements.push({priority:"check",title:"전화번호가 서로 다르게 표시됩니다.",reason:"공식 API의 공개 전화번호가 일치하지 않습니다. 변경 이력을 점주와 확인하세요."});
@@ -112,13 +113,14 @@ module.exports=async(req,res)=>{
   if(matches.length===1)improvements.push({priority:"next",title:"플랫폼별 등록 정보 추가 확인",reason:"현재 한 곳의 공식 검색 API만 이름 일치를 확인했습니다. 나머지는 계정 또는 검색권한 확인이 필요합니다."});
   const total=Object.values(platform).filter(x=>x.status==="matched").length;
   return res.status(200).json({
-   input:{name,region,placeUrl:link?.url||null,provider:link?.provider||null},
+   input:{name,region,placeUrl:link?.url||null,provider:link?.provider||null,naverPlaceId},
    checkedAt:new Date().toISOString(),
-   coverage:{officialApiMatched:total,availableProviders:2,naverChecked:false},
+   coverage:{officialApiMatched:total,availableProviders:3,naverChecked:naver.status==="matched",naverSource:naver.source||null},
    platforms:platform,observations,improvements,
    notes:[
     "이름만 일치한 경우에도 실제 업체 주소·지도 ID 대조가 필요합니다.",
     "Google/Kakao API 검색 목록 순서는 지도 앱 사용자 화면의 실제 노출순위가 아닙니다.",
+    "네이버 지역 검색 API의 상호 일치는 플레이스 URL의 실제 매장 ID 검증이나 네이버지도 검색순위 측정을 의미하지 않습니다.",
     "네이버 플레이스 조회수·전체 SNS 언급수·실시간 유동인구·AI 추천 확률은 이 진단에 포함되지 않습니다."
    ]
   });
