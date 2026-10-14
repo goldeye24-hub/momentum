@@ -1,0 +1,17 @@
+/* Public, text-first verified case studies. Design graphics are illustrative. */
+.case-hero{background:#10192b;position:relative;overflow:hidden}
+.case-hero::after{content:"";position:absolute;right:-6%;top:14%;width:min(43vw,560px);height:min(43vw,560px);border:1px solid rgba(174,199,245,.22);border-radius:50%;box-shadow:0 0 0 60px rgba(129,165,230,.05),0 0 0 120px rgba(129,165,230,.022)}
+.case-hero.pohang{background:radial-gradient(ellipse at 82% 17%,rgba(20,123,152,.31),transparent 42%),#102338}
+.case-hero.balmong{background:radial-gradient(ellipse at 81% 19%,rgba(172,135,124,.23),transparent 43%),#22202d}
+.case-hero h1 span{color:#aac5ff}.case-hero.balmong h1 span{color:#e2c3b9}
+.case-brief{display:grid;grid-template-columns:.85fr 1.15fr;gap:55px;align-items:start}
+.case-brief .meta{border-top:1px solid #dbe5f1;padding-top:13px;display:grid;gap:18px}
+.case-brief .meta div{display:flex;justify-content:space-between;gap:18px;font-size:13px}
+.case-brief .meta b{font-weight:850;color:#33496d}.case-brief .meta span{color:#64758e;text-align:right}
+.case-highlights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.case-highlight{background:#f8faff;border:1px solid #e0e8f4;border-radius:14px;padding:25px;min-height:192px}
+.case-highlight .no{font-size:11px;font-weight:900;color:#466be6;letter-spacing:.1em}
+.case-highlight h3{margin:24px 0 10px;font-size:22px;letter-spacing:-.05em}
+.case-highlight p{margin:0;color:#62738b;font-size:13px;line-height:1.75}
+.case-link{color:#365be6;text-decoration:underline;text-underline-offset:5px;font-weight:800}
+@media(max-width:750px){.case-brief{grid-template-columns:1fr;gap:18px}.case-highlights{grid-template-columns:1fr}.case-highlight{min-height:0}}

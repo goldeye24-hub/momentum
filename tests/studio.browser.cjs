@@ -156,7 +156,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     agencyHome.on('pageerror',e=>agencyErrors.push(String(e)));
     const agencyResponse=await agencyHome.goto('http://127.0.0.1:'+port+'/',{waitUntil:'load'});
     assert.equal(agencyResponse.status(),200);
-    assert.match(await agencyHome.locator('h1').innerText(),/마케팅의 모든 과정/);
+    assert.match(await agencyHome.locator('h1').innerText(),/고객의 선택을 만드는/);
     assert.equal(await agencyHome.locator('.agency-visual .visual-modules>div').count(),4);
     assert.match(await agencyHome.locator('.agency-tools-preview').innerText(),/API 미연동/);
     assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
@@ -172,9 +172,51 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.setViewportSize({width:390,height:844});
     assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
-    assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
+    assert.equal(await agencyHome.locator('#work .agency-work-card').count(),3);
+    assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
+    assert.equal(await agencyHome.locator('#services .service-card').count(),9);
+    const customCss=await agencyHome.evaluate(async()=>{
+      const response=await fetch('/agency-showcase.css');
+      return response.status===200&&(await response.text()).includes('.agency-work-card');
+    });
+    assert.ok(customCss,'Editorial showcase CSS missing');
+    // Mobile menu is accessible, expands, navigates, and closes.
+    const toggle=agencyHome.locator('.agency-menu-toggle');
+    assert.ok(await toggle.isVisible());
+    await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+    assert.ok(await agencyHome.locator('.agency-nav a[href="#work"]').isVisible());
+    await agencyHome.locator('.agency-nav a[href="#work"]').click();
+    assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+    assert.equal(await agencyHome.locator('.agency-nav').isVisible(),false);
+        assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
     await agencyHome.close();
     console.log('PASS: agency landing, CSS, original inquiry form, and responsive desktop/tablet/mobile views');
+
+    // Service and project case pages must load as standalone public content.
+    const landing=await ctx.newPage();
+    for(const slug of ['search-ads','viral','place-seo','creative']){
+      const url='http://127.0.0.1:'+port+'/services/'+slug+'/';
+      const response=await landing.goto(url,{waitUntil:'load'});
+      assert.equal(response.status(),200,'Service landing unavailable: '+slug);
+      assert.match(await landing.locator('h1').innerText(),/고객|선택|검색|좋은 제품/);
+      assert.equal(await landing.locator('.services .service').count(),4);
+      assert.ok(await landing.locator('a[href^="/?service="]').count()>=1);
+      await landing.setViewportSize({width:390,height:840});
+      const dims=await landing.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile service detail overflow: '+slug);
+    }
+    for(const slug of ['mukdori','balmonghair']){
+      const response=await landing.goto('http://127.0.0.1:'+port+'/work/'+slug+'/',{waitUntil:'load'});
+      assert.equal(response.status(),200,'Case-study unavailable: '+slug);
+      assert.equal(await landing.locator('.case-highlight').count(),3);
+      const dims=await landing.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile case study overflow: '+slug);
+    }
+    await landing.goto('http://127.0.0.1:'+port+'/?service='+encodeURIComponent('키워드 검색광고')+'#contact',{waitUntil:'load'});
+    assert.equal(await landing.locator('#requestedProduct').inputValue(),'키워드 검색광고');
+    await landing.close();
+    console.log('PASS: four real service landings, two protected-media-safe case studies, mobile accessibility and cross-page inquiry preselection');
 
     // Home-page product redesign: service CTAs must target the correctly preselected inquiry product.
     const publicPage=await ctx.newPage();
