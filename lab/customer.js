@@ -115,7 +115,7 @@ function calendar(){
 }
 function generateReport(){
  const d=state.audit,own=window.MomentumIntel?.getResult?.();
- if(!d&&!own){$("reportText").textContent="진단을 먼저 시작하세요.";return}
+ if(!d&&!own&&!window.MomentumSelfAudit?.isActive?.()){$("reportText").textContent="진단을 먼저 시작하세요.";return}
  const t=["모멘텀마케팅 매장 통합진단","작성 시각: "+fmt(d?.checkedAt||own?.createdAt||new Date().toISOString()),"매장명: "+(state.company||own?.merchant?.name||v("storeName")),"입력 플레이스: "+(state.placeUrl||v("placeUrl"))];
  if(own){
   const m=own.merchant;
