@@ -268,3 +268,36 @@ test('local SEO GEO check works honestly without NAVER credentials',()=>{
  assert.match(customer,/MomentumSelfAudit\.reportLines\(\)/);
  assert.match(customer,/content-type/);
 });
+
+test('integrated agency visual redesign retains accurate products and live inquiry paths',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const agency=fs.readFileSync('agency.css','utf8');
+ assert.match(home,/INTEGRATED MARKETING AGENCY/);
+ assert.match(home,/마케팅의 모든 과정/);
+ assert.match(home,/Integrated[\s\S]*Growth System/);
+ assert.match(home,/agency-visual/);
+ assert.match(home,/SEARCH ADVERTISING/);
+ assert.match(home,/VIRAL & EXPERIENCES/);
+ assert.match(home,/BRAND & WEB DESIGN/);
+ assert.match(home,/SEO·GEO 직접확인 진단/);
+ assert.match(home,/href="\/agency\.css"/);
+ assert.match(home,/id="contactForm"/);
+ assert.match(home,/id="requestedProduct"/);
+ assert.match(home,/href="\/lab\/"/);
+ assert.match(home,/id="open-packages"/);
+ assert.match(home,/id="industries"/);
+ assert.match(home,/실제 월간 검색량·플레이스 순위는 API 미연동/);
+ assert.doesNotMatch(home,/class="hero-form"/);
+ for(const product of ['키워드 검색광고','바이럴마케팅','블로그 체험단','플레이스 진단 및 SEO 최적화','플레이스 등록 및 수정대행','플레이스 리뷰 신고 및 삭제 요청 지원','오픈마켓 상세페이지 제작','홈페이지 제작','사진촬영','오픈패키지 1','오픈패키지 2']){
+  assert.ok(home.includes('data-product="'+product+'"'),product);
+ }
+ assert.equal((home.match(/class="card service-card/g)||[]).length,9);
+ assert.equal((home.match(/class="package-card card/g)||[]).length,2);
+ assert.match(agency,/\.agency-hero-grid/);
+ assert.match(agency,/\.agency-service-grid/);
+ assert.match(agency,/@media\(max-width:760px\)/);
+ const lab=fs.readFileSync('lab/customer.css','utf8');
+ const industry=fs.readFileSync('industries/site.css','utf8');
+ assert.match(lab,/integrated agency identity/);
+ assert.match(industry,/Cross-site agency brand/);
+});
