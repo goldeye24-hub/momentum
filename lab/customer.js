@@ -125,7 +125,8 @@ async function sourceFetch(){
  }
  renderCompetitors();renderRanking();
  const site=p.google?.store?.website;
- let websiteHost="";try{websiteHost=new URL(site||"").hostname}catch{}\n if(site&&/^https:\/\//i.test(site)&&websiteHost&&!/(naver\.com|google\.com|kakao\.com)/.test(websiteHost)){
+ let websiteHost="";try{websiteHost=new URL(site||"").hostname}catch{}
+ if(site&&/^https:\/\//i.test(site)&&websiteHost&&!/(naver\.com|google\.com|kakao\.com)/.test(websiteHost)){
   try{
     const r=await fetch("/api/website-seo?"+new URLSearchParams({url:site,strategy:"mobile"}),{headers:{Accept:"application/json"}});
     if(r.ok)state.seo=await r.json();
