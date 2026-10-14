@@ -150,6 +150,32 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       console.log('PASS: '+size+' downloaded '+w+'x'+h+' PNG');
     }
 
+    // Full-service agency redesign: layout, honest tool statements and responsive navigation.
+    const agencyHome=await ctx.newPage();
+    const agencyErrors=[];
+    agencyHome.on('pageerror',e=>agencyErrors.push(String(e)));
+    const agencyResponse=await agencyHome.goto('http://127.0.0.1:'+port+'/',{waitUntil:'load'});
+    assert.equal(agencyResponse.status(),200);
+    assert.match(await agencyHome.locator('h1').innerText(),/마케팅의 모든 과정/);
+    assert.equal(await agencyHome.locator('.agency-visual .visual-modules>div').count(),4);
+    assert.match(await agencyHome.locator('.agency-tools-preview').innerText(),/API 미연동/);
+    assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
+    assert.ok(await agencyHome.locator('#contactForm').count()===1);
+    const cssAvailable=await agencyHome.evaluate(async()=>{const r=await fetch('/agency.css');return r.status===200&&(await r.text()).includes('.agency-hero-grid')});
+    assert.ok(cssAvailable,'Integrated agency stylesheet missing');
+    await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-desktop.png'),fullPage:true});
+    for(const width of [390,768,1280]){
+      await agencyHome.setViewportSize({width,height:850});
+      const size=await agencyHome.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(size.scrollWidth<=size.viewport+3,'Agency homepage horizontal overflow at '+width+': '+JSON.stringify(size));
+    }
+    await agencyHome.setViewportSize({width:390,height:844});
+    assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
+    await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
+    assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
+    await agencyHome.close();
+    console.log('PASS: agency landing, CSS, original inquiry form, and responsive desktop/tablet/mobile views');
+
     // Home-page product redesign: service CTAs must target the correctly preselected inquiry product.
     const publicPage=await ctx.newPage();
     const publicErrors=[];

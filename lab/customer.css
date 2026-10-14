@@ -12,3 +12,28 @@ code{font-family:ui-monospace,Consolas,monospace;background:#eef2f6;padding:2px 
 footer{text-align:center;font-size:11px;color:#8290a3;padding:35px 0 40px}
 @media(max-width:1020px){.layout{grid-template-columns:1fr}.side{position:static;overflow:auto;white-space:nowrap;display:flex;gap:3px}.sidehead,.side-footer{display:none}.sidebtn{width:auto;flex-shrink:0;padding:10px}.hero-row{grid-template-columns:1fr}.features{display:none}}@media(max-width:720px){.container{width:calc(100% - 24px)}.mainnav{display:none}.input-row,.grid2,.grid3{grid-template-columns:1fr}.search{padding:17px}.hero{padding:25px 0}.sectionhead h2{font-size:20px}.stat strong{font-size:20px}.card{padding:16px}.platform{min-height:0}}
 @media print{.top,.hero,.side,.search,.actions,.btn,.callout,footer{display:none!important}.layout{display:block}.section{display:block}.card{break-inside:avoid}body{background:white}}
+
+/* Align customer diagnostic console with MOMENTUM integrated agency identity. */
+:root{--navy:#0b1120;--blue:#3d63f4;--orange:#3d63f4;--ink:#17243a;--muted:#65748b;--line:#e3eaf3;--bg:#f4f7fc}
+.top{background:rgba(255,255,255,.97)}
+.wordmark{color:#182237;letter-spacing:-.7px}
+.wordmark:before{background:#121927;border-radius:10px}
+.wordmark b{color:#3d63f4}
+.mainnav a[aria-current],.mainnav a:hover{color:#3d63f4}
+.pill-btn{background:#3d63f4}
+.pill-btn:hover{background:#2a51df}
+.hero{background:radial-gradient(circle at 85% 18%,rgba(68,101,235,.22),transparent 35%),linear-gradient(120deg,#0b1120,#18294d);border-bottom:1px solid #263a5b}
+.hero .eyebrow{color:#8facff}
+.hero h1{letter-spacing:-1.4px}
+.hero p{color:#b8c8e0}
+.features span{border-color:rgba(154,184,241,.15);background:rgba(255,255,255,.055)}
+.side{border-color:#dce5f2;box-shadow:0 9px 23px rgba(18,32,62,.045)}
+.sidebtn.active{background:#edf2ff;color:#345bdc}
+.sidebtn:hover{background:#f2f5fc}
+.tag{background:#edf2ff;color:#3658cc}
+.btn{background:#3d63f4}
+.btn:hover{background:#2e52dc}
+.btn.alt{background:#fff;color:#33486a}
+.field input:focus,.field textarea:focus{border-color:#7d9af5;box-shadow:0 0 0 3px rgba(61,99,244,.13)}
+.card,.search{box-shadow:0 4px 18px rgba(21,40,70,.045)}
+@media(max-width:760px){.hero h1{font-size:clamp(27px,6vw,38px)}}
