@@ -26,3 +26,5 @@
 .self-check-foot .btn{white-space:normal}
 .self-check-foot .self-reset{border:0;background:transparent;color:#64748b;font-weight:700;font-size:12px;cursor:pointer}
 @media(max-width:660px){.self-check-head{display:block}.self-check-status{display:inline-flex;margin-top:8px}.self-check-options{margin-left:0}.self-check-guide{margin-left:0}}
+
+.self-audit[hidden]{display:none!important}
