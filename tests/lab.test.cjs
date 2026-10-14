@@ -140,3 +140,59 @@ test('Naver-first diagnostics use NAVER API HUB and protect public display right
  const client=fs.readFileSync('lab/customer.js','utf8');
  assert.match(client,/p\.naver\?\.store\|\|p\.google/);
 });
+
+
+test('independent first-party engine returns useful plan from only business name and URL',()=>{
+ const {analyse,parsePlaceUrl}=require('../api/_momentum-intel.js');
+ const data=analyse({name:'포항 묵돌이',placeUrl:'https://m.place.naver.com/restaurant/12345678/home'});
+ assert.equal(data.method,'MOMENTUM_INDEPENDENT_INPUT_ONLY');
+ assert.equal(data.merchant.identity.placeId,'12345678');
+ assert.equal(data.merchant.identity.verifiedIdentity,false);
+ assert.equal(data.merchant.region.value,'포항');
+ assert.equal(data.merchant.industry.label,'음식점');
+ assert.ok(data.keywords.some(x=>x.keyword==='포항 맛집'));
+ assert.ok(data.keywords.some(x=>x.keyword==='포항 묵돌이 위치'));
+ assert.ok(data.actions.length>=3);
+ assert.ok(data.campaigns.length>=3);
+ assert.equal(data.measurements.naverMapRank.value,null);
+ assert.equal(data.measurements.naverSearchVolume.value,null);
+ assert.ok(data.keywords.every(x=>x.searchVolume===null && x.rank===null));
+ assert.equal(parsePlaceUrl('https://naver.me/abc123').placeId,null);
+ assert.equal(parsePlaceUrl('https://bad.example/restaurant/123456789').valid,false);
+ assert.equal(parsePlaceUrl('http://m.place.naver.com/restaurant/123456789').valid,false);
+ assert.equal(parsePlaceUrl('https://m.place.naver.com/%ED%A').valid,false);
+});
+test('marketing hypotheses avoid inventing locations, specialties and numeric rank',()=>{
+ const {analyse}=require('../api/_momentum-intel.js');
+ const generic=analyse({name:'스위트하우스',placeUrl:'https://naver.me/xya123'});
+ assert.equal(generic.merchant.region.value,null);
+ assert.equal(generic.merchant.industry.label,null);
+ assert.equal(generic.merchant.identity.urlType,'shortlink');
+ assert.equal(generic.merchant.identity.placeId,null);
+ assert.equal(generic.measurements.storeVisitors.value,null);
+ assert.ok(generic.actions.some(x=>x.type==='data_gap'));
+ const branded=analyse({name:'수영 엽이네 돼지갈비',placeUrl:'https://m.place.naver.com/restaurant/523412342/home'});
+ assert.equal(branded.merchant.region.value,'부산 수영');
+ assert.equal(branded.merchant.industry.label,'고기·구이');
+ assert.equal(branded.merchant.specialty,'돼지갈비');
+ assert.ok(branded.keywords.some(x=>x.keyword.includes('돼지갈비')));
+ assert.ok(!branded.keywords.some(x=>x.keyword.includes('회집')));
+});
+test('server endpoint has no keys, requires only merchant inputs and returns evidence labels',async()=>{
+ const handler=require('../api/own-intelligence.js');
+ function response(){let code=0,data=null;return {setHeader(){},status(n){code=n;return this},json(v){data=v;return this},get code(){return code},get data(){return data}}}
+ const res=response();
+ await handler({method:'POST',body:{name:'발몽헤어 부산',placeUrl:'https://m.place.naver.com/hairshop/123456789/home'},headers:{}},res);
+ assert.equal(res.code,200);
+ assert.equal(res.data.merchant.industry.label,'미용·헤어');
+ assert.equal(res.data.merchant.region.value,'부산');
+ assert.equal(res.data.merchant.identity.placeId,'123456789');
+ assert.equal(res.data.measurements.naverMapRank.value,null);
+ const bad=response();
+ await handler({method:'POST',body:{name:'업체',placeUrl:'https://example.com/place/123456789'},headers:{}},bad);
+ assert.equal(bad.code,400);
+ assert.match(html,/id="ownIntel"/);
+ assert.match(html,/\/lab\/intel\.js/);
+ assert.match(html,/\/lab\/intel\.css/);
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/intel.js','utf8')));
+});
