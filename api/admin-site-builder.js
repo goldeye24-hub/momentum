@@ -3,7 +3,7 @@ const crypto=require('node:crypto');
 const fs=require('node:fs');
 const path=require('node:path');
 
-const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','crm-index.html','crm.css','crm.js','products.json']);
+const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json']);
 const COOKIE='momentum_admin_session';
 const SIX_HOURS=6*60*60;
 const MAX_FORM=4096;
@@ -90,7 +90,7 @@ module.exports=function(req,res){
  if(file==='index.html'){
   data=data.replaceAll('/site-builder/','/admin/assets/');
  }
- const MIME={ 'editor.css':'text/css; charset=utf-8','site-template.css':'text/css; charset=utf-8','editor.js':'text/javascript; charset=utf-8','kit.js':'text/javascript; charset=utf-8','presets.json':'application/json; charset=utf-8','crm.js':'text/javascript; charset=utf-8','crm.css':'text/css; charset=utf-8','products.json':'application/json; charset=utf-8'};
+ const MIME={ 'editor.css':'text/css; charset=utf-8','site-template.css':'text/css; charset=utf-8','editor.js':'text/javascript; charset=utf-8','kit.js':'text/javascript; charset=utf-8','presets.json':'application/json; charset=utf-8','crm.js':'text/javascript; charset=utf-8','crm-commerce.js':'text/javascript; charset=utf-8','crm.css':'text/css; charset=utf-8','products.json':'application/json; charset=utf-8'};
  res.setHeader('Content-Type',MIME[file]||'text/html; charset=utf-8');
  return res.end(data);
 };

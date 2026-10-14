@@ -11,6 +11,8 @@
 <a href="#overviewSection"><span>◫</span>운영 대시보드</a>
 <a href="#customerSection"><span>♙</span>거래처 등록</a>
 <a href="#contractSection"><span>▤</span>상품별 계약</a>
+<a href="#bundleSection"><span>▣</span>묶음 견적·계약</a>
+<a href="#supplierSection"><span>▧</span>외주·공급업체</a>
 <a href="#pipelineSection"><span>◷</span>후속영업·업무</a>
 <a href="#catalogSection"><span>▦</span>광고상품 목록</a>
 <a href="#recordsSection"><span>☷</span>거래처 계약 현황</a>
@@ -68,6 +70,73 @@
 </div><p id="policyNote" class="policy" hidden>이 상품은 플랫폼 정책·광고 표시·성과보장 문구를 계약 전 검토하세요. 인위적 노출·허위 트래픽을 약속하지 않습니다.</p><div class="actions"><button class="primary" type="submit">계약 저장</button><button id="contractReset" class="outline" type="button">입력 초기화</button></div></form>
 </div>
 </section>
+<section class="section" id="bundleSection">
+  <div class="section-head"><div><span class="kicker">MULTI-PRODUCT CONTRACTS · HISTORICAL PRICING</span><h2>묶음 견적 · 계약 관리</h2><p>한 고객에게 여러 광고상품을 함께 판매하고 계약 당시의 수량·단가·기간을 보존합니다.</p></div><button type="button" class="outline" id="newBundle">+ 새 묶음 견적</button></div>
+  <form id="bundleForm" autocomplete="off">
+    <input type="hidden" name="id" id="bundleId">
+    <div class="bundle-head-grid">
+      <label>거래처 <b>*</b><select id="bundleCustomer" name="customerId" required><option value="">거래처 선택</option></select></label>
+      <label>견적/계약명 <b>*</b><input name="title" required maxlength="110" placeholder="예: 10월 블로그·인스타 통합광고"></label>
+      <label>계약일<input name="signedDate" type="date"></label>
+      <label>진행 상태<select name="status"><option>견적</option><option>계약</option><option>진행중</option><option>완료</option><option>종료</option></select></label>
+      <label>공통 시작일<input name="startDate" type="date"></label>
+      <label>공통 만료일<input name="endDate" type="date"></label>
+    </div>
+    <div class="bundle-line-heading"><div><h3>계약 상품 구성</h3><p>상품마다 공급업체·판매단가·원가·기간을 다르게 설정할 수 있습니다.</p></div><button id="addBundleLine" type="button" class="outline">+ 상품 한 줄 추가</button></div>
+    <div class="bundle-lines" id="bundleLines"></div>
+    <div class="bundle-bottom">
+      <div class="bundle-side">
+        <div class="bundle-head-grid">
+          <label>일괄 할인액 (원)<input id="bundleDiscount" name="discount" type="number" min="0" step="1" value="0"></label>
+          <label>받은 금액 (원)<input id="bundlePaid" name="paid" type="number" min="0" step="1" value="0"></label>
+        </div>
+        <label class="memo-label">특약·작업 조건·계약 메모<textarea name="notes" maxlength="2000" rows="3" placeholder="협의된 계약 조건과 유의사항"></textarea></label>
+        <p class="privacy-tip">계약 당시 단가는 저장할 때 고정됩니다. 추후 수정 시 이전 버전을 이력으로 보존하고, 사용량은 별도 작업 이력으로 기록합니다.</p>
+      </div>
+      <div class="bundle-summary" id="bundleSummary">
+        <span>견적 금액</span><strong id="bundleSubtotal">0원</strong>
+        <div><span>할인액</span><b id="bundleDiscountView">0원</b></div>
+        <div class="total"><span>최종 계약금액</span><b id="bundleTotal">0원</b></div>
+        <div><span>예상 외주원가</span><b id="bundleCost">0원</b></div>
+        <div><span>예상 매출총이익</span><b id="bundleProfit">0원</b></div>
+        <div><span>미수 잔액</span><b id="bundleOutstanding">0원</b></div>
+      </div>
+    </div>
+    <div class="actions bundle-actions"><button class="primary" type="submit">묶음 견적·계약 저장</button><button class="outline" id="resetBundle" type="button">새 견적 작성</button><button class="outline" id="printBundleDraft" type="button">현재 견적 출력 ↗</button></div>
+  </form>
+  <div class="bundle-history"><div class="section-head"><div><span class="kicker">CONTRACT ARCHIVE</span><h3>과거·진행 계약과 잔여 수량</h3></div><input type="search" id="bundleSearch" placeholder="고객명·계약명·상품명 검색" aria-label="묶음계약 검색"></div>
+  <div id="bundleRecords" class="bundle-records"><p class="empty">아직 묶음 계약이 없습니다.</p></div></div>
+</section>
+<section class="section" id="supplierSection">
+  <div class="section-head"><div><span class="kicker">PARTNER DIRECTORY · COST RATES</span><h2>외주 · 공급업체 관리</h2><p>접수 방법, 담당자 연락처, 상품별 공급단가를 보관하고 견적에 연결합니다.</p></div><button class="outline" id="resetSupplier" type="button">+ 새 외주업체</button></div>
+  <div class="supplier-layout">
+    <form id="supplierForm" autocomplete="off"><input name="id" type="hidden" id="supplierId"><div class="supplier-grid">
+      <label>외주업체명 <b>*</b><input name="name" required maxlength="90" placeholder="예: OO 콘텐츠 실행사"></label>
+      <label>담당자명<input name="manager" maxlength="70" placeholder="예: 운영팀 김담당"></label>
+      <label>연락처<input name="phone" maxlength="45" placeholder="예: 010-0000-0000"></label>
+      <label>접수 방식<select name="orderMethod"><option>카카오톡</option><option>웹사이트 접수</option><option>이메일</option><option>전화</option><option>기타</option></select></label>
+      <label class="wide">접수 URL<input name="orderUrl" type="url" maxlength="300" placeholder="https://..."></label>
+      <label>은행명<input name="bank" maxlength="50" placeholder="은행명 (테스트 데이터만)"></label>
+      <label>계좌번호<input type="text" value="보안 서버 연결 후 사용" disabled aria-label="계좌번호는 보안 서버 연결 후 사용"></label>
+      <label class="wide">거래·정산 메모<textarea name="notes" maxlength="1200" rows="2" placeholder="접수 마감, 협의사항, 업무 방식 등"></textarea></label>
+    </div><div class="bundle-line-heading supplier-rate-heading"><div><h3>주요 취급 상품 · 공급단가</h3><p>여러 상품과 공급단가를 등록할 수 있습니다.</p></div><button id="addSupplierRate" type="button" class="outline">+ 단가 추가</button></div>
+    <div id="supplierRates" class="supplier-rates"></div>
+    <p class="privacy-tip">계좌번호 원문은 현재 브라우저 저장 방식에서는 안전하지 않아 입력을 막아 두었습니다. 정식 보안 데이터베이스 연결 후 사용합니다.</p>
+    <div class="actions"><button class="primary" type="submit">외주업체 저장</button><button class="outline" type="button" id="clearSupplier">입력 초기화</button></div></form>
+    <div class="supplier-directory"><h3>등록된 협력업체 <span id="supplierCount">0</span></h3><div id="supplierList"><p class="empty">등록된 협력업체가 없습니다.</p></div></div>
+  </div>
+</section>
+<dialog id="usageDialog" class="usage-dialog" aria-label="상품 사용량 등록">
+  <form id="usageForm"><div class="section-head"><div><span class="kicker">FULFILLMENT LOG</span><h2 id="usageTitle">상품 소진 이력</h2></div><button id="closeUsage" type="button" class="outline">닫기 ×</button></div>
+  <div id="usageStatus"></div>
+  <label>이번 사용 수량 <b>*</b><input name="quantity" type="number" min="0.001" step="0.001" required placeholder="예: 3"></label>
+  <label>사용 날짜<input name="date" type="date" required></label>
+  <label>작업 내용·보고 URL 등<input name="note" maxlength="280" placeholder="예: 체험단 3건 진행 / 결과보고"></label>
+  <div class="actions"><button class="primary" type="submit">사용 기록 저장</button></div>
+  <div id="usageHistory" class="usage-history"></div>
+  <p class="privacy-tip">사용 기록은 삭제 대신 취소 이력으로 보존합니다. 변경 이력을 확인할 수 있습니다.</p>
+  </form>
+</dialog>
 <section class="section" id="pipelineSection">
 <div class="section-head"><div><span class="kicker">SALES & OPERATIONS</span><h2>후속영업 · 할 일</h2></div><p>계약 갱신 연락, 시안 전달, 결과 보고 등 업무를 추적합니다.</p></div>
 <div class="pipeline-grid">
@@ -87,4 +156,5 @@
 </main></div></div>
 <footer class="shell foot">모멘텀마케팅 관리자 · 고객용 공개 페이지가 아닙니다. <span>고객 정보의 안전한 운영을 위해 정식 서버 저장 도입 전에는 시험 데이터 사용을 권장합니다.</span></footer>
 <script defer src="/admin/assets/crm.js"></script>
+<script defer src="/admin/assets/crm-commerce.js"></script>
 </body></html>
