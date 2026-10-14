@@ -59,3 +59,55 @@ test('site SEO rejects private addresses and map URLs',()=>{
  }
  assert.equal(validateUrl('https://example.com/'),'https://example.com/');
 });
+
+test('creative studio replaces single generic poster and supports premium editing',()=>{
+ const block=html.slice(html.indexOf('<section id="creative"'),html.indexOf('<section id="calculator"'));
+ assert.ok(block.length>3500);
+ for(const id of ['studioTemplateGrid','studioBusiness','studioFormat','studioHeadline','studioSubline','studioPhoto','studioLogo','studioZoom','studioPanX','studioPanY','studioBrightness','studioAccent','studioOverlay','studioDownload','studioCaption','poster']){
+  assert.match(block,new RegExp('id="'+id+'"'));
+ }
+ assert.doesNotMatch(block,/id="posterTitle"|id="posterDesc"|id="posterImage"/);
+ assert.match(html,/\/lab\/studio\.css/);
+ assert.match(html,/\/lab\/studio\.js/);
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/studio.js','utf8')));
+ assert.doesNotMatch(fs.readFileSync('lab/customer.js','utf8'),/function drawPoster\(/);
+});
+test('studio Canvas draws every preset in every export format',()=>{
+ const js=fs.readFileSync('lab/studio.js','utf8');
+ const ids=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
+ const inputs={};
+ for(const id of ids)inputs[id]={value:'',innerHTML:'',textContent:'',files:[],addEventListener(name,cb){this._events??={};this._events[name]=cb;},querySelectorAll(selector){
+   if(selector==='button'){
+     const ids=[...this.innerHTML.matchAll(/data-studio-template="([^"]+)"/g)].map(m=>m[1]);
+     return ids.map(id=>({dataset:{studioTemplate:id},onclick:null}));
+   }
+   return [];
+ }};
+ const sent=[];
+ const ctx=new Proxy({}, {get(target,key){
+   if(key==='measureText')return text=>({width:String(text).length*25});
+   if(key==='createLinearGradient')return()=>({addColorStop(){}});
+   if(key==='fillText')return txt=>{sent.push(String(txt))};
+   if(key in target)return target[key];
+   return()=>{};
+ },set(target,key,value){target[key]=value;return true}});
+ const canvas=inputs.poster;
+ canvas.getContext=()=>ctx;
+ inputs.studioFormat.value='square';
+ inputs.studioAccent.value='#eb8f4a';
+ for(const id of ['studioHeadline','studioSubline','studioEyebrow','studioPrice','studioCTA','studioFootnote','studioBusiness'])inputs[id].value='';
+ const handlers={};
+ const document={readyState:'complete',getElementById(id){return inputs[id]||null},querySelector(){return null}};
+ const ctxVm={document,localStorage:{getItem(){return null},setItem(){}},requestAnimationFrame(cb){cb();return 1},cancelAnimationFrame(){},URL,alert(){},confirm(){return true},navigator:{clipboard:{writeText:async()=>{}}},Image:function(){}};
+ vm.runInNewContext(js,ctxVm,{timeout:5000});
+ assert.ok(sent.length>4);
+ assert.equal(canvas.width,1080);
+ for(const format of [['portrait',1350],['story',1920],['banner',628],['square',1080]]){
+  inputs.studioFormat.value=format[0];
+  inputs.studioFormat._events.change();
+  assert.equal(canvas.height,format[1]);
+ }
+ assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="beauty"/);
+ assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="premium"/);
+ assert.equal((inputs.studioTemplateGrid.innerHTML.match(/class="studio-template"/g)||[]).length,8);
+});
