@@ -244,6 +244,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
     assert.equal(await templatePage.locator('.sample-card').count(),5);
+    assert.match(await templatePage.locator('h1').innerText(),/좋은 디자인/);
     await templatePage.locator('[data-filter="professional"]').click();
     assert.equal(await templatePage.locator('.sample-card:visible').count(),2);
     await templatePage.locator('[data-filter="all"]').click();
@@ -257,8 +258,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     builder.on('pageerror',e=>builderErrors.push(String(e)));
     const editResponse=await builder.goto('http://127.0.0.1:'+port+'/site-builder/?template=beauty',{waitUntil:'load'});
     assert.equal(editResponse.status(),200);
-    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('LUME STUDIO'),{timeout:15000});
-    assert.match(await builder.locator('#previewTitle').innerText(),/에디토리얼 뷰티/);
+    await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('온결 헤어스튜디오'),{timeout:15000});
+    assert.match(await builder.locator('#previewTitle').innerText(),/온결 뷰티 스튜디오/);
     await builder.locator('#edit-brand').fill('테스트 브랜드');
     await builder.waitForFunction(()=>document.querySelector('#sitePreview')?.srcdoc?.includes('테스트 브랜드'),{timeout:10000});
     await builder.locator('[data-tab="hero"]').click();
