@@ -392,5 +392,5 @@ test('page builder has real section, image, style, reorder, persistence and expo
  assert.equal((gallery.match(/class="card-visual"/g)||[]).length,5);
  assert.doesNotMatch(gallery,/<iframe/i);
 
- assert.match(gallery,/샘플은 실제 업체 포트폴리오와 별도로 관리/);
+ assert.match(gallery,/실제 고객 납품 실적이나 디자인 어워드 수상작이 아닙니다/);
 });
