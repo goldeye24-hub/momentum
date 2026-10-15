@@ -81,7 +81,7 @@ test('SQL history is owner-only, service-role-only, and joins exact target witho
  assert.match(sql,/momentum_member_daily_history/);
  assert.match(sql,/where t\.owner_id=p_user and t\.id=p_target/);
  assert.match(sql,/revoke all on function public\.momentum_member_daily_history/);
- assert.match(sql,/grant execute on function public\.momentum_member_daily_history.*service_role/);
+ assert.match(sql,/grant execute on function public\.momentum_member_daily_history[\s\S]*?to service_role/);
  assert.match(api,/member\.check\(req\)/);assert.match(api,/owner_id:'eq\.'\+session\.userId/);
  assert.doesNotMatch(api,/runMobile|runMap|fetch\(/);
  assert.match(portal,/id="historyChart"/);assert.match(portal,/src="\/platform\/history.js"/);
