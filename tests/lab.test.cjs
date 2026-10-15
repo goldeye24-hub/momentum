@@ -790,3 +790,5 @@ require('./member-history.test.cjs');
 require('./hobby-function-budget.test.cjs');
 
 require('./supabase-key-compat.test.cjs');
+
+require('./admin-connection.test.cjs');
