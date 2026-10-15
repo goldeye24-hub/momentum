@@ -1,0 +1,13 @@
+{
+  "name": "momentum-marketing-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Momentum Marketing serverless site and permission-limited rank measurement",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "141.0.0",
+    "playwright-core": "1.56.1"
+  }
+}
