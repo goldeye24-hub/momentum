@@ -30,8 +30,28 @@ function fromPaste(raw,target){
 }
 function format(r){return r.rank==null?'미확인':r.rank+'위'}
 function match(r){return r.kind===safeKind()&&r.keyword===val('keyword')&&r.target===val('target')}
+function paintTrend(all){
+ const mount=$('rankTrend');if(!mount)return;
+ const usable=all.filter(x=>typeof x.rank==='number'&&x.rank>0).slice(0,14).reverse();
+ if(usable.length<2){mount.textContent='동일 키워드·대상에서 2회 이상 측정하면 순위 변화 그래프가 나타납니다.';return}
+ const ranks=usable.map(x=>x.rank),lo=Math.min(...ranks),hi=Math.max(...ranks),span=Math.max(1,hi-lo);
+ const w=800,h=225,p=32;
+ const points=usable.map((x,i)=>[p+i*(w-2*p)/Math.max(usable.length-1,1),p+(x.rank-lo)/span*(h-2*p)]);
+ const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
+ svg.setAttribute('viewBox','0 0 '+w+' '+h);svg.setAttribute('role','img');svg.setAttribute('aria-label','측정 순위 변화: '+ranks.join('위, ')+'위');svg.style.width='100%';
+ for(const fraction of [0,.5,1]){
+  const line=document.createElementNS(ns,'line');const y=p+fraction*(h-2*p);
+  for(const [k,v] of Object.entries({x1:p,x2:w-p,y1:y,y2:y,stroke:'#dfeaf0','stroke-dasharray':'5 5'}))line.setAttribute(k,v);
+  svg.appendChild(line);
+ }
+ const path=document.createElementNS(ns,'polyline');path.setAttribute('points',points.map(x=>x.join(',')).join(' '));path.setAttribute('fill','none');path.setAttribute('stroke','#286cdf');path.setAttribute('stroke-width','4');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path);
+ points.forEach((pos,i)=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',pos[0]);c.setAttribute('cy',pos[1]);c.setAttribute('r','6');c.setAttribute('fill','#286cdf');const t=document.createElementNS(ns,'title');t.textContent=new Date(usable[i].at).toLocaleString('ko-KR')+' · '+usable[i].rank+'위';c.appendChild(t);svg.appendChild(c)});
+ mount.replaceChildren(svg);
+ const cap=document.createElement('p');cap.className='trend-caption';cap.textContent='관측 '+usable.length+'건 · '+ranks[0]+'위 → '+ranks[ranks.length-1]+'위 (실제 저장된 관측 기록)';mount.appendChild(cap);
+}
 function paint(){
  const all=history.filter(match),recent=all[0],prior=all[1];
+ paintTrend(all);
  $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?recent.methodLabel:'측정되지 않음';
  $('samples').textContent=all.length+'회';
  $('delta').textContent=recent?.rank!=null&&prior?.rank!=null?(prior.rank-recent.rank>0?'▲ '+(prior.rank-recent.rank):prior.rank-recent.rank<0?'▼ '+(recent.rank-prior.rank):'변동 없음'):'—';
