@@ -47,6 +47,13 @@ test('all previously protected API handlers remain independently authenticated',
  for(const op of moved){
   const r=mockResponse();
   await compact({method:'GET',query:{op},headers:{}},r);
-  assert.equal(r.code,401,'Unauthenticated request should fail for '+op);
+  if(op==='member-auth'){
+   // Login status is deliberately public. An unconfigured Auth service
+   // returns 503; a configured service without cookies returns anonymous.
+   assert.ok([200,503].includes(r.code));
+   if(r.code===200)assert.equal(r.data.authenticated,false);
+  }else{
+   assert.equal(r.code,401,'Unauthenticated request should fail for '+op);
+  }
  }
 });
