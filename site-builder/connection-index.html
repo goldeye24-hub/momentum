@@ -1,0 +1,26 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Supabase 연결 진단 | 모멘텀마케팅</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#173653;font:14px system-ui,-apple-system,"Noto Sans KR",sans-serif}header{padding:20px max(20px,calc((100vw - 1060px)/2));background:#152f4b;color:#fff;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}header a{color:#c7ddf6;text-decoration:none;font-size:12px}main{max-width:1060px;margin:45px auto;padding:0 20px}small{color:#557fae;letter-spacing:.1em;font-weight:900}h1{font-size:34px;margin:12px 0;letter-spacing:-.04em}p{line-height:1.85;color:#6a7e91}.card{border:1px solid #dce6f1;background:white;border-radius:12px;padding:25px;margin:24px 0}.headline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}button{background:#2e69bc;color:#fff;border:0;border-radius:8px;padding:10px 17px;font-weight:900;cursor:pointer}button:disabled{opacity:.5}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#eff3f9;color:#637b95;text-align:left}th,td{padding:13px 10px;border-bottom:1px solid #e8eef5}strong{font-weight:900}.ok{color:#14785f}.failed{color:#be4f42}.notice{background:#eef5ff;color:#355c83;border-left:3px solid #4c88d6;padding:15px;font-size:12px}.subtitle{font-size:12px;color:#7b8da0}footer{padding:30px;text-align:center;color:#8699ad;font-size:11px}@media(max-width:580px){h1{font-size:27px}.card{padding:15px}}
+</style></head><body><header><b>MOMENTUM · DATABASE CHECK</b><nav><a href="/admin/">관리자 홈</a>　<a href="/admin/members/">회원 관리</a></nav></header><main><small>ADMIN · SYSTEM CHECK</small><h1>Supabase 연결 진단</h1><p>현재 운영 서버가 모멘텀 전용 Supabase 데이터베이스 및 회원 인증 서버에 실제 연결되는지 확인합니다. 다른 프로젝트에 요청하지 않으며, 고객 데이터는 조회 결과에 표시하지 않습니다.</p>
+<section class="card"><div class="headline"><h2>서버 연결 상태</h2><button type="button" id="refresh">다시 확인</button></div><p id="overall" class="notice" role="status" aria-live="polite">연결을 검사하고 있습니다.</p>
+<p id="counts" class="subtitle"></p><p id="auth" class="subtitle"></p><div style="overflow:auto"><table><thead><tr><th>데이터베이스 테이블</th><th>연결 결과</th></tr></thead><tbody id="rows"><tr><td colspan="2">서버 확인 중</td></tr></tbody></table></div>
+<p class="subtitle">일부 항목이 실패하면 저장된 비밀키를 출력하지 않고 해당 기능만 점검해야 합니다.</p></section>
+</main><footer>© MOMENTUM MARKETING · INTERNAL CONNECTION DIAGNOSTICS</footer>
+<script>
+(function(){'use strict';const $=id=>document.getElementById(id);let busy=false;
+async function load(){if(busy)return;busy=true;$('refresh').disabled=true;$('overall').textContent='운영 Supabase 연결을 확인 중입니다.';
+try{
+const r=await fetch('/admin/connection/api',{credentials:'same-origin',cache:'no-store'}),j=await r.json();
+const checks=j.database?.tables||[];
+$('overall').textContent=j.status==='ok'?'데이터베이스와 회원 인증 연결이 모두 정상입니다.':j.error||'일부 연결 확인에 실패했습니다.';
+$('counts').textContent='데이터베이스 테이블 확인: '+(j.database?.passedCount??0)+' / '+(j.database?.checkedCount??9);
+$('auth').textContent='회원 인증 API: '+(j.authentication?.connectivity==='ok'?'연결 성공':j.authentication?.connectivity==='failed'?'연결 실패':'아직 확인되지 않음');
+$('rows').replaceChildren();for(const c of checks){
+const tr=document.createElement('tr'),name=document.createElement('td'),status=document.createElement('td');
+name.textContent=c.name;status.textContent=c.status==='ok'?'정상':'연결 실패';
+status.className=c.status==='ok'?'ok':'failed';tr.append(name,status);$('rows').append(tr);
+}
+if(!checks.length)$('rows').textContent='연결 정보를 받을 수 없습니다.';
+}catch(e){$('overall').textContent='연결 응답을 확인하지 못했습니다.';$('rows').textContent='다시 확인하세요.'}
+finally{$('refresh').disabled=false;busy=false}}
+$('refresh').addEventListener('click',load);load();})();
+</script></body></html>
