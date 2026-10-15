@@ -117,3 +117,42 @@ revoke all on function public.momentum_keyword_latest_days(text,integer)
  from PUBLIC,anon,authenticated;
 grant execute on function public.momentum_keyword_latest_days(text,integer)
  to service_role;
+
+-- Compare two exact Place IDs using the SAME latest observed snapshot for each
+-- keyword. A NULL rank means "not found among observed rows", NOT "unranked".
+create or replace function public.momentum_compare_places(
+ p_place_a text,p_place_b text,p_days integer default 30
+) returns table(
+ keyword text,observed_at timestamptz,
+ rank_a integer,rank_b integer,
+ approximate_a boolean,approximate_b boolean,
+ name_a text,name_b text
+) language sql stable security definer set search_path=public as $$
+ with latest as (
+  select distinct on (s.keyword) s.id,s.keyword,s.observed_at
+  from public.rank_keyword_snapshots s
+  where s.scope='mobile'
+    and p_days in (7,30,90)
+    and p_place_a ~ '^[0-9]{6,20}$' and p_place_b ~ '^[0-9]{6,20}$'
+    and p_place_a<>p_place_b
+    and (s.observed_at at time zone 'Asia/Seoul')::date >=
+     ((now() at time zone 'Asia/Seoul')::date-(p_days-1))
+  order by s.keyword,s.observed_at desc
+ )
+ select s.keyword,s.observed_at,
+  max(e.rank) filter(where e.place_id=p_place_a)::integer as rank_a,
+  max(e.rank) filter(where e.place_id=p_place_b)::integer as rank_b,
+  bool_or(e.rank_approximate) filter(where e.place_id=p_place_a) as approximate_a,
+  bool_or(e.rank_approximate) filter(where e.place_id=p_place_b) as approximate_b,
+  max(e.place_name) filter(where e.place_id=p_place_a) as name_a,
+  max(e.place_name) filter(where e.place_id=p_place_b) as name_b
+ from latest s join public.rank_keyword_entries e on e.snapshot_id=s.id
+  and e.place_id in (p_place_a,p_place_b)
+ group by s.keyword,s.observed_at
+ order by s.keyword asc
+ limit 300;
+$$;
+revoke all on function public.momentum_compare_places(text,text,integer)
+ from PUBLIC,anon,authenticated;
+grant execute on function public.momentum_compare_places(text,text,integer)
+ to service_role;
