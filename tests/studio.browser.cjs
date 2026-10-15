@@ -760,6 +760,32 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(watchErrors.length,0,'Watch manager runtime errors: '+watchErrors.join(' | '));
     await watchPage.close();
 
+    // One-time pagination investigation on an already public map list.
+    try{
+      const pp=await ctx.newPage();
+      await pp.goto('https://pcmap.place.naver.com/place/list?query='+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:17000});
+      await pp.waitForTimeout(3300);
+      const counts=[];
+      for(let k=0;k<5;k++){
+        const d=await pp.evaluate(()=>{
+          const cards=[...document.querySelectorAll('li [data-nlog-area="mpl_vsl.result"][data-nlog-params]')],ids=new Set(),ranks=[];
+          for(const el of cards){try{const a=JSON.parse(el.getAttribute('data-nlog-params'));ids.add(a.place_id);ranks.push(a.rank)}catch{}}
+          let top=cards[0]?.closest('li');const parents=[];
+          for(let z=0;top&&z<12;z++,top=top.parentElement){
+            const c=getComputedStyle(top);
+            parents.push({tag:top.tagName,cls:String(top.className||'').slice(0,55),scrollTop:top.scrollTop,scrollHeight:top.scrollHeight,clientHeight:top.clientHeight,overflow:c.overflowY});
+          }
+          const container=parents.find(x=>x.scrollHeight>x.clientHeight+140&&(x.overflow==='auto'||x.overflow==='scroll'));
+          if(container){
+           let node=cards[0]?.closest('li');for(let z=0;node&&z<12;z++,node=node.parentElement){const c=getComputedStyle(node);if(node.scrollHeight>node.clientHeight+140&&(c.overflowY==='auto'||c.overflowY==='scroll')){node.scrollTop=node.scrollHeight;break}}
+          }else window.scrollBy(0,window.innerHeight);
+          return {unique:ids.size,maxRank:Math.max(0,...ranks),parents:parents.slice(0,7),container};
+        });
+        counts.push({step:k,...d});await pp.waitForTimeout(700);
+      }
+      console.log('MAP_SCROLL_PROBE '+JSON.stringify(counts).slice(0,10500));await pp.close();
+    }catch(err){console.log('MAP_SCROLL_PROBE error='+String(err.message).slice(0,200))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
