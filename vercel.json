@@ -30,6 +30,18 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/competitors/api",
+      "destination": "/api/admin-competitor-compare"
+    },
+    {
+      "source": "/admin/competitors",
+      "destination": "/api/admin-site-builder?view=competitors"
+    },
+    {
+      "source": "/admin/competitors/",
+      "destination": "/api/admin-site-builder?view=competitors"
+    },
+    {
       "source": "/admin/keyword-matrix/api",
       "destination": "/api/admin-keyword-matrix"
     },
@@ -88,6 +100,9 @@
     "api/admin-keyword-matrix.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    },
+    "api/admin-competitor-compare.js": {
+      "maxDuration": 30
     }
   }
 }
