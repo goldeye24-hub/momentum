@@ -53,6 +53,10 @@
   "functions": {
     "api/admin-site-builder.js": {
       "includeFiles": "site-builder/**"
+    },
+    "api/place-rank-live.js": {
+      "maxDuration": 30,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     }
   }
 }

@@ -12,10 +12,11 @@ function store(){
 }
 function updateSearch(){$('openNaver').href=searchLink()}
 function switchMode(){
- const type=safeKind(),method=currentMethod();if(type==='place'&&method==='api'){document.querySelector('input[value="observed"][name="method"]').checked=true}
+ const type=safeKind(),method=currentMethod();if(type==='place'&&method==='api'){document.querySelector('input[value="live"][name="method"]').checked=true}if(type==='blog'&&method==='live'){document.querySelector('input[value="observed"][name="method"]').checked=true}
  document.querySelector('input[value="api"][name="method"]').disabled=type==='place';
- for(const m of ['observed','paste','api'])$(m+'Panel').hidden=currentMethod()!==m;
- $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'네이버 플레이스에 표시된 정확한 상호명';
+ document.querySelector('input[value="live"][name="method"]').disabled=type==='blog';
+ for(const m of ['live','observed','paste','api'])$(m+'Panel').hidden=currentMethod()!==m;
+ $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'https://map.naver.com/p/entry/place/1234567890 또는 숫자 ID';
  updateSearch();paint()
 }
 document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',updateSearch);$('target').addEventListener('input',paint);
@@ -49,7 +50,15 @@ $('rankForm').addEventListener('submit',async ev=>{
  if(keyword.length<2||!target){$('message').textContent='검색어와 매장명(또는 블로그 URL)을 입력하세요.';return}
  const btn=$('measure');btn.disabled=true;btn.textContent='확인 중…';
  try{
-  if(method==='observed'){
+  if(method==='live'){
+   if(kind!=='place')throw Error('플레이스 자동 측정만 지원합니다.');
+   $('message').textContent='실제 네이버 검색 화면을 확인하고 있습니다…';
+   const response=await fetch('/api/place-rank-live',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeUrl:target})});
+   const result=await response.json();
+   if(!response.ok)throw Error(result.message||'자동 측정 실패');
+   if(!['ranked','not_in_block'].includes(result.status)){$('message').textContent=result.message||'자동 측정이 완료되지 않았습니다.';return}
+   add({rank:result.rank,depth:result.observedCount,methodLabel:'네이버 PC 플레이스 블록 자동 관측',message:result.message});
+  }else if(method==='observed'){
    const found=val('found')==='yes',rank=found?Number(val('rankNumber')):null,depth=Number(val('depth'));
    if(found&&(!Number.isInteger(rank)||rank<1||rank>depth))throw Error('확인한 순위가 1~'+depth+' 안에 있어야 합니다.');
    add({rank,depth,methodLabel:'네이버 화면 직접 확인',message:found?'직접 확인한 '+rank+'위를 기록했습니다.':'상위 '+depth+'에서 미확인으로 기록했습니다.'});
