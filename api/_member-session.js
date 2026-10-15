@@ -25,9 +25,12 @@ function check(req,now=Date.now()){
  let value;try{value=decodeURIComponent(pair.slice(COOKIE.length+1))}catch{return null}
  if(value.length>2000)return null;
  const bits=value.split('.');if(bits.length!==2||bits[0].length>1400||!bits[0])return null;
- const expect=crypto.createHmac('sha256',key).update(bits[0]).digest();
- let actual;try{actual=Buffer.from(bits[1],'base64url')}catch{return null}
- if(expect.length!==actual.length||!crypto.timingSafeEqual(expect,actual))return null;
+ // Compare canonical text, not decoded bytes: changing an unused Base64URL
+ // padding bit must still invalidate the cookie's serialized signature.
+ if(!/^[A-Za-z0-9_-]{43}$/.test(bits[1]))return null;
+ const expected=Buffer.from(crypto.createHmac('sha256',key).update(bits[0]).digest('base64url'),'ascii');
+ const actual=Buffer.from(bits[1],'ascii');
+ if(expected.length!==actual.length||!crypto.timingSafeEqual(expected,actual))return null;
  try{
   const v=JSON.parse(Buffer.from(bits[0],'base64url').toString('utf8'));
   if(v.v!==1||!db.uuid(v.userId)||typeof v.email!=='string'||v.email.length>254||
