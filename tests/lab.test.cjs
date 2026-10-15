@@ -622,3 +622,29 @@ test('rank tracker distinguishes actual observation from blog API ranking and ne
  assert.match(js,/rankNumber/);
  assert.match(fs.readFileSync('lab/index.html','utf8'),/href="\/lab\/rank\/"/);
 });
+
+test('automatic Naver Place-block browser observation is exact-ID matched and scoped',()=>{
+ const engine=require('../api/_place-observe.js');
+ assert.equal(engine.placeId('https://map.naver.com/p/entry/place/1234567890'),'1234567890');
+ assert.equal(engine.placeId('https://m.place.naver.com/place/1234567890'),'1234567890');
+ assert.equal(engine.placeId('1234567890'),'1234567890');
+ assert.equal(engine.placeId('https://evilnaver.com/place/1234567890'),null);
+ assert.equal(engine.placeId('https://naver.com.evil.test/place/1234567890'),null);
+ assert.equal(engine.validateKeyword('포항 물회'),'포항 물회');
+ assert.equal(engine.validateKeyword('<script>'),null);
+ const items=[{id:'7777777',name:'A'},{id:'8888888',name:'B',ad:true},{id:'9999999',name:'C'},{id:'8888888',name:'dup'}];
+ assert.equal(engine.reduceResult(items,'9999999').rank,3);
+ assert.equal(engine.reduceResult(items,'9999999').adExcludedRank,2);
+ assert.equal(engine.reduceResult(items,'8888888').adExcludedRank,null);
+ assert.equal(engine.reduceResult(items,'1000000').status,'not_in_block');
+ assert.equal(engine.reduceResult(items,'1000000').rank,null);
+ assert.equal(engine.reduceResult([], '1000000').status,'no_place_block');
+ const live=require('../api/place-rank-live.js');
+ assert.equal(typeof live,'function');
+ const rank=fs.readFileSync('lab/rank/index.html','utf8');
+ assert.match(rank,/value="live"/);
+ assert.match(rank,/id="livePanel"/);
+ assert.match(fs.readFileSync('lab/rank/rank.js','utf8'),/\/api\/place-rank-live/);
+ const cfg=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+ assert.equal(cfg.functions['api/place-rank-live.js'].maxDuration,30);
+});

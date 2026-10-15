@@ -45,6 +45,18 @@ function localServer(){
       });
       return;
     }
+    if(req.method==='POST' && req.url==='/api/place-rank-live'){
+      let body='';
+      req.on('data',chunk=>{body+=chunk;if(body.length>3000)req.destroy()});
+      req.on('end',()=>{
+        let json;try{json=JSON.parse(body)}catch{json={}}
+        const id=require('../api/_place-observe').placeId(json.placeUrl||json.placeId||'');
+        const result=id==='1234567890'?{status:'ranked',rank:4,observedCount:6,message:'실측 테스트 픽스처 4번째 위치'}:
+          {status:'invalid',rank:null,message:'테스트 플레이스 ID를 입력하세요.'};
+        res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(result));
+      });
+      return;
+    }
     let target;
     try{
       const u=new URL(req.url,'http://localhost');
@@ -652,6 +664,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     const rankPage=await ctx.newPage();
     const rankErrors=[];rankPage.on('pageerror',e=>rankErrors.push(String(e)));
     await rankPage.goto('http://127.0.0.1:'+port+'/lab/rank/',{waitUntil:'load'});
+    await rankPage.locator('input[name="method"][value="observed"]').check();
     await rankPage.locator('#target').fill('테스트 미용실');
     await rankPage.locator('#rankNumber').fill('12');
     await rankPage.locator('#measure').click();
@@ -676,6 +689,14 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.waitForFunction(()=>/연결되지|승인/.test(document.querySelector('#message')?.textContent||''));
     assert.match(await rankPage.locator('#message').innerText(),/연결되지|승인/);
     assert.equal(await rankPage.locator('#latest').innerText(),'—');
+    await rankPage.locator('#kind').selectOption('place');
+    await rankPage.locator('#keyword').fill('포항 물회');
+    await rankPage.locator('#target').fill('https://map.naver.com/p/entry/place/1234567890');
+    await rankPage.locator('input[name="method"][value="live"]').check();
+    await rankPage.locator('#measure').click();
+    await rankPage.waitForFunction(()=>document.querySelector('#latest')?.textContent==='4위');
+    assert.equal(await rankPage.locator('#latest').innerText(),'4위');
+    assert.match(await rankPage.locator('#message').innerText(),/테스트 픽스처/);
     await rankPage.setViewportSize({width:390,height:844});
     const rd=await rankPage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
     assert.ok(rd.scrollWidth<=rd.viewport+3,'Rank mobile overflow '+JSON.stringify(rd));
