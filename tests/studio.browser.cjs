@@ -269,7 +269,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.equal(await form.count(),1,'Missing service inquiry form '+service);
       assert.equal(await form.getAttribute('data-demo-only'),'true');
       assert.match(await templatePage.locator('.quote-privacy').innerText(),/저장하지 않습니다|저장되거나 전송되지/);
-      assert.match(await templatePage.locator('a.ind-button.alt').getAttribute('href'),/#quote/);
+      assert.equal(await templatePage.locator('.sig-hero a.sig-primary').getAttribute('href'),'#quote');
       const count=await form.locator('.quote-field').count();
       assert.ok(count>=7,'Need industry-specific service questions '+service);
       const submit=templatePage.locator('#serviceQuoteForm button[type="submit"]');
