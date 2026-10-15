@@ -673,7 +673,7 @@ test('rank-watch back office is protected, secret-less until explicitly configur
  assert.match(sql,/row level security/g);
  assert.match(sql,/rank_watch_targets/);
  assert.match(sql,/rank_watch_observations/);
- const admin=require('../api/admin-rank-watches.js');
+ const admin=require('../server-handlers/admin-rank-watches.js');
  let code=0,payload={};
  await admin({method:'GET',headers:{}},{setHeader(){},status(n){code=n;return this},json(obj){payload=obj;return this}});
  assert.equal(code,401);
@@ -740,7 +740,7 @@ test('mobile Place uses separate name-or-ID matching and conservative rank seman
 
 
 test('mobile rank admin accepts business-name targets without losing exact Place IDs',()=>{
- const admin=fs.readFileSync('api/admin-rank-watches.js','utf8');
+ const admin=fs.readFileSync('server-handlers/admin-rank-watches.js','utf8');
  const worker=fs.readFileSync('api/rank-watch-cron.js','utf8');
  const sql=fs.readFileSync('db/rank-watch.sql','utf8');
  assert.match(admin,/target_name/);
