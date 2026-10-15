@@ -700,6 +700,18 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
           return {title:document.title.slice(0,100),hrefLinks:all.length,uniqueIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].length,listCount:list.length,bodyLen:document.body?.innerText.length||0};
         });
         console.log('NAVER_FEASIBILITY '+JSON.stringify({http:response.status(),finalOrigin:new URL(qp.url()).origin,...v,elapsedMs:Date.now()-started}));
+        try {
+          const raw=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36','Accept-Language':'ko-KR,ko;q=0.9'},signal:AbortSignal.timeout(8000)});
+          const html=await raw.text();
+          const list=[...html.matchAll(/(?:https?:\/\/)?map\.naver\.com\/p\/entry\/place\/(\d{5,20})/g)].map(x=>x[1]);
+          const ids=[...new Set(list)].slice(0,20);
+          const docLinks=await qp.evaluate(()=>[...document.querySelectorAll('div[class*="place"] li')].map(el=>{
+            const link=el.querySelector('a[href*="map.naver.com/p/entry/place/"]');
+            return {id:link?.href.match(/\/place\/(\d{5,20})/)?.[1]||'',hint:el.innerText.slice(0,70),ad:/광고/.test(el.innerText)};
+          }).filter(x=>x.id));
+          console.log('NAVER_HTML_PROBE '+JSON.stringify({http:raw.status,htmlLen:html.length,htmlUnique:ids.length,htmlIds:ids,domLinks:docLinks}));
+        } catch(err){console.log('NAVER_HTML_PROBE error='+String(err.message).slice(0,160))}
+
       }
       await qp.close();
     } catch(err){console.log('NAVER_FEASIBILITY error='+String(err.message).slice(0,220));}
