@@ -2,6 +2,7 @@
 const auth=require('../api/admin-site-builder');
 const db=require('../api/_rank-store');
 const observer=require('../api/_place-observe');
+const sourceGate=require('../api/_rank-live-shared');
 const clean=(v,max=90)=>String(v??'').trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max);
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex');
@@ -25,6 +26,44 @@ module.exports=async function(req,res){
   if(typeof data==='string'){if(data.length>2000)return res.status(413).json({error:'입력 크기 초과'});data=JSON.parse(data)}
   if(!data||typeof data!=='object'||Array.isArray(data))return res.status(400).json({error:'입력을 확인해 주세요.'});
   const action=clean(data.action,15);
+  if(action==='measure'){
+   if(!db.uuid(data.id))return res.status(400).json({error:'측정 대상 ID를 확인하세요.'});
+   const found=await db.request('rank_watch_targets',{query:{
+    select:'id,label,keyword,place_id,target_name,scope,active,last_run_at',
+    id:'eq.'+data.id,limit:'1'
+   }});
+   const row=found?.[0];
+   if(!row)return res.status(404).json({error:'등록된 측정 대상이 없습니다.'});
+   if(!row.active)return res.status(409).json({error:'일시 중지된 대상입니다. 추적을 재개한 후 측정하세요.'});
+   const last=Date.parse(row.last_run_at||'');
+   if(Number.isFinite(last)&&Date.now()-last<10*60*1000){
+    return res.status(429).json({status:'cooldown',error:'동일 대상은 10분 이내 중복 측정할 수 없습니다. 이전 결과를 확인하세요.'});
+   }
+   const target=row.place_id||observer.normalizeBusinessName(row.target_name);
+   const key=row.scope+'\n'+row.keyword+'\n'+target;
+   const result=await sourceGate.sharedMeasure({key,scope:row.scope,measure:()=>row.scope==='mobile'?
+     observer.runMobile(row.keyword,{id:row.place_id||null,name:row.target_name||null}):
+     row.scope==='map'?observer.runMap(row.keyword,row.place_id):
+     observer.run(row.keyword,row.place_id)});
+   if(result.status==='shared_delayed'||result.status==='blocked'){
+    return res.status(503).json({status:result.status,retryAfterSeconds:result.retryAfterSeconds||60,
+     error:result.message||'네이버 요청 제한이나 다른 측정으로 새 관측을 진행하지 않았습니다.'});
+   }
+   const allowed=['ranked','not_in_block','no_place_block','unavailable'];
+   const status=allowed.includes(result.status)?result.status:'unavailable';
+   const observedAt=new Date().toISOString();
+   await db.request('rank_watch_observations',{method:'POST',
+    body:{target_id:row.id,rank:status==='ranked'?result.rank:null,
+     rank_approximate:result.rankApproximate===true,status,
+     observed_count:Number(result.observedCount)||0,source:result.source||'none',
+     scope:row.scope,observed_at:observedAt},prefer:'return=minimal'});
+   await db.request('rank_watch_targets',{method:'PATCH',
+    query:{id:'eq.'+row.id},body:{last_run_at:observedAt},prefer:'return=minimal'});
+   return res.status(200).json({status,rank:status==='ranked'?result.rank:null,
+    rankApproximate:result.rankApproximate===true,observedAt,
+    message:status==='ranked'?'실제 관측된 모바일 또는 PC 순위를 기록했습니다.':
+    '관측을 시도했지만 순위가 확인되지 않았습니다. 순위 밖으로 단정하지 않습니다.'});
+  }
   if(action==='create'){
    const keyword=observer.validateKeyword(data.keyword),label=clean(data.label,70);
    const scope=data.scope==='integrated'?'integrated':data.scope==='map'?'map':'mobile';

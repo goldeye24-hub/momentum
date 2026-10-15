@@ -2,6 +2,17 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "momentum-orcin-delta.vercel.app"
+        }
+      ],
+      "destination": "https://momentum-goldeye24-hubs-projects.vercel.app/:path*",
+      "permanent": false
+    },
+    {
       "source": "/site-builder",
       "destination": "/admin/",
       "permanent": false
