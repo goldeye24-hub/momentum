@@ -50,7 +50,9 @@ function createController({now=()=>Date.now(),ttlMs=30*60*1000,blockMs=60*60*100
      if(previous)return {code:200,data:{...snapshot(previous,{stale:true}),retryAfterSeconds:Math.ceil((blockedUntil-now())/1000)}};
      return {code:503,data:{status:'source_rate_limited',rank:null,retryAfterSeconds:Math.ceil((blockedUntil-now())/1000),message:'네이버가 추가 검색 요청을 제한했습니다(HTTP '+providerCode+'). 자동 재시도는 하지 않습니다.'}};
     }
-    if((data?.status==='ranked'||data?.status==='not_in_block')&&data?.source==='browser_observed'){
+    if(data?.status==='shared_delayed')return {code:503,data};
+    // A shared DB cache result should be returned without extending its real TTL.
+    if(!data?.cached&&(data?.status==='ranked'||data?.status==='not_in_block')&&data?.source==='browser_observed'){
      cache.set(key,{time:now(),data});trim(now());
     }
     return {code:200,data};
