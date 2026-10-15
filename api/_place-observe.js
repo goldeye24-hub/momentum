@@ -165,4 +165,95 @@ async function runMap(keyword,id){
  }finally{await browser.close().catch(()=>{})}
 }
 
-module.exports={placeId,validateKeyword,reduceResult,reduceMap,run,runMap};
+
+/**
+ * Mobile Place list observation (not PC Map and not the small PC Place block).
+ * No provider API or rank is inferred. A DOM-derived position is approximate,
+ * because ad cards / deferred elements can affect the observed list.
+ */
+function normalizeBusinessName(value){
+ return String(value||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+}
+function mobileTarget(input){
+ const id=placeId(input);
+ if(id)return {id,name:null};
+ const name=String(input||'').normalize('NFKC').trim().replace(/\s+/g,' ');
+ if(name.length<2||name.length>70||/[/<>?#=&]/.test(name))return null;
+ return {id:null,name};
+}
+function reduceMobile(items,target){
+ if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 목록을 읽지 못했습니다. 순위 밖이라는 뜻은 아닙니다.'};
+ const seen=new Set(),list=[];
+ for(const raw of items){
+  const id=String(raw.id||'');
+  if(!/^\d{6,20}$/.test(id)||seen.has(id))continue;
+  seen.add(id);
+  const providerRank=Number(raw.rank);
+  const trustworthy=Number.isInteger(providerRank)&&providerRank>=1&&providerRank<=500;
+  list.push({id,name:String(raw.name||'').trim().slice(0,70),rank:trustworthy?providerRank:list.length+1,approximate:!trustworthy});
+ }
+ if(!list.length)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 ID가 확인되지 않았습니다.'};
+ const matches=target.id?list.filter(x=>x.id===target.id):list.filter(x=>normalizeBusinessName(x.name)===normalizeBusinessName(target.name));
+ if(matches.length>1)return {status:'ambiguous',rank:null,observedCount:list.length,message:'같은 업체명이 여러 곳에서 확인되었습니다. 플레이스 ID로 다시 측정해 주세요.'};
+ const item=matches[0];
+ return {status:item?'ranked':'not_in_block',rank:item?.rank??null,rankApproximate:item?.approximate??false,
+  rankBasis:item?(item.approximate?'visible_mobile_list_order_estimate':'mobile_list_provider_rank'):null,
+  matchedName:item?.name||null,matchedId:item?.id||null,observedCount:list.length,
+  maxObservedRank:Math.max(...list.map(x=>x.rank)),
+  message:item?(item.approximate?'네이버 모바일 플레이스 목록에서 약 '+item.rank+'번째로 관측했습니다. 광고 및 동적 로딩으로 실제 일반 순위와 다를 수 있습니다.':'네이버 모바일 플레이스 목록에 표시된 '+item.rank+'위를 확인했습니다.'):
+  '관측된 모바일 플레이스 업체 '+list.length+'곳에서 대상을 찾지 못했습니다. 더 아래 순위 또는 검색 미노출이라는 뜻은 아닙니다.'};
+}
+async function runMobile(keyword,target){
+ const playwright=require('playwright-core'),chromiumBinary=require('@sparticuz/chromium');
+ const browser=await playwright.chromium.launch({
+  args:chromiumBinary.args,executablePath:await chromiumBinary.executablePath(),headless:true,timeout:12000
+ });
+ try{
+  const context=await browser.newContext({
+   locale:'ko-KR',viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2,
+   userAgent:'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'
+  });
+  const page=await context.newPage();
+  const query=new URLSearchParams({where:'m',query:keyword,entry:'pll'}).toString();
+  const candidates=['https://m.place.naver.com/restaurant/list?'+query,'https://m.place.naver.com/place/list?'+query];
+  let rows=[],usedUrl='',httpStatus=null;
+  for(const url of candidates){
+   try{
+    const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:11000});
+    const loaded=new URL(page.url());
+    httpStatus=response?.status()??null;
+    if(httpStatus!==200||loaded.hostname!=='m.place.naver.com')continue;
+    usedUrl=page.url();
+    await page.locator('li a[href*="/restaurant/"],li a[href*="/place/"],li [data-nlog-params]').first().waitFor({state:'attached',timeout:2800}).catch(()=>{});
+    const ids=new Set();
+    for(let pageIndex=0;pageIndex<5;pageIndex++){
+     const items=await page.evaluate(()=>{
+      const found=[];
+      for(const li of document.querySelectorAll('li')){
+       const info=li.querySelector('[data-nlog-params]'),anchor=li.querySelector('a[href*="/restaurant/"],a[href*="/place/"],a[href*="/hairshop/"],a[href*="/accommodation/"]');
+       let meta={};try{if(info)meta=JSON.parse(info.getAttribute('data-nlog-params')||'{}')}catch{}
+       const rawHref=anchor?.getAttribute('href')||'';
+       const id=String(meta.place_id||rawHref.match(/\/(?:restaurant|place|hairshop|accommodation)\/(\d{6,20})(?:\/|[?#]|$)/)?.[1]||'');
+       if(!/^\d{6,20}$/.test(id))continue;
+       const providerRank=meta.rank===undefined?null:Number(meta.rank);
+       const name=String(li.querySelector('h3,strong,[class*="name"]')?.textContent||anchor?.textContent||'').trim().replace(/\s+/g,' ').slice(0,70);
+       found.push({id,name,rank:Number.isInteger(providerRank)&&providerRank>0?providerRank:null});
+      }
+      return found;
+     });
+     for(const x of items)if(!ids.has(x.id)){ids.add(x.id);rows.push(x)}
+     if(rows.some(x=>x.id===target.id||(target.name&&normalizeBusinessName(x.name)===normalizeBusinessName(target.name)))||rows.length>=100)break;
+     await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
+     await page.waitForTimeout(450);
+    }
+    if(rows.length)break;
+   }catch{continue}
+  }
+  if(!rows.length)return {status:'no_place_block',rank:null,observedCount:0,scope:'naver_mobile_place_list',query:keyword,
+   observedAt:new Date().toISOString(),source:'none',message:'모바일 플레이스 목록을 자동으로 읽지 못했습니다. 네이버 페이지 구조나 네트워크 차단 여부를 확인해야 합니다.',diagnostics:{httpStatus,host:usedUrl?new URL(usedUrl).hostname:null}};
+  return {...reduceMobile(rows,target),scope:'naver_mobile_place_list',query:keyword,observedAt:new Date().toISOString(),source:'browser_observed',
+   disclaimer:'모바일 화면 390px 기준 관측입니다. 위치·로그인·광고·동적 로딩에 따라 순위가 달라질 수 있으며, 확인 범위를 넘어선 순위는 추측하지 않습니다.'};
+ }finally{await browser.close().catch(()=>{})}
+}
+
+module.exports={placeId,validateKeyword,reduceResult,reduceMap,run,runMap,normalizeBusinessName,mobileTarget,reduceMobile,runMobile};
