@@ -60,6 +60,7 @@ const {chromium}=require('playwright');
   await page.locator('button[data-mode="signup"]').click();
   assert.match(await page.locator('#authTitle').textContent(),/회원가입/);
   await page.locator('button[data-mode="login"]').click();
+  await page.locator('#rememberEmail').check();
   await page.locator('#email').fill('test@company.kr');
   await page.locator('#password').fill('test-password-123');
   await page.locator('#authSubmit').click();
@@ -93,6 +94,20 @@ const {chromium}=require('playwright');
   await page.locator('#logout').click();
   await page.waitForFunction(()=>!document.querySelector('#authPanel').hidden,{timeout:8000});
   assert.equal(await page.locator('#dashboard').isHidden(),true);
+  // Remember ID must survive a fresh load, but must not remember a password
+  // or bypass authentication.
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>!document.querySelector('#authPanel').hidden,{timeout:8000});
+  assert.equal(await page.locator('#email').inputValue(),'test@company.kr');
+  assert.equal(await page.locator('#rememberEmail').isChecked(),true);
+  assert.equal(await page.locator('#password').inputValue(),'');
+  assert.equal(await page.locator('#dashboard').isHidden(),true);
+  // Unchecking actively forgets the previously saved ID.
+  await page.locator('#rememberEmail').uncheck();
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>!document.querySelector('#authPanel').hidden,{timeout:8000});
+  assert.equal(await page.locator('#email').inputValue(),'');
+  assert.equal(await page.locator('#rememberEmail').isChecked(),false);
   assert.deepEqual(errors,[]);
   console.log('Member portal auth and slot browser checks passed');
  }finally{await browser.close()}
