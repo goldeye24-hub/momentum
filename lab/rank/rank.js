@@ -6,7 +6,7 @@ const val=id=>$(id).value.trim(),norm=s=>String(s||'').normalize('NFKC').replace
 const s=id=>$(id).textContent;
 function safeKind(){return val('kind')==='blog'?'blog':'place'}
 function currentMethod(){return document.querySelector('input[name="method"]:checked')?.value||'observed'}
-function searchLink(){return (safeKind()==='place'&&document.getElementById('rankScope')?.value==='map'?'https://map.naver.com/p/search/':'https://search.naver.com/search.naver?query=')+encodeURIComponent(val('keyword'))}
+function searchLink(){return (safeKind()==='place'&&document.getElementById('rankScope')?.value==='map'?'https://map.naver.com/p/search/':document.getElementById('rankScope')?.value==='mobile'?'https://m.search.naver.com/search.naver?query=':'https://search.naver.com/search.naver?query=')+encodeURIComponent(val('keyword'))}
 function store(){
  try{localStorage.setItem(key,JSON.stringify(history.slice(0,300)));return true}catch{return false}
 }
@@ -16,7 +16,7 @@ function switchMode(){
  document.querySelector('input[value="api"][name="method"]').disabled=type==='place';
  document.querySelector('input[value="live"][name="method"]').disabled=type==='blog';
  for(const m of ['live','observed','paste','api'])$(m+'Panel').hidden=currentMethod()!==m;
- $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'https://map.naver.com/p/entry/place/1234567890 또는 숫자 ID';
+ $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'업체명, 플레이스 숫자 ID 또는 https://m.place.naver.com/restaurant/1234567890';
  updateSearch();paint()
 }
 document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',updateSearch);$('target').addEventListener('input',paint);$('rankScope').addEventListener('change',()=>{updateSearch();paint()});
@@ -78,7 +78,7 @@ $('rankForm').addEventListener('submit',async ev=>{
    const result=await response.json();
    if(!response.ok)throw Error(result.message||'자동 측정 실패');
    if(!['ranked','not_in_block'].includes(result.status)){$('message').textContent=result.message||'자동 측정이 완료되지 않았습니다.';return}
-   add({rank:result.rank,approximate:result.rankApproximate===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='map'?(result.rankApproximate?'네이버지도 목록 순서 추정':'네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
+   add({rank:result.rank,approximate:result.rankApproximate===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
   }else if(method==='observed'){
    const found=val('found')==='yes',rank=found?Number(val('rankNumber')):null,depth=Number(val('depth'));
    if(found&&(!Number.isInteger(rank)||rank<1||rank>depth))throw Error('확인한 순위가 1~'+depth+' 안에 있어야 합니다.');
