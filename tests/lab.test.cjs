@@ -737,3 +737,42 @@ test('mobile Place uses separate name-or-ID matching and conservative rank seman
  assert.match(api,/runMobile\(keyword,mobileTarget\)/);
  assert.doesNotThrow(()=>new vm.Script(ui));
 });
+
+
+test('mobile rank admin accepts business-name targets without losing exact Place IDs',()=>{
+ const admin=fs.readFileSync('api/admin-rank-watches.js','utf8');
+ const worker=fs.readFileSync('api/rank-watch-cron.js','utf8');
+ const sql=fs.readFileSync('db/rank-watch.sql','utf8');
+ assert.match(admin,/target_name/);
+ assert.match(admin,/observer\.mobileTarget\(rawTarget\)/);
+ assert.match(worker,/item\.target_name/);
+ assert.match(worker,/observer\.runMobile/);
+ assert.match(fs.readFileSync('site-builder/rank-watch-index.html','utf8'),/업체명 또는 플레이스 URL·ID/);
+ assert.equal((sql.match(/create table if not exists public\.rank_watch_targets/g)||[]).length,1);
+ assert.equal((sql.match(/create table if not exists public\.rank_watch_observations/g)||[]).length,1);
+ assert.match(sql,/create unique index if not exists rank_watch_targets_name_scope_unique/);
+ assert.match(sql,/alter table public\.rank_watch_targets add column if not exists target_name/);
+ assert.match(sql,/scope in \('mobile','map','integrated'\)/);
+ assert.doesNotMatch(sql,/\)\s*,\s*target_name text[\s\S]*?create table if not exists public\.rank_watch_observations[\s\S]*?create table if not exists public\.rank_watch_observations/);
+});
+
+test('mobile rank is conservative when names overlap or provider positions restart',()=>{
+ const observer=require('../api/_place-observe.js');
+ const target=observer.mobileTarget('2085358113');
+ const nameTarget=observer.mobileTarget('퐝물회');
+ const entries=[{id:'5555555',name:'매장1',rank:8},{id:'2085358113',name:'퐝물회',rank:1}];
+ const result=observer.reduceMobile(entries,target);
+ assert.equal(result.status,'ranked');
+ assert.equal(result.rank,2);
+ assert.equal(result.rankApproximate,true);
+ const byName=observer.reduceMobile([{id:'2085358113',name:'퐝물회',rank:85}],nameTarget);
+ assert.equal(byName.rank,85);
+ assert.equal(byName.rankApproximate,true);
+ assert.equal(byName.rankBasis,'mobile_name_match_requires_id');
+ const duplicate=observer.reduceMobile([
+  {id:'2085358113',name:'퐝물회',rank:85},
+  {id:'777777777',name:'퐝물회',rank:86},
+ ],nameTarget);
+ assert.equal(duplicate.status,'ambiguous');
+ assert.equal(duplicate.rank,null);
+});
