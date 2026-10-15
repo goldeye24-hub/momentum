@@ -7,6 +7,7 @@ on:
       - 'index.html'
       - 'tests/**'
       - 'site-builder/**'
+      - 'platform/**'
       - 'vercel.json'
       - 'website-samples/**'
       - '.github/workflows/marketing-lab-checks.yml'
