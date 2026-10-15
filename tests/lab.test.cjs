@@ -785,3 +785,4 @@ require('./keyword-matrix.test.cjs');
 require('./competitor-compare.test.cjs');
 require('./place-keyword-insights.test.cjs');
 require('./member-portal.test.cjs');
+require('./admin-members.test.cjs');

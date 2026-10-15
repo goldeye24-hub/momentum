@@ -74,6 +74,18 @@
       "destination": "/api/admin-site-builder?view=keywords"
     },
     {
+      "source": "/admin/members/api",
+      "destination": "/api/admin-members"
+    },
+    {
+      "source": "/admin/members",
+      "destination": "/api/admin-site-builder?view=members"
+    },
+    {
+      "source": "/admin/members/",
+      "destination": "/api/admin-site-builder?view=members"
+    },
+    {
       "source": "/admin/watches/api",
       "destination": "/api/admin-rank-watches"
     },
@@ -131,6 +143,9 @@
       "maxDuration": 30
     },
     "api/member-watches.js": {
+      "maxDuration": 30
+    },
+    "api/admin-members.js": {
       "maxDuration": 30
     }
   }
