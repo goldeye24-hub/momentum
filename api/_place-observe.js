@@ -68,25 +68,28 @@ async function run(keyword,id){
 
 function reduceMap(items,requestedId){
  if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'네이버지도에서 업체 목록을 읽지 못했습니다. 검색 결과가 없다는 뜻은 아닙니다.'};
- const unique=new Map();
+ const seen=new Set(),ordered=[];
  for(const item of items){
-  const id=String(item.id||''),rank=Number(item.rank);
-  if(!/^\d{6,20}$/.test(id)||!Number.isInteger(rank)||rank<1||rank>500)continue;
-  if(!unique.has(id))unique.set(id,{rank,name:String(item.name||'').slice(0,70)});
+  const id=String(item.id||''),originalRank=Number(item.rank);
+  if(!/^\d{6,20}$/.test(id)||!Number.isInteger(originalRank)||originalRank<1||originalRank>500||seen.has(id))continue;
+  seen.add(id);ordered.push({id,originalRank,name:String(item.name||'').slice(0,70)});
  }
- const matched=unique.get(requestedId);
- const ranks=[...unique.values()].map(x=>x.rank);
- const high=ranks.length?Math.max(...ranks):null;
- if(!unique.size)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'지도 업체 목록에서 순위 정보를 읽지 못했습니다.'};
- return {
-  status:matched?'ranked':'not_in_block',
-  rank:matched?matched.rank:null,
-  observedCount:unique.size,
-  maxObservedRank:high,
-  matchedName:matched?.name||null,
-  message:matched?'네이버지도 검색 결과에 표시된 업체 '+matched.rank+'위를 확인했습니다. 검색 지역·화면·시간에 따라 달라질 수 있습니다.':
-   '네이버지도에서 현재 확인한 '+unique.size+'개 업체(표시 순위 '+high+'위까지) 중에 대상 ID가 없습니다. 전체 검색 미노출을 뜻하지 않습니다.'
- };
+ if(!ordered.length)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'지도 업체 목록에서 순위 정보를 읽지 못했습니다.'};
+ // The telemetry rank field can restart from 1 on each newly loaded results page.
+ // Keep the exact first-page value; later values are page-order derived estimates.
+ let offset=0,previous=0;
+ ordered.forEach((row,index)=>{
+  if(index>0&&row.originalRank<previous&&previous>=8&&row.originalRank<=3)offset+=10;
+  row.rank=offset?Math.max(index+1,offset+row.originalRank):row.originalRank;
+  row.rankBasis=offset?'estimated_from_loaded_page_order':'visible_provider_rank';
+  previous=row.originalRank;
+ });
+ const found=ordered.find(x=>x.id===requestedId);
+ const high=Math.max(...ordered.map(x=>x.rank)),approx=found?.rankBasis==='estimated_from_loaded_page_order';
+ return {status:found?'ranked':'not_in_block',rank:found?.rank??null,observedCount:ordered.length,maxObservedRank:high,matchedName:found?.name||null,
+  rankBasis:found?.rankBasis||null,rankApproximate:!!approx,
+  message:found?(approx?'네이버지도에서 순서상 약 '+found.rank+'번째 항목으로 관측했습니다. 10위 이후는 결과 페이지 순서를 이용한 추정치입니다.':'네이버지도에 표시된 업체 '+found.rank+'위를 확인했습니다. 지역·기기·검색 설정에 따라 달라집니다.'):
+   '네이버지도에서 현재 확인한 '+ordered.length+'개 업체(약 '+high+'위 범위) 중에 대상 ID가 없습니다. 하위 순위나 검색 미노출을 뜻하지 않습니다.'};
 }
 async function runMap(keyword,id){
  const playwright=require('playwright-core');
@@ -145,8 +148,17 @@ async function runMap(keyword,id){
    const seen=new Set(items.map(x=>x.id));for(const x of now)if(!seen.has(x.id)){seen.add(x.id);items.push(x)}
    if(items.some(x=>x.id===id)||i===maxScroll||!now.length)break;
    try{
-    await frame.locator('li').last().scrollIntoViewIfNeeded({timeout:1000});
-    await page.waitForTimeout(550);
+    const moved=await frame.evaluate(()=>{
+     const first=document.querySelector('li [data-nlog-area="mpl_vsl.result"][data-nlog-params]');
+     let n=first?.closest('li');
+     for(let i=0;n&&i<12;i++,n=n.parentElement){
+      const st=getComputedStyle(n);
+      if(n.scrollHeight>n.clientHeight+140&&(st.overflowY==='auto'||st.overflowY==='scroll')){n.scrollTop=n.scrollHeight;return true}
+     }
+     return false;
+    });
+    if(!moved)break;
+    await page.waitForTimeout(850);
    }catch{break}
   }
   return {...reduceMap(items,id),scope:'naver_map_pc_search_list_observed',source:'browser_observed',query:keyword,observedAt:new Date().toISOString(),disclaimer:'네이버지도 검색 화면에 실제 표시된 업체 순위이며 위치·기기·개인화·정렬조건의 영향을 받습니다. 확인하지 못한 하위 순위는 추측하지 않습니다.'};
