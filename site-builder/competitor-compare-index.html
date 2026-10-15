@@ -1,0 +1,29 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>플레이스 경쟁업체 키워드 비교 | 모멘텀마케팅</title><link rel="stylesheet" href="/admin/assets/keyword-matrix.css"><link rel="stylesheet" href="/admin/assets/competitor-compare.css"></head><body>
+<header class="top"><a href="/admin/">MOMENTUM <b>INTELLIGENCE</b></a><nav><a href="/admin/keyword-matrix/">키워드 순위표</a><a href="/admin/watches/">업체별 추적</a><a href="/admin/crm/">고객 관리</a><form action="/admin/logout" method="post"><button>로그아웃</button></form></nav></header>
+<main>
+<section class="intro"><span class="eyebrow">INTERNAL ANALYTICS · KEYWORD OVERLAP</span><h1>플레이스 경쟁업체를<br>키워드별로 비교합니다.</h1><p>두 업체의 숫자 플레이스 ID로 동일한 모바일 관측 기록을 비교합니다. 서로 다른 시각의 데이터를 섞지 않고, 관측되지 않은 키워드는 미노출로 단정하지 않습니다.</p></section>
+<section class="panel search-panel">
+<div class="section-title"><div><small>01 / COMPARE STORES</small><h2>비교 업체 선택</h2></div><span class="tag">관리자 전용 · 누적 관측 데이터</span></div>
+<form id="compareForm">
+<div class="compare-inputs"><label>업체 A · 플레이스 ID 또는 URL<input id="placeA" required placeholder="예: 2085358113" maxlength="550"></label><span class="versus">VS</span><label>업체 B · 플레이스 ID 또는 URL<input id="placeB" required placeholder="경쟁업체의 ID 또는 m.place.naver.com 주소" maxlength="550"></label></div>
+<div class="config"><div class="option"><span>기준 기간</span><div class="seg" role="group" aria-label="비교 기간"><button data-days="7" type="button">7일</button><button data-days="30" class="active" type="button">30일</button><button data-days="90" type="button">90일</button></div></div><button id="submitCompare" type="submit" class="action">저장된 키워드 비교</button></div>
+</form>
+<p id="message" role="status" aria-live="polite" class="notice">서버에 저장된 모바일 관측 결과만 분석합니다. 이 화면은 새로운 네이버 검색을 실행하지 않습니다.</p>
+</section>
+<section class="panel">
+<div class="section-title"><div><small>02 / COMPETITOR OVERVIEW</small><h2>두 업체의 키워드 관측 비교</h2></div><small id="resultLabel">아직 선택된 업체 없음</small></div>
+<div class="metrics three">
+ <div class="metric"><span>두 업체 모두 관측</span><strong id="bothCount">—</strong><small>동일 키워드·측정시각</small></div>
+ <div class="metric"><span>A 업체만 관측</span><strong id="aCount" class="up">—</strong><small>상대 업체 미관측</small></div>
+ <div class="metric"><span>B 업체만 관측</span><strong id="bCount" class="down">—</strong><small>상대 업체 미관측</small></div>
+</div>
+<div class="ratio"><div class="ratio-title"><span>업체 A TOP 10 관측 키워드: <strong id="aTop10">—</strong></span><span>업체 B TOP 10 관측 키워드: <strong id="bTop10">—</strong></span></div><div class="ratio-bar"><div id="aBar" class="a-bar"></div><div id="bBar" class="b-bar"></div></div></div>
+<div class="section-title lower"><div><small>03 / OBSERVED KEYWORD DIFFERENCES</small><h2>노출 키워드 비교표</h2></div><div class="filters"><select id="filter" aria-label="키워드 비교 필터"><option value="all">전체 관측</option><option value="both">공통 관측</option><option value="only_a">A만 관측</option><option value="only_b">B만 관측</option></select><button id="exportCsv" type="button" class="secondary">CSV 다운로드</button></div></div>
+<div class="table-scroll" role="region" aria-label="경쟁업체 키워드 비교" tabindex="0">
+<table class="difference-table"><thead><tr><th>키워드</th><th>최근 수집일</th><th>A 업체 순위</th><th>B 업체 순위</th><th>관측 결과</th></tr></thead><tbody id="compareRows"><tr><td colspan="5" class="empty">두 업체의 ID를 입력하세요.</td></tr></tbody></table>
+</div>
+<p class="fine">‘A만 관측’은 B 업체가 목록에서 발견되지 않았다는 의미입니다. B 업체의 전체 순위가 없다는 뜻은 아닙니다. 검색 목록 자체가 확보되지 않은 키워드는 표에 표시하지 않습니다.</p>
+</section>
+<section class="footer-note"><strong>기록 기준</strong><p>비교값은 사전에 관측되어 Supabase에 저장된 동일한 모바일 플레이스 목록에 한정됩니다. 업체 ID가 다르면 합치지 않습니다. 저장된 자료가 부족하다면 먼저 <a href="/admin/keyword-matrix/">키워드별 순위표</a>에서 필요한 키워드의 관측 자료를 확인하세요.</p></section>
+</main><footer>© MOMENTUM MARKETING · 관리자 전용</footer>
+<script defer src="/admin/assets/competitor-compare.js"></script></body></html>
