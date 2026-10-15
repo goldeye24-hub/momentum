@@ -15,6 +15,8 @@
 <div class="toggle"><button type="button" data-mode="login" class="active">로그인</button><button type="button" data-mode="signup">회원가입</button></div>
 <form id="authForm"><label for="email">이메일</label><input id="email" type="email" autocomplete="email" required maxlength="254" placeholder="example@company.com">
 <label for="password">비밀번호 <span>10자 이상</span></label><input id="password" type="password" autocomplete="current-password" required minlength="10" maxlength="128">
+<label class="remember-email" id="rememberEmailRow"><input id="rememberEmail" type="checkbox" autocomplete="off"><span>아이디(이메일) 저장</span></label>
+<p class="remember-note" id="rememberEmailNote">이 기기에 이메일 주소만 저장합니다. 비밀번호는 저장하지 않습니다.</p>
 <button type="submit" id="authSubmit" class="primary wide">로그인</button>
 </form><p id="authMessage" class="notice" role="status" aria-live="polite">회원 시스템이 연결되지 않은 경우 준비 중으로 표시됩니다.</p>
 </section>
