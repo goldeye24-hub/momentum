@@ -17,7 +17,9 @@ async function readHistory(keyword,days){
  }});
  // Keep one latest snapshot per UTC date; never invent missing days.
  const unique=new Map();
- for(const row of records){const date=model.day(row.observed_at);if(date&&!unique.has(date))unique.set(date,row)}
+ const today=model.day(new Date().toISOString());
+ const earliest=model.day(new Date(Date.now()-(days-1)*86400000).toISOString());
+ for(const row of records){const date=model.day(row.observed_at);if(date&&date>=earliest&&date<=today&&!unique.has(date))unique.set(date,row)}
  const selected=[...unique.values()].slice(0,days);
  const entries=[];
  // Under the standard PostgREST 1,000-row cap, batches of at most 8 × 100 rows.
