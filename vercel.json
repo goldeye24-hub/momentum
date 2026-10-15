@@ -30,6 +30,18 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/place-insights/api",
+      "destination": "/api/admin-place-keyword-insights"
+    },
+    {
+      "source": "/admin/place-insights",
+      "destination": "/api/admin-site-builder?view=insights"
+    },
+    {
+      "source": "/admin/place-insights/",
+      "destination": "/api/admin-site-builder?view=insights"
+    },
+    {
       "source": "/admin/competitors/api",
       "destination": "/api/admin-competitor-compare"
     },
@@ -102,6 +114,9 @@
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     },
     "api/admin-competitor-compare.js": {
+      "maxDuration": 30
+    },
+    "api/admin-place-keyword-insights.js": {
       "maxDuration": 30
     }
   }

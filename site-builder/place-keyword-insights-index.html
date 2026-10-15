@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>플레이스 관측 키워드 종합분석 | 모멘텀마케팅</title><link rel="stylesheet" href="/admin/assets/keyword-matrix.css"><link rel="stylesheet" href="/admin/assets/place-keyword-insights.css"></head><body>
+<header class="top"><a href="/admin/">MOMENTUM <b>INTELLIGENCE</b></a><nav><a href="/admin/keyword-matrix/">키워드 순위표</a><a href="/admin/competitors/">경쟁업체 비교</a><a href="/admin/watches/">순위 추적</a><form action="/admin/logout" method="post"><button>로그아웃</button></form></nav></header>
+<main>
+<section class="intro"><span class="eyebrow">STORE INTELLIGENCE · OBSERVED KEYWORDS</span><h1>플레이스 ID 하나로<br>관측 키워드를 모아봅니다.</h1><p>지금까지 확보된 키워드별 모바일 관측 기록을 업체 ID를 중심으로 재구성합니다. 확인되지 않은 검색량이나 히든 키워드를 실측값처럼 생성하지 않습니다.</p></section>
+<section class="panel search-panel"><div class="section-title"><div><small>01 / BUSINESS LOOKUP</small><h2>업체별 순위 분석</h2></div><span class="tag">기록 기반 · 관리자 전용</span></div>
+<form id="insightForm"><label for="placeId">네이버 플레이스 숫자 ID 또는 URL</label><div class="search-controls"><input id="placeId" placeholder="예: 2085358113 또는 https://m.place.naver.com/restaurant/..." required maxlength="550"><button type="submit" id="search" class="primary">관측된 키워드 분석</button></div></form>
+<div class="config"><div class="option"><span>분석 기간</span><div class="seg" role="group" aria-label="분석 기간"><button type="button" data-days="7">7일</button><button type="button" data-days="30" class="active">30일</button><button type="button" data-days="90">90일</button></div></div><div class="option"><span>키워드 필터</span><select id="filter"><option value="all">전체 관측 키워드</option><option value="top10">TOP 10</option><option value="rising">순위 상승</option><option value="falling">순위 하락</option><option value="missing">최근 목록 미관측</option></select></div><button type="button" class="secondary" id="exportCsv">CSV 내보내기</button></div>
+<p id="message" class="notice" role="status" aria-live="polite">저장된 관측 기록만 확인합니다. 이 화면 자체는 네이버에 새 검색 요청을 보내지 않습니다.</p></section>
+<section class="panel"><div class="section-title"><div><small>02 / BUSINESS VISIBILITY</small><h2 id="storeTitle">업체 노출 분석</h2></div><small id="lastAt">아직 조회하지 않음</small></div>
+<div class="metrics insights-metrics">
+ <div class="metric"><span>관측된 키워드</span><strong id="keywordCount">—</strong><small>선택 기간 전체</small></div>
+ <div class="metric"><span>최근 TOP 3</span><strong id="top3Count">—</strong><small>최신 관측 순위 기준</small></div>
+ <div class="metric"><span>최근 TOP 10</span><strong id="top10Count">—</strong><small>최신 관측 순위 기준</small></div>
+ <div class="metric"><span>순위 상승</span><strong id="risingCount" class="up">—</strong><small>직전 동일 키워드 관측 대비</small></div>
+ <div class="metric"><span>순위 하락</span><strong id="fallingCount" class="down">—</strong><small>비교 가능한 값만</small></div>
+ <div class="metric"><span>최근 목록 미관측</span><strong id="missingCount">—</strong><small>순위 밖 확정 아님</small></div>
+</div>
+<div class="section-title lower"><div><small>03 / EVIDENCE-BACKED KEYWORDS</small><h2>키워드별 누적 노출 분석</h2></div><small id="totalLabel">실측 기록 없음</small></div>
+<div class="table-scroll" tabindex="0" role="region" aria-label="관측 키워드별 노출 이력"><table class="insights-table"><thead><tr><th>검색 키워드</th><th>최신 관측 시각</th><th>최근 순위</th><th>이전 순위</th><th>변동</th><th>상태</th><th>상세</th></tr></thead><tbody id="insightRows"><tr><td colspan="7" class="empty">플레이스 ID를 입력하세요.</td></tr></tbody></table></div>
+<p class="fine">두 측정 시점 모두 업체를 확인한 경우에만 순위 변화를 계산합니다. 최근 목록에서 관측되지 않은 업체의 순위를 임의로 생성하지 않습니다.</p>
+</section>
+<section class="footer-note"><strong>히든 키워드와의 차이</strong><p>현재 화면은 **실제로 수집한 키워드의 관측 기록을 업체 ID별로 찾는 기능**입니다. 네이버의 전체 검색어·실제 유입 경로·모든 히든 키워드를 알아내는 기능은 아닙니다. 후보 발굴 기능은 별도로 데이터 확보와 품질 검증이 필요합니다.</p><p><a href="/admin/keyword-matrix/">키워드별 순위 비교표 열기 →</a></p></section>
+</main><footer>© MOMENTUM MARKETING · 기록 기반 내부 분석</footer><script defer src="/admin/assets/place-keyword-insights.js"></script></body></html>
