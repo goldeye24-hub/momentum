@@ -726,7 +726,7 @@ test('mobile Place uses separate name-or-ID matching and conservative rank seman
  assert.equal(duplicate.status,'ambiguous');
  assert.equal(duplicate.rank,null);
  assert.equal(engine.reduceMobile([],engine.mobileTarget('퐝물회')).status,'no_place_block');
- const provider=engine.reduceMobile([{id:'2085358113',name:'퐝물회',rank:5}],engine.mobileTarget('퐝물회'));
+ const provider=engine.reduceMobile([{id:'2085358113',name:'퐝물회',rank:5}],engine.mobileTarget('2085358113'));
  assert.equal(provider.rank,5);
  assert.equal(provider.rankApproximate,false);
  const html=fs.readFileSync('lab/rank/index.html','utf8');
