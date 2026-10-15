@@ -95,17 +95,31 @@ async function runMap(keyword,id){
  try{
   const context=await browser.newContext({locale:'ko-KR',viewport:{width:1440,height:960},deviceScaleFactor:1});
   const page=await context.newPage();
-  const url='https://map.naver.com/p/search/'+encodeURIComponent(keyword);
-  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:14500});
-  if(!response||response.status()!==200||new URL(page.url()).hostname!=='map.naver.com')return {status:'blocked',rank:null,message:'네이버지도 검색 화면에 접속할 수 없습니다 (HTTP '+(response?.status()||'?')+').'};
+  // Public PC Map list URL also works as a directly rendered page (without Map shell).
+  // Prefer it to avoid iframe hydration races. Fall back to the real map shell.
   let frame=null;
   try{
-   await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>(el.getAttribute('src')||'').includes('pcmap.place.naver.com')),{timeout:10000});
+   const direct='https://pcmap.place.naver.com/place/list?'+new URLSearchParams({query:keyword}).toString();
+   const r=await page.goto(direct,{waitUntil:'domcontentloaded',timeout:12500});
+   if(r?.status()===200){
+    await page.locator('li [data-nlog-area="mpl_vsl.result"][data-nlog-params]').first().waitFor({state:'attached',timeout:4200}).catch(()=>{});
+    if(await page.locator('li [data-nlog-area="mpl_vsl.result"][data-nlog-params]').count())frame=page.mainFrame();
+   }
   }catch{}
-  for(let i=0;i<5;i++){
-   frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()));
-   if(frame)break;
-   await page.waitForTimeout(750);
+  if(!frame){
+   const url='https://map.naver.com/p/search/'+encodeURIComponent(keyword);
+   const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:14500});
+   if(!response||response.status()!==200||new URL(page.url()).hostname!=='map.naver.com')return {status:'blocked',rank:null,message:'네이버지도 검색 화면에 접속할 수 없습니다 (HTTP '+(response?.status()||'?')+').'};
+  }
+  if(!frame){
+   try{
+    await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>(el.getAttribute('src')||'').includes('pcmap.place.naver.com')),{timeout:10000});
+   }catch{}
+   for(let i=0;i<5;i++){
+    frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()));
+    if(frame)break;
+    await page.waitForTimeout(750);
+   }
   }
   if(!frame){
    const frameInfo=page.frames().map(f=>{try{return new URL(f.url()).hostname}catch{return 'about:blank'}}).filter(Boolean);
@@ -113,7 +127,7 @@ async function runMap(keyword,id){
    return {status:'no_place_block',rank:null,message:'네이버지도 업체 목록 화면을 확인하지 못했습니다. 브라우저 실행 환경 또는 로딩 상태 문제일 수 있습니다.',diagnostics:{iframePresent:!!hasMapIframe,frameHosts:frameInfo.slice(0,9)}};
   }
   try{await frame.locator('[data-nlog-params*="place_id"]').first().waitFor({state:'attached',timeout:5500})}catch{}
-  let items=[],maxScroll=2;
+  let items=[],maxScroll=5;
   for(let i=0;i<=maxScroll;i++){
    const now=await frame.evaluate(()=>{
     const rows=[];
@@ -132,7 +146,7 @@ async function runMap(keyword,id){
    if(items.some(x=>x.id===id)||i===maxScroll||!now.length)break;
    try{
     await frame.locator('li').last().scrollIntoViewIfNeeded({timeout:1000});
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(550);
    }catch{break}
   }
   return {...reduceMap(items,id),scope:'naver_map_pc_search_list_observed',source:'browser_observed',query:keyword,observedAt:new Date().toISOString(),disclaimer:'네이버지도 검색 화면에 실제 표시된 업체 순위이며 위치·기기·개인화·정렬조건의 영향을 받습니다. 확인하지 못한 하위 순위는 추측하지 않습니다.'};
