@@ -22,6 +22,7 @@ async function api(path,opts={}){
 const post=(path,data)=>api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
 function showAccount(show){
  $('authPanel').hidden=show;$('dashboard').hidden=!show;$('logout').hidden=!show;
+ if(!show&&window.MomentumHistory)window.MomentumHistory.close();
  if(show)window.scrollTo({top:0,behavior:'instant'});
 }
 function draw(list){
@@ -34,7 +35,9 @@ function draw(list){
   const place=exact?'ID '+esc(row.place_id):'업체명만 등록 · 식별 검증 필요';
   return '<tr><td><b>'+esc(row.label)+'</b><small>'+place+'</small></td><td>'+esc(row.keyword)+'</td>'+
    '<td>'+rank+(!exact?'<small class="approx">정확한 ID 등록 권장</small>':'')+'</td>'+
-   '<td>'+esc(fmt(row.observed_at))+'</td><td><button type="button" data-remove="'+esc(row.id)+'">삭제</button></td></tr>';
+   '<td>'+esc(fmt(row.observed_at))+'</td><td>'+
+   (exact?'<button type="button" data-history="'+esc(row.id)+'">순위 이력</button>':'')+
+   '<button type="button" data-remove="'+esc(row.id)+'">삭제</button></td></tr>';
  }).join(''):'<tr><td colspan="5">등록된 업체와 키워드가 없습니다.</td></tr>';
 }
 async function load(){
@@ -86,6 +89,11 @@ $('watchForm').addEventListener('submit',async e=>{
  finally{busy=false;if(account&&account.usedSlots<account.slotLimit)$('addWatch').disabled=false}
 });
 $('watchRows').addEventListener('click',async e=>{
+ const historyButton=e.target.closest('button[data-history]');
+ if(historyButton){
+  if(window.MomentumHistory)window.MomentumHistory.open(historyButton.dataset.history);
+  return;
+ }
  const button=e.target.closest('button[data-remove]');if(!button||busy)return;
  if(!confirm('해당 업체·키워드 등록을 삭제하시겠습니까?'))return;
  busy=true;button.disabled=true;
