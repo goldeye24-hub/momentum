@@ -25,7 +25,7 @@ function reduceMobileList(raw,max=100){
   scope:'mobile',precision:'observed_mobile_list_not_organic_rank',
   disclaimer:'네이버 모바일 플레이스 화면에서 읽은 목록의 표시 위치이며 광고 제외 자연검색 순위가 아닙니다. 실제 수집하지 못한 항목의 순위는 비워둡니다.'};
 }
-function day(iso){const d=new Date(iso);return Number.isFinite(d.getTime())?d.toISOString().slice(0,10):null}
+function day(iso){const d=new Date(iso);return Number.isFinite(d.getTime())?new Date(d.getTime()+9*60*60*1000).toISOString().slice(0,10):null}
 function summarize(snapshots,entries,{days=7}={}){
  const period=[7,30,90].includes(Number(days))?Number(days):7;
  const sorted=(Array.isArray(snapshots)?snapshots:[]).filter(s=>s&&day(s.observed_at)).sort((a,b)=>String(b.observed_at).localeCompare(String(a.observed_at)));
@@ -49,7 +49,8 @@ function summarize(snapshots,entries,{days=7}={}){
    rankBasis:entry.rank_basis||'unknown'});
  }
  const timelines=new Map(),columns=selected.map(s=>({id:s.id,date:day(s.observed_at),observedAt:s.observed_at,
-  observedCount:s.observed_count,maximumRank:s.max_observed_rank??null}));
+  observedCount:s.observed_count,maximumRank:s.max_observed_rank??null,
+  entries:[...(bySnapshot.get(s.id)||new Map()).values()].sort((a,b)=>a.rank-b.rank)}));
  selected.forEach((s,i)=>{
   for(const value of (bySnapshot.get(s.id)||new Map()).values()){
    if(!timelines.has(value.placeId))timelines.set(value.placeId,{id:value.placeId,name:value.name,ranks:Array(selected.length).fill(null),approximate:Array(selected.length).fill(null)});
