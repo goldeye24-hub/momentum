@@ -739,6 +739,17 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       console.log('MAP_RANK_PRODUCTION_CHECK '+JSON.stringify({http:response.status,body:body.slice(0,1000)}));
     }catch(err){console.log('MAP_RANK_PRODUCTION_CHECK error='+String(err.message).slice(0,210))}
 
+    // One public first-party iframe URL direct-entry feasibility observation.
+    try{
+      const direct=await ctx.newPage();
+      const dest='https://pcmap.place.naver.com/place/list?'+new URLSearchParams({query:'포항 물회'});
+      const rs=await direct.goto(dest,{waitUntil:'domcontentloaded',timeout:16000});
+      await direct.waitForTimeout(3500);
+      const v=await direct.evaluate(()=>({title:document.title,len:document.body?.innerText.length||0,cards:document.querySelectorAll('[data-nlog-params*="place_id"]').length,idMeta:[...document.querySelectorAll('[data-nlog-params*="place_id"]')].slice(0,3).map(el=>el.getAttribute('data-nlog-params').slice(0,140))}));
+      console.log('MAP_DIRECT_PROBE '+JSON.stringify({http:rs?.status(),url:direct.url().slice(0,140),...v}));
+      await direct.close();
+    }catch(err){console.log('MAP_DIRECT_PROBE error='+String(err.message).slice(0,200))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
