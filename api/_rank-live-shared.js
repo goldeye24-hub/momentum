@@ -17,7 +17,7 @@ async function sharedMeasure({key,scope,measure,now=()=>Date.now()}){
   }});
   const saved=rows[0];
   if(saved&&Date.parse(saved.expires_at)>now()&&saved.payload?.source==='browser_observed'&&
-   ['ranked','not_in_block'].includes(saved.payload?.status)){
+   ['ranked','not_in_block','observed'].includes(saved.payload?.status)){
    return {...saved.payload,cached:true,observedAt:saved.payload.observedAt||saved.recorded_at};
   }
   const gate=await db.request('rpc/momentum_rank_claim',{
@@ -35,7 +35,7 @@ async function sharedMeasure({key,scope,measure,now=()=>Date.now()}){
    const seconds=Math.min(86400,Math.max(3600,Number(result.retryAfterSeconds)||0));
    await db.request('rpc/momentum_rank_block',{method:'POST',body:{p_source:scope,p_seconds:seconds},prefer:'return=representation'});
   }
-  if(result?.source==='browser_observed'&&['ranked','not_in_block'].includes(result.status)){
+  if(result?.source==='browser_observed'&&['ranked','not_in_block','observed'].includes(result.status)){
    const recordedAt=result.observedAt||new Date(now()).toISOString();
    await db.request('rank_live_snapshots',{
     method:'POST',query:{on_conflict:'cache_key'},
