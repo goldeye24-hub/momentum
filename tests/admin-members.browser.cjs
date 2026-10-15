@@ -32,6 +32,7 @@ const {chromium}=require('playwright');
   await page.locator('button[data-save]').click();
   await page.waitForFunction(()=>document.querySelector('#rows input[data-slot]')?.value==='4',{timeout:8000});
   assert.equal(updates,1);
+  await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('감사 기록'),{timeout:8000});
   assert.match(await page.locator('#message').textContent(),/감사 기록/);
   fs.mkdirSync('artifacts',{recursive:true});
   await page.screenshot({path:'artifacts/admin-member-slots-desktop.png',fullPage:true});
