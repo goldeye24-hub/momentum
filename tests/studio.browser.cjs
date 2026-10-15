@@ -706,6 +706,29 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.close();
     console.log('PASS: rank observation recording and history comparisons');
 
+
+    // One-time map DOM research (non-recurring, one query, no bypass/retry).
+    try{
+      const mp=await ctx.newPage();
+      await mp.goto('https://map.naver.com/p/search/'+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:19000});
+      await mp.waitForTimeout(6300);
+      const fr=mp.frames().find(x=>/pcmap\.place\.naver\.com/.test(x.url()));
+      if(fr){
+        const data=await fr.evaluate(()=>{
+          const els=[...document.querySelectorAll('li')].slice(0,7);
+          return {
+            frameTitle:document.title,bodyLen:document.body?.innerText.length,
+            firstItems:els.map(x=>({text:x.innerText.slice(0,170),html:x.outerHTML.slice(0,1700)})),
+            possibleCards:[...document.querySelectorAll('[data-id],[data-placeid],[data-place-id],a[href]')].slice(0,35).map(x=>({tag:x.tagName,href:x.getAttribute('href'),dataId:x.getAttribute('data-id'),txt:x.textContent?.slice(0,36)})),
+            scripts:[...document.scripts].slice(0,10).map(x=>x.src?.slice(0,80)||'inline')
+          };
+        });
+        console.log('MAP_DEEP_PROBE '+JSON.stringify(data).slice(0,13500));
+        await mp.screenshot({path:path.join(root,'artifacts/map-research.png'),fullPage:true});
+      }else console.log('MAP_DEEP_PROBE no_pcmap_iframe frames='+mp.frames().map(x=>x.url().slice(0,100)).join('|'));
+      await mp.close();
+    }catch(err){console.log('MAP_DEEP_PROBE error='+String(err.message).slice(0,350))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
