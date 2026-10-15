@@ -705,6 +705,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.close();
     console.log('PASS: rank observation recording and history comparisons');
 
+    let samplePlaceId=null;
     // One-time, low-volume technical feasibility observation (no bypass or retries).
     try {
       const qp=await ctx.newPage();
@@ -718,9 +719,10 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
         const v=await qp.evaluate(()=>{
           const all=[...document.querySelectorAll('a[href*="/place/"]')];
           const list=[...document.querySelectorAll('div[class*="place"] li')];
-          return {title:document.title.slice(0,100),hrefLinks:all.length,uniqueIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].length,listCount:list.length,bodyLen:document.body?.innerText.length||0};
+          return {title:document.title.slice(0,100),hrefLinks:all.length,uniqueIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].length,firstIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].slice(0,3),listCount:list.length,bodyLen:document.body?.innerText.length||0};
         });
         console.log('NAVER_FEASIBILITY '+JSON.stringify({http:response.status(),finalOrigin:new URL(qp.url()).origin,...v,elapsedMs:Date.now()-started}));
+        samplePlaceId=v.firstIds?.[0]||null;
         try {
           const raw=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36','Accept-Language':'ko-KR,ko;q=0.9'},signal:AbortSignal.timeout(8000)});
           const html=await raw.text();
@@ -740,7 +742,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     // One-off production health probe for the newly deployed browser-powered API.
     try{
       const begin=Date.now();
-      const endpoint='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:'34908033'});
+      const endpoint='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:samplePlaceId||'34908033'});
       const rr=await fetch(endpoint,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(28000)});
       const t=await rr.text();
       console.log('RANK_PRODUCTION_PROBE '+JSON.stringify({http:rr.status,ms:Date.now()-begin,body:t.slice(0,600)}));
