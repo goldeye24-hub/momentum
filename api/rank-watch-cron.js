@@ -13,7 +13,7 @@ module.exports=async function(req,res){
   const out=[];
   for(const item of due){
    let result;
-   try{result=await (item.scope==='map'?observer.runMap(item.keyword,item.place_id):observer.run(item.keyword,item.place_id))}
+   try{result=await (item.scope==='mobile'?observer.runMobile(item.keyword,{id:item.place_id,name:null}):item.scope==='map'?observer.runMap(item.keyword,item.place_id):observer.run(item.keyword,item.place_id))}
    catch{result={status:'unavailable',rank:null,source:'none',observedCount:0}}
    const status=['ranked','not_in_block','no_place_block','blocked','unavailable'].includes(result.status)?result.status:'unavailable';
    const at=new Date().toISOString();
