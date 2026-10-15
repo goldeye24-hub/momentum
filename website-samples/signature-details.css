@@ -1,0 +1,155 @@
+
+/* Individually composed high-impact industry modules */
+.sig-spotlight{width:min(1240px,calc(100% - 64px));margin:70px auto 25px;padding:0;box-sizing:border-box}
+.sig-spotlight *{box-sizing:border-box}
+.sig-spotlight img{width:100%;height:100%;object-fit:cover;display:block}
+.sig-spotlight a{color:inherit;text-decoration:none}
+.sig-spotlight h2{font-size:clamp(34px,4.4vw,62px);font-weight:880;line-height:1.18;letter-spacing:-.075em;margin:14px 0 18px;word-break:keep-all}
+.sig-spotlight p{line-height:1.85;font-size:14px;margin:0}
+.sig-spotlight small{font-size:10px;font-weight:900;letter-spacing:.13em}
+.sig-spotlight section{scroll-margin-top:25px}
+.sig-spot-head{display:grid;grid-template-columns:1fr 1.6fr .9fr;gap:35px;align-items:end;margin-bottom:30px}
+.sig-spot-head span{font-size:10px;letter-spacing:.14em;font-weight:850}
+.sig-spot-head h2{margin:0}.sig-spot-head p{font-size:12px}
+.sig-poolrooms{color:#143e3c}.sig-poolrooms .sig-room-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
+.sig-poolrooms .sig-room-grid article{height:435px;position:relative;overflow:hidden;background:#bfd1ca}
+.sig-poolrooms .sig-room-grid article:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,#062d33a8)}
+.sig-poolrooms .sig-room-grid article>div{position:absolute;bottom:25px;left:25px;z-index:1;color:white}
+.sig-poolrooms .sig-room-grid h3{font-size:29px;letter-spacing:-.055em;margin:4px 0}
+.sig-poolrooms .sig-room-grid span{font-size:12px}.sig-poolrooms .sig-room-grid small{color:#d7eee5}
+.sig-pensionnote{border-top:1px solid #a9b3a5;color:#324737;padding-top:23px}
+.sig-issue{display:flex;justify-content:space-between;font-size:11px;font-weight:800;letter-spacing:.12em;color:#768774}
+.sig-pension-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:75px;align-items:center;padding:45px 10px 10px}
+.sig-pension-layout h2{font-family:Georgia,"Noto Serif KR",serif;font-weight:500;font-size:clamp(40px,5vw,71px)}
+.sig-pension-layout p{max-width:480px;color:#6a796b}
+.sig-pension-photo{height:400px}
+.sig-campsite{background:#233329;color:#e5ebcf;padding:40px 48px;margin-bottom:50px}
+.sig-camp-top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #78816a;padding-bottom:23px;font-size:11px;letter-spacing:.12em}
+.sig-camp-top span:last-child{font-size:33px}
+.sig-camp-content{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;padding:35px 0 5px;align-items:end}
+.sig-camp-content h2{font-family:Georgia,"Noto Serif KR",serif;font-weight:500;font-size:clamp(43px,5vw,71px)}
+.sig-camp-bits{display:grid;gap:14px}.sig-camp-bits p{border-top:1px solid #647760;padding-top:12px}
+.sig-camp-bits b{font-size:12px;margin-right:15px;color:#c7d69b}
+.sig-petstyles{display:grid;grid-template-columns:70px 1fr 1fr;gap:24px;background:#fbe9f0;border-radius:40px;padding:40px;align-items:center;color:#934a67}
+.sig-petstyles .sig-petstar{font-size:58px;align-self:start}
+.sig-petstyles h2{font-size:clamp(35px,4vw,54px)}
+.sig-pet-menu{display:grid;gap:9px}
+.sig-pet-menu a{padding:18px 20px;display:flex;align-items:center;gap:18px;background:white;border-radius:16px}
+.sig-pet-menu a>span{font-size:10px;font-weight:800;color:#c188a0}
+.sig-pet-menu a strong{flex:1;font-size:15px}.sig-pet-menu a i{font-style:normal;font-weight:900}
+.sig-worksite{width:100%;max-width:none;background:#e67e38;color:#1a2834;padding:35px max(34px,calc((100vw - 1240px)/2))}
+.sig-worksite-title{display:flex;align-items:end;justify-content:space-between;gap:25px}
+.sig-worksite-title span{font-size:11px;font-weight:900;letter-spacing:.12em}
+.sig-worksite-title h2{font-weight:980;font-size:clamp(39px,4.6vw,69px)}
+.sig-worksite-grid{display:grid;grid-template-columns:repeat(3,1fr) 1.1fr;background:#202e3c;color:#fff}
+.sig-worksite-grid div{padding:22px 20px;border-right:1px solid #4c5a63}
+.sig-worksite-grid b{font-size:12px;color:#f8a970;display:block}.sig-worksite-grid strong{display:block;font-size:18px;margin:8px 0}
+.sig-worksite-grid p{font-size:11px;color:#b9c8d0}
+.sig-worksite-grid a{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fed095;color:#263239;font-size:12px;font-weight:900;padding:20px}
+.sig-move-flow{background:#e9f4fc;padding:35px 39px;border-radius:20px;color:#154773}
+.sig-move-flow>span{font-size:11px;font-weight:900;letter-spacing:.12em}
+.sig-move-flow .sig-move-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:center}
+.sig-move-grid>div{background:#fff;padding:25px 18px;border-radius:10px;min-height:145px}
+.sig-move-grid>b{font-size:25px}.sig-move-grid strong{display:block;font-size:20px;margin:8px 0}
+.sig-move-grid small{color:#5b93b5}
+.sig-move-flow>a{display:inline-block;background:#206eaa;color:#fff;margin-top:27px;padding:13px 21px;font-size:12px;font-weight:900;border-radius:8px}
+.sig-clean-menu{display:grid;grid-template-columns:.8fr 1.2fr;gap:35px;color:#17634e;padding:35px 0;border-top:1px solid #b8d8ca}
+.sig-clean-menu .sig-clean-choices{display:grid;gap:10px}
+.sig-clean-choices a{display:flex;align-items:center;gap:17px;padding:15px 20px;background:#e5f5ed;border:1px solid #c2e4d2}
+.sig-clean-choices span{font-size:11px;color:#78a58f;font-weight:900}
+.sig-clean-choices b{font-size:20px;flex:1}.sig-clean-choices small{font-size:10px;color:#568673}
+.sig-clean-choices i{font-style:normal;font-weight:900}
+.sig-dish-special{width:100%;max-width:none;display:grid;grid-template-columns:1.1fr .9fr;align-items:stretch;min-height:510px;background:#efe0cf}
+.sig-dish-image{min-height:500px}
+.sig-dish-copy{padding:75px 10% 55px 9%;color:#642c1b}
+.sig-dish-copy>span{font-size:10px;letter-spacing:.17em;font-weight:900}
+.sig-dish-copy h2{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(50px,5.5vw,81px);font-weight:550}
+.sig-dish-copy p{color:#846257}
+.sig-dish-copy a{display:inline-block;border-bottom:1px solid #7f4231;font-weight:800;margin-top:25px;padding:8px 0;font-size:12px}
+.sig-brand-playbook{width:100%;max-width:none;background:#e0edc8;color:#183d28;padding:63px max(30px,calc((100vw - 1240px)/2))}
+.sig-brand-head{display:grid;grid-template-columns:1.1fr .6fr;gap:45px;align-items:end}
+.sig-brand-head small{grid-column:1/-1}
+.sig-brand-head h2{font-size:clamp(44px,5vw,73px)}
+.sig-brand-head p{font-size:13px}
+.sig-brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:32px}
+.sig-brand-grid article{background:#194b32;color:white;padding:28px 25px;min-height:180px}
+.sig-brand-grid span{font-size:10px;color:#c9e899;font-weight:900;letter-spacing:.1em}
+.sig-brand-grid h3{font-size:25px;margin:28px 0 5px}.sig-brand-grid p{font-size:12px;color:#c4dbcb}
+.sig-air-models{background:#edf7fc;border:1px solid #c7e2ed;padding:37px 40px;border-radius:12px;color:#1d527b}
+.sig-air-head{display:flex;gap:40px;align-items:end;justify-content:space-between}
+.sig-air-head span{font-size:11px;font-weight:850;letter-spacing:.1em}
+.sig-air-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:20px}
+.sig-air-grid a{padding:25px 22px;background:#fff;border:1px solid #d6e8f3;display:flex;flex-direction:column;gap:10px;min-height:190px}
+.sig-air-grid b{font-size:12px;color:#7aacc6}
+.sig-air-grid strong{font-size:29px}.sig-air-grid span{font-size:11px;letter-spacing:.15em;color:#6e9ab6}
+.sig-air-grid i{font-style:normal;font-size:20px;margin-top:auto}
+.sig-air-models>p{font-size:11px;color:#638daa;margin-top:15px}
+.sig-dining-note{color:#442922;border-top:1px solid #bba9a0;padding-top:24px}
+.sig-dining-note>span{font-size:10px;font-weight:900;letter-spacing:.17em;color:#967362}
+.sig-dining-note>div{display:grid;grid-template-columns:1.25fr .65fr;gap:55px;align-items:end;margin-top:20px}
+.sig-dining-note h2{font-family:Georgia,"Noto Serif KR",serif;font-weight:430;font-size:clamp(43px,5vw,75px)}
+.sig-dining-note p{color:#8b6d61;margin-bottom:18px}
+.sig-dining-note a{font-size:12px;font-weight:800;border-bottom:1px solid #98796c;padding-bottom:10px}
+.sig-salon-board{display:grid;grid-template-columns:1fr 1fr;gap:45px;background:#fae9ef;padding:55px;color:#864964;border-radius:20px}
+.sig-salon-board h2{font-family:Georgia,"Noto Serif KR",serif;font-weight:450}
+.sig-salon-list{display:grid;gap:6px}
+.sig-salon-list a{display:flex;align-items:center;gap:17px;border-bottom:1px solid #c7a5b6;padding:15px 0}
+.sig-salon-list span{font-size:11px}.sig-salon-list strong{font-family:Georgia,serif;font-size:28px;letter-spacing:.05em;flex:1}
+.sig-salon-list small{font-size:13px}
+.sig-study-path{background:#ffde82;color:#183667;padding:49px 45px}
+.sig-study-title{display:grid;grid-template-columns:1.3fr .7fr;gap:50px;align-items:end}
+.sig-study-title small{grid-column:1/-1}.sig-study-title h2{font-weight:970;font-size:clamp(47px,5.2vw,74px)}
+.sig-study-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.sig-study-steps article{background:#183f8e;color:white;padding:24px;min-height:190px}
+.sig-study-steps b{font-size:11px;color:#f9de8e}.sig-study-steps strong{display:block;font-size:25px;margin-top:31px}
+.sig-study-steps p{color:#cadcff;font-size:12px}
+.sig-patient-guide{display:grid;grid-template-columns:1fr 1fr;gap:55px;border-top:1px solid #c9e1d9;padding:45px 15px;color:#225c4f}
+.sig-patient-steps{display:grid;gap:9px}
+.sig-patient-steps>div{padding:17px 22px;display:flex;gap:22px;align-items:center;background:#e8f4ef;border-radius:8px}
+.sig-patient-steps span{font-size:11px;color:#75a092;font-weight:900}
+.sig-patient-steps strong{font-size:18px}
+.sig-enterprise{display:grid;grid-template-columns:.75fr 1.25fr;gap:45px;background:#193144;color:#fff;padding:55px 50px}
+.sig-enterprise small{color:#9fd1e8}.sig-enterprise h2{font-size:clamp(42px,4.6vw,69px)}
+.sig-enterprise-grid{display:grid;gap:0}
+.sig-enterprise-grid article{border-bottom:1px solid #66859a;padding:14px 0}
+.sig-enterprise-grid span{font-size:10px;color:#a3cada;letter-spacing:.13em}
+.sig-enterprise-grid h3{font-size:23px;margin:7px 0 5px}
+.sig-enterprise-grid p{font-size:12px;color:#b3cad7}
+@media(max-width:800px){
+ .sig-spotlight{width:calc(100% - 36px);margin:35px auto}
+ .sig-spot-head,.sig-pension-layout,.sig-camp-content,.sig-petstyles,.sig-clean-menu,.sig-dish-special,.sig-brand-head,.sig-dining-note>div,.sig-salon-board,.sig-study-title,.sig-patient-guide,.sig-enterprise{grid-template-columns:1fr;gap:20px}
+ .sig-spot-head{display:block}.sig-spot-head h2{margin:15px 0}
+ .sig-poolrooms .sig-room-grid{grid-template-columns:1fr 1fr}
+ .sig-poolrooms .sig-room-grid article{height:300px}
+ .sig-petstyles{padding:24px}.sig-petstyles .sig-petstar{font-size:40px}
+ .sig-worksite{padding:30px 18px}
+ .sig-worksite-title{display:block}.sig-worksite-grid{grid-template-columns:1fr 1fr}
+ .sig-move-flow{padding:25px}
+ .sig-move-grid>div{min-height:100px}
+ .sig-dish-image{min-height:300px;height:320px}
+ .sig-brand-playbook{padding:32px 18px}.sig-brand-grid{grid-template-columns:1fr}
+ .sig-brand-grid article{min-height:0}
+ .sig-campsite,.sig-salon-board,.sig-enterprise{padding:27px}
+ .sig-study-path{padding:28px}.sig-study-steps{grid-template-columns:1fr}
+ .sig-study-steps article{min-height:0}
+}
+@media(max-width:550px){
+ .sig-poolrooms .sig-room-grid{grid-template-columns:1fr}
+ .sig-poolrooms .sig-room-grid article{height:300px}
+ .sig-pension-photo{height:260px}
+ .sig-camp-top{gap:12px;font-size:9px}
+ .sig-petstyles .sig-petstar{display:none}
+ .sig-worksite-grid{grid-template-columns:1fr}
+ .sig-worksite-grid div{padding:16px 20px}
+ .sig-move-grid{display:block}
+ .sig-move-grid>div{margin-bottom:10px}
+ .sig-move-grid>b{display:none}
+ .sig-clean-choices a{flex-wrap:wrap}
+ .sig-air-models{padding:25px 18px}
+ .sig-air-head{display:block}.sig-air-grid{grid-template-columns:1fr}
+ .sig-air-grid a{min-height:120px}
+ .sig-dining-note>div{gap:12px}
+ .sig-salon-board{border-radius:10px}
+ .sig-patient-guide{padding:23px 0}
+ .sig-enterprise{padding:28px 19px}
+}
