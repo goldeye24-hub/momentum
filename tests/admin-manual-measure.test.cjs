@@ -11,8 +11,8 @@ async function mocked(opts,fn){
  const orig={authorized:auth.isAuthorized,configured:db.config,request:db.request,measure:gate.sharedMeasure};
  auth.isAuthorized=()=>opts.authorized!==false;
  db.config=()=>opts.configured!==false?{base:'https://test.supabase.co'}:null;
- db.request=opts.request||async()=>[];
- gate.sharedMeasure=opts.measure||async()=>({status:'ranked',rank:11,rankApproximate:false,observedCount:90,source:'browser_observed'});
+ db.request=opts.request||(async()=>[]);
+ gate.sharedMeasure=opts.measure||(async()=>({status:'ranked',rank:11,rankApproximate:false,observedCount:90,source:'browser_observed'}));
  try{await fn()}finally{auth.isAuthorized=orig.authorized;db.config=orig.configured;db.request=orig.request;gate.sharedMeasure=orig.measure}
 }
 test('admin manual measure requires authenticated admin and registered target',async()=>{
