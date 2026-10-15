@@ -8,7 +8,7 @@ function placeId(input){
  if(/^\d{6,20}$/.test(raw))return raw;
  let u;try{u=new URL(raw)}catch{return null}
  if(u.protocol!=='https:'||u.username||u.password||!(u.hostname==='naver.com'||u.hostname.endsWith('.naver.com')))return null;
- const m=u.pathname.match(/\/(?:entry\/)?place\/(\d{6,20})(?:\/|$)/);
+ const m=u.pathname.match(/\/(?:entry\/)?(?:place|restaurant|hairshop|accommodation)\/(\d{6,20})(?:\/|$)/);
  return m?m[1]:null;
 }
 function validateKeyword(input){
