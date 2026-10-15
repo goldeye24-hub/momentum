@@ -673,6 +673,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.locator('#measure').click();
     assert.equal(await rankPage.locator('#latest').innerText(),'7위');
     assert.match(await rankPage.locator('#delta').innerText(),/▲ 5/);
+    assert.equal(await rankPage.locator('#rankTrend svg').count(),1,'Rank trend SVG should render for two measured records');
     assert.equal(await rankPage.locator('#history tr').count(),2);
     await rankPage.reload({waitUntil:'load'});
     await rankPage.locator('#target').fill('테스트 미용실');
@@ -704,69 +705,6 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.screenshot({path:path.join(root,'artifacts/rank-tracker-mobile.png'),fullPage:true});
     await rankPage.close();
     console.log('PASS: rank observation recording and history comparisons');
-
-    let samplePlaceId=null;
-    // One-time, low-volume technical feasibility observation (no bypass or retries).
-    try {
-      const qp=await ctx.newPage();
-      const started=Date.now();
-      const url='https://search.naver.com/search.naver?'+new URLSearchParams({query:'포항 물회'});
-      let response=null;
-      try {response=await qp.goto(url,{waitUntil:'domcontentloaded',timeout:15000});}
-      catch(err){console.log('NAVER_FEASIBILITY navigation_error='+String(err.message).slice(0,180));}
-      if(response){
-        await qp.waitForTimeout(1400);
-        const v=await qp.evaluate(()=>{
-          const all=[...document.querySelectorAll('a[href*="/place/"]')];
-          const list=[...document.querySelectorAll('div[class*="place"] li')];
-          return {title:document.title.slice(0,100),hrefLinks:all.length,uniqueIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].length,firstIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].slice(0,3),listCount:list.length,bodyLen:document.body?.innerText.length||0};
-        });
-        console.log('NAVER_FEASIBILITY '+JSON.stringify({http:response.status(),finalOrigin:new URL(qp.url()).origin,...v,elapsedMs:Date.now()-started}));
-        samplePlaceId=v.firstIds?.[0]||null;
-        try {
-          const raw=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36','Accept-Language':'ko-KR,ko;q=0.9'},signal:AbortSignal.timeout(8000)});
-          const html=await raw.text();
-          const list=[...html.matchAll(/(?:https?:\/\/)?map\.naver\.com\/p\/entry\/place\/(\d{5,20})/g)].map(x=>x[1]);
-          const ids=[...new Set(list)].slice(0,20);
-          const docLinks=await qp.evaluate(()=>[...document.querySelectorAll('div[class*="place"] li')].map(el=>{
-            const link=el.querySelector('a[href*="map.naver.com/p/entry/place/"]');
-            return {id:link?.href.match(/\/place\/(\d{5,20})/)?.[1]||'',hint:el.innerText.slice(0,70),ad:/광고/.test(el.innerText)};
-          }).filter(x=>x.id));
-          console.log('NAVER_HTML_PROBE '+JSON.stringify({http:raw.status,htmlLen:html.length,htmlUnique:ids.length,htmlIds:ids,domLinks:docLinks}));
-        } catch(err){console.log('NAVER_HTML_PROBE error='+String(err.message).slice(0,160))}
-
-      }
-      await qp.close();
-    } catch(err){console.log('NAVER_FEASIBILITY error='+String(err.message).slice(0,220));}
-
-    // One-off production health probe for the newly deployed browser-powered API.
-    try{
-      const begin=Date.now();
-      const endpoint='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:samplePlaceId||'34908033'});
-      const rr=await fetch(endpoint,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(28000)});
-      const t=await rr.text();
-      console.log('RANK_PRODUCTION_PROBE '+JSON.stringify({http:rr.status,ms:Date.now()-begin,body:t.slice(0,600)}));
-    }catch(err){console.log('RANK_PRODUCTION_PROBE error='+String(err.message).slice(0,240))}
-
-    // One-off investigation: first-party Naver Map listing (no login/bypass).
-    try{
-      const mapPage=await ctx.newPage();
-      const start=Date.now();
-      const response=await mapPage.goto('https://map.naver.com/p/search/'+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:18000});
-      await mapPage.waitForTimeout(6200);
-      const status=[];
-      for(const frame of mapPage.frames()){
-        try{
-          const info=await frame.evaluate(()=>{
-            const anchors=[...document.querySelectorAll('a[href*="/place/"],a[href*="/entry/place/"]')];
-            return {title:document.title.slice(0,75),len:document.body?.innerText.length||0,placeLinks:anchors.length,ids:[...new Set(anchors.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].slice(0,5),allLi:document.querySelectorAll('li').length};
-          });
-          status.push({url:frame.url().slice(0,130),...info});
-        }catch(e){status.push({url:frame.url().slice(0,130),err:String(e.message).slice(0,50)})}
-      }
-      console.log('NAVER_MAP_PROBE '+JSON.stringify({http:response?.status()||null,frames:status,iframes:await mapPage.locator('iframe').evaluateAll(els=>els.map(x=>({id:x.id,src:x.getAttribute('src')?.slice(0,130)})).slice(0,8)),ms:Date.now()-start}).slice(0,2600));
-      await mapPage.close();
-    }catch(err){console.log('NAVER_MAP_PROBE error='+String(err.message).slice(0,160))}
 
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
