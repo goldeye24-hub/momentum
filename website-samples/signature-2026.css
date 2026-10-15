@@ -1,0 +1,278 @@
+
+/* 2026 signature art directions: separately composed hero experiences (not color-swapped template). */
+.sig-hero{position:relative;isolation:isolate}
+.sig-hero img{display:block;object-fit:cover;width:100%;height:100%}
+.sig-hero h1{font-size:clamp(43px,6vw,96px);line-height:1.07;letter-spacing:-.085em;margin:15px 0 23px;word-break:keep-all}
+.sig-hero p{margin:0;font-size:15px;line-height:1.9}
+.sig-hero .sig-kicker{font-size:11px;letter-spacing:.17em;font-weight:850}
+.sig-hero .sig-primary{display:inline-flex;align-items:center;justify-content:center;min-height:49px;padding:12px 22px;background:var(--primary,#164d43);color:#fff;font-size:13px;font-weight:850;text-decoration:none;gap:15px;border-radius:2px}
+.sig-hero .sig-secondary{font-size:13px;font-weight:800;text-decoration:none;border-bottom:1px solid currentColor;padding:10px 2px}
+.sig-hero .sig-actions{display:flex;gap:21px;flex-wrap:wrap;align-items:center;margin-top:30px}
+.sig-hero .sig-book{display:inline-flex;flex-direction:column;align-items:flex-start;gap:5px}
+.sig-hero .naver-reserve-note,.naver-reserve-note{display:block;font-size:11px;line-height:1.4;font-weight:650;letter-spacing:0;color:inherit;opacity:.8;white-space:nowrap}
+.sig-hero .sig-copy,.sig-hero .ind-copy{min-width:0}
+.sig-hero .sig-photo,.sig-hero .ind-media{overflow:hidden;min-width:0;position:relative}
+.sig-hero .sig-photo img,.sig-hero .ind-media img{height:100%;width:100%;position:relative;inset:auto}
+.sig-hero .sig-sup{font-size:10px;font-weight:850;letter-spacing:.2em;text-transform:uppercase}
+.sig-hero .sig-photo-caption{position:absolute;z-index:2;color:white;font-size:11px;letter-spacing:.11em;font-weight:850}
+.sig-hero .sig-label{font-size:11px;font-weight:900;letter-spacing:.12em}
+.sig-hero .sig-rail{display:flex;gap:20px;align-items:center}
+.sig-hero .sig-mini{font-size:12px;line-height:1.65}
+.site-hero.sig-hero .hero-text,.sig-hero .ind-copy{position:relative;inset:auto;transform:none;display:block;max-width:none;width:auto}
+.site-hero.sig-hero .hero-media,.sig-hero .ind-media{position:relative;inset:auto;min-height:0;height:auto;border:0}
+.site-hero.sig-hero .hero-media:before,.site-hero.sig-hero .hero-media:after,.sig-hero .ind-media:before,.sig-hero .ind-media:after{display:none}
+.sig-specialty{padding:70px 0 15px;display:grid;grid-template-columns:.48fr 1fr;gap:35px;align-items:start}
+.sig-specialty b{font-size:12px;text-transform:uppercase;letter-spacing:.15em}
+.sig-specialty p{font-size:clamp(24px,2.9vw,42px);letter-spacing:-.065em;line-height:1.3;margin:0}
+.sig-hero .sig-field{position:absolute;left:0;top:0}
+.sig-hero .sig-hidden{display:none}
+
+/* 01 POOL VILLA: travel editorial, giant cinematic cover + docked booking mini-bar */
+.theme-poolvilla .ind-head{top:43px}
+.theme-poolvilla .sig-hero{width:100%;max-width:none;height:790px;min-height:620px;display:block;background:#143e45;color:white;overflow:hidden}
+.theme-poolvilla .sig-hero .ind-media{position:absolute;inset:0;height:100%;width:100%;border:0;border-radius:0}
+.theme-poolvilla .sig-hero .ind-media img{height:100%;filter:brightness(.8)}
+.theme-poolvilla .sig-hero .ind-media:after{display:block;background:linear-gradient(90deg,#072e409e,transparent 90%),linear-gradient(0deg,#07242bb9,transparent 58%)}
+.theme-poolvilla .sig-hero .ind-copy{z-index:2;position:absolute;left:max(34px,calc((100vw - 1250px)/2));bottom:150px;width:min(740px,calc(100% - 65px));padding:0;color:white}
+.theme-poolvilla .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(78px,9vw,141px);line-height:1.02;font-weight:400}
+.theme-poolvilla .sig-hero p{color:#e2f0ed;max-width:530px}
+.theme-poolvilla .sig-hero .sig-primary{background:#e9f2e8;color:#133b41}
+.theme-poolvilla .sig-hero .sig-label{color:#d0eded}
+.theme-poolvilla .sig-book small{color:#f6f8f3}
+.theme-poolvilla .sig-hotel-search{position:absolute;bottom:0;left:0;right:0;z-index:3;display:grid;grid-template-columns:1fr 1fr 1fr auto;background:#e6f1ed;color:#153d41;padding:18px max(24px,calc((100vw - 1240px)/2));gap:0}
+.theme-poolvilla .sig-hotel-search>div{padding:0 20px;border-right:1px solid #bbd3cb}
+.theme-poolvilla .sig-hotel-search small{display:block;font-size:9px;letter-spacing:.17em;font-weight:900;color:#65847f}
+.theme-poolvilla .sig-hotel-search strong{display:block;font-size:17px;font-weight:620;margin-top:4px}
+.theme-poolvilla .sig-hotel-search a{background:#21584e;color:white;padding:13px 19px;align-self:center;white-space:nowrap;font-size:12px;font-weight:850}
+.theme-poolvilla .experience-strip{display:none}
+
+/* 02 PENSION: paper magazine with image left, staggered editorial captions */
+.theme-pension .sig-hero{min-height:660px;display:grid;grid-template-columns:1.12fr .88fr;gap:5%;align-items:center;background:#f5f1e8;color:#344739}
+.theme-pension .sig-hero .ind-media{grid-column:1;grid-row:1;height:625px;border-radius:0}
+.theme-pension .sig-hero .ind-media img{height:100%}
+.theme-pension .sig-hero .ind-copy{grid-column:2;grid-row:1;position:relative;top:auto;bottom:auto;padding:30px 12px 30px 0}
+.theme-pension .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(58px,6vw,94px);font-weight:400;letter-spacing:-.065em}
+.theme-pension .sig-hero .sig-label{color:#899978}
+.theme-pension .sig-hero .sig-primary{background:#485e45}
+.theme-pension .sig-hero .sig-photo-caption{left:20px;bottom:22px;background:#f4f1eadd;color:#344739;padding:10px 15px}
+.theme-pension .sig-page-number{display:block;margin-top:28px;border-top:1px solid #bdc6b4;padding-top:19px;font-size:12px;letter-spacing:.12em}
+.theme-pension .pension-note{display:none}
+
+/* 03 GLAMPING: dark open-air atmosphere, centered celestial cover */
+.theme-glamping .sig-hero{width:100%;max-width:none;height:730px;display:block;overflow:hidden;background:#0d1a12;color:white}
+.theme-glamping .sig-hero .ind-media{position:absolute;inset:0;width:100%;height:100%;border-radius:0}
+.theme-glamping .sig-hero .ind-media img{height:100%;filter:brightness(.66)}
+.theme-glamping .sig-hero .ind-media:after{display:block;background:linear-gradient(#08150fc6,#081c125e 45%,#071009d5)}
+.theme-glamping .sig-hero .ind-copy{position:absolute;z-index:2;left:50%;top:47%;transform:translate(-50%,-50%);width:min(810px,calc(100% - 35px));text-align:center;padding:0;color:white}
+.theme-glamping .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(70px,9vw,137px);font-weight:400}
+.theme-glamping .sig-hero p{max-width:580px;margin:auto;color:#e6efdf}
+.theme-glamping .sig-hero .sig-actions{justify-content:center}
+.theme-glamping .sig-hero .sig-primary{background:#dce3b0;color:#293c2e}
+.theme-glamping .sig-hero .sig-photo-caption{bottom:28px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.theme-glamping .sig-hero .sig-label{color:#e1e5af}
+.theme-glamping .camp-invite{display:none}
+
+/* 04 PET GROOM: editorial illustration-style collage, oval dog portrait */
+.theme-petgroom .sig-hero{display:grid;grid-template-columns:1fr .95fr;gap:15px;min-height:620px;padding:40px;background:#ffedf1;border-radius:38px;align-items:center;width:min(1270px,calc(100% - 40px));margin:27px auto}
+.theme-petgroom .sig-hero .ind-copy{padding:25px 6px 25px 32px}
+.theme-petgroom .sig-hero h1{font-size:clamp(58px,6.4vw,103px);font-weight:930;color:#9d4f65;line-height:1.07}
+.theme-petgroom .sig-hero .ind-media{height:550px;border-radius:48% 48% 36% 36%;border:13px solid #fff9f5;transform:rotate(3deg)}
+.theme-petgroom .sig-hero .ind-media img{height:100%}
+.theme-petgroom .sig-hero .sig-primary{border-radius:30px;background:#b25573}
+.theme-petgroom .sig-hero .sig-secondary{color:#8d5771}
+.theme-petgroom .sig-paw{display:inline-block;font-size:47px;color:#d18fa1;vertical-align:middle}
+.theme-petgroom .pet-chips{margin:5px auto 25px}
+
+/* 05 LADDER: orange safety stripe, industrial steel blocks */
+.theme-ladder .sig-hero{width:100%;max-width:none;display:grid;grid-template-columns:50% 50%;min-height:650px;background:#202d38;color:#fff;gap:0}
+.theme-ladder .sig-hero .ind-copy{padding:76px 40px 75px max(34px,calc((100vw - 1250px)/2));display:flex;flex-direction:column;justify-content:center}
+.theme-ladder .sig-hero h1{font-size:clamp(74px,7vw,128px);font-weight:950;color:#fff}
+.theme-ladder .sig-hero h1 mark{background:transparent;color:#ff944e}
+.theme-ladder .sig-hero p{color:#ccdae0;max-width:530px}
+.theme-ladder .sig-hero .ind-media{min-height:650px}
+.theme-ladder .sig-hero .ind-media img{height:100%;filter:contrast(1.12)}
+.theme-ladder .sig-hero .sig-primary{background:#f47e36;color:#142633}
+.theme-ladder .sig-hero .sig-secondary{color:#fff}
+.theme-ladder .sig-hero .sig-label{color:#f9b080}
+.theme-ladder .sig-hero .sig-photo-caption{background:#ff954a;color:#182735;right:25px;bottom:25px;padding:15px}
+.theme-ladder .field-brief{border-top:6px solid #232f37}
+
+/* 06 MOVERS: courier blue, giant number steps, horizontal freight */
+.theme-movers .sig-hero{min-height:620px;background:#dff1ff;display:grid;grid-template-columns:1.12fr .88fr;gap:25px;padding:45px;border-radius:20px;align-items:center}
+.theme-movers .sig-hero .ind-copy{padding:34px}
+.theme-movers .sig-hero h1{font-size:clamp(73px,7vw,118px);color:#164b84;font-weight:920}
+.theme-movers .sig-hero .sig-label{color:#4381b4}
+.theme-movers .sig-hero .ind-media{height:535px;border-radius:20px 20px 190px 20px}
+.theme-movers .sig-hero .ind-media img{height:100%}
+.theme-movers .sig-hero .sig-primary{background:#216ca3;border-radius:8px}
+.theme-movers .sig-hero .sig-moving-tag{display:flex;gap:9px;margin-top:25px;flex-wrap:wrap}
+.theme-movers .sig-hero .sig-moving-tag span{background:white;border-radius:5px;font-size:11px;padding:8px 12px;color:#2d6e9d;font-weight:800}
+
+/* 07 CLEANING: bright minimalism with before/after editorial panel */
+.theme-cleaning .sig-hero{display:grid;grid-template-columns:.8fr 1.2fr;gap:45px;min-height:585px;align-items:center}
+.theme-cleaning .sig-hero .ind-copy{padding:30px 0}
+.theme-cleaning .sig-hero h1{font-size:clamp(65px,6.3vw,102px);color:#1d6b59}
+.theme-cleaning .sig-hero .sig-primary{background:#247b65}
+.theme-cleaning .sig-hero .ind-media{height:550px;display:grid;grid-template-columns:1.3fr .7fr;gap:9px;border-radius:0}
+.theme-cleaning .sig-hero .ind-media img{height:100%}
+.theme-cleaning .sig-hero .ind-media img:last-child{filter:saturate(.65);object-position:center}
+.theme-cleaning .sig-hero .sig-photo-caption{left:16px;bottom:20px;background:#fff;color:#1f6454;padding:11px}
+.theme-cleaning .clean-path{margin-top:18px}
+
+/* 08 FOODIE: energetic menu-poster composition */
+.theme-foodie .sig-hero{width:100%;max-width:none;min-height:695px;height:720px;display:grid;grid-template-columns:.55fr .45fr;gap:0;background:#491c13;color:white}
+.theme-foodie .sig-hero .ind-copy{padding:60px 15px 70px max(35px,calc((100vw - 1250px)/2));position:relative;top:auto;left:auto;transform:none;display:flex;flex-direction:column;justify-content:center}
+.theme-foodie .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(82px,7.9vw,138px);font-weight:550;line-height:1.02;letter-spacing:-.09em}
+.theme-foodie .sig-hero h1 em{color:#ffd29b}
+.theme-foodie .sig-hero p{color:#f6d6c0;max-width:500px}
+.theme-foodie .sig-hero .ind-media{height:100%;min-height:0}
+.theme-foodie .sig-hero .ind-media img{height:100%;filter:saturate(1.1)}
+.theme-foodie .sig-hero .sig-primary{background:#ffe6bd;color:#502618}
+.theme-foodie .sig-hero .sig-secondary{color:#ffebd0}
+.theme-foodie .sig-hero .sig-label{color:#f7b78d}
+.theme-foodie .sig-hero .sig-photo-caption{left:30px;bottom:35px;background:#51180fcc;padding:15px}
+.theme-foodie .foodie-feature{margin-top:0;border-bottom:3px solid #a94428}
+
+/* 09 FRANCHISE: B2B architecture, bold lime typography and structured process rail */
+.theme-franchise .sig-hero{display:grid;grid-template-columns:1.12fr .88fr;min-height:680px;gap:0;width:100%;max-width:none;background:#123f2d;color:white}
+.theme-franchise .sig-hero .ind-copy{padding:70px 25px 60px max(35px,calc((100vw - 1250px)/2));display:flex;flex-direction:column;justify-content:center}
+.theme-franchise .sig-hero h1{font-size:clamp(78px,7vw,123px);font-weight:950;line-height:1.02}
+.theme-franchise .sig-hero h1 em{color:#d2ec8e}
+.theme-franchise .sig-hero p{color:#d1e5d1}
+.theme-franchise .sig-hero .ind-media{min-height:680px}
+.theme-franchise .sig-hero .ind-media img{height:100%}
+.theme-franchise .sig-hero .sig-primary{background:#d9f195;color:#214632}
+.theme-franchise .sig-hero .sig-secondary{color:#e3f5d0}
+.theme-franchise .sig-hero .sig-label{color:#c7e68b}
+.theme-franchise .sig-hero .sig-photo-caption{right:30px;bottom:33px;background:#153b31df;padding:13px}
+.theme-franchise .franchise-process{background:#ddefaf}
+
+/* 10 AIRCON: technical service console with specification grid */
+.theme-aircon .sig-hero{display:grid;grid-template-columns:1fr .96fr;min-height:615px;gap:32px;background:#eef8fe;padding:30px 35px;border:1px solid #d3e5f1;border-radius:12px}
+.theme-aircon .sig-hero .ind-copy{padding:46px 18px;display:flex;flex-direction:column;justify-content:center}
+.theme-aircon .sig-hero h1{font-size:clamp(61px,6.7vw,105px);font-weight:940;color:#164c75}
+.theme-aircon .sig-hero .sig-label{color:#4f86ad}
+.theme-aircon .sig-hero .ind-media{height:550px;border-radius:12px}
+.theme-aircon .sig-hero .ind-media img{height:100%}
+.theme-aircon .sig-hero .sig-primary{background:#287ca7}
+.theme-aircon .sig-hero .sig-specs{display:flex;gap:9px;margin-top:22px;flex-wrap:wrap}
+.theme-aircon .sig-hero .sig-specs span{padding:8px 10px;background:white;border:1px solid #d4e8f2;border-radius:6px;font-size:11px;color:#2c7495;font-weight:850}
+
+/* 11 RESTAURANT: luxurious chef-led editorial asymmetry */
+.style-restaurant .sig-hero{min-height:665px;display:grid;grid-template-columns:.96fr 1.04fr;gap:5%;align-items:center;padding:38px 0 80px;background:#f7f1ea}
+.style-restaurant .sig-hero .hero-media{height:610px;order:-1;border-radius:0}
+.style-restaurant .sig-hero .hero-media img{height:100%}
+.style-restaurant .sig-hero .hero-text{padding:45px 15px 45px 0}
+.style-restaurant .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-weight:450;font-size:clamp(65px,6.3vw,100px);line-height:1.11;color:#442a25}
+.style-restaurant .sig-hero .sig-label{color:#aa735d}
+.style-restaurant .sig-hero p{max-width:440px;color:#795e58}
+.style-restaurant .sig-hero .sig-primary{background:#7f4636}
+.style-restaurant .sig-hero .sig-photo-caption{bottom:24px;left:24px;background:#4b2d27c7;padding:12px}
+.style-restaurant .sig-hero .sig-secondary{color:#794f44}
+
+/* 12 BEAUTY: beauty magazine artboard with oversized type and portrait */
+.style-beauty .sig-hero{min-height:670px;width:min(1300px,calc(100% - 36px));display:grid;grid-template-columns:1.04fr .96fr;gap:0;align-items:center;padding:30px 35px 35px 60px;border-radius:150px 9px 9px 9px;background:#f7e8ed}
+.style-beauty .sig-hero .hero-text{padding:25px 25px 25px 0}
+.style-beauty .sig-hero h1{font-family:Georgia,"Noto Serif KR",serif;font-size:clamp(69px,6.6vw,105px);font-weight:460;line-height:1.1;color:#783f5d}
+.style-beauty .sig-hero .hero-media{height:565px;border-radius:47% 47% 9px 9px;border:10px solid #fffaf8;transform:rotate(3deg)}
+.style-beauty .sig-hero .hero-media img{height:100%}
+.style-beauty .sig-hero .sig-primary{background:#9a5374;border-radius:30px}
+.style-beauty .sig-hero .sig-label{color:#b87698}
+.style-beauty .sig-hero p{color:#826678}
+.style-beauty .sig-hero .sig-photo-caption{bottom:21px;left:25px}
+
+/* 13 ACADEMY: graphic learning road map, bright blue grid */
+.style-academy .sig-hero{min-height:650px;width:100%;max-width:none;background:#152f7f;color:white;display:grid;grid-template-columns:1.1fr .9fr}
+.style-academy .sig-hero .hero-text{padding:70px 30px 62px max(30px,calc((100vw - 1250px)/2));display:flex;flex-direction:column;justify-content:center}
+.style-academy .sig-hero h1{font-size:clamp(75px,7.4vw,126px);line-height:1.07;font-weight:970;color:white}
+.style-academy .sig-hero h1 em{font-style:normal;color:#ffe18a}
+.style-academy .sig-hero .hero-media{height:650px;border-radius:0}
+.style-academy .sig-hero .hero-media img{height:100%}
+.style-academy .sig-hero p{color:#cddcff}
+.style-academy .sig-hero .sig-label{color:#f9db90}
+.style-academy .sig-hero .sig-primary{background:#ffdc73;color:#122858;border-radius:99px}
+.style-academy .sig-hero .sig-photo-caption{left:24px;bottom:24px;background:#122e70c7;padding:15px}
+
+/* 14 CLINIC: calm healthcare info, not glam or restaurant landing */
+.style-clinic .sig-hero{min-height:640px;display:grid;grid-template-columns:1.06fr .94fr;gap:45px;align-items:center;background:#f6fbfa}
+.style-clinic .sig-hero .hero-text{padding:45px 15px}
+.style-clinic .sig-hero h1{font-size:clamp(68px,6.3vw,99px);line-height:1.15;font-weight:860;color:#1c5951}
+.style-clinic .sig-hero .sig-label{color:#6b9a89}
+.style-clinic .sig-hero p{color:#64847c;max-width:480px}
+.style-clinic .sig-hero .hero-media{height:565px;border-radius:18px 18px 200px 18px}
+.style-clinic .sig-hero .hero-media img{height:100%}
+.style-clinic .sig-hero .sig-primary{background:#397d6c;border-radius:8px}
+.style-clinic .sig-hero .sig-info-block{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.style-clinic .sig-hero .sig-info-block span{background:#e5f2ee;color:#44746a;border-radius:7px;padding:10px 15px;font-size:12px;font-weight:800}
+.style-clinic .sig-hero .sig-photo-caption{right:18px;bottom:23px;background:#ffffffc9;color:#2d7464;padding:13px}
+
+/* 15 CORPORATE: technology company with architectural dark stage */
+.style-corporate .sig-hero{width:100%;max-width:none;min-height:700px;background:#14283e;color:white;display:grid;grid-template-columns:1.14fr .86fr;gap:0}
+.style-corporate .sig-hero .hero-text{padding:75px 30px 70px max(30px,calc((100vw - 1250px)/2));display:flex;flex-direction:column;justify-content:center}
+.style-corporate .sig-hero h1{font-size:clamp(78px,7.2vw,125px);font-weight:960;line-height:1.04;letter-spacing:-.085em;color:white}
+.style-corporate .sig-hero h1 em{font-style:normal;color:#95cee8}
+.style-corporate .sig-hero .sig-label{color:#89c2df}
+.style-corporate .sig-hero p{color:#bdd4e3}
+.style-corporate .sig-hero .hero-media{height:700px}
+.style-corporate .sig-hero .hero-media img{height:100%}
+.style-corporate .sig-hero .sig-primary{background:#add7e9;color:#193449}
+.style-corporate .sig-hero .sig-photo-caption{bottom:28px;left:23px;background:#15324aba;padding:16px}
+
+/* reservation integration note: immediately under booking call-to-action, not a false active link */
+.sig-contact-reserve{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.sig-contact-reserve .naver-reserve-note{font-size:11px;color:#f2eee4;opacity:.86}
+.sig-hero .sig-book .naver-reserve-note{padding-left:2px}
+@media(max-width:940px){
+ .sig-hero{max-width:100%}
+ .theme-pension .sig-hero{gap:3%}
+ .theme-pension .sig-hero .ind-media{height:520px}
+ .theme-ladder .sig-hero .ind-copy,.theme-franchise .sig-hero .ind-copy,.style-academy .sig-hero .hero-text,.style-corporate .sig-hero .hero-text{padding-left:30px}
+ .theme-ladder .sig-hero h1,.theme-franchise .sig-hero h1,.style-academy .sig-hero h1,.style-corporate .sig-hero h1{font-size:clamp(55px,6.7vw,83px)}
+ .theme-foodie .sig-hero .ind-copy{padding-left:30px}
+ .theme-foodie .sig-hero h1{font-size:clamp(64px,7.5vw,100px)}
+ .style-restaurant .sig-hero .hero-media{height:490px}
+ .style-restaurant .sig-hero h1,.style-beauty .sig-hero h1{font-size:clamp(58px,6vw,82px)}
+ .style-beauty .sig-hero{padding-left:35px}
+ .style-clinic .sig-hero h1{font-size:clamp(55px,6.4vw,80px)}
+}
+@media(max-width:720px){
+ .sig-hero h1{font-size:clamp(48px,10vw,72px)}
+ .theme-poolvilla .sig-hero{height:680px;min-height:0}
+ .theme-poolvilla .sig-hero .ind-copy{left:23px;bottom:133px;width:calc(100% - 45px)}
+ .theme-poolvilla .sig-hero h1{font-size:clamp(60px,12vw,91px)}
+ .theme-poolvilla .sig-hotel-search{padding:13px 16px;grid-template-columns:1fr 1fr;gap:8px}
+ .theme-poolvilla .sig-hotel-search>div{padding:0 7px;border:0}
+ .theme-poolvilla .sig-hotel-search>div:nth-child(3){display:none}
+ .theme-poolvilla .sig-hotel-search strong{font-size:12px}
+ .theme-poolvilla .sig-hotel-search a{grid-column:1/-1;text-align:center;padding:9px}
+ .theme-pension .sig-hero{display:flex;flex-direction:column;gap:0}
+ .theme-pension .sig-hero .ind-media{height:355px;order:0;width:100%}
+ .theme-pension .sig-hero .ind-copy{padding:30px 0;order:1}
+ .theme-pension .sig-hero h1{font-size:clamp(53px,12vw,76px)}
+ .theme-glamping .sig-hero{height:640px}
+ .theme-glamping .sig-hero h1{font-size:clamp(55px,12vw,80px)}
+ .theme-petgroom .sig-hero{display:flex;flex-direction:column-reverse;padding:14px;width:calc(100% - 20px);margin:13px auto;min-height:0}
+ .theme-petgroom .sig-hero .ind-media{height:295px;width:100%;border-width:8px;transform:none}
+ .theme-petgroom .sig-hero .ind-copy{padding:28px 8px;width:100%}
+ .theme-petgroom .sig-hero h1{font-size:clamp(55px,12vw,80px)}
+ .theme-ladder .sig-hero,.theme-franchise .sig-hero,.theme-foodie .sig-hero,.style-academy .sig-hero,.style-corporate .sig-hero{display:flex;flex-direction:column;min-height:0;height:auto}
+ .theme-ladder .sig-hero .ind-copy,.theme-franchise .sig-hero .ind-copy,.theme-foodie .sig-hero .ind-copy,.style-academy .sig-hero .hero-text,.style-corporate .sig-hero .hero-text{padding:43px 23px;position:relative;inset:auto;transform:none;width:100%;flex:none}
+ .theme-ladder .sig-hero .ind-media,.theme-franchise .sig-hero .ind-media,.theme-foodie .sig-hero .ind-media,.style-academy .sig-hero .hero-media,.style-corporate .sig-hero .hero-media{height:335px;min-height:0;width:100%}
+ .theme-ladder .sig-hero h1,.theme-franchise .sig-hero h1,.theme-foodie .sig-hero h1,.style-academy .sig-hero h1,.style-corporate .sig-hero h1{font-size:clamp(60px,11.8vw,78px)}
+ .theme-movers .sig-hero,.theme-cleaning .sig-hero,.theme-aircon .sig-hero,.style-clinic .sig-hero,.style-restaurant .sig-hero,.style-beauty .sig-hero{display:flex;flex-direction:column;gap:0;min-height:0}
+ .theme-movers .sig-hero,.theme-aircon .sig-hero{padding:15px}
+ .theme-movers .sig-hero .ind-copy,.theme-aircon .sig-hero .ind-copy{padding:26px 14px}
+ .theme-movers .sig-hero .ind-media,.theme-cleaning .sig-hero .ind-media,.theme-aircon .sig-hero .ind-media{height:315px;min-height:0;width:100%}
+ .theme-movers .sig-hero h1,.theme-cleaning .sig-hero h1,.theme-aircon .sig-hero h1{font-size:clamp(55px,11vw,73px)}
+ .theme-cleaning .sig-hero .ind-copy{padding:25px 0}
+ .style-restaurant .sig-hero .hero-media{height:370px;order:0;width:100%}
+ .style-restaurant .sig-hero .hero-text{padding:33px 0;order:1}
+ .style-restaurant .sig-hero h1{font-size:clamp(61px,11.3vw,78px)}
+ .style-beauty .sig-hero{padding:18px;width:calc(100% - 16px);border-radius:65px 10px 10px 10px}
+ .style-beauty .sig-hero .hero-text{padding:27px 8px}
+ .style-beauty .sig-hero .hero-media{height:320px;transform:none;width:100%}
+ .style-beauty .sig-hero h1{font-size:clamp(61px,11vw,77px)}
+ .style-clinic .sig-hero .hero-text{padding:30px 0}
+ .style-clinic .sig-hero .hero-media{height:315px;width:100%}
+ .style-clinic .sig-hero h1{font-size:clamp(55px,10.5vw,77px)}
+}
