@@ -17,7 +17,8 @@ async function request(table,{method='GET',query={},body,prefer=''}={}){
  try{
   const rsp=await fetch(u,{
    method,signal:ctl.signal,
-   headers:{'apikey':cfg.token,'Authorization':'Bearer '+cfg.token,'Content-Type':'application/json','Accept':'application/json',...(prefer?{Prefer:prefer}:{})},
+   headers:{'apikey':cfg.token,...(cfg.token.startsWith('sb_secret_')?{}:{'Authorization':'Bearer '+cfg.token}),
+    'Content-Type':'application/json','Accept':'application/json',...(prefer?{Prefer:prefer}:{})},
    ...(body===undefined?{}:{body:JSON.stringify(body)})
   });
   if(!rsp.ok){
