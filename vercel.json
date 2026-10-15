@@ -30,6 +30,14 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/designs",
+      "destination": "/api/admin-site-builder?view=designs"
+    },
+    {
+      "source": "/admin/designs/",
+      "destination": "/api/admin-site-builder?view=designs"
+    },
+    {
       "source": "/admin/login",
       "destination": "/api/admin-site-builder?action=login"
     },
