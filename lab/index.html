@@ -7,6 +7,7 @@
 <button class="sidebtn active" data-view="overview"><span>◈</span>종합 진단</button>
 <button class="sidebtn" data-view="places"><span>▣</span>3사 플레이스 현황</button>
 <button class="sidebtn" data-view="ranking"><span>↗</span>검색 노출·순위</button>
+<a class="sidebtn" href="/lab/rank/" style="display:flex;gap:12px;align-items:center;text-decoration:none"><span>◎</span>순위 측정·변화 기록 ↗</a>
 <button class="sidebtn" data-view="keywords"><span>⌕</span>키워드·수요 분석</button>
 <button class="sidebtn" data-view="competition"><span>◎</span>상권·경쟁매장</button>
 <button class="sidebtn" data-view="geo"><span>✧</span>SEO·AI GEO</button>
@@ -46,7 +47,7 @@
 <div id="platformCards" class="grid3"><div class="card">네이버 검색 전</div><div class="card">구글 검색 전</div><div class="card">카카오맵 검색 전</div></div>
 <div class="card" style="margin-top:16px"><h3>플랫폼별 정보 일치성</h3><div id="consistency" class="empty">실제 업체 정보가 확인되면 차이를 분석합니다.</div><div class="notice warn">플레이스 링크 자체는 공식 순위·리뷰 수·실제 조회수에 접근할 권한이 아닙니다.</div></div></section>
 <section id="ranking" class="section"><div class="sectionhead"><div><h2>검색 노출·순위</h2><p>포털마다 결과 기준이 다르므로 측정 조건과 출처를 분리합니다.</p></div></div>
-<div class="card"><h3>키워드별 확인 결과</h3><div id="rankingOutput" class="empty">진단 후 연결된 순위 측정 시스템의 결과를 표시합니다.</div><p>단순히 상호명으로 업체를 찾은 순서는 '지역맛집' 등 일반 검색어의 순위가 아닙니다. 네이버 실제 지도 앱 순위는 별도 승인된 측정 방식이 필요합니다.</p></div></section>
+<div class="card" style="margin-bottom:15px;border-left:4px solid #258c6b;background:#eff7f2"><h3>새 기능 · 순위 측정실</h3><p>네이버 블로그·플레이스 검색 결과에서 내 노출 위치를 기록하고 이전 측정과 비교하세요. 블로그 API 조회는 인증·권한 연결 후 이용할 수 있습니다.</p><a class="btn" href="/lab/rank/">순위 측정·추적 화면 열기 ↗</a></div><div class="card"><h3>키워드별 확인 결과</h3><div id="rankingOutput" class="empty">진단 후 연결된 순위 측정 시스템의 결과를 표시합니다.</div><p>단순히 상호명으로 업체를 찾은 순서는 '지역맛집' 등 일반 검색어의 순위가 아닙니다. 네이버 실제 지도 앱 순위는 별도 승인된 측정 방식이 필요합니다.</p></div></section>
 <section id="keywords" class="section"><div class="sectionhead"><div><h2>키워드·검색 수요</h2><p>매장 업종과 지역에서 고객이 실제로 찾을 법한 키워드를 정리합니다.</p></div></div>
 <div class="card" style="margin-bottom:14px;border-left:4px solid #248369;background:#f0f8f3"><h3>새 기능 · 키워드 기회 탐색기</h3><p>키워드 하나만 입력해 지역별 롱테일·예약/견적 의도·콘텐츠 기획 우선순위를 분석할 수 있습니다. 네이버 검색광고 API가 연결되면 월간 검색량도 함께 표시합니다.</p><p><a href="/lab/keywords/" class="btn" style="display:inline-block">키워드 기회 탐색기 사용하기 ↗</a></p><p style="font-size:12px;color:#52746b">기획 우선순위는 자체 추정이며 실제 검색량이나 검색순위가 아닙니다.</p></div><div class="card"><h3>자동 검색어 후보</h3><div id="keywordIdeas" class="empty">확인된 업종과 지역 데이터를 기반으로 생성됩니다.</div></div><div class="card"><h3>검색량 현황</h3><div id="keywordVolumes" class="empty">모멘텀이 관리하는 검색량 API 연동 후 PC·모바일 검색량을 표시합니다.</div><div class="notice warn">추정 수치를 월간 검색량처럼 표시하지 않습니다.</div></div></section>
 <section id="competition" class="section"><div class="sectionhead"><div><h2>상권·경쟁매장</h2><p>등록된 매장 위치와 업종을 기준으로 조사 가능한 데이터를 분석합니다.</p></div></div>
