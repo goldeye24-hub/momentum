@@ -65,7 +65,7 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(storeCalls,0,'invalid password must not be stored');
   await page.locator('#password').fill(ADMIN_PASSWORD);
   await page.locator('#adminLoginSubmit').click();
-  await page.waitForURL(url+'/admin/',{timeout:8000});
+  await page.waitForFunction(()=>location.pathname==='/admin/'&&document.querySelector('#adminLoginForm')===null,{timeout:10000});
   assert.equal(storeCalls,1);
   assert.equal(stored.id,'momentum-admin');
   assert.equal(stored.password,ADMIN_PASSWORD);
