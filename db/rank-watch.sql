@@ -5,7 +5,7 @@ create table if not exists public.rank_watch_targets (
  label text not null check (length(label) between 1 and 70),
  keyword text not null check (length(keyword) between 2 and 60),
  place_id text not null check (place_id ~ '^[0-9]{6,20}$'),
- scope text not null check (scope in ('map','integrated')),
+ scope text not null check (scope in ('mobile','map','integrated')),
  active boolean not null default true,
  last_run_at timestamptz,
  created_at timestamptz not null default now(),
@@ -29,3 +29,9 @@ alter table public.rank_watch_observations enable row level security;
 
 -- Safe upgrade for previously created pilot table.
 alter table public.rank_watch_observations add column if not exists rank_approximate boolean not null default false;
+
+-- Upgrade earlier pilot DBs without deleting targets or observations.
+alter table public.rank_watch_targets drop constraint if exists rank_watch_targets_scope_check;
+alter table public.rank_watch_targets add constraint rank_watch_targets_scope_check check (scope in ('mobile','map','integrated'));
+alter table public.rank_watch_observations drop constraint if exists rank_watch_observations_scope_check;
+alter table public.rank_watch_observations add constraint rank_watch_observations_scope_check check (scope in ('mobile','map','integrated'));
