@@ -30,10 +30,17 @@ const {chromium}=require('playwright');
    const payload=req.method()==='POST'?(posts++,{status:'saved',observedAt:current,observedCount:2}):(gets++,fixtures);
    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)});
   });
-  const html=fs.readFileSync('site-builder/keyword-matrix-index.html','utf8');
-  await page.setContent(html,{waitUntil:'domcontentloaded'});
-  await page.addStyleTag({content:fs.readFileSync('site-builder/keyword-matrix.css','utf8')});
-  await page.addScriptTag({content:fs.readFileSync('site-builder/keyword-matrix.js','utf8')});
+  const base='https://momentum.example';
+  await page.route(base+'/admin/keyword-matrix/',route=>route.fulfill({
+   status:200,contentType:'text/html',body:fs.readFileSync('site-builder/keyword-matrix-index.html','utf8')
+  }));
+  await page.route(base+'/admin/assets/keyword-matrix.css',route=>route.fulfill({
+   status:200,contentType:'text/css',body:fs.readFileSync('site-builder/keyword-matrix.css','utf8')
+  }));
+  await page.route(base+'/admin/assets/keyword-matrix.js',route=>route.fulfill({
+   status:200,contentType:'text/javascript',body:fs.readFileSync('site-builder/keyword-matrix.js','utf8')
+  }));
+  await page.goto(base+'/admin/keyword-matrix/',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#latestCount').textContent==='2',{timeout:8000});
   assert.equal(await page.locator('#risingCount').textContent(),'1');
   assert.equal(await page.locator('#matrixBody tr').count(),100);
