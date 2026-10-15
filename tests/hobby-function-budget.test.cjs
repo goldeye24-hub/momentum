@@ -57,3 +57,12 @@ test('all previously protected API handlers remain independently authenticated',
   }
  }
 });
+
+test('legacy Momentum hostname redirects to the one login-cookie origin',()=>{
+ const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+ const redirect=config.redirects.find(x=>x.has?.some(item=>item.type==='host'&&item.value==='momentum-orcin-delta.vercel.app'));
+ assert.ok(redirect);
+ assert.equal(redirect.source,'/:path*');
+ assert.equal(redirect.destination,'https://momentum-goldeye24-hubs-projects.vercel.app/:path*');
+ assert.equal(redirect.permanent,false);
+});
