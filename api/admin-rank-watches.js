@@ -15,7 +15,7 @@ module.exports=async function(req,res){
  try{
   if(method==='GET'){
    const [watch,history]=await Promise.all([
-    db.request('rank_watch_targets',{query:{select:'id,label,keyword,place_id,scope,active,last_run_at,created_at',order:'created_at.desc',limit:'50'}}),
+    db.request('rank_watch_targets',{query:{select:'id,label,keyword,place_id,target_name,scope,active,last_run_at,created_at',order:'created_at.desc',limit:'50'}}),
     db.request('rank_watch_observations',{query:{select:'target_id,rank,rank_approximate,status,observed_count,observed_at',order:'observed_at.desc',limit:'100'}})
    ]);
    return res.status(200).json({targets:watch,observations:history});
@@ -26,14 +26,17 @@ module.exports=async function(req,res){
   if(!data||typeof data!=='object'||Array.isArray(data))return res.status(400).json({error:'입력을 확인해 주세요.'});
   const action=clean(data.action,15);
   if(action==='create'){
-   const keyword=observer.validateKeyword(data.keyword),place=observer.placeId(data.placeUrl||data.placeId),label=clean(data.label,70);
-   const scope=data.scope==='integrated'?'integrated':'map';
-   if(!keyword||!place||!label)return res.status(400).json({error:'상호·검색어·플레이스 주소를 확인해 주세요.'});
+   const keyword=observer.validateKeyword(data.keyword),label=clean(data.label,70);
+   const scope=data.scope==='integrated'?'integrated':data.scope==='map'?'map':'mobile';
+   const rawTarget=data.placeUrl||data.placeId||data.targetName||'';
+   const place=observer.placeId(rawTarget);
+   const name=scope==='mobile'&&!place?observer.mobileTarget(rawTarget)?.name||null:null;
+   if(!keyword||!label||(!place&&!name))return res.status(400).json({error:'업체명 또는 플레이스 ID/주소와 검색어를 확인해 주세요. PC 조회에는 플레이스 ID가 필요합니다.'});
    const existing=await db.request('rank_watch_targets',{query:{select:'id',limit:'30'}});
    if(existing.length>=20)return res.status(409).json({error:'현재 시험 운영은 최대 20개 대상만 등록할 수 있습니다.'});
-   const duplicates=await db.request('rank_watch_targets',{query:{select:'id',keyword:'eq.'+keyword,place_id:'eq.'+place,scope:'eq.'+scope,limit:'1'}});
+   const duplicates=await db.request('rank_watch_targets',{query:{select:'id',keyword:'eq.'+keyword,...(place?{place_id:'eq.'+place}:{target_name:'eq.'+name}),scope:'eq.'+scope,limit:'1'}});
    if(duplicates.length)return res.status(409).json({error:'이미 등록된 키워드·플레이스 조합입니다.'});
-   const data=await db.request('rank_watch_targets',{method:'POST',body:{keyword,place_id:place,scope,label,active:true},prefer:'return=representation'});
+   const data=await db.request('rank_watch_targets',{method:'POST',body:{keyword,place_id:place||null,target_name:name,scope,label,active:true},prefer:'return=representation'});
    return res.status(201).json({target:data[0]||null});
   }
   if(action==='pause'||action==='resume'||action==='delete'){

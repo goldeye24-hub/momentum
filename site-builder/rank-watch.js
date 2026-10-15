@@ -12,7 +12,7 @@ function latest(id){
  return (r.rank_approximate?'약 ':'')+r.rank+'위'+delta;
 }
 function render(){
- $('watchList').innerHTML=targets.length?targets.map(x=>'<tr><td><b>'+escape(x.label)+'</b>'+escape(x.keyword)+'<small> · ID '+escape(x.place_id)+'</small></td><td>'+escape(x.scope==='map'?'네이버지도':'PC 통합검색')+'</td><td>'+escape(latest(x.id))+'</td><td>'+(x.active?'추적 대상':'일시 중지')+'</td><td><button data-action="'+(x.active?'pause':'resume')+'" data-id="'+escape(x.id)+'">'+(x.active?'중지':'재개')+'</button><button data-action="delete" data-id="'+escape(x.id)+'">삭제</button></td></tr>').join(''):'<tr><td colspan="5">등록된 측정 대상이 없습니다.</td></tr>';
+ $('watchList').innerHTML=targets.length?targets.map(x=>'<tr><td><b>'+escape(x.label)+'</b>'+escape(x.keyword)+'<small> · ID '+escape(x.place_id||x.target_name||'입력 없음')+'</small></td><td>'+escape(x.scope==='mobile'?'모바일 플레이스':x.scope==='map'?'PC 네이버지도':'PC 통합검색')+'</td><td>'+escape(latest(x.id))+'</td><td>'+(x.active?'추적 대상':'일시 중지')+'</td><td><button data-action="'+(x.active?'pause':'resume')+'" data-id="'+escape(x.id)+'">'+(x.active?'중지':'재개')+'</button><button data-action="delete" data-id="'+escape(x.id)+'">삭제</button></td></tr>').join(''):'<tr><td colspan="5">등록된 측정 대상이 없습니다.</td></tr>';
 }
 async function api(action,payload){
  const r=await fetch('/admin/watches/api',{method:action==='read'?'GET':'POST',headers:{'Content-Type':'application/json'},...(action==='read'?{}:{body:JSON.stringify(payload)})});
