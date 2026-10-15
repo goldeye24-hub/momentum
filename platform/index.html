@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="description" content="모멘텀마케팅 플레이스 키워드 관측 관리실 베타">
+<title>내 플레이스 순위 관리 | 모멘텀마케팅</title>
+<link rel="stylesheet" href="/platform/portal.css"></head>
+<body>
+<header class="top"><a class="brand" href="/"><span class="mark">M<span>↗</span></span><b>모멘텀마케팅</b><small>PLACE INTELLIGENCE</small></a>
+<nav><a href="/lab/rank/">무료 순위조회</a><a href="/">홈페이지</a><button id="logout" type="button" hidden>로그아웃</button></nav></header>
+<main>
+<section class="hero"><span class="eyebrow">KEYWORD · PLACE · HISTORY</span><h1>내 가게 검색 노출,<br><em>기록으로 관리하세요.</em></h1>
+<p>네이버 모바일 플레이스의 관측 가능한 위치를 저장된 데이터로 확인합니다. 조회 결과는 광고 제외 자연검색 순위와 다를 수 있으며, 관측하지 않은 날짜는 순위를 만들어 표시하지 않습니다.</p></section>
+<section class="auth card" id="authPanel">
+<div class="eyebrow">MEMBER ACCESS · BETA</div><h2 id="authTitle">회원 로그인</h2>
+<p class="desc">회원별 키워드와 업체를 등록해 모니터링 대상을 관리합니다. 등록만으로 자동 측정이 시작되지는 않습니다.</p>
+<div class="toggle"><button type="button" data-mode="login" class="active">로그인</button><button type="button" data-mode="signup">회원가입</button></div>
+<form id="authForm"><label for="email">이메일</label><input id="email" type="email" autocomplete="email" required maxlength="254" placeholder="example@company.com">
+<label for="password">비밀번호 <span>10자 이상</span></label><input id="password" type="password" autocomplete="current-password" required minlength="10" maxlength="128">
+<button type="submit" id="authSubmit" class="primary wide">로그인</button>
+</form><p id="authMessage" class="notice" role="status" aria-live="polite">회원 시스템이 연결되지 않은 경우 준비 중으로 표시됩니다.</p>
+</section>
+<section id="dashboard" hidden>
+ <div class="section-title"><div><span class="eyebrow">PERSONAL WORKSPACE</span><h2>내 업체·키워드 관리</h2><p id="accountLabel" class="desc">회원 정보 조회 중</p></div><span class="pill">모바일 플레이스 기준</span></div>
+ <div class="metrics"><div><small>회원 요금제</small><strong id="plan">무료</strong><span>유료 결제는 아직 연결되지 않았습니다.</span></div><div><small>등록 슬롯</small><strong id="slots">0 / 1</strong><span>업체 × 검색 키워드 조합</span></div><div><small>저장된 추적 대상</small><strong id="count">0</strong><span>실측 기록이 없으면 순위를 표시하지 않습니다.</span></div></div>
+ <div class="card register"><div class="section-title"><div><span class="eyebrow">01 / REGISTER</span><h3>측정 대상 등록</h3></div><span class="pill small">슬롯 1개 사용</span></div>
+ <form id="watchForm" class="watch-fields">
+  <label>업체 표시명<input name="label" required maxlength="70" placeholder="예: 포항 묵돌이"></label>
+  <label>모바일 검색 키워드<input name="keyword" required minlength="2" maxlength="60" placeholder="예: 포항맛집"></label>
+  <label>플레이스 ID 또는 업체명<input name="target" required maxlength="550" placeholder="예: 2085358113"></label>
+  <button type="submit" id="addWatch" class="primary">등록하기</button>
+ </form>
+ <p class="hint">숫자 플레이스 ID를 사용하면 업체명이 비슷해도 정확한 업체를 식별할 수 있습니다. 회원 등록은 자동 일일 측정을 보장하지 않습니다.</p>
+ </div>
+ <div class="card listing"><div class="section-title"><div><span class="eyebrow">02 / SAVED TARGETS</span><h3>내 등록 목록</h3></div><button id="refresh" type="button" class="secondary">새로고침</button></div>
+ <p id="dashboardMessage" class="notice" role="status" aria-live="polite">저장된 대상을 확인하고 있습니다.</p>
+ <div class="scroll"><table><thead><tr><th>업체</th><th>검색 키워드</th><th>최근 관측</th><th>관측 시각</th><th>관리</th></tr></thead><tbody id="watchRows"><tr><td colspan="5">로그인이 필요합니다.</td></tr></tbody></table></div></div>
+ <aside class="caution"><b>측정 데이터 안내</b><p>등록된 회원의 키워드가 실제 모바일 목록으로 관측·저장된 경우에만 순위가 나타납니다. 목록에서 업체가 보이지 않는다는 사실만으로 미노출이나 순위 밖이라고 판단할 수 없습니다. 현재는 내부 파일럿으로, 유료 구독과 보장된 자동 측정은 제공하지 않습니다.</p></aside>
+</section>
+</main><footer>© MOMENTUM MARKETING · MEMBER PORTAL BETA</footer>
+<script defer src="/platform/portal.js"></script></body></html>

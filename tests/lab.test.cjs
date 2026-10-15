@@ -784,3 +784,4 @@ require('./rank-live-shared.test.cjs');
 require('./keyword-matrix.test.cjs');
 require('./competitor-compare.test.cjs');
 require('./place-keyword-insights.test.cjs');
+require('./member-portal.test.cjs');

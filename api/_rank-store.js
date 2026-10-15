@@ -20,7 +20,13 @@ async function request(table,{method='GET',query={},body,prefer=''}={}){
    headers:{'apikey':cfg.token,'Authorization':'Bearer '+cfg.token,'Content-Type':'application/json','Accept':'application/json',...(prefer?{Prefer:prefer}:{})},
    ...(body===undefined?{}:{body:JSON.stringify(body)})
   });
-  if(!rsp.ok)throw Object.assign(new Error('DB 요청 오류 ('+rsp.status+')'),{code:'database_error'});
+  if(!rsp.ok){
+   let reason=null;
+   try{const detail=await rsp.json();
+    if(['slot_limit_reached','member_not_found','invalid_target'].includes(detail?.message))reason=detail.message;
+   }catch{}
+   throw Object.assign(new Error('DB 요청 오류 ('+rsp.status+')'),{code:'database_error',status:rsp.status,reason});
+  }
   if(rsp.status===204)return [];
   const raw=await rsp.text();
   return raw?JSON.parse(raw):[];

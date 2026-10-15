@@ -14,6 +14,14 @@
   ],
   "rewrites": [
     {
+      "source": "/platform",
+      "destination": "/platform/index.html"
+    },
+    {
+      "source": "/platform/",
+      "destination": "/platform/index.html"
+    },
+    {
       "source": "/admin",
       "destination": "/api/admin-site-builder"
     },
@@ -117,6 +125,12 @@
       "maxDuration": 30
     },
     "api/admin-place-keyword-insights.js": {
+      "maxDuration": 30
+    },
+    "api/member-auth.js": {
+      "maxDuration": 30
+    },
+    "api/member-watches.js": {
       "maxDuration": 30
     }
   }
