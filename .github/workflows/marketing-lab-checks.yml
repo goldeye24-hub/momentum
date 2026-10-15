@@ -59,6 +59,7 @@ jobs:
           node tests/place-keyword-insights.browser.cjs
           node tests/member-portal.browser.cjs
           node tests/admin-members.browser.cjs
+          node tests/admin-password-remember.browser.cjs
           node tests/production-browser.cjs
       - name: Save desktop and mobile screenshots
         if: always()
