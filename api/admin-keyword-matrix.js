@@ -11,27 +11,18 @@ function validOrigin(req){
  catch{return false}
 }
 async function readHistory(keyword,days){
- const records=await db.request('rank_keyword_snapshots',{query:{
-  select:'id,keyword,scope,observed_at,observed_count,max_observed_rank',
-  keyword:'eq.'+keyword,scope:'eq.mobile',order:'observed_at.desc',limit:'180'
- }});
- // Keep one latest snapshot per UTC date; never invent missing days.
- const unique=new Map();
- const today=model.day(new Date().toISOString());
- const earliest=model.day(new Date(Date.now()-(days-1)*86400000).toISOString());
- for(const row of records){const date=model.day(row.observed_at);if(date&&date>=earliest&&date<=today&&!unique.has(date))unique.set(date,row)}
- const selected=[...unique.values()].slice(0,days);
- const entries=[];
- // Under the standard PostgREST 1,000-row cap, batches of at most 8 × 100 rows.
- for(let i=0;i<selected.length;i+=8){
-  const batch=selected.slice(i,i+8);
-  const part=await db.request('rank_keyword_entries',{query:{
-   select:'snapshot_id,place_id,place_name,rank,rank_approximate,rank_basis',
-   snapshot_id:'in.('+batch.map(x=>x.id).join(',')+')',limit:'800'
-  }});
-  entries.push(...part);
- }
- return model.summarize(selected,entries,{days});
+ const selected=await db.request('rpc/momentum_keyword_latest_days',{
+  method:'POST',body:{p_keyword:keyword,p_days:days},prefer:'return=representation'
+ });
+ if(!Array.isArray(selected))throw Error('Unexpected rank history shape');
+ const groups=[];
+ // Standard Supabase PostgREST installations cap one response at 1000 rows.
+ for(let i=0;i<selected.length;i+=8)groups.push(selected.slice(i,i+8));
+ const batches=await Promise.all(groups.map(batch=>db.request('rank_keyword_entries',{query:{
+  select:'snapshot_id,place_id,place_name,rank,rank_approximate,rank_basis',
+  snapshot_id:'in.('+batch.map(x=>x.id).join(',')+')',limit:'800'
+ }})));
+ return model.summarize(selected,batches.flat(),{days});
 }
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');
