@@ -701,3 +701,39 @@ test('deep list ordering is estimated, not falsely presented as an official Nave
  assert.match(script,/약 /);
  assert.match(script,/rankApproximate/);
 });
+
+
+test('mobile Place uses separate name-or-ID matching and conservative rank semantics',()=>{
+ const engine=require('../api/_place-observe.js');
+ assert.equal(engine.placeId('https://m.place.naver.com/restaurant/2085358113/home'),'2085358113');
+ assert.equal(engine.mobileTarget('퐝물회').name,'퐝물회');
+ assert.equal(engine.mobileTarget('2085358113').id,'2085358113');
+ assert.equal(engine.mobileTarget('https://m.place.naver.com/restaurant/2085358113/home').id,'2085358113');
+ assert.equal(engine.mobileTarget('https://untrusted.test/place/2085358113'),null);
+ const list=[
+  {id:'2085358113',name:'퐝물회',rank:null},
+  {id:'12029183',name:'환여횟집',rank:null}
+ ];
+ const idRank=engine.reduceMobile(list,engine.mobileTarget('2085358113'));
+ assert.equal(idRank.status,'ranked');
+ assert.equal(idRank.rank,1);
+ assert.equal(idRank.rankApproximate,true);
+ assert.equal(idRank.rankBasis,'visible_mobile_list_order_estimate');
+ const nameRank=engine.reduceMobile(list,engine.mobileTarget('퐝물회'));
+ assert.equal(nameRank.matchedId,'2085358113');
+ assert.equal(engine.reduceMobile(list,engine.mobileTarget('없는업체')).status,'not_in_block');
+ const duplicate=engine.reduceMobile([...list,{id:'99999999',name:'퐝물회'}],engine.mobileTarget('퐝물회'));
+ assert.equal(duplicate.status,'ambiguous');
+ assert.equal(duplicate.rank,null);
+ assert.equal(engine.reduceMobile([],engine.mobileTarget('퐝물회')).status,'no_place_block');
+ const provider=engine.reduceMobile([{id:'2085358113',name:'퐝물회',rank:5}],engine.mobileTarget('퐝물회'));
+ assert.equal(provider.rank,5);
+ assert.equal(provider.rankApproximate,false);
+ const html=fs.readFileSync('lab/rank/index.html','utf8');
+ const ui=fs.readFileSync('lab/rank/rank.js','utf8');
+ const api=fs.readFileSync('api/place-rank-live.js','utf8');
+ assert.match(html,/value="mobile" selected/);
+ assert.match(ui,/모바일 플레이스 목록/);
+ assert.match(api,/runMobile\(keyword,mobileTarget\)/);
+ assert.doesNotThrow(()=>new vm.Script(ui));
+});
