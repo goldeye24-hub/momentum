@@ -198,3 +198,48 @@ revoke all on function public.momentum_admin_set_pilot_slots(uuid,integer,text)
 grant execute on function public.momentum_admin_member_summary() to service_role;
 grant execute on function public.momentum_admin_set_pilot_slots(uuid,integer,text)
  to service_role;
+
+
+-- Owner-scoped daily history from the same real mobile keyword-list snapshots.
+-- Includes unobserved calendar days as NULL: never backfill guessed rankings.
+create or replace function public.momentum_member_daily_history(
+ p_user uuid,p_target uuid,p_days integer default 30
+) returns table(
+ observation_date date,observed_at timestamptz,observed_count integer,
+ rank integer,rank_approximate boolean,rank_basis text
+) language sql stable security definer set search_path=public as $$
+ with owned as (
+  select t.keyword,t.place_id
+  from public.momentum_member_targets t
+  where t.owner_id=p_user and t.id=p_target
+    and t.scope='mobile' and t.place_id is not null
+    and p_days in (7,30,90)
+ ), calendar as (
+  select generate_series(
+   (now() at time zone 'Asia/Seoul')::date - (p_days-1),
+   (now() at time zone 'Asia/Seoul')::date,interval '1 day'
+  )::date as observation_date
+  where exists(select 1 from owned)
+ ), daily as (
+  select distinct on ((s.observed_at at time zone 'Asia/Seoul')::date)
+    (s.observed_at at time zone 'Asia/Seoul')::date as local_day,
+    s.id,s.observed_at,s.observed_count
+  from public.rank_keyword_snapshots s
+  join owned t on s.keyword=t.keyword and s.scope='mobile'
+  where (s.observed_at at time zone 'Asia/Seoul')::date >=
+    ((now() at time zone 'Asia/Seoul')::date-(p_days-1))
+  order by (s.observed_at at time zone 'Asia/Seoul')::date desc,s.observed_at desc
+ )
+ select c.observation_date,d.observed_at,d.observed_count,
+  e.rank,e.rank_approximate,e.rank_basis
+ from calendar c
+ left join daily d on d.local_day=c.observation_date
+ left join owned t on true
+ left join public.rank_keyword_entries e
+  on e.snapshot_id=d.id and e.place_id=t.place_id
+ order by c.observation_date asc;
+$$;
+revoke all on function public.momentum_member_daily_history(uuid,uuid,integer)
+ from PUBLIC,anon,authenticated;
+grant execute on function public.momentum_member_daily_history(uuid,uuid,integer)
+ to service_role;
