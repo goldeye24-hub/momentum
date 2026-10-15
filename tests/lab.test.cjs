@@ -776,3 +776,7 @@ test('mobile rank is conservative when names overlap or provider positions resta
  assert.equal(duplicate.status,'ambiguous');
  assert.equal(duplicate.rank,null);
 });
+
+require('./rank-live-control.test.cjs');
+
+require('./rank-live-shared.test.cjs');

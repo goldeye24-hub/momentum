@@ -230,6 +230,15 @@ async function runMobile(keyword,target){
     const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:11000});
     const loaded=new URL(page.url());
     httpStatus=response?.status()??null;
+    // An upstream restriction must stop this measurement immediately. Never
+    // switch routes or retry in an attempt to work around HTTP 429/403.
+    if(httpStatus===429||httpStatus===403){
+     const rawRetry=await response.headerValue('retry-after').catch(()=>null);
+     const retryAfterSeconds=/^\d+$/.test(String(rawRetry||''))?Math.min(Number(rawRetry),86400):null;
+     return {status:'blocked',rank:null,source:'none',scope:'naver_mobile_place_list',query:keyword,
+      observedAt:new Date().toISOString(),providerHttpStatus:httpStatus,retryAfterSeconds,
+      message:'네이버 모바일 페이지가 요청을 제한했습니다 (HTTP '+httpStatus+'). 이번 측정을 중단했습니다.'};
+    }
     if(httpStatus!==200||loaded.hostname!=='m.place.naver.com')continue;
     usedUrl=page.url();
     await page.locator('li a[href*="/restaurant/"],li a[href*="/place/"],li [data-nlog-params]').first().waitFor({state:'attached',timeout:2800}).catch(()=>{});

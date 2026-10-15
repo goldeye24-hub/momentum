@@ -61,10 +61,13 @@ function paint(){
  $('history').innerHTML=history.length?history.slice(0,100).map(r=>'<tr><td>'+e(new Date(r.at).toLocaleString('ko-KR'))+'</td><td>'+e(names[r.kind]||r.kind)+'</td><td>'+e(r.keyword)+'</td><td>'+e(r.target)+'</td><td><strong>'+e(format(r))+'</strong></td><td>'+e(r.methodLabel)+'</td><td>'+e(r.depth)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">저장된 측정 기록이 없습니다.</td></tr>';
 }
 function add(data){
- const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:new Date().toISOString()};
- history.unshift(item);history=history.slice(0,300);
+ const observedAt=typeof data.observedAt==='string'&&!Number.isNaN(Date.parse(data.observedAt))?new Date(data.observedAt).toISOString():new Date().toISOString();
+ const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt};
+ const existing=history.some(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
+ if(existing){paint();$('message').textContent=(data.message||'')+' · 기존 측정 기록을 재사용했습니다. 새로운 측정으로 중복 기록하지 않았습니다.';return}
+ history.unshift(item);history.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));history=history.slice(0,300);
  const saved=store();paint();
- $('message').textContent=(data.message||'')+' · '+(saved?'현재 브라우저에 기록했습니다.':'브라우저 저장에 실패했습니다. CSV로 내보내세요.');
+ $('message').textContent=(data.message||'')+(data.stale?' · 새 조회가 제한되어 과거 결과만 표시했습니다.':'')+' · '+(saved?'관측 시각 기준으로 현재 브라우저에 기록했습니다.':'브라우저 저장에 실패했습니다. CSV로 내보내세요.');
 }
 $('rankForm').addEventListener('submit',async ev=>{
  ev.preventDefault();const keyword=val('keyword'),target=val('target'),kind=safeKind(),method=currentMethod();
@@ -78,7 +81,7 @@ $('rankForm').addEventListener('submit',async ev=>{
    const result=await response.json();
    if(!response.ok)throw Error(result.message||'자동 측정 실패');
    if(!['ranked','not_in_block'].includes(result.status)){$('message').textContent=result.message||'자동 측정이 완료되지 않았습니다.';return}
-   add({rank:result.rank,approximate:result.rankApproximate===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
+   add({rank:result.rank,approximate:result.rankApproximate===true,observedAt:result.observedAt,cached:result.cached===true,stale:result.stale===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
   }else if(method==='observed'){
    const found=val('found')==='yes',rank=found?Number(val('rankNumber')):null,depth=Number(val('depth'));
    if(found&&(!Number.isInteger(rank)||rank<1||rank>depth))throw Error('확인한 순위가 1~'+depth+' 안에 있어야 합니다.');
