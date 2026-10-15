@@ -676,6 +676,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(await rankPage.locator('#rankTrend svg').count(),1,'Rank trend SVG should render for two measured records');
     assert.equal(await rankPage.locator('#history tr').count(),2);
     await rankPage.reload({waitUntil:'load'});
+    await rankPage.locator('input[name="method"][value="observed"]').check();
     await rankPage.locator('#target').fill('테스트 미용실');
     assert.equal(await rankPage.locator('#latest').innerText(),'7위');
     await rankPage.locator('input[name="method"][value="paste"]').check();

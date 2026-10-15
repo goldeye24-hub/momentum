@@ -29,7 +29,8 @@ function fromPaste(raw,target){
  return {rank:exact.length?exact[0].index:null,depth:names.length,message:exact.length?'붙여넣은 목록의 '+exact[0].index+'번째입니다.':'붙여넣은 '+names.length+'개 목록 안에서 동일 상호를 찾지 못했습니다.'};
 }
 function format(r){return r.rank==null?'미확인':r.rank+'위'}
-function match(r){return r.kind===safeKind()&&r.keyword===val('keyword')&&r.target===val('target')}
+function currentScope(){return safeKind()==='place'?(currentMethod()==='live'?val('rankScope'):'manual_place'):(currentMethod()==='api'?'blog_api':'manual_blog')}
+function match(r){return r.kind===safeKind()&&r.keyword===val('keyword')&&r.target===val('target')&&(r.scope||'manual_place')===currentScope()}
 function paintTrend(all){
  const mount=$('rankTrend');if(!mount)return;
  const usable=all.filter(x=>typeof x.rank==='number'&&x.rank>0).slice(0,14).reverse();
@@ -60,7 +61,7 @@ function paint(){
  $('history').innerHTML=history.length?history.slice(0,100).map(r=>'<tr><td>'+e(new Date(r.at).toLocaleString('ko-KR'))+'</td><td>'+e(names[r.kind]||r.kind)+'</td><td>'+e(r.keyword)+'</td><td>'+e(r.target)+'</td><td><strong>'+e(format(r))+'</strong></td><td>'+e(r.methodLabel)+'</td><td>'+e(r.depth)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">저장된 측정 기록이 없습니다.</td></tr>';
 }
 function add(data){
- const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),rank:data.rank,depth:data.depth,methodLabel:data.methodLabel,at:new Date().toISOString()};
+ const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,depth:data.depth,methodLabel:data.methodLabel,at:new Date().toISOString()};
  history.unshift(item);history=history.slice(0,300);
  const saved=store();paint();
  $('message').textContent=(data.message||'')+' · '+(saved?'현재 브라우저에 기록했습니다.':'브라우저 저장에 실패했습니다. CSV로 내보내세요.');
@@ -97,6 +98,6 @@ $('rankForm').addEventListener('submit',async ev=>{
  finally{btn.disabled=false;btn.textContent='순위 측정·기록하기 →'}
 });
 $('clearHistory').addEventListener('click',()=>{if(!confirm('이 브라우저의 순위 기록을 모두 삭제할까요?'))return;history=[];store();paint();$('message').textContent='기록을 비웠습니다.'});
-$('exportCsv').addEventListener('click',()=>{const head=['관측일시','채널','키워드','대상','순위','측정 방법','확인 범위'];const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const rows=[head.map(quote).join(',')];for(const r of history)rows.push([r.at,r.kind,r.keyword,r.target,r.rank,r.methodLabel,r.depth].map(quote).join(','));const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='momentum-search-ranking-history.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)});
+$('exportCsv').addEventListener('click',()=>{const head=['관측일시','채널','키워드','대상','측정 범위','순위','측정 방법','확인 범위'];const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const rows=[head.map(quote).join(',')];for(const r of history)rows.push([r.at,r.kind,r.keyword,r.target,r.scope||'legacy',r.rank,r.methodLabel,r.depth].map(quote).join(','));const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='momentum-search-ranking-history.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)});
 switchMode();
 })();
