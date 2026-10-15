@@ -65,4 +65,71 @@ async function run(keyword,id){
    disclaimer:'통합검색 플레이스 블록의 표시 위치이며 네이버지도 전체 순위가 아닙니다. 지역·개인화·기기에 따라 결과는 달라질 수 있습니다.'};
  }finally{await browser.close().catch(()=>{})}
 }
-module.exports={placeId,validateKeyword,reduceResult,run};
+
+function reduceMap(items,requestedId){
+ if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'네이버지도에서 업체 목록을 읽지 못했습니다. 검색 결과가 없다는 뜻은 아닙니다.'};
+ const unique=new Map();
+ for(const item of items){
+  const id=String(item.id||''),rank=Number(item.rank);
+  if(!/^\d{6,20}$/.test(id)||!Number.isInteger(rank)||rank<1||rank>500)continue;
+  if(!unique.has(id))unique.set(id,{rank,name:String(item.name||'').slice(0,70)});
+ }
+ const matched=unique.get(requestedId);
+ const ranks=[...unique.values()].map(x=>x.rank);
+ const high=ranks.length?Math.max(...ranks):null;
+ if(!unique.size)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'지도 업체 목록에서 순위 정보를 읽지 못했습니다.'};
+ return {
+  status:matched?'ranked':'not_in_block',
+  rank:matched?matched.rank:null,
+  observedCount:unique.size,
+  maxObservedRank:high,
+  matchedName:matched?.name||null,
+  message:matched?'네이버지도 검색 결과에 표시된 업체 '+matched.rank+'위를 확인했습니다. 검색 지역·화면·시간에 따라 달라질 수 있습니다.':
+   '네이버지도에서 현재 확인한 '+unique.size+'개 업체(표시 순위 '+high+'위까지) 중에 대상 ID가 없습니다. 전체 검색 미노출을 뜻하지 않습니다.'
+ };
+}
+async function runMap(keyword,id){
+ const playwright=require('playwright-core');
+ const chromiumBinary=require('@sparticuz/chromium');
+ const browser=await playwright.chromium.launch({args:chromiumBinary.args,executablePath:await chromiumBinary.executablePath(),headless:true,timeout:12000});
+ try{
+  const context=await browser.newContext({locale:'ko-KR',viewport:{width:1440,height:960},deviceScaleFactor:1});
+  const page=await context.newPage();
+  const url='https://map.naver.com/p/search/'+encodeURIComponent(keyword);
+  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:14500});
+  if(!response||response.status()!==200||new URL(page.url()).hostname!=='map.naver.com')return {status:'blocked',rank:null,message:'네이버지도 검색 화면에 접속할 수 없습니다 (HTTP '+(response?.status()||'?')+').'};
+  let frame=null;
+  try{
+   await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>(el.getAttribute('src')||'').includes('pcmap.place.naver.com')),{timeout:7000});
+   frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()));
+   if(!frame){await page.waitForTimeout(1100);frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()))}
+  }catch{}
+  if(!frame)return {status:'no_place_block',rank:null,message:'네이버지도 업체 목록 화면을 찾지 못했습니다.'};
+  try{await frame.locator('[data-nlog-params*="place_id"]').first().waitFor({state:'attached',timeout:5500})}catch{}
+  let items=[],maxScroll=2;
+  for(let i=0;i<=maxScroll;i++){
+   const now=await frame.evaluate(()=>{
+    const rows=[];
+    for(const li of document.querySelectorAll('li')){
+     const el=li.querySelector('[data-nlog-area="mpl_vsl.result"][data-nlog-params]');
+     if(!el)continue;
+     let meta;try{meta=JSON.parse(el.getAttribute('data-nlog-params'))}catch{continue}
+     const id=String(meta?.place_id||''),rank=Number(meta?.rank);
+     if(!/^\d{6,20}$/.test(id)||!Number.isInteger(rank)||rank<1)continue;
+     const name=String(el.querySelector('span')?.textContent||el.textContent||'').trim().slice(0,70);
+     rows.push({id,rank,name});
+    }
+    return rows;
+   });
+   const seen=new Set(items.map(x=>x.id));for(const x of now)if(!seen.has(x.id)){seen.add(x.id);items.push(x)}
+   if(items.some(x=>x.id===id)||i===maxScroll||!now.length)break;
+   try{
+    await frame.locator('li').last().scrollIntoViewIfNeeded({timeout:1000});
+    await page.waitForTimeout(700);
+   }catch{break}
+  }
+  return {...reduceMap(items,id),scope:'naver_map_pc_search_list_observed',source:'browser_observed',query:keyword,observedAt:new Date().toISOString(),disclaimer:'네이버지도 검색 화면에 실제 표시된 업체 순위이며 위치·기기·개인화·정렬조건의 영향을 받습니다. 확인하지 못한 하위 순위는 추측하지 않습니다.'};
+ }finally{await browser.close().catch(()=>{})}
+}
+
+module.exports={placeId,validateKeyword,reduceResult,reduceMap,run,runMap};

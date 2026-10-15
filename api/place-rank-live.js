@@ -24,10 +24,11 @@ module.exports=async function(req,res){
  const keyword=observer.validateKeyword(body.keyword);
  const id=observer.placeId(body.placeId||body.placeUrl||body.target);
  if(!keyword||!id)return res.status(400).json({status:'invalid',message:'2~60자 검색어와 네이버 플레이스 주소 또는 숫자 ID를 입력하세요.'});
- const key=keyword+'\n'+id,now=Date.now(),saved=cache.get(key);
+ const scope=body.scope==='map'?'map':'integrated';
+ const key=scope+'\n'+keyword+'\n'+id,now=Date.now(),saved=cache.get(key);
  if(saved&&now-saved.time<180000)return res.status(200).json({...saved.data,cached:true});
  try{
-  const result=await observer.run(keyword,id);
+  const result=await (scope==='map'?observer.runMap(keyword,id):observer.run(keyword,id));
   if(result.status==='ranked'||result.status==='not_in_block')cache.set(key,{time:Date.now(),data:result});
   if(cache.size>250){for(const [k,v] of cache)if(Date.now()-v.time>180000)cache.delete(k)}
   return res.status(200).json(result);

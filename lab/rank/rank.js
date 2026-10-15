@@ -6,7 +6,7 @@ const val=id=>$(id).value.trim(),norm=s=>String(s||'').normalize('NFKC').replace
 const s=id=>$(id).textContent;
 function safeKind(){return val('kind')==='blog'?'blog':'place'}
 function currentMethod(){return document.querySelector('input[name="method"]:checked')?.value||'observed'}
-function searchLink(){return 'https://search.naver.com/search.naver?query='+encodeURIComponent(val('keyword'))}
+function searchLink(){return (safeKind()==='place'&&document.getElementById('rankScope')?.value==='map'?'https://map.naver.com/p/search/':'https://search.naver.com/search.naver?query=')+encodeURIComponent(val('keyword'))}
 function store(){
  try{localStorage.setItem(key,JSON.stringify(history.slice(0,300)));return true}catch{return false}
 }
@@ -19,7 +19,7 @@ function switchMode(){
  $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'https://map.naver.com/p/entry/place/1234567890 또는 숫자 ID';
  updateSearch();paint()
 }
-document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',updateSearch);$('target').addEventListener('input',paint);
+document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',updateSearch);$('target').addEventListener('input',paint);$('rankScope').addEventListener('change',()=>{updateSearch();paint()});
 function cleanLine(line){return String(line||'').replace(/^\s*(?:\d+\s*[.)\]:-]|[-•*])\s*/,'').trim()}
 function fromPaste(raw,target){
  const names=String(raw).split(/\r?\n/g).map(cleanLine).filter(Boolean).slice(0,200);
@@ -73,11 +73,11 @@ $('rankForm').addEventListener('submit',async ev=>{
   if(method==='live'){
    if(kind!=='place')throw Error('플레이스 자동 측정만 지원합니다.');
    $('message').textContent='실제 네이버 검색 화면을 확인하고 있습니다…';
-   const response=await fetch('/api/place-rank-live',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeUrl:target})});
+   const response=await fetch('/api/place-rank-live',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeUrl:target,scope:val('rankScope')})});
    const result=await response.json();
    if(!response.ok)throw Error(result.message||'자동 측정 실패');
    if(!['ranked','not_in_block'].includes(result.status)){$('message').textContent=result.message||'자동 측정이 완료되지 않았습니다.';return}
-   add({rank:result.rank,depth:result.observedCount,methodLabel:'네이버 PC 플레이스 블록 자동 관측',message:result.message});
+   add({rank:result.rank,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='map'?'네이버지도 검색 목록 자동 관측':'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
   }else if(method==='observed'){
    const found=val('found')==='yes',rank=found?Number(val('rankNumber')):null,depth=Number(val('depth'));
    if(found&&(!Number.isInteger(rank)||rank<1||rank>depth))throw Error('확인한 순위가 1~'+depth+' 안에 있어야 합니다.');
