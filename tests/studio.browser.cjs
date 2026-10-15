@@ -673,6 +673,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.locator('#target').fill('https://blog.naver.com/exampleblog/12345678');
     await rankPage.locator('input[name="method"][value="api"]').check();
     await rankPage.locator('#measure').click();
+    await rankPage.waitForFunction(()=>/연결되지|승인/.test(document.querySelector('#message')?.textContent||''));
     assert.match(await rankPage.locator('#message').innerText(),/연결되지|승인/);
     assert.equal(await rankPage.locator('#latest').innerText(),'—');
     await rankPage.setViewportSize({width:390,height:844});
