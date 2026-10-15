@@ -2,7 +2,7 @@
 const auth=require('../api/admin-site-builder');
 const db=require('../api/_rank-store');
 const observer=require('../api/_place-observe');
-const {sharedMeasure}=require('../api/_rank-live-shared');
+const sourceGate=require('../api/_rank-live-shared');
 const clean=(v,max=90)=>String(v??'').trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max);
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex');
@@ -41,7 +41,7 @@ module.exports=async function(req,res){
    }
    const target=row.place_id||observer.normalizeBusinessName(row.target_name);
    const key=row.scope+'\n'+row.keyword+'\n'+target;
-   const result=await sharedMeasure({key,scope:row.scope,measure:()=>row.scope==='mobile'?
+   const result=await sourceGate.sharedMeasure({key,scope:row.scope,measure:()=>row.scope==='mobile'?
      observer.runMobile(row.keyword,{id:row.place_id||null,name:row.target_name||null}):
      row.scope==='map'?observer.runMap(row.keyword,row.place_id):
      observer.run(row.keyword,row.place_id)});
