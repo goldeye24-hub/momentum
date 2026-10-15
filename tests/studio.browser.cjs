@@ -729,6 +729,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       await mp.close();
     }catch(err){console.log('MAP_DEEP_PROBE error='+String(err.message).slice(0,350))}
 
+
+    // Production Naver Map rank measurement smoke test (single requested observation).
+    try{
+      const url='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:'2085358113',scope:'map'});
+      const response=await fetch(url,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(28500)});
+      const body=await response.text();
+      console.log('MAP_RANK_PRODUCTION_CHECK '+JSON.stringify({http:response.status,body:body.slice(0,1000)}));
+    }catch(err){console.log('MAP_RANK_PRODUCTION_CHECK error='+String(err.message).slice(0,210))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);

@@ -648,3 +648,15 @@ test('automatic Naver Place-block browser observation is exact-ID matched and sc
  const cfg=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  assert.equal(cfg.functions['api/place-rank-live.js'].maxDuration,30);
 });
+
+test('map list rank uses Naver observed metadata and never guesses beyond observed range',()=>{
+ const obs=require('../api/_place-observe.js');
+ const records=[{id:'2085358113',rank:1,name:'퐝물회'},{id:'12029183',rank:2,name:'환여횟집'},{id:'13485890',rank:7,name:'포항오대양'}];
+ const a=obs.reduceMap(records,'13485890');
+ assert.equal(a.rank,7);assert.equal(a.observedCount,3);assert.equal(a.maxObservedRank,7);
+ const b=obs.reduceMap(records,'55555555');assert.equal(b.rank,null);assert.equal(b.status,'not_in_block');
+ assert.equal(obs.reduceMap([],'55555555').status,'no_place_block');
+ const html=fs.readFileSync('lab/rank/index.html','utf8');
+ assert.match(html,/id="rankScope"/);
+ assert.match(html,/네이버지도 검색 목록/);
+});
