@@ -3,7 +3,7 @@
 const form=document.getElementById('serviceQuoteForm');
 if(!form)return;
 const result=document.getElementById('quoteDemoResult');
-const quotes={ladder:'사다리차',movers:'이사',cleaning:'청소',aircon:'에어컨'};
+const quotes={ladder:'사다리차',movers:'이사',cleaning:'청소',aircon:'에어컨',petgroom:'애견미용'};
 const type=document.querySelector('[data-quote-kind]')?.dataset.quoteKind||'서비스';
 const name=quotes[type]||'서비스';
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
