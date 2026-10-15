@@ -685,3 +685,19 @@ test('rank-watch back office is protected, secret-less until explicitly configur
  assert.match(fs.readFileSync('site-builder/index.html','utf8'),/href="\/admin\/watches\/"/);
  assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('site-builder/rank-watch.js','utf8')));
 });
+
+test('deep list ordering is estimated, not falsely presented as an official Naver map rank',()=>{
+ const obs=require('../api/_place-observe.js');
+ const rows=[];
+ for(let i=0;i<25;i++){const n=i%10+1;rows.push({id:String(10000000+i),rank:n,name:'업체'+i})}
+ const result=obs.reduceMap(rows,'10000019');
+ assert.equal(result.status,'ranked');
+ assert.equal(result.rank,20);
+ assert.equal(result.rankApproximate,true);
+ assert.equal(result.rankBasis,'estimated_from_loaded_page_order');
+ assert.equal(obs.reduceMap(rows,'10000000').rankApproximate,false);
+ assert.match(result.message,/추정치/);
+ const script=fs.readFileSync('lab/rank/rank.js','utf8');
+ assert.match(script,/약 /);
+ assert.match(script,/rankApproximate/);
+});

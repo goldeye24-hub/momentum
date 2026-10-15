@@ -731,25 +731,6 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     }catch(err){console.log('MAP_DEEP_PROBE error='+String(err.message).slice(0,350))}
 
 
-    // Production Naver Map rank measurement smoke test (single requested observation).
-    try{
-      const url='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:'2085358113',scope:'map'});
-      const response=await fetch(url,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(28500)});
-      const body=await response.text();
-      console.log('MAP_RANK_PRODUCTION_CHECK '+JSON.stringify({http:response.status,body:body.slice(0,1000)}));
-    }catch(err){console.log('MAP_RANK_PRODUCTION_CHECK error='+String(err.message).slice(0,210))}
-
-    // One public first-party iframe URL direct-entry feasibility observation.
-    try{
-      const direct=await ctx.newPage();
-      const dest='https://pcmap.place.naver.com/place/list?'+new URLSearchParams({query:'포항 물회'});
-      const rs=await direct.goto(dest,{waitUntil:'domcontentloaded',timeout:16000});
-      await direct.waitForTimeout(3500);
-      const v=await direct.evaluate(()=>({title:document.title,len:document.body?.innerText.length||0,cards:document.querySelectorAll('[data-nlog-params*="place_id"]').length,idMeta:[...document.querySelectorAll('[data-nlog-params*="place_id"]')].slice(0,3).map(el=>el.getAttribute('data-nlog-params').slice(0,140))}));
-      console.log('MAP_DIRECT_PROBE '+JSON.stringify({http:rs?.status(),url:direct.url().slice(0,140),...v}));
-      await direct.close();
-    }catch(err){console.log('MAP_DIRECT_PROBE error='+String(err.message).slice(0,200))}
-
     // New watch manager renders safely when DB is absent (never exposes keys).
     const watchPage=await ctx.newPage();
     const watchErrors=[];watchPage.on('pageerror',e=>watchErrors.push(String(e)));
@@ -759,32 +740,6 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await watchPage.locator('.setup').innerText(),/MOMENTUM_RANK_DB_URL/);
     assert.equal(watchErrors.length,0,'Watch manager runtime errors: '+watchErrors.join(' | '));
     await watchPage.close();
-
-    // One-time pagination investigation on an already public map list.
-    try{
-      const pp=await ctx.newPage();
-      await pp.goto('https://pcmap.place.naver.com/place/list?query='+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:17000});
-      await pp.waitForTimeout(3300);
-      const counts=[];
-      for(let k=0;k<5;k++){
-        const d=await pp.evaluate(()=>{
-          const cards=[...document.querySelectorAll('li [data-nlog-area="mpl_vsl.result"][data-nlog-params]')],ids=new Set(),ranks=[];
-          for(const el of cards){try{const a=JSON.parse(el.getAttribute('data-nlog-params'));ids.add(a.place_id);ranks.push(a.rank)}catch{}}
-          let top=cards[0]?.closest('li');const parents=[];
-          for(let z=0;top&&z<12;z++,top=top.parentElement){
-            const c=getComputedStyle(top);
-            parents.push({tag:top.tagName,cls:String(top.className||'').slice(0,55),scrollTop:top.scrollTop,scrollHeight:top.scrollHeight,clientHeight:top.clientHeight,overflow:c.overflowY});
-          }
-          const container=parents.find(x=>x.scrollHeight>x.clientHeight+140&&(x.overflow==='auto'||x.overflow==='scroll'));
-          if(container){
-           let node=cards[0]?.closest('li');for(let z=0;node&&z<12;z++,node=node.parentElement){const c=getComputedStyle(node);if(node.scrollHeight>node.clientHeight+140&&(c.overflowY==='auto'||c.overflowY==='scroll')){node.scrollTop=node.scrollHeight;break}}
-          }else window.scrollBy(0,window.innerHeight);
-          return {unique:ids.size,maxRank:Math.max(0,...ranks),parents:parents.slice(0,7),container};
-        });
-        counts.push({step:k,...d});await pp.waitForTimeout(700);
-      }
-      console.log('MAP_SCROLL_PROBE '+JSON.stringify(counts).slice(0,10500));await pp.close();
-    }catch(err){console.log('MAP_SCROLL_PROBE error='+String(err.message).slice(0,200))}
 
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
