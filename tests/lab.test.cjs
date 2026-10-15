@@ -558,3 +558,24 @@ test('internal CRM product catalog and admin-only authentication protect private
   if(secret===undefined)delete process.env.MOMENTUM_SESSION_SECRET;else process.env.MOMENTUM_SESSION_SECRET=secret;
  }
 });
+
+
+test('independent portfolio design editor has authenticated route and safe local preview controls',()=>{
+ const html=fs.readFileSync('site-builder/design-editor.html','utf8');
+ const script=fs.readFileSync('site-builder/design-editor.js','utf8');
+ const css=fs.readFileSync('site-builder/design-editor.css','utf8');
+ const api=fs.readFileSync('api/admin-site-builder.js','utf8');
+ const vercel=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+ for(const id of ['designSelect','livePreview','headlineInput','heroFile','saveDraft','saveJson','loadJson','exportHtml'])assert.match(html,new RegExp('id="'+id+'"'));
+ assert.doesNotThrow(()=>new vm.Script(script));
+ assert.match(script,/momentum-independent-design-draft/);
+ assert.match(script,/textContent/);
+ assert.match(script,/safeImage/);
+ assert.match(script,/safeLink/);
+ assert.match(script,/Object\.entries\(draft\)/);
+ assert.match(css,/previewOuter\.isMobile/);
+ for(const name of ['design-editor.html','design-editor.css','design-editor.js'])assert.match(api,new RegExp(name.replace('.','\\\.')));
+ assert.match(api,/view==='designs'/);
+ assert.ok(vercel.rewrites.some(x=>x.source==='/admin/designs/'&&x.destination.includes('view=designs')));
+ assert.match(fs.readFileSync('site-builder/index.html','utf8'),/href="\/admin\/designs\/"/);
+});
