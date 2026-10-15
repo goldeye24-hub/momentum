@@ -184,23 +184,31 @@ function mobileTarget(input){
 function reduceMobile(items,target){
  if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 목록을 읽지 못했습니다. 순위 밖이라는 뜻은 아닙니다.'};
  const seen=new Set(),list=[];
+ let lastProviderRank=0,fallbackOrder=false;
  for(const raw of items){
   const id=String(raw.id||'');
   if(!/^\d{6,20}$/.test(id)||seen.has(id))continue;
   seen.add(id);
   const providerRank=Number(raw.rank);
-  const trustworthy=Number.isInteger(providerRank)&&providerRank>=1&&providerRank<=500;
-  list.push({id,name:String(raw.name||'').trim().slice(0,70),rank:trustworthy?providerRank:list.length+1,approximate:!trustworthy});
+  const hasRank=raw.rank!=null&&Number.isInteger(providerRank)&&providerRank>=1&&providerRank<=500;
+  if(hasRank&&providerRank<=lastProviderRank)fallbackOrder=true;
+  if(hasRank)lastProviderRank=providerRank;
+  const validPosition=hasRank&&!fallbackOrder;
+  list.push({
+   id,name:String(raw.name||'').trim().slice(0,70),
+   rank:validPosition?providerRank:list.length+1,
+   approximate:!validPosition
+  });
  }
  if(!list.length)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 ID가 확인되지 않았습니다.'};
  const matches=target.id?list.filter(x=>x.id===target.id):list.filter(x=>normalizeBusinessName(x.name)===normalizeBusinessName(target.name));
  if(matches.length>1)return {status:'ambiguous',rank:null,observedCount:list.length,message:'같은 업체명이 여러 곳에서 확인되었습니다. 플레이스 ID로 다시 측정해 주세요.'};
- const item=matches[0];
- return {status:item?'ranked':'not_in_block',rank:item?.rank??null,rankApproximate:item?.approximate??false,
-  rankBasis:item?(item.approximate?'visible_mobile_list_order_estimate':'mobile_list_provider_rank'):null,
+ const item=matches[0],approximate=!!item&&(item.approximate||!target.id);
+ return {status:item?'ranked':'not_in_block',rank:item?.rank??null,rankApproximate:approximate,
+  rankBasis:item?(item.approximate?'visible_mobile_list_order_estimate':!target.id?'mobile_name_match_requires_id':'mobile_list_provider_rank'):null,
   matchedName:item?.name||null,matchedId:item?.id||null,observedCount:list.length,
   maxObservedRank:Math.max(...list.map(x=>x.rank)),
-  message:item?(item.approximate?'네이버 모바일 플레이스 목록에서 약 '+item.rank+'번째로 관측했습니다. 광고 및 동적 로딩으로 실제 일반 순위와 다를 수 있습니다.':'네이버 모바일 플레이스 목록에 표시된 '+item.rank+'위를 확인했습니다.'):
+  message:item?(approximate?'네이버 모바일 플레이스 목록에서 약 '+item.rank+'번째로 관측했습니다. 업체 ID 미확인, 광고 또는 동적 로딩 때문에 정확한 자연검색 순위와 다를 수 있습니다.':'네이버 모바일 플레이스 목록에 표시된 '+item.rank+'번째 항목으로 확인했습니다. 광고 제외 자연검색 순위를 의미하지 않습니다.'):
   '관측된 모바일 플레이스 업체 '+list.length+'곳에서 대상을 찾지 못했습니다. 더 아래 순위 또는 검색 미노출이라는 뜻은 아닙니다.'};
 }
 async function runMobile(keyword,target){
