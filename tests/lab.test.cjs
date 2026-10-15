@@ -787,3 +787,4 @@ require('./place-keyword-insights.test.cjs');
 require('./member-portal.test.cjs');
 require('./admin-members.test.cjs');
 require('./member-history.test.cjs');
+require('./hobby-function-budget.test.cjs');
