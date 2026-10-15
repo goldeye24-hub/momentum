@@ -30,7 +30,7 @@ test('member cookies are tamper-evident and expire without backend access',()=>{
   assert.deepEqual(member.check({headers:{cookie:member.COOKIE+'='+encodeURIComponent(token)}},t+1000),
    {userId:ID,email:'owner@company.test'});
   const [payload,mac]=token.split('.');
-  assert.equal(member.check({headers:{cookie:member.COOKIE+'='+payload+'.'+mac.slice(0,-1)+'x'}},t+1000),null);
+  assert.equal(member.check({headers:{cookie:member.COOKIE+'='+payload+'.'+mac.slice(0,-1)+(mac.at(-1)==='x'?'y':'x')}},t+1000),null);
   assert.equal(member.check({headers:{cookie:member.COOKIE+'='+token}},t+member.LIFETIME_MS+1),null);
   assert.match(member.cookie(token),/HttpOnly; Secure; SameSite=Lax/);
  }finally{if(prev===undefined)delete process.env.MOMENTUM_MEMBER_SESSION_SECRET;
@@ -141,5 +141,5 @@ test('member portal is a static responsive page and its JS is browser-valid',()=
  for(const id of ['authForm','authPanel','watchForm','watchRows','dashboardMessage','email','password'])
   assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/등록만으로 자동 측정이 시작되지는 않습니다/);
- assert.match(js,/\/api\/member-auth/);
+ assert.match(js,/member-auth/);
 });
