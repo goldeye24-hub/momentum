@@ -88,3 +88,32 @@ revoke all on function public.momentum_save_keyword_snapshot(text,timestamptz,js
  from PUBLIC,anon,authenticated;
 grant execute on function public.momentum_save_keyword_snapshot(text,timestamptz,jsonb)
  to service_role;
+
+-- Latest valid observation per Korea-local calendar date.
+-- This avoids accidentally truncating older dates when many observations
+-- are captured on one day; only actual saved snapshots are returned.
+create or replace function public.momentum_keyword_latest_days(
+ p_keyword text,p_days integer default 7
+) returns table(
+ id uuid,keyword text,scope text,observed_at timestamptz,
+ observed_count integer,max_observed_rank integer
+) language sql stable security definer set search_path=public as $$
+ select d.id,d.keyword,d.scope,d.observed_at,d.observed_count,d.max_observed_rank
+ from (
+  select distinct on ((s.observed_at at time zone 'Asia/Seoul')::date)
+    s.id,s.keyword,s.scope,s.observed_at,s.observed_count,s.max_observed_rank,
+    (s.observed_at at time zone 'Asia/Seoul')::date as local_day
+  from public.rank_keyword_snapshots s
+  where s.keyword=trim(p_keyword) and s.scope='mobile'
+    and p_days in (7,30,90)
+    and (s.observed_at at time zone 'Asia/Seoul')::date >=
+      ((now() at time zone 'Asia/Seoul')::date-(p_days-1))
+    and (s.observed_at at time zone 'Asia/Seoul')::date <=
+      (now() at time zone 'Asia/Seoul')::date
+  order by (s.observed_at at time zone 'Asia/Seoul')::date desc,s.observed_at desc
+ ) d order by d.observed_at desc limit p_days;
+$$;
+revoke all on function public.momentum_keyword_latest_days(text,integer)
+ from PUBLIC,anon,authenticated;
+grant execute on function public.momentum_keyword_latest_days(text,integer)
+ to service_role;
