@@ -5,21 +5,26 @@ const isId=x=>/^[0-9]{6,20}$/.test(String(x||''));
 const clean=x=>String(x||'').normalize('NFKC').trim().replace(/\s+/g,' ').slice(0,70);
 function reduceMobileList(raw,max=100){
  if(!Array.isArray(raw)||raw.length===0)return {status:'no_place_block',entries:[],observedCount:0,maxObservedRank:null};
- const seen=new Set(),entries=[];
- let lastRank=0,estimated=false;
+ const seen=new Set(),items=[];
+ const cap=Math.min(100,Math.max(1,Number(max)||100));
  for(const item of raw){
   const id=String(item?.id||'');
   if(!isId(id)||seen.has(id))continue;
   seen.add(id);
-  if(entries.length>=Math.min(100,Math.max(1,Number(max)||100)))break;
-  const numeric=Number(item.rank);
-  const provider=item.rank!==null&&item.rank!==undefined&&Number.isInteger(numeric)&&numeric>0&&numeric<=500;
-  if(provider&&numeric<=lastRank)estimated=true;
-  if(provider)lastRank=numeric;
-  const approximate=estimated||!provider;
-  entries.push({placeId:id,name:clean(item.name)||'이름 미확인',rank:approximate?entries.length+1:numeric,
-   approximate,rankBasis:approximate?'visible_list_position_estimate':'provider_list_position'});
+  if(items.length>=cap)break;
+  items.push({id,name:clean(item.name)||'이름 미확인',providerRank:item.rank});
  }
+ let last=0,reliable=true;
+ for(const row of items){
+  const rank=Number(row.providerRank);
+  if(row.providerRank==null||!Number.isInteger(rank)||rank<1||rank>500||rank<=last){reliable=false;break}
+  last=rank;
+ }
+ // Do not mix provider positions and visual estimates in the same snapshot.
+ // Any restart, duplication or missing metadata downgrades the entire list.
+ const entries=items.map((row,i)=>({placeId:row.id,name:row.name,
+  rank:reliable?Number(row.providerRank):i+1,approximate:!reliable,
+  rankBasis:reliable?'provider_list_position':'visible_list_position_estimate'}));
  return {status:entries.length?'observed':'no_place_block',entries,observedCount:entries.length,
   maxObservedRank:entries.length?Math.max(...entries.map(x=>x.rank)):null,
   scope:'mobile',precision:'observed_mobile_list_not_organic_rank',
