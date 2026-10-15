@@ -9,7 +9,7 @@ function latest(id){
  if(!r)return '—';
  if(r.status!=='ranked'||r.rank==null)return escape(r.status)+' (순위 미확인)';
  const delta=prev?.rank!=null?' / '+(prev.rank>r.rank?'▲ '+(prev.rank-r.rank):prev.rank<r.rank?'▼ '+(r.rank-prev.rank):'변동 없음'):'';
- return r.rank+'위'+delta;
+ return (r.rank_approximate?'약 ':'')+r.rank+'위'+delta;
 }
 function render(){
  $('watchList').innerHTML=targets.length?targets.map(x=>'<tr><td><b>'+escape(x.label)+'</b>'+escape(x.keyword)+'<small> · ID '+escape(x.place_id)+'</small></td><td>'+escape(x.scope==='map'?'네이버지도':'PC 통합검색')+'</td><td>'+escape(latest(x.id))+'</td><td>'+(x.active?'추적 대상':'일시 중지')+'</td><td><button data-action="'+(x.active?'pause':'resume')+'" data-id="'+escape(x.id)+'">'+(x.active?'중지':'재개')+'</button><button data-action="delete" data-id="'+escape(x.id)+'">삭제</button></td></tr>').join(''):'<tr><td colspan="5">등록된 측정 대상이 없습니다.</td></tr>';

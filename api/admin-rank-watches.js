@@ -16,7 +16,7 @@ module.exports=async function(req,res){
   if(method==='GET'){
    const [watch,history]=await Promise.all([
     db.request('rank_watch_targets',{query:{select:'id,label,keyword,place_id,scope,active,last_run_at,created_at',order:'created_at.desc',limit:'50'}}),
-    db.request('rank_watch_observations',{query:{select:'target_id,rank,status,observed_count,observed_at',order:'observed_at.desc',limit:'100'}})
+    db.request('rank_watch_observations',{query:{select:'target_id,rank,rank_approximate,status,observed_count,observed_at',order:'observed_at.desc',limit:'100'}})
    ]);
    return res.status(200).json({targets:watch,observations:history});
   }

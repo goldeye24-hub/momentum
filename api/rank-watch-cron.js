@@ -17,7 +17,7 @@ module.exports=async function(req,res){
    catch{result={status:'unavailable',rank:null,source:'none',observedCount:0}}
    const status=['ranked','not_in_block','no_place_block','blocked','unavailable'].includes(result.status)?result.status:'unavailable';
    const at=new Date().toISOString();
-   await db.request('rank_watch_observations',{method:'POST',body:{target_id:item.id,rank:status==='ranked'?result.rank:null,status,observed_count:result.observedCount||0,source:result.source||'none',scope:item.scope,observed_at:at},prefer:'return=minimal'});
+   await db.request('rank_watch_observations',{method:'POST',body:{target_id:item.id,rank:status==='ranked'?result.rank:null,rank_approximate:result.rankApproximate===true,status,observed_count:result.observedCount||0,source:result.source||'none',scope:item.scope,observed_at:at},prefer:'return=minimal'});
    await db.request('rank_watch_targets',{method:'PATCH',query:{id:'eq.'+item.id},body:{last_run_at:at},prefer:'return=minimal'});
    out.push({id:item.id,status,rank:status==='ranked'?result.rank:null});
   }
