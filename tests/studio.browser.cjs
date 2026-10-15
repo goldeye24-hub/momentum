@@ -684,6 +684,26 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await rankPage.close();
     console.log('PASS: rank observation recording and history comparisons');
 
+    // One-time, low-volume technical feasibility observation (no bypass or retries).
+    try {
+      const qp=await ctx.newPage();
+      const started=Date.now();
+      const url='https://search.naver.com/search.naver?'+new URLSearchParams({query:'포항 물회'});
+      let response=null;
+      try {response=await qp.goto(url,{waitUntil:'domcontentloaded',timeout:15000});}
+      catch(err){console.log('NAVER_FEASIBILITY navigation_error='+String(err.message).slice(0,180));}
+      if(response){
+        await qp.waitForTimeout(1400);
+        const v=await qp.evaluate(()=>{
+          const all=[...document.querySelectorAll('a[href*="/place/"]')];
+          const list=[...document.querySelectorAll('div[class*="place"] li')];
+          return {title:document.title.slice(0,100),hrefLinks:all.length,uniqueIds:[...new Set(all.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].length,listCount:list.length,bodyLen:document.body?.innerText.length||0};
+        });
+        console.log('NAVER_FEASIBILITY '+JSON.stringify({http:response.status(),finalOrigin:new URL(qp.url()).origin,...v,elapsedMs:Date.now()-started}));
+      }
+      await qp.close();
+    } catch(err){console.log('NAVER_FEASIBILITY error='+String(err.message).slice(0,220));}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
