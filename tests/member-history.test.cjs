@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const member=require('../api/_member-session'),db=require('../api/_rank-store');
-const model=require('../api/_member-history-model'),handler=require('../api/member-history');
+const model=require('../api/_member-history-model'),handler=require('../server-handlers/member-history');
 const USER='11111111-1111-4111-8111-111111111111',TARGET='22222222-2222-4222-8222-222222222222';
 function res(){return{code:0,data:null,setHeader(){},status(v){this.code=v;return this},json(v){this.data=v;return this}}}
 async function mocked({session=true,configured=true,request},run){
@@ -74,7 +74,7 @@ test('member history returns 404 for other owner and 422 for name-only',async()=
 });
 test('SQL history is owner-only, service-role-only, and joins exact target without fake data',()=>{
  const sql=fs.readFileSync('db/member-portal.sql','utf8');
- const api=fs.readFileSync('api/member-history.js','utf8');
+ const api=fs.readFileSync('server-handlers/member-history.js','utf8');
  const js=fs.readFileSync('platform/history.js','utf8');
  const portal=fs.readFileSync('platform/index.html','utf8');
  const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
@@ -86,5 +86,5 @@ test('SQL history is owner-only, service-role-only, and joins exact target witho
  assert.doesNotMatch(api,/runMobile|runMap|fetch\(/);
  assert.match(portal,/id="historyChart"/);assert.match(portal,/src="\/platform\/history.js"/);
  assert.doesNotThrow(()=>new vm.Script(js));
- assert.ok(config.functions['api/member-history.js']);
+ assert.ok(config.functions['server-handlers/member-history.js']);
 });
