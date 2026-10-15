@@ -22,6 +22,18 @@ function localServer(){
       });
       return;
     }
+    if(req.method==='POST' && req.url==='/api/keyword-opportunities'){
+      let body='';
+      req.on('data',chunk=>{body+=chunk;if(body.length>4000)req.destroy()});
+      req.on('end',async()=>{
+        let status=200;
+        const adapter={setHeader(){},status(n){status=n;return this},json(data){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return this}};
+        try{
+          await require('../api/keyword-opportunities.js')({method:'POST',headers:{host:'127.0.0.1','x-forwarded-for':'127.0.0.1'},body:JSON.parse(body)},adapter);
+        }catch(err){res.writeHead(500);res.end(JSON.stringify({error:String(err)}))}
+      });
+      return;
+    }
     let target;
     try{
       const u=new URL(req.url,'http://localhost');
@@ -601,6 +613,28 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(industryErrors.length,0,'Industry pages browser errors: '+industryErrors.join(' | '));
     await industryPage.close();
     console.log('PASS: industry directory and four sector pages, mobile and no errors');
+
+
+    const keywordPage=await ctx.newPage();
+    const keywordErrors=[];
+    keywordPage.on('pageerror',err=>keywordErrors.push(String(err)));
+    const keywordResponse=await keywordPage.goto('http://127.0.0.1:'+port+'/lab/keywords/',{waitUntil:'load'});
+    assert.equal(keywordResponse.status(),200);
+    await keywordPage.waitForFunction(()=>document.querySelectorAll('#table tr').length>=10,{timeout:12000});
+    assert.match(await keywordPage.locator('#summary').innerText(),/부산 사다리차/);
+    assert.ok((await keywordPage.locator('#table tr').count())>=12);
+    assert.match(await keywordPage.locator('#apiStatus').innerText(),/기획 우선순위/);
+    assert.ok((await keywordPage.locator('#table').innerText()).includes('—'));
+    await keywordPage.locator('.example[data-seed="해운대 맛집"]').click();
+    await keywordPage.waitForFunction(()=>document.querySelector('#summary')?.textContent.includes('해운대 맛집'),{timeout:12000});
+    assert.match(await keywordPage.locator('#table').innerText(),/예약|메뉴/);
+    await keywordPage.setViewportSize({width:390,height:844});
+    const kd=await keywordPage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+    assert.ok(kd.scrollWidth<=kd.viewport+3,'Keyword mobile horizontal overflow '+JSON.stringify(kd));
+    assert.equal(keywordErrors.length,0,'Keyword tool runtime errors: '+keywordErrors.join(' | '));
+    await keywordPage.screenshot({path:path.join(root,'artifacts/keyword-explorer-mobile.png'),fullPage:true});
+    await keywordPage.close();
+    console.log('PASS: keyword explorer live API, intent-based ranking, mobile and no invented search volume');
 
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});

@@ -579,3 +579,24 @@ test('independent portfolio design editor has authenticated route and safe local
  assert.ok(vercel.rewrites.some(x=>x.source==='/admin/designs/'&&x.destination.includes('view=designs')));
  assert.match(fs.readFileSync('site-builder/index.html','utf8'),/href="\/admin\/designs\/"/);
 });
+
+test('keyword explorer produces intent-first candidates without invented search counts',()=>{
+ const engine=require('../api/keyword-opportunities.js');
+ const result=engine.generate('부산 사다리차');
+ assert.equal(result.region,'부산');
+ assert.equal(result.industry,'출장·생활서비스');
+ assert.ok(result.candidates.length>=12);
+ assert.ok(result.candidates.some(x=>x.keyword.includes('견적')));
+ assert.ok(result.candidates.some(x=>x.priority>=75));
+ assert.ok(result.candidates.every(x=>x.monthlyTotal===null&&x.source==='heuristic'));
+ const joined=engine.joinAds(engine.generate('부산 사다리차'),{status:'connected',rows:[{keyword:'부산사다리차',pc:200,mobile:800,adCompetition:'높음'}]});
+ assert.ok(joined.candidates.some(x=>x.source==='naver_searchads'&&x.monthlyTotal===1000));
+ assert.equal(engine.parseCount('< 10').lessThan,10);
+ assert.equal(engine.parseCount('invalid'),null);
+ const html=fs.readFileSync('lab/keywords/index.html','utf8');
+ const script=fs.readFileSync('lab/keywords/keywords.js','utf8');
+ assert.match(html,/키워드 기회 탐색기/);
+ assert.match(html,/실측/);
+ assert.match(fs.readFileSync('lab/index.html','utf8'),/href="\/lab\/keywords\/"/);
+ assert.doesNotThrow(()=>new vm.Script(script));
+});
