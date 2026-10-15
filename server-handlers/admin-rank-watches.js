@@ -1,7 +1,7 @@
 'use strict';
-const auth=require('./admin-site-builder');
-const db=require('./_rank-store');
-const observer=require('./_place-observe');
+const auth=require('../api/admin-site-builder');
+const db=require('../api/_rank-store');
+const observer=require('../api/_place-observe');
 const clean=(v,max=90)=>String(v??'').trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max);
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex');

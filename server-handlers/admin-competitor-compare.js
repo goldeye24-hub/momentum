@@ -1,6 +1,6 @@
 'use strict';
-const auth=require('./admin-site-builder'),db=require('./_rank-store');
-const observer=require('./_place-observe'),model=require('./_place-competitor-model');
+const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
+const observer=require('../api/_place-observe'),model=require('../api/_place-competitor-model');
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex,nofollow');

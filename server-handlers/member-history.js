@@ -1,6 +1,6 @@
 'use strict';
-const member=require('./_member-session'),db=require('./_rank-store');
-const model=require('./_member-history-model');
+const member=require('../api/_member-session'),db=require('../api/_rank-store');
+const model=require('../api/_member-history-model');
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','private, no-store');

@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../api/_place-keyword-insight-model');
-const handler=require('../api/admin-place-keyword-insights');
+const handler=require('../server-handlers/admin-place-keyword-insights');
 const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
 const place='2085358113';
 function response(){return{code:0,data:null,setHeader(){},status(n){this.code=n;return this},json(d){this.data=d;return this}}}
@@ -54,7 +54,7 @@ test('insights SQL and manager UI are read-only, private and deep-link to rank m
  const ui=fs.readFileSync('site-builder/place-keyword-insights-index.html','utf8');
  const js=fs.readFileSync('site-builder/place-keyword-insights.js','utf8');
  const mx=fs.readFileSync('site-builder/keyword-matrix.js','utf8');
- const api=fs.readFileSync('api/admin-place-keyword-insights.js','utf8');
+ const api=fs.readFileSync('server-handlers/admin-place-keyword-insights.js','utf8');
  const admin=fs.readFileSync('api/admin-site-builder.js','utf8');
  const cfg=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  assert.match(sql,/momentum_place_keyword_insights/);

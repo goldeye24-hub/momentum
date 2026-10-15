@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../api/_place-competitor-model');
-const handler=require('../api/admin-competitor-compare');
+const handler=require('../server-handlers/admin-competitor-compare');
 const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
 const A='2085358113',B='1616273949';
 function res(){return{code:0,data:null,setHeader(){},status(code){this.code=code;return this},json(value){this.data=value;return this}}}
@@ -52,7 +52,7 @@ test('competition view has private DB-only endpoint, accessible admin assets and
  const sql=fs.readFileSync('db/rank-keyword-history.sql','utf8');
  const page=fs.readFileSync('site-builder/competitor-compare-index.html','utf8');
  const js=fs.readFileSync('site-builder/competitor-compare.js','utf8');
- const api=fs.readFileSync('api/admin-competitor-compare.js','utf8');
+ const api=fs.readFileSync('server-handlers/admin-competitor-compare.js','utf8');
  const router=fs.readFileSync('api/admin-site-builder.js','utf8');
  const rewrites=JSON.parse(fs.readFileSync('vercel.json','utf8')).rewrites;
  assert.match(sql,/momentum_compare_places/);assert.match(sql,/rank_keyword_entries/);

@@ -1,5 +1,5 @@
 'use strict';
-const admin=require('./admin-site-builder'),db=require('./_rank-store');
+const admin=require('../api/admin-site-builder'),db=require('../api/_rank-store');
 function origin(req){try{const o=new URL(String(req.headers?.origin||''));return o.protocol==='https:'&&o.host===req.headers?.host}catch{return false}}
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');

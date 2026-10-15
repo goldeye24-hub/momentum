@@ -1,5 +1,5 @@
 'use strict';
-const member=require('./_member-session'),db=require('./_rank-store');
+const member=require('../api/_member-session'),db=require('../api/_rank-store');
 const header=res=>{res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex,nofollow')};
 const clean=v=>String(v??'').trim();

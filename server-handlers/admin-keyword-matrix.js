@@ -1,10 +1,10 @@
 'use strict';
 /** Admin-only mobile keyword snapshots; no public scraping API or paid promises. */
-const auth=require('./admin-site-builder');
-const db=require('./_rank-store');
-const observer=require('./_place-observe');
-const {sharedMeasure}=require('./_rank-live-shared');
-const model=require('./_rank-keyword-model');
+const auth=require('../api/admin-site-builder');
+const db=require('../api/_rank-store');
+const observer=require('../api/_place-observe');
+const {sharedMeasure}=require('../api/_rank-live-shared');
+const model=require('../api/_rank-keyword-model');
 const validDays=x=>[7,30,90].includes(Number(x))?Number(x):7;
 function validOrigin(req){
  try{const value=new URL(String(req.headers?.origin||''));return value.protocol==='https:'&&value.host===req.headers?.host}

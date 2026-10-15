@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const member=require('../api/_member-session');
 const db=require('../api/_rank-store');
-const authHandler=require('../api/member-auth'),watchesHandler=require('../api/member-watches');
+const authHandler=require('../server-handlers/member-auth'),watchesHandler=require('../server-handlers/member-watches');
 const ID='11111111-1111-4111-8111-111111111111';
 function response(){return{statusCode:200,headers:{},body:null,setHeader(k,v){this.headers[k]=v},status(n){this.statusCode=n;return this},json(data){this.body=data;return this}}}
 const req=(method,body,extra={})=>({method,body,headers:{host:'momentum.example',origin:'https://momentum.example',...extra}});
@@ -130,7 +130,7 @@ test('database slot cap is transactional, service-only, and upgrade cannot be cl
  assert.match(sql,/references auth\.users\(id\) on delete cascade/);
  assert.match(sql,/where owner_id=p_user/);
  assert.match(sql,/revoke all on public\.momentum_member_targets from PUBLIC,anon,authenticated/);
- assert.doesNotMatch(fs.readFileSync('api/member-watches.js','utf8'),/update.*slot_limit|upgrade.*plan/);
+ assert.doesNotMatch(fs.readFileSync('server-handlers/member-watches.js','utf8'),/update.*slot_limit|upgrade.*plan/);
 });
 test('member portal is a static responsive page and its JS is browser-valid',()=>{
  const cfg=JSON.parse(fs.readFileSync('vercel.json','utf8'));

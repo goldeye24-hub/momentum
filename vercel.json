@@ -14,6 +14,38 @@
   ],
   "rewrites": [
     {
+      "source": "/api/admin-keyword-matrix",
+      "destination": "/api/compact?op=admin-keyword-matrix"
+    },
+    {
+      "source": "/api/admin-competitor-compare",
+      "destination": "/api/compact?op=admin-competitor-compare"
+    },
+    {
+      "source": "/api/admin-members",
+      "destination": "/api/compact?op=admin-members"
+    },
+    {
+      "source": "/api/admin-place-keyword-insights",
+      "destination": "/api/compact?op=admin-place-keyword-insights"
+    },
+    {
+      "source": "/api/member-auth",
+      "destination": "/api/compact?op=member-auth"
+    },
+    {
+      "source": "/api/member-watches",
+      "destination": "/api/compact?op=member-watches"
+    },
+    {
+      "source": "/api/member-history",
+      "destination": "/api/compact?op=member-history"
+    },
+    {
+      "source": "/api/admin-rank-watches",
+      "destination": "/api/compact?op=admin-rank-watches"
+    },
+    {
       "source": "/platform",
       "destination": "/platform/index.html"
     },
@@ -39,7 +71,7 @@
     },
     {
       "source": "/admin/place-insights/api",
-      "destination": "/api/admin-place-keyword-insights"
+      "destination": "/api/compact?op=admin-place-keyword-insights"
     },
     {
       "source": "/admin/place-insights",
@@ -51,7 +83,7 @@
     },
     {
       "source": "/admin/competitors/api",
-      "destination": "/api/admin-competitor-compare"
+      "destination": "/api/compact?op=admin-competitor-compare"
     },
     {
       "source": "/admin/competitors",
@@ -63,7 +95,7 @@
     },
     {
       "source": "/admin/keyword-matrix/api",
-      "destination": "/api/admin-keyword-matrix"
+      "destination": "/api/compact?op=admin-keyword-matrix"
     },
     {
       "source": "/admin/keyword-matrix",
@@ -75,7 +107,7 @@
     },
     {
       "source": "/admin/members/api",
-      "destination": "/api/admin-members"
+      "destination": "/api/compact?op=admin-members"
     },
     {
       "source": "/admin/members",
@@ -87,7 +119,7 @@
     },
     {
       "source": "/admin/watches/api",
-      "destination": "/api/admin-rank-watches"
+      "destination": "/api/compact?op=admin-rank-watches"
     },
     {
       "source": "/admin/watches",
@@ -129,27 +161,9 @@
     "api/rank-watch-cron.js": {
       "maxDuration": 60
     },
-    "api/admin-keyword-matrix.js": {
+    "api/compact.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
-    },
-    "api/admin-competitor-compare.js": {
-      "maxDuration": 30
-    },
-    "api/admin-place-keyword-insights.js": {
-      "maxDuration": 30
-    },
-    "api/member-auth.js": {
-      "maxDuration": 30
-    },
-    "api/member-watches.js": {
-      "maxDuration": 30
-    },
-    "api/admin-members.js": {
-      "maxDuration": 30
-    },
-    "api/member-history.js": {
-      "maxDuration": 30
     }
   }
 }
