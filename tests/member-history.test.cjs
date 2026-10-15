@@ -86,5 +86,5 @@ test('SQL history is owner-only, service-role-only, and joins exact target witho
  assert.doesNotMatch(api,/runMobile|runMap|fetch\(/);
  assert.match(portal,/id="historyChart"/);assert.match(portal,/src="\/platform\/history.js"/);
  assert.doesNotThrow(()=>new vm.Script(js));
- assert.ok(config.functions['server-handlers/member-history.js']);
+ assert.ok(config.functions['api/compact.js']);
 });
