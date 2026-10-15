@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const admin=require('../api/admin-site-builder'),db=require('../api/_rank-store');
-const handler=require('../api/admin-members');
+const handler=require('../server-handlers/admin-members');
 const USER='11111111-1111-4111-8111-111111111111';
 function response(){return{statusCode:200,data:null,setHeader(){},status(code){this.statusCode=code;return this},json(x){this.data=x;return this}}}
 async function mock(props,fn){
