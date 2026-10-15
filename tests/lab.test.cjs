@@ -794,3 +794,4 @@ require('./supabase-key-compat.test.cjs');
 require('./admin-connection.test.cjs');
 
 require('./admin-manual-measure.test.cjs');
+require('./admin-password-remember.test.cjs');
