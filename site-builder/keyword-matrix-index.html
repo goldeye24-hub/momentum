@@ -1,0 +1,24 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="모멘텀마케팅 내부 관리자 전용 모바일 플레이스 키워드 순위 관측 데이터"><title>모바일 키워드 순위 분석 | 모멘텀마케팅</title><link rel="stylesheet" href="/admin/assets/keyword-matrix.css"></head><body>
+<header class="top"><a href="/admin/">MOMENTUM <b>INTELLIGENCE</b></a><nav><a href="/admin/watches/">업체별 순위 추적</a><a href="/admin/crm/">고객 관리</a><a href="/lab/rank/" target="_blank" rel="noopener">공개 순위조회 ↗</a><form action="/admin/logout" method="post"><button>로그아웃</button></form></nav></header>
+<main>
+<section class="intro"><span class="eyebrow">INTERNAL ANALYTICS · NAVER MOBILE</span><h1>키워드별 순위 변동을<br>한눈에 비교합니다.</h1><p>한 번 관측한 목록으로 여러 업체의 표시 위치를 비교합니다. 관측하지 않은 날짜는 빈칸으로 두며, 이 결과는 광고 제외 자연검색 순위와 다를 수 있습니다.</p></section>
+<section class="panel search-panel"><div class="section-title"><div><small>01 / SEARCH & CAPTURE</small><h2>분석 키워드</h2></div><span class="tag">관리자 전용 · 베타</span></div>
+<form id="keywordForm" class="search"><label for="keyword">네이버 모바일 검색 키워드</label><div class="search-controls"><input id="keyword" name="keyword" required minlength="2" maxlength="60" placeholder="예: 포항맛집" value="포항맛집"><button type="submit" id="load">기존 기록 조회</button><button type="button" id="capture" class="primary">새 모바일 목록 관측</button></div></form>
+<div class="config"><div class="option"><span>비교 기간</span><div class="seg" role="group" aria-label="비교 기간"><button data-days="7" class="active" type="button">7일</button><button data-days="30" type="button">30일</button><button data-days="90" type="button">90일</button></div></div><div class="option"><span>표시 순위</span><div class="seg" role="group" aria-label="표시 순위"><button data-limit="10" type="button">TOP 10</button><button data-limit="30" type="button">TOP 30</button><button data-limit="100" class="active" type="button">TOP 100</button></div></div><button id="exportCsv" type="button" class="secondary">관측 기록 CSV</button></div>
+<p id="message" class="notice" role="status" aria-live="polite">서버에 저장된 순위 기록을 불러올 수 있습니다. 새로운 관측은 네이버 요청 제한에 따라 지연될 수 있습니다.</p></section>
+<section class="panel"><div class="section-title"><div><small>02 / KEYWORD OVERVIEW</small><h2>키워드 순위 현황</h2></div><span id="latestAt" class="meta">미측정</span></div>
+<div class="metrics">
+<div class="metric"><span>마지막 관측 업체</span><strong id="latestCount">—</strong><small>목록에서 실제 확인한 업체 수</small></div>
+<div class="metric"><span>비교 가능한 업체</span><strong id="matchedCount">—</strong><small>최근 두 관측에 모두 등장</small></div>
+<div class="metric"><span>순위 상승</span><strong id="risingCount" class="up">—</strong><small>두 시점에서 확인된 변동</small></div>
+<div class="metric"><span>순위 하락</span><strong id="fallingCount" class="down">—</strong><small>미관측 업체는 제외</small></div>
+</div>
+<div class="section-title lower"><div><small>03 / HISTORICAL RANK MATRIX</small><h2>날짜별 1~100위 순위표</h2></div><small>오른쪽으로 스크롤하여 날짜 비교 · 빈칸은 미관측</small></div>
+<div class="table-scroll" role="region" aria-label="모바일 키워드 날짜별 순위표" tabindex="0"><table class="matrix"><thead id="matrixHead"><tr><th>순위</th><th>아직 수집된 기록이 없습니다</th></tr></thead><tbody id="matrixBody"><tr><td colspan="2" class="empty">키워드를 조회하면 저장된 관측 기록이 표시됩니다.</td></tr></tbody></table></div>
+<p class="fine">표시된 순위는 모바일 목록에서 관측한 위치입니다. 광고·개인화·지역 설정의 영향을 받으며, 목록에서 읽히지 않은 1~100위는 임의로 채우지 않습니다.</p>
+</section>
+<section class="panel bottom"><div class="section-title"><div><small>04 / COMPETITOR MOVEMENT</small><h2>관측 업체별 순위 변화</h2></div><small id="coverage">측정일 없음</small></div>
+<div class="compare-layout"><div class="table-scroll competitor" role="region" aria-label="최근 관측된 업체별 순위 변화"><table><thead><tr><th>업체</th><th>최근 순위</th><th>직전 관측</th><th>변동</th><th>정확도</th></tr></thead><tbody id="movementRows"><tr><td colspan="5" class="empty">비교할 기록이 없습니다.</td></tr></tbody></table></div><aside class="chart"><h3 id="chartTitle">업체별 순위 추이</h3><div id="trendChart" class="chart-inner">왼쪽 목록에서 업체를 선택하면 관측된 날짜의 순위를 표시합니다.</div><p>연속된 두 날짜에 기록이 없으면 선을 연결하지 않습니다. 이전 데이터가 없는 업체는 신규 진입으로 추정하지 않습니다.</p></aside></div>
+</section>
+<section class="footer-note"><strong>운영 안내</strong><p>관측 데이터를 만들려면 비공개 Supabase DB와 서버 환경변수를 연결해야 합니다. 네이버 요청 제한(429/403)이 발생하면 재시도를 중단하며, 새로운 값 대신 실제 과거 관측 시각을 표시합니다. 고객용 유료 제공은 데이터 이용 권한과 수용량을 검증한 후 개방합니다.</p><p><a href="/admin/watches/">기존 업체별 순위 추적 관리 →</a></p></section>
+</main><footer>© MOMENTUM MARKETING · 내부 운영 자료</footer><script defer src="/admin/assets/keyword-matrix.js"></script></body></html>
