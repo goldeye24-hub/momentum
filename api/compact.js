@@ -12,7 +12,8 @@ const handlers=Object.freeze({
  'member-auth':require('../server-handlers/member-auth'),
  'member-watches':require('../server-handlers/member-watches'),
  'member-history':require('../server-handlers/member-history'),
- 'admin-rank-watches':require('../server-handlers/admin-rank-watches')
+ 'admin-rank-watches':require('../server-handlers/admin-rank-watches'),
+ 'admin-connection':require('../server-handlers/admin-connection')
 });
 module.exports=async function(req,res){
  const raw=req?.query?.op;

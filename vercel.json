@@ -106,6 +106,18 @@
       "destination": "/api/admin-site-builder?view=keywords"
     },
     {
+      "source": "/admin/connection/api",
+      "destination": "/api/compact?op=admin-connection"
+    },
+    {
+      "source": "/admin/connection",
+      "destination": "/api/admin-site-builder?view=connection"
+    },
+    {
+      "source": "/admin/connection/",
+      "destination": "/api/admin-site-builder?view=connection"
+    },
+    {
       "source": "/admin/members/api",
       "destination": "/api/compact?op=admin-members"
     },
