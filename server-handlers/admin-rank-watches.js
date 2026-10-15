@@ -40,7 +40,7 @@ module.exports=async function(req,res){
     return res.status(429).json({status:'cooldown',error:'동일 대상은 10분 이내 중복 측정할 수 없습니다. 이전 결과를 확인하세요.'});
    }
    const target=row.place_id||observer.normalizeBusinessName(row.target_name);
-   const key=row.scope+'\\n'+row.keyword+'\\n'+target;
+   const key=row.scope+'\n'+row.keyword+'\n'+target;
    const result=await sharedMeasure({key,scope:row.scope,measure:()=>row.scope==='mobile'?
      observer.runMobile(row.keyword,{id:row.place_id||null,name:row.target_name||null}):
      row.scope==='map'?observer.runMap(row.keyword,row.place_id):
