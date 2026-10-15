@@ -53,6 +53,7 @@ jobs:
           node tests/keyword-matrix.browser.cjs
           node tests/competitor-compare.browser.cjs
           node tests/place-keyword-insights.browser.cjs
+          node tests/member-portal.browser.cjs
       - name: Save desktop and mobile screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
