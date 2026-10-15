@@ -20,8 +20,8 @@ test('reduceMobileList accepts only visible unique IDs, never invents missing po
   {id:'junk',name:'가짜',rank:87},{id:'234567890',name:'테스트 매장',rank:null}
  ]);
  assert.equal(data.status,'observed');assert.equal(data.observedCount,2);
- assert.deepEqual(data.entries.map(x=>x.rank),[85,2]);
- assert.equal(data.entries[0].approximate,false);
+ assert.deepEqual(data.entries.map(x=>x.rank),[1,2]);
+ assert.equal(data.entries[0].approximate,true);
  assert.equal(data.entries[1].approximate,true);
  assert.match(data.disclaimer,/자연검색 순위가 아닙니다/);
  assert.equal(model.reduceMobileList([]).status,'no_place_block');
@@ -30,8 +30,8 @@ test('reduceMobileList accepts only visible unique IDs, never invents missing po
 
 test('rank metadata restarting inside loaded scroll never produces a false exact rank',()=>{
  const rows=model.reduceMobileList([{id:'1234567',name:'첫 업체',rank:8},{id:'2345678',name:'둘 업체',rank:1},{id:'3456789',name:'셋 업체',rank:2}]).entries;
- assert.deepEqual(rows.map(x=>x.rank),[8,2,3]);
- assert.equal(rows[1].approximate,true);
+ assert.deepEqual(rows.map(x=>x.rank),[1,2,3]);
+ assert.equal(rows[0].approximate,true);assert.equal(rows[1].approximate,true);
  assert.equal(rows[2].rankBasis,'visible_list_position_estimate');
 });
 
