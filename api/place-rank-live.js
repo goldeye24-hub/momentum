@@ -22,13 +22,15 @@ module.exports=async function(req,res){
  if(typeof body==='string'){if(body.length>1200)return res.status(413).json({status:'error',message:'요청이 너무 깁니다.'});try{body=JSON.parse(body)}catch{return res.status(400).json({status:'error',message:'JSON 요청을 확인해 주세요.'})}}
  if(!body||typeof body!=='object'||Array.isArray(body))body={};
  const keyword=observer.validateKeyword(body.keyword);
- const id=observer.placeId(body.placeId||body.placeUrl||body.target);
- if(!keyword||!id)return res.status(400).json({status:'invalid',message:'2~60자 검색어와 네이버 플레이스 주소 또는 숫자 ID를 입력하세요.'});
- const scope=body.scope==='map'?'map':'integrated';
- const key=scope+'\n'+keyword+'\n'+id,now=Date.now(),saved=cache.get(key);
+ const scope=body.scope==='mobile'?'mobile':body.scope==='map'?'map':'integrated';
+ const targetValue=body.placeId||body.placeUrl||body.target||body.name;
+ const mobileTarget=scope==='mobile'?observer.mobileTarget(targetValue):null;
+ const id=observer.placeId(targetValue);
+ if(!keyword||(scope==='mobile'?!mobileTarget:!id))return res.status(400).json({status:'invalid',message:'검색어와 업체명 또는 플레이스 ID/주소를 확인하세요.'});
+ const key=scope+'\n'+keyword+'\n'+(id||mobileTarget.name),now=Date.now(),saved=cache.get(key);
  if(saved&&now-saved.time<180000)return res.status(200).json({...saved.data,cached:true});
  try{
-  const result=await (scope==='map'?observer.runMap(keyword,id):observer.run(keyword,id));
+  const result=await (scope==='mobile'?observer.runMobile(keyword,mobileTarget):scope==='map'?observer.runMap(keyword,id):observer.run(keyword,id));
   if(result.status==='ranked'||result.status==='not_in_block')cache.set(key,{time:Date.now(),data:result});
   if(cache.size>250){for(const [k,v] of cache)if(Date.now()-v.time>180000)cache.delete(k)}
   return res.status(200).json(result);
