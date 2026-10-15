@@ -753,7 +753,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const mapPage=await ctx.newPage();
       const start=Date.now();
       const response=await mapPage.goto('https://map.naver.com/p/search/'+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:18000});
-      await mapPage.waitForTimeout(1800);
+      await mapPage.waitForTimeout(6200);
       const status=[];
       for(const frame of mapPage.frames()){
         try{
@@ -764,7 +764,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
           status.push({url:frame.url().slice(0,130),...info});
         }catch(e){status.push({url:frame.url().slice(0,130),err:String(e.message).slice(0,50)})}
       }
-      console.log('NAVER_MAP_PROBE '+JSON.stringify({http:response?.status()||null,frames:status,ms:Date.now()-start}).slice(0,2100));
+      console.log('NAVER_MAP_PROBE '+JSON.stringify({http:response?.status()||null,frames:status,iframes:await mapPage.locator('iframe').evaluateAll(els=>els.map(x=>({id:x.id,src:x.getAttribute('src')?.slice(0,130)})).slice(0,8)),ms:Date.now()-start}).slice(0,2600));
       await mapPage.close();
     }catch(err){console.log('NAVER_MAP_PROBE error='+String(err.message).slice(0,160))}
 
