@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../api/_rank-keyword-model');
 const observer=require('../api/_place-observe');
-const handler=require('../api/admin-keyword-matrix');
+const handler=require('../server-handlers/admin-keyword-matrix');
 const auth=require('../api/admin-site-builder');
 const db=require('../api/_rank-store');
 const sid1='11111111-1111-4111-8111-111111111111',sid2='22222222-2222-4222-8222-222222222222';
@@ -128,5 +128,5 @@ test('SQL tables and authenticated UI contain no public snapshot grants',()=>{
  assert.match(router,/view==='keywords'/);
  assert.match(router,/keyword-matrix-index\.html/);
  assert.doesNotThrow(()=>new vm.Script(js));
- assert.ok(vercel.rewrites.some(x=>x.source==='/admin/keyword-matrix/api'&&x.destination==='/api/admin-keyword-matrix'));
+ assert.ok(vercel.rewrites.some(x=>x.source==='/admin/keyword-matrix/api'&&x.destination==='/api/compact?op=admin-keyword-matrix'));
 });
