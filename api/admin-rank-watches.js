@@ -27,7 +27,7 @@ module.exports=async function(req,res){
   const action=clean(data.action,15);
   if(action==='create'){
    const keyword=observer.validateKeyword(data.keyword),place=observer.placeId(data.placeUrl||data.placeId),label=clean(data.label,70);
-   const scope=data.scope==='integrated'?'integrated':'map';
+   const scope=data.scope==='integrated'?'integrated':data.scope==='map'?'map':'mobile';
    if(!keyword||!place||!label)return res.status(400).json({error:'상호·검색어·플레이스 주소를 확인해 주세요.'});
    const existing=await db.request('rank_watch_targets',{query:{select:'id',limit:'30'}});
    if(existing.length>=20)return res.status(409).json({error:'현재 시험 운영은 최대 20개 대상만 등록할 수 있습니다.'});
