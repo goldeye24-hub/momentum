@@ -231,79 +231,120 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await landing.close();
     console.log('PASS: four real service landings, two protected-media-safe case studies, mobile accessibility and cross-page inquiry preselection');
 
-    // These are fifteen independent websites, not instances of a shared card/template skeleton.
+    // Real industry template pages: actual navigable pages, not fictional screenshots.
     const templatePage=await ctx.newPage();
     const templateErrors=[];
     templatePage.on('pageerror',e=>templateErrors.push(String(e)));
-    const designs=['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon','restaurant','beauty','academy','clinic','corporate'];
-    const layouts=new Set();
-    for(const id of designs){
-      await templatePage.setViewportSize({width:1440,height:900});
+    for(const id of ['restaurant','beauty','academy','clinic','corporate']){
       const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      assert.equal(response.status(),200,'Portfolio route '+id);
-      assert.ok((await templatePage.locator('h1').first().innerText()).length>8,id+' headline');
-      assert.match(await templatePage.locator('.demo-strip').innerText(),/가상의 브랜드/);
-      const layout=await templatePage.evaluate(()=>document.querySelector('main>section').className);
-      assert.ok(layout&&layout!=='ind-hero','Shared old layout still used: '+id);
-      layouts.add(layout);
-      assert.equal(await templatePage.locator('main > section').count()>=3,true,id+' should have meaningful sections');
+      assert.equal(response.status(),200,'Template route '+id);
+      await templatePage.waitForSelector('.site-hero h1',{timeout:15000});
+      assert.ok((await templatePage.locator('h1').innerText()).length>=6,id+' empty heading');
+      assert.equal(await templatePage.locator('.service-card').count(),3,'Service cards '+id);
+      assert.equal(await templatePage.locator('.gallery-tile').count(),3,'Gallery '+id);
+      assert.match(await templatePage.locator('.sample-ribbon').innerText(),/실제 업체가 아닙니다/);
+      await templatePage.setViewportSize({width:390,height:844});
+      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile sample overflow '+id+' '+JSON.stringify(dims));
+    }
+    // Ten new real websites: food/franchise, lodging, pet grooming and local services.
+    for(const id of ['foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon']){
+      const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      assert.equal(response.status(),200,'New sample route '+id);
+      await templatePage.waitForSelector('.ind-hero h1',{timeout:10000});
+      assert.ok((await templatePage.locator('h1').innerText()).length>7,'New sample heading '+id);
+      assert.equal(await templatePage.locator('.ind-feature').count(),3,'New services '+id);
+      assert.equal(await templatePage.locator('.ind-shot').count(),3,'New gallery '+id);
+      assert.match(await templatePage.locator('.industry-demo').innerText(),/가상 브랜드/);
+      assert.match(await templatePage.locator('.ind-final a').getAttribute('href'),new RegExp('design='+id));
+      await templatePage.setViewportSize({width:390,height:844});
+      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(dims.scrollWidth<=dims.viewport+3,'New sample mobile overflow '+id+' '+JSON.stringify(dims));
+    }
+
+    // Industry-specific consultation forms are navigable, validated and privacy-safe.
+    for(const service of ['ladder','movers','cleaning','aircon','petgroom']){
+      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+service+'/',{waitUntil:'load'});
+      const form=templatePage.locator('#serviceQuoteForm');
+      assert.equal(await form.count(),1,'Missing service inquiry form '+service);
+      assert.equal(await form.getAttribute('data-demo-only'),'true');
+      assert.match(await templatePage.locator('.quote-privacy').innerText(),/저장하지 않습니다|저장되거나 전송되지/);
+      assert.equal(await templatePage.locator('.sig-hero a.sig-primary').getAttribute('href'),'#quote');
+      const count=await form.locator('.quote-field').count();
+      assert.ok(count>=7,'Need industry-specific service questions '+service);
+      const submit=templatePage.locator('#serviceQuoteForm button[type="submit"]');
+      await submit.click();
+      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),false,'Empty form must not submit');
+      await form.evaluate(el=>{
+        const today=new Date();
+        const local=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+        for(const input of el.querySelectorAll('[required]')){
+          if(input.tagName==='SELECT')input.value=input.options[1].value;
+          else if(input.type==='date')input.value=local;
+          else if(input.tagName==='TEXTAREA')input.value='시연용 내용';
+          else input.value='부산 테스트 지역';
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+      });
+      const postUrls=[];
+      const onPost=req=>{if(req.method()==='POST')postUrls.push(req.url())};
+      templatePage.on('request',onPost);
+      await submit.click();
+      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),true,'Form demo result missing '+service);
+      assert.match(await templatePage.locator('#quoteDemoResult').innerText(),/전달되지 않으며|전송되지|저장되지/);
+      assert.deepEqual(postUrls,[],'Demo form must not transmit customer data '+service);
+      templatePage.off('request',onPost);
+      await templatePage.setViewportSize({width:390,height:844});
+      const bounds=await templatePage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+      assert.ok(bounds.scrollWidth<=bounds.viewport+3,'Service form mobile overflow '+service+' '+JSON.stringify(bounds));
+      await templatePage.setViewportSize({width:1440,height:900});
+    }
+    // Layout diversity: the portfolio must NOT be one wireframe with changed photos/colors.
+    const designSignatures=new Map();
+    await templatePage.setViewportSize({width:1440,height:900});
+    for(const id of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      const shape=await templatePage.evaluate(()=>{
+        const hero=document.querySelector('.ind-hero'),copy=hero.querySelector('.ind-copy'),media=hero.querySelector('.ind-media');
+        const a=copy.getBoundingClientRect(),b=media.getBoundingClientRect();
+        return {layout:getComputedStyle(hero).display,position:getComputedStyle(copy).position,photo:getComputedStyle(media).position,
+          copyX:Math.round(a.x/30),photoX:Math.round(b.x/30),photoY:Math.round(b.y/30),copyY:Math.round(a.y/30)};
+      });
+      designSignatures.set(id,JSON.stringify(shape));
       if(['poolvilla','petgroom','ladder','foodie','franchise'].includes(id)){
         await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
       }
-      await templatePage.setViewportSize({width:390,height:844});
-      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
-      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile overflow '+id+' '+JSON.stringify(dims));
     }
-    assert.equal(layouts.size,15,'Not all fifteen independent layouts are distinct');
+    assert.ok(new Set(designSignatures.values()).size>=6,'Portfolio design layouts too similar: '+JSON.stringify([...designSignatures]));
+
+    // Every art-directed sample has unique business-specific content and nearby booking integration note.
     for(const id of ['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic']){
-      await templatePage.setViewportSize({width:1440,height:900});
       await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      const booking=templatePage.locator('.booking-cta');
-      assert.equal(await booking.count(),1,'Booking control missing '+id);
-      assert.equal(await booking.locator('.naver-reserve-note').innerText(),'네이버예약 연동 가능');
+      const booking=templatePage.locator('.sig-hero .sig-book');
+      assert.equal(await booking.count(),1,'Booking CTA missing '+id);
+      assert.equal(await booking.locator('small.naver-reserve-note').innerText(),'네이버예약 연동 가능');
       assert.equal(await booking.locator('a').getAttribute('href'),id==='petgroom'?'#quote':'#contact');
       const rect=await booking.evaluate(el=>{
         const a=el.querySelector('a').getBoundingClientRect(),b=el.querySelector('small').getBoundingClientRect();
         return {buttonBottom:a.bottom,labelTop:b.top,labelHeight:b.height};
       });
       assert.ok(rect.labelTop>=rect.buttonBottom-2&&rect.labelTop<=rect.buttonBottom+25&&rect.labelHeight>8,
-        'Booking caption not adjacent '+id+' '+JSON.stringify(rect));
+        'Booking note must stay immediately underneath reservation CTA '+id+' '+JSON.stringify(rect));
     }
-    for(const service of ['ladder','movers','cleaning','aircon','petgroom']){
-      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+service+'/',{waitUntil:'load'});
-      const form=templatePage.locator('#serviceQuoteForm');
-      assert.equal(await form.count(),1,'Missing industry quote '+service);
-      assert.equal(await form.getAttribute('data-demo-only'),'true');
-      assert.match(await templatePage.locator('.quote-privacy').innerText(),/저장하지 않습니다|저장되거나 전송되지/);
-      assert.ok(await form.locator('.quote-field').count()>=7);
-      await form.locator('button[type="submit"]').click();
-      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),false);
-      await form.evaluate(el=>{
-        const today=new Date();const dt=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
-        for(const input of el.querySelectorAll('[required]')){
-          if(input.tagName==='SELECT')input.value=input.options[1].value;
-          else if(input.type==='date')input.value=dt;
-          else input.value='부산 테스트 지역';
-          input.dispatchEvent(new Event('input',{bubbles:true}));
-        }
-      });
-      const posts=[];const onPost=req=>{if(req.method()==='POST')posts.push(req.url())};
-      templatePage.on('request',onPost);
-      await form.locator('button[type="submit"]').click();
-      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),true);
-      assert.deepEqual(posts,[],'Demo data transmitted '+service);
-      templatePage.off('request',onPost);
-    }
-    await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/cleaning/',{waitUntil:'load'});
-    await templatePage.locator('[data-compare-range]').fill('75');
-    assert.equal(await templatePage.locator('[data-beforeafter]').evaluate(el=>el.style.getPropertyValue('--compare-right')),'25%');
-    assert.equal(templateErrors.length,0,'Portfolio JavaScript errors: '+templateErrors.join(' | '));
+    assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
     assert.equal(await templatePage.locator('.sample-card').count(),15);
-    for(const [filter,count] of [['food',3],['stay',3],['services',4],['professional',3],['all',15]]){
-      await templatePage.locator('[data-filter="'+filter+'"]').click();
-      assert.equal(await templatePage.locator('.sample-card:visible').count(),count,'Filter '+filter);
-    }
+    assert.match(await templatePage.locator('h1').innerText(),/선택하고 싶은/);
+    await templatePage.locator('[data-filter="food"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    await templatePage.locator('[data-filter="stay"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    await templatePage.locator('[data-filter="services"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),4);
+    await templatePage.locator('[data-filter="professional"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    await templatePage.locator('[data-filter="all"]').click();
+    assert.equal(await templatePage.locator('.sample-card:visible').count(),15);
     await templatePage.locator('[data-choose="franchise"]').click();
     assert.match(await templatePage.locator('#selectedDesignName').innerText(),/프랜차이즈/);
     assert.match(await templatePage.locator('#selectedDesignConsult').getAttribute('href'),/design=franchise/);

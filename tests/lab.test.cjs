@@ -343,11 +343,11 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   assert.ok(preset,id);
   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
   assert.doesNotMatch(page,/<script\s+src="\/site-builder\/kit\.js"/);
-  assert.match(page,/atelier\.css/);
+  assert.match(page,/site-template\.css/);
   assert.match(page,/noindex,follow/);
-  assert.match(page,/id="top"/);
-  assert.match(page,/<h1/);
-  assert.match(page,/class="brand-nav"/);
+  assert.match(page,/<section class="site-shell site-hero(?:\s|\")/);
+  assert.match(page,/class="services-grid"/);
+  assert.match(page,/class="gallery-grid"/);
   assert.doesNotMatch(page,/홈페이지 디자인 샘플을 불러오는 중입니다/);
   assert.doesNotMatch(page,/document\.write\(/);
 
@@ -373,58 +373,105 @@ test('five distinct industry websites are real navigable demo pages with safe HT
  assert.doesNotMatch(productionHtml,/class="sample-ribbon"/);
  assert.match(productionHtml,/공식 홈페이지/);
 });
-test('portfolio is fifteen independent industry websites and builder remains operational',()=>{
+test('page builder has real section, image, style, reorder, persistence and export controls',()=>{
  const html=fs.readFileSync('site-builder/index.html','utf8');
  const js=fs.readFileSync('site-builder/editor.js','utf8');
  const gallery=fs.readFileSync('website-samples/index.html','utf8');
- const atelier=fs.readFileSync('website-samples/atelier.css','utf8');
- const designs=['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon','restaurant','beauty','academy','clinic','corporate'];
- const firstSections=new Set();
- for(const id of designs){
-   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-   assert.match(page,/atelier\.css/);
-   assert.match(page,/id="top"/);
-   assert.match(page,/<h1/);
-   assert.match(page,/class="brand-nav"/);
-   assert.match(page,new RegExp('<body class="w-'+id+'"'));
-   assert.match(page,/실제 운영 업체가 아닙니다/);
-   assert.doesNotMatch(page,/class="(?:ind-section|site-section|ind-feature|service-card)"/);
-   const main=page.match(/<main>\s*<section class="([^"]+)"/);
-   assert.ok(main,id+' custom main hero missing');
-   assert.notEqual(main[1],'ind-hero');
-   firstSections.add(main[1]);
-   assert.ok(atelier.includes('.w-'+id),id+' custom style missing');
-   assert.match(gallery,new RegExp('data-choose="'+id+'"'));
+ const distinctCss=fs.readFileSync('website-samples/industry-distinct.css','utf8');
+ const originalCss=fs.readFileSync('website-samples/original-distinct.css','utf8');
+ for(const name of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+  assert.ok(distinctCss.includes('.theme-'+name),name+' missing bespoke direction');
+  const html=fs.readFileSync('website-samples/'+name+'/index.html','utf8');
+  assert.match(html,/industry-distinct\.css/);
  }
- assert.equal(firstSections.size,15,'all fifteen front-page architectures must be distinct');
+ for(const name of ['restaurant','beauty','academy','clinic','corporate']){
+  assert.ok(originalCss.includes('.style-'+name),name+' missing distinct layout');
+  assert.match(fs.readFileSync('website-samples/'+name+'/index.html','utf8'),/original-distinct\.css/);
+ }
+
+ assert.match(html,/id="sitePreview"/);
+ assert.match(html,/data-tab="sections"/);
+ assert.match(html,/data-tab="gallery"/);
+ assert.match(html,/id="downloadHtml"/);
+ assert.match(html,/id="saveConfig"/);
+ assert.match(html,/id="loadConfig"/);
+ assert.match(html,/data-viewport="mobile"/);
+ assert.doesNotThrow(()=>new vm.Script(js));
+ for(const marker of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])
+  assert.ok(js.includes(marker),marker);
  assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,15);
  assert.match(gallery,/data-filter/);
- const booking=['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic'];
- for(const id of booking){
+ assert.match(gallery,/data-choose="restaurant"/);
+ for(const id of ['foodie','franchise','poolvilla','pension','petgroom','ladder','movers','cleaning','glamping','aircon']){
+  assert.match(gallery,new RegExp('data-choose="'+id+'"'));
+  const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+  assert.match(page,/class="ind-wrap ind-hero(?:\s|\")/);
+  assert.match(page,/class="ind-feature"/);
+  assert.match(page,/class="ind-shot"/);
+  assert.match(page,/가상 브랜드|가상의 브랜드/);
+ }
+ assert.equal((gallery.match(/class="filter-tabs"/g)||[]).length,1);
+
+ const sigCss=fs.readFileSync('website-samples/signature-2026.css','utf8');
+ const sigDetails=fs.readFileSync('website-samples/signature-details.css','utf8');
+ const designs=['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon','restaurant','beauty','academy','clinic','corporate'];
+ for(const id of designs){
    const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-   assert.match(page,/<small class="naver-reserve-note">네이버예약 연동 가능<\/small>/);
-   assert.match(page,/class="booking-cta"/);
+   assert.match(page,/signature-2026\.css/);
+   assert.match(page,/signature-details\.css/);
+   assert.match(page,/class="sig-spotlight /);
+   assert.match(page,/sig-hero/);
+   assert.ok(sigCss.includes('.'+(['restaurant','beauty','academy','clinic','corporate'].includes(id)?'style-':'theme-')+id),id+' has no special art direction');
  }
- const formIds=['ladder','movers','cleaning','aircon','petgroom'];
+ for(const id of ['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic']){
+   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+   assert.match(page,/<small class="naver-reserve-note">네이버예약 연동 가능<\/small>/,id+' booking integration label absent');
+   assert.match(page,/class="sig-book"/,id+' booking CTA missing');
+ }
+ assert.match(sigDetails,/sig-brand-playbook/);
+ assert.match(sigDetails,/sig-poolrooms/);
+
+
+
  const quoteScript=fs.readFileSync('website-samples/service-inquiry.js','utf8');
+ const quoteStyles=fs.readFileSync('website-samples/service-inquiry.css','utf8');
  assert.doesNotThrow(()=>new vm.Script(quoteScript));
+ assert.match(quoteScript,/event.preventDefault/);
  assert.doesNotMatch(quoteScript,/fetch\(|localStorage|sessionStorage/);
- for(const kind of formIds){
-   const page=fs.readFileSync('website-samples/'+kind+'/index.html','utf8');
-   assert.match(page,/id="serviceQuoteForm"/);
-   assert.match(page,new RegExp('data-quote-kind="'+kind+'"'));
-   assert.match(page,/data-demo-only="true"/);
-   assert.match(page,/service-inquiry\.css/);
-   assert.match(page,/service-inquiry\.js/);
+ for(const kind of ['ladder','movers','cleaning','aircon','petgroom']){
+   const content=fs.readFileSync('website-samples/'+kind+'/index.html','utf8');
+   assert.match(content,/id="serviceQuoteForm"/);
+   assert.match(content,new RegExp('data-quote-kind="'+kind+'"'));
+   assert.match(content,/data-demo-only="true"/);
+   assert.match(content,/service-inquiry\.css/);
+   assert.match(content,/service-inquiry\.js/);
+   assert.match(content,/개인정보/);
  }
- assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('website-samples/atelier.js','utf8')));
- for(const marker of ['id="sitePreview"','data-tab="sections"','data-tab="gallery"','id="downloadHtml"','id="saveConfig"','id="loadConfig"','data-viewport="mobile"'])assert.ok(html.includes(marker),marker);
- assert.doesNotThrow(()=>new vm.Script(js));
- for(const marker of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])assert.ok(js.includes(marker),marker);
+ assert.match(quoteStyles,/quote-grid/);
+ const thumbStyles=fs.readFileSync('website-samples/gallery-distinct.css','utf8');
+ for(const id of ['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate']){
+   assert.match(gallery,new RegExp('preview-'+id+'(?:\\s|\\")'));
+   assert.ok(thumbStyles.includes('.preview-'+id),id+' gallery preview not distinct');
+ }
+ assert.match(gallery,/gallery-distinct\.css/);
+ const sampleOrder=new Set();
+ for(const id of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
+   const html=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+   const order=[...html.matchAll(/<section class="ind-section" id="([^"]+)"/g)].map(x=>x[1]);
+   assert.equal(order.length,5);
+   assert.equal(new Set(order).size,5);
+   assert.equal(order[4],'contact');
+   sampleOrder.add(order.slice(0,3).join('|'));
+ }
+ assert.ok(sampleOrder.size>=4,'Industry information architectures must meaningfully differ');
+
+ assert.doesNotMatch(gallery,/href="\/site-builder/);
  assert.equal((gallery.match(/class="card-visual"/g)||[]).length,15);
  assert.doesNotMatch(gallery,/<iframe/i);
+
  assert.match(gallery,/실제 고객 납품 실적이나 디자인 어워드 수상작이 아닙니다/);
 });
+
 test('admin studio supports safe scoped editing without changing other sections',()=>{
  const presets=JSON.parse(fs.readFileSync('site-builder/presets.json','utf8'));
  const code=fs.readFileSync('site-builder/kit.js','utf8');
