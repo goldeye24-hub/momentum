@@ -367,12 +367,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
     await designer.locator('#designSelect').selectOption('ladder');
-    await designer.frameLocator('#livePreview').locator('h1').waitFor();
+    await designer.frameLocator('#livePreview').locator('body.theme-ladder').waitFor();
     assert.equal(await designer.locator('#headlineInput').isDisabled(),false);
     assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),1);
-    assert.equal(await designer.frameLocator('#livePreview').locator('.ladder-board').count(),1);
+    assert.equal(await designer.frameLocator('#livePreview').locator('body.theme-ladder').count(),1);
     await designer.locator('#brandInput').fill('테스트 사다리차');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.brand-nav > a').innerText(),'테스트 사다리차');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.ind-head .ind-logo').innerText(),'테스트 사다리차');
     await designer.locator('#designSelect').selectOption('poolvilla');
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
