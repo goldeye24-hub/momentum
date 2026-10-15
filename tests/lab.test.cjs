@@ -345,7 +345,7 @@ test('five distinct industry websites are real navigable demo pages with safe HT
   assert.doesNotMatch(page,/<script\s+src="\/site-builder\/kit\.js"/);
   assert.match(page,/site-template\.css/);
   assert.match(page,/noindex,follow/);
-  assert.match(page,/<section class="site-shell site-hero"/);
+  assert.match(page,/<section class="site-shell site-hero(?:\s|\")/);
   assert.match(page,/class="services-grid"/);
   assert.match(page,/class="gallery-grid"/);
   assert.doesNotMatch(page,/홈페이지 디자인 샘플을 불러오는 중입니다/);
@@ -405,12 +405,32 @@ test('page builder has real section, image, style, reorder, persistence and expo
  for(const id of ['foodie','franchise','poolvilla','pension','petgroom','ladder','movers','cleaning','glamping','aircon']){
   assert.match(gallery,new RegExp('data-choose="'+id+'"'));
   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-  assert.match(page,/class="ind-wrap ind-hero"/);
+  assert.match(page,/class="ind-wrap ind-hero(?:\s|\")/);
   assert.match(page,/class="ind-feature"/);
   assert.match(page,/class="ind-shot"/);
   assert.match(page,/가상 브랜드|가상의 브랜드/);
  }
  assert.equal((gallery.match(/class="filter-tabs"/g)||[]).length,1);
+
+ const sigCss=fs.readFileSync('website-samples/signature-2026.css','utf8');
+ const sigDetails=fs.readFileSync('website-samples/signature-details.css','utf8');
+ const designs=['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon','restaurant','beauty','academy','clinic','corporate'];
+ for(const id of designs){
+   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+   assert.match(page,/signature-2026\.css/);
+   assert.match(page,/signature-details\.css/);
+   assert.match(page,/class="sig-spotlight /);
+   assert.match(page,/sig-hero/);
+   assert.ok(sigCss.includes('.'+(['restaurant','beauty','academy','clinic','corporate'].includes(id)?'style-':'theme-')+id),id+' has no special art direction');
+ }
+ for(const id of ['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic']){
+   const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
+   assert.match(page,/<small class="naver-reserve-note">네이버예약 연동 가능<\/small>/,id+' booking integration label absent');
+   assert.match(page,/class="sig-book"/,id+' booking CTA missing');
+ }
+ assert.match(sigDetails,/sig-brand-playbook/);
+ assert.match(sigDetails,/sig-poolrooms/);
+
 
 
  const quoteScript=fs.readFileSync('website-samples/service-inquiry.js','utf8');

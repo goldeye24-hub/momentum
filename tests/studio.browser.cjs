@@ -316,6 +316,21 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       }
     }
     assert.ok(new Set(designSignatures.values()).size>=6,'Portfolio design layouts too similar: '+JSON.stringify([...designSignatures]));
+
+    // Every art-directed sample has unique business-specific content and nearby booking integration note.
+    for(const id of ['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic']){
+      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
+      const booking=templatePage.locator('.sig-hero .sig-book');
+      assert.equal(await booking.count(),1,'Booking CTA missing '+id);
+      assert.equal(await booking.locator('small.naver-reserve-note').innerText(),'네이버예약 연동 가능');
+      assert.equal(await booking.locator('a').getAttribute('href'),id==='petgroom'?'#quote':'#contact');
+      const rect=await booking.evaluate(el=>{
+        const a=el.querySelector('a').getBoundingClientRect(),b=el.querySelector('small').getBoundingClientRect();
+        return {buttonBottom:a.bottom,labelTop:b.top,labelHeight:b.height};
+      });
+      assert.ok(rect.labelTop>=rect.buttonBottom-2&&rect.labelTop<=rect.buttonBottom+25&&rect.labelHeight>8,
+        'Booking note must stay immediately underneath reservation CTA '+id+' '+JSON.stringify(rect));
+    }
     assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
     await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
     assert.equal(await templatePage.locator('.sample-card').count(),15);
