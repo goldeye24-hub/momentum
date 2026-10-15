@@ -147,5 +147,7 @@ $('exportCsv').addEventListener('click',()=>{
  link.href=url;link.download='momentum-keyword-rank-'+state.keyword.replace(/[^\p{L}\p{N}-]/gu,'_')+'.csv';link.click();
  setTimeout(()=>URL.revokeObjectURL(url),10000);
 });
+const deeplink=new URLSearchParams(location.search).get('keyword');
+if(deeplink&&deeplink.length>=2&&deeplink.length<=60)$('keyword').value=deeplink;
 load();
 })();
