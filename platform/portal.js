@@ -3,6 +3,21 @@
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 let mode='login',busy=false,account=null;
+const REMEMBER_EMAIL_KEY='momentum.member.remember-email.v1';
+function restoreRememberedEmail(){
+ try{
+  const saved=localStorage.getItem(REMEMBER_EMAIL_KEY);
+  if(saved&&saved.length<=254&&/^.+@[^@\s]+\.[^@\s]+$/.test(saved)){
+   $('email').value=saved;$('rememberEmail').checked=true;
+  }
+ }catch{/* Private browsing may disable storage. Login still works. */}
+}
+function saveRememberedEmail(){
+ try{
+  if($('rememberEmail').checked)localStorage.setItem(REMEMBER_EMAIL_KEY,$('email').value.trim());
+  else localStorage.removeItem(REMEMBER_EMAIL_KEY);
+ }catch{/* Storing the email is optional and should not interrupt login. */}
+}
 const fmt=iso=>iso?new Date(iso).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';
 function message(id,str,error=false){$(id).textContent=str;$(id).classList.toggle('error',error)}
 function changeMode(newMode){
@@ -11,6 +26,8 @@ function changeMode(newMode){
  $('authTitle').textContent=mode==='login'?'회원 로그인':'신규 회원가입';
  $('authSubmit').textContent=mode==='login'?'로그인':'회원가입';
  $('password').autocomplete=mode==='login'?'current-password':'new-password';
+ $('rememberEmailRow').hidden=mode!=='login';
+ $('rememberEmailNote').hidden=mode!=='login';
  message('authMessage',mode==='login'?'이메일 인증을 마친 회원은 로그인할 수 있습니다.':'이메일 인증 후 로그인해야 합니다.');
 }
 async function api(path,opts={}){
@@ -71,12 +88,16 @@ $('authForm').addEventListener('submit',async e=>{
    changeMode('login');
    message('authMessage',response.message||'가입 안내 이메일을 확인해 주세요.');
   }else{
+   saveRememberedEmail();
    showAccount(true);await load();
   }
  }catch(err){message('authMessage',err.message,true)}
  finally{busy=false;$('authSubmit').disabled=false}
 });
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>changeMode(b.dataset.mode)));
+$('rememberEmail').addEventListener('change',()=>{
+ if(!$('rememberEmail').checked){try{localStorage.removeItem(REMEMBER_EMAIL_KEY)}catch{}}
+});
 $('watchForm').addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;busy=true;$('addWatch').disabled=true;
  try{
@@ -106,5 +127,6 @@ $('logout').addEventListener('click',async()=>{
  try{await post('member-auth',{action:'logout'});account=null;showAccount(false);
   message('authMessage','로그아웃되었습니다.')}catch(err){message('dashboardMessage',err.message,true)}
 });
+restoreRememberedEmail();
 initialize();
 })();

@@ -15,3 +15,6 @@
 .history .notice{margin:12px 0 4px}
 [hidden]{display:none!important}
 @media(max-width:750px){.history-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Remember only the member's email address on this device, never the password. */
+.remember-email{display:flex;align-items:center;gap:9px;margin:18px 0 2px;cursor:pointer;font-weight:700;color:#405c78}.remember-email input{width:16px;height:16px;margin:0;accent-color:#2b6ac6;flex:none}.remember-email span{color:inherit;font-size:12px;font-weight:750}.remember-note{margin:4px 0 0;color:#8393a7;font-size:11px;line-height:1.5}.remember-email[hidden],.remember-note[hidden]{display:none!important}
