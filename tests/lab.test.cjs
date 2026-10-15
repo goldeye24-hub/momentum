@@ -701,3 +701,5 @@ test('deep list ordering is estimated, not falsely presented as an official Nave
  assert.match(script,/약 /);
  assert.match(script,/rankApproximate/);
 });
+// CRM bundled-contract calendar regression suite (included in the existing CI test command).
+require('./crm-calendar.test.cjs');
