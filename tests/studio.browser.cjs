@@ -748,6 +748,26 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       console.log('RANK_PRODUCTION_PROBE '+JSON.stringify({http:rr.status,ms:Date.now()-begin,body:t.slice(0,600)}));
     }catch(err){console.log('RANK_PRODUCTION_PROBE error='+String(err.message).slice(0,240))}
 
+    // One-off investigation: first-party Naver Map listing (no login/bypass).
+    try{
+      const mapPage=await ctx.newPage();
+      const start=Date.now();
+      const response=await mapPage.goto('https://map.naver.com/p/search/'+encodeURIComponent('포항 물회'),{waitUntil:'domcontentloaded',timeout:18000});
+      await mapPage.waitForTimeout(1800);
+      const status=[];
+      for(const frame of mapPage.frames()){
+        try{
+          const info=await frame.evaluate(()=>{
+            const anchors=[...document.querySelectorAll('a[href*="/place/"],a[href*="/entry/place/"]')];
+            return {title:document.title.slice(0,75),len:document.body?.innerText.length||0,placeLinks:anchors.length,ids:[...new Set(anchors.map(a=>a.href.match(/\/place\/(\d{5,20})/)?.[1]).filter(Boolean))].slice(0,5),allLi:document.querySelectorAll('li').length};
+          });
+          status.push({url:frame.url().slice(0,130),...info});
+        }catch(e){status.push({url:frame.url().slice(0,130),err:String(e.message).slice(0,50)})}
+      }
+      console.log('NAVER_MAP_PROBE '+JSON.stringify({http:response?.status()||null,frames:status,ms:Date.now()-start}).slice(0,2100));
+      await mapPage.close();
+    }catch(err){console.log('NAVER_MAP_PROBE error='+String(err.message).slice(0,160))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
