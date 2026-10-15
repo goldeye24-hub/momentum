@@ -750,6 +750,16 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       await direct.close();
     }catch(err){console.log('MAP_DIRECT_PROBE error='+String(err.message).slice(0,200))}
 
+    // New watch manager renders safely when DB is absent (never exposes keys).
+    const watchPage=await ctx.newPage();
+    const watchErrors=[];watchPage.on('pageerror',e=>watchErrors.push(String(e)));
+    await watchPage.goto('http://127.0.0.1:'+port+'/site-builder/rank-watch-index.html',{waitUntil:'load'});
+    assert.equal(await watchPage.locator('#watchForm').count(),1);
+    assert.equal(await watchPage.locator('#watchList').count(),1);
+    assert.match(await watchPage.locator('.setup').innerText(),/MOMENTUM_RANK_DB_URL/);
+    assert.equal(watchErrors.length,0,'Watch manager runtime errors: '+watchErrors.join(' | '));
+    await watchPage.close();
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);

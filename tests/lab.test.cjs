@@ -660,3 +660,28 @@ test('map list rank uses Naver observed metadata and never guesses beyond observ
  assert.match(html,/id="rankScope"/);
  assert.match(html,/네이버지도 검색 목록/);
 });
+
+test('rank-watch back office is protected, secret-less until explicitly configured, with RLS tables',async()=>{
+ const auth=require('../api/admin-site-builder.js');
+ assert.equal(typeof auth.isAuthorized,'function');
+ assert.equal(auth.isAuthorized({headers:{cookie:''}}),false);
+ const storage=require('../api/_rank-store.js');
+ assert.equal(storage.config(),null);
+ assert.equal(storage.uuid('00000000-0000-0000-0000-000000000001'),true);
+ assert.equal(storage.uuid('other'),false);
+ const sql=fs.readFileSync('db/rank-watch.sql','utf8');
+ assert.match(sql,/row level security/g);
+ assert.match(sql,/rank_watch_targets/);
+ assert.match(sql,/rank_watch_observations/);
+ const admin=require('../api/admin-rank-watches.js');
+ let code=0,payload={};
+ await admin({method:'GET',headers:{}},{setHeader(){},status(n){code=n;return this},json(obj){payload=obj;return this}});
+ assert.equal(code,401);
+ const cron=require('../api/rank-watch-cron.js');
+ code=0;await cron({method:'GET',headers:{}},{setHeader(){},status(n){code=n;return this},json(obj){payload=obj;return this}});
+ assert.equal(code,401);
+ const config=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+ assert.ok(config.rewrites.some(x=>x.source==='/admin/watches/api'));
+ assert.match(fs.readFileSync('site-builder/index.html','utf8'),/href="\/admin\/watches\/"/);
+ assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('site-builder/rank-watch.js','utf8')));
+});
