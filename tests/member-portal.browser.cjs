@@ -32,9 +32,26 @@ const {chromium}=require('playwright');
    else{status=409;payload={error:'슬롯 초과'}}
    await route.fulfill({status,contentType:'application/json',body:JSON.stringify(payload)});
   });
+  let historyRequests=0;
+  await page.route('**/api/member-history**',async route=>{
+   historyRequests++;
+   const today=new Date(),records=[];
+   for(let i=6;i>=0;i--){
+    const d=new Date(today.getTime()-i*86400000),day=d.toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});
+    records.push({date:day,observedAt:i===4?null:d.toISOString(),observedCount:i===4?null:50,
+     rank:i===4||i===3?null:22+i,approximate:i===0,basis:i===0?'visible_list_position_estimate':'provider_list_position',
+     status:i===4?'not_measured':i===3?'not_found_in_observed_list':'observed'});
+   }
+   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+    target:{id:'22222222-2222-4222-8222-222222222222',label:'퐝물회',keyword:'포항맛집',placeId:'2085358113'},
+    days:7,rows:records,summary:{calendarDays:7,daysMeasured:6,daysMatched:5,lastRecordedRank:22,
+     lastRecordedAt:today.toISOString(),change:1,changeFrom:records[5].date,changeTo:records[6].date}
+   })});
+  });
   for(const [path,file,mime] of [
    ['/platform/','index.html','text/html'],
    ['/platform/portal.css','portal.css','text/css'],
+   ['/platform/history.js','history.js','text/javascript'],
    ['/platform/portal.js','portal.js','text/javascript']
   ])await page.route(origin+path,route=>route.fulfill({status:200,contentType:mime,
    body:fs.readFileSync('platform/'+file,'utf8')}));
@@ -56,6 +73,17 @@ const {chromium}=require('playwright');
   assert.match(await page.locator('#watchRows').textContent(),/순위 미관측/);
   assert.equal(posted,1);
   assert.equal(await page.locator('#addWatch').isDisabled(),true);
+  await page.locator('#watchRows button[data-history]').click();
+  await page.waitForFunction(()=>document.querySelector('#historyMatched').textContent==='5',{timeout:8000});
+  assert.equal(await page.locator('#historyRows tr').count(),7);
+  assert.match(await page.locator('#historyRows').textContent(),/목록에서 미발견/);
+  assert.equal(await page.locator('#historyChart svg circle').count(),5);
+  assert.ok(historyRequests>=1);
+  const csvPromise=page.waitForEvent('download');
+  await page.locator('#historyCsv').click();
+  assert.match((await csvPromise).suggestedFilename(),/momentum-my-place-history/);
+  await page.locator('#historyClose').click();
+  assert.equal(await page.locator('#historyPanel').isHidden(),true);
   fs.mkdirSync('artifacts',{recursive:true});
   await page.screenshot({path:'artifacts/member-portal-desktop.png',fullPage:true});
   await page.setViewportSize({width:390,height:844});
