@@ -30,6 +30,18 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/watches/api",
+      "destination": "/api/admin-rank-watches"
+    },
+    {
+      "source": "/admin/watches",
+      "destination": "/api/admin-site-builder?view=watches"
+    },
+    {
+      "source": "/admin/watches/",
+      "destination": "/api/admin-site-builder?view=watches"
+    },
+    {
       "source": "/admin/designs",
       "destination": "/api/admin-site-builder?view=designs"
     },
@@ -57,6 +69,9 @@
     "api/place-rank-live.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    },
+    "api/rank-watch-cron.js": {
+      "maxDuration": 60
     }
   }
 }
