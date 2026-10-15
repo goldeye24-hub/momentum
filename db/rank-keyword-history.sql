@@ -156,3 +156,59 @@ revoke all on function public.momentum_compare_places(text,text,integer)
  from PUBLIC,anon,authenticated;
 grant execute on function public.momentum_compare_places(text,text,integer)
  to service_role;
+
+-- What keywords actually have any observations of this exact Place ID?
+-- Consider the last TWO full snapshots for each keyword, including cases
+-- where this Place ID is absent in the latest snapshot.
+create or replace function public.momentum_place_keyword_insights(
+ p_place_id text,p_days integer default 30
+) returns table(
+ keyword text,
+ latest_observed_at timestamptz,previous_observed_at timestamptz,
+ latest_rank integer,previous_rank integer,
+ latest_approximate boolean,previous_approximate boolean,
+ matched_name text
+) language sql stable security definer set search_path=public as $$
+ with eligible as (
+  select distinct s.keyword
+  from public.rank_keyword_entries e
+  join public.rank_keyword_snapshots s on s.id=e.snapshot_id
+  where e.place_id=p_place_id
+   and p_place_id ~ '^[0-9]{6,20}$'
+   and p_days in (7,30,90)
+   and (s.observed_at at time zone 'Asia/Seoul')::date >=
+     ((now() at time zone 'Asia/Seoul')::date-(p_days-1))
+ ),
+ numbered as (
+  select s.keyword,s.observed_at,e.rank,e.rank_approximate,e.place_name,
+   row_number() over (partition by s.keyword order by s.observed_at desc) as seq
+  from public.rank_keyword_snapshots s
+  join eligible k on k.keyword=s.keyword
+  left join public.rank_keyword_entries e on e.snapshot_id=s.id and e.place_id=p_place_id
+  where s.scope='mobile'
+   and (s.observed_at at time zone 'Asia/Seoul')::date >=
+     ((now() at time zone 'Asia/Seoul')::date-(p_days-1))
+ ),
+ paired as (
+  select keyword,
+   max(observed_at) filter(where seq=1) as latest_observed_at,
+   max(observed_at) filter(where seq=2) as previous_observed_at,
+   max(rank) filter(where seq=1) as latest_rank,
+   max(rank) filter(where seq=2) as previous_rank,
+   bool_or(rank_approximate) filter(where seq=1) as latest_approximate,
+   bool_or(rank_approximate) filter(where seq=2) as previous_approximate,
+   max(place_name) as matched_name
+  from numbered where seq<=2 group by keyword
+ )
+ select p.keyword,p.latest_observed_at,p.previous_observed_at,
+  p.latest_rank,p.previous_rank,p.latest_approximate,p.previous_approximate,
+  p.matched_name
+ from paired p
+ order by case when p.latest_rank is null then 1 else 0 end,
+  p.latest_rank nulls last,p.keyword
+ limit 300;
+$$;
+revoke all on function public.momentum_place_keyword_insights(text,integer)
+ from PUBLIC,anon,authenticated;
+grant execute on function public.momentum_place_keyword_insights(text,integer)
+ to service_role;
