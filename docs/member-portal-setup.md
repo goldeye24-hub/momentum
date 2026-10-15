@@ -34,3 +34,16 @@
 - 네이버에 새 요청을 하지 않는 DB 읽기 전용 기능이므로 이력 화면 자체에서 429 추가 요청이 발생하지 않습니다.
 - 기존 DB를 사용한다면 최신 `db/member-portal.sql`을 **다시 실행**해 `momentum_member_daily_history` 함수를 설치해야 합니다.
 - 회원 등록만으로 데이터가 쌓이지 않습니다. 관리자 관측 기능으로 실제 모바일 목록 자료가 생성된 키워드만 나옵니다.
+
+## 최신 Supabase API Keys 연결 (2026)
+
+새 `momentum-marketing` 프로젝트의 **Project Settings → API Keys**에서 다음 키를 확인합니다.
+- `MOMENTUM_RANK_DB_URL`: 해당 프로젝트의 URL (`https://…supabase.co`). **다른 프로젝트 URL을 사용하지 않습니다.**
+- `MOMENTUM_RANK_DB_SERVICE_KEY`: 서버 전용 `sb_secret_...` (Secret API key). 이전 `service_role` JWT 형식도 임시 호환됩니다.
+- `MOMENTUM_MEMBER_ANON_KEY`: `sb_publishable_...` (Publishable API key). 이전 `anon` JWT도 임시 호환됩니다.
+- `MOMENTUM_MEMBER_SESSION_SECRET`: 이 사이트만의 별도 고강도 무작위 값 32자 이상.
+
+모두 **Vercel의 `momentum` 프로젝트** → Settings → Environment Variables에 등록하고 Production/Preview 범위를 확인합니다.
+`MOMENTUM_RANK_DB_SERVICE_KEY`와 `MOMENTUM_MEMBER_SESSION_SECRET`는 서버 전용 비밀로 관리하며 채팅이나 GitHub에 붙여 넣지 마세요.
+
+2026년 최신 Supabase의 `sb_secret_`/`sb_publishable_` 키는 JWT가 아닙니다. 두 키는 `apikey` 헤더로 전송해야 하고, 이전 JWT를 담는 `Authorization: Bearer` 헤더로 잘못 전달하지 않도록 호환 코드를 구현했습니다. 키를 입력한 후 새 Vercel 배포가 완료되어야 서버 기능에 반영됩니다.

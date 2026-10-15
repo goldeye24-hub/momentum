@@ -50,8 +50,8 @@ async function authCall(path,{body,method='POST'}={}){
  try{
   const rsp=await fetch(cfg.base+'/auth/v1/'+path,{
    method,signal:ctl.signal,
-   headers:{apikey:cfg.anon,Authorization:'Bearer '+cfg.anon,'Content-Type':'application/json',
-    Accept:'application/json'},
+   headers:{apikey:cfg.anon,...(cfg.anon.startsWith('sb_publishable_')?{}:{Authorization:'Bearer '+cfg.anon}),
+    'Content-Type':'application/json',Accept:'application/json'},
    ...(body===undefined?{}:{body:JSON.stringify(body)})
   });
   let result={};try{result=await rsp.json()}catch{}
