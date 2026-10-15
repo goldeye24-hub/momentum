@@ -147,6 +147,9 @@
     },
     "api/admin-members.js": {
       "maxDuration": 30
+    },
+    "api/member-history.js": {
+      "maxDuration": 30
     }
   }
 }
