@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>업종별 독립 디자인 편집 | 모멘텀마케팅</title><link rel="stylesheet" href="/admin/assets/design-editor.css"></head>
+<body><header class="top"><div class="brand">M<span>↗</span> 모멘텀마케팅 <small>/ 디자인 편집실</small></div><nav><a href="/admin/">기존 제작 스튜디오</a><a href="/admin/crm/">광고주·외주 관리</a><a href="/website-samples/" target="_blank" rel="noopener">공개 포트폴리오 ↗</a><form method="post" action="/admin/logout"><button>로그아웃</button></form></nav></header>
+<div class="notice"><b>업종별 독립형 디자인 편집 (15종)</b><span>사진과 글을 바꾸어도 각 업종의 고유 레이아웃은 유지합니다.</span></div>
+<main class="app"><aside class="settings">
+<div class="intro"><div class="mini">INDUSTRY DESIGN MANAGER</div><h1>서로 다른 디자인,<br>하나의 편집실.</h1><p>업종을 선택하고 브랜드·첫 화면·핵심 정보를 수정하세요. 오른쪽에서 PC와 모바일 미리보기를 확인할 수 있습니다.</p></div>
+<label class="control"><span>편집할 디자인 선택</span><select id="designSelect" aria-label="편집할 디자인 선택"></select></label>
+<div class="info" id="designInfo">디자인을 불러오는 중입니다.</div>
+<div class="tabs" role="tablist" aria-label="편집 항목"><button type="button" data-pane="main" class="selected">첫 화면</button><button type="button" data-pane="detail">핵심 콘텐츠</button><button type="button" data-pane="guide">관리 안내</button></div>
+<div id="editMain" class="pane">
+<label class="control"><span>상호·브랜드명</span><input id="brandInput" maxlength="55" placeholder="사업장명"></label>
+<label class="control"><span>대표 문구</span><textarea id="headlineInput" rows="4" maxlength="240" placeholder="줄바꿈을 넣으면 실제 화면에도 반영됩니다."></textarea><small>여러 줄 입력 시 줄바꿈이 유지됩니다.</small></label>
+<label class="control"><span>대표 소개 문장</span><textarea id="introInput" rows="4" maxlength="700" placeholder="사업장 소개"></textarea></label>
+<label class="control"><span>메인 사진 URL</span><input id="heroUrlInput" type="url" placeholder="https://..."></label>
+<label class="photoInput"><span>또는 내 사진 업로드 (5MB 이내 · 미리보기 자동 압축)</span><input id="heroFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<label class="control"><span>첫 화면 버튼 문구</span><input id="ctaTextInput" maxlength="45" placeholder="예약 안내 / 견적 문의"></label>
+<label class="control"><span>첫 화면 버튼 연결 주소</span><input id="ctaLinkInput" maxlength="500" placeholder="#contact 또는 https://..."></label>
+</div>
+<div id="editDetail" class="pane" hidden>
+<label class="control"><span>다음 주요 영역 제목</span><textarea id="sectionTitleInput" rows="3" maxlength="220"></textarea></label>
+<label class="control"><span>다음 주요 영역 설명</span><textarea id="sectionTextInput" rows="4" maxlength="600"></textarea></label>
+<label class="control"><span>다음 영역 대표 사진 URL</span><input id="detailUrlInput" type="url" placeholder="사진이 있는 디자인에만 적용"></label>
+<p class="hint">업종마다 화면 구성이 달라, 존재하는 제목·설명·이미지만 편집할 수 있습니다. 메뉴·객실·세부 서비스는 각 업종의 전용 콘텐츠 형태를 유지합니다.</p>
+</div>
+<div id="editGuide" class="pane" hidden><h3>저장 방식 안내</h3><p>현재 편집 내용은 <b>이 브라우저에서만 임시 저장</b>됩니다. GitHub 파일이나 실제 공개 홈페이지는 자동 변경되지 않습니다.</p><p><b>HTML 내보내기</b>로 결과 파일을 만들거나, JSON 백업을 통해 다른 PC로 옮길 수 있습니다. 실제 고객사 사이트에 발행하려면 별도의 배포 작업이 필요합니다.</p><p>고객 사진과 자료를 사용하는 경우 반드시 이용 권한을 확인해야 합니다. 네이버예약은 고객사의 예약 URL을 연결해야 작동합니다.</p></div>
+<div class="actions"><button id="saveDraft" class="primary" type="button">현재 디자인 임시 저장</button><button id="resetDraft" type="button">선택 디자인 초기화</button></div>
+<p class="saveState" id="saveStatus" role="status" aria-live="polite">브라우저 내에서 편집하는 베타 기능입니다.</p>
+</aside>
+<section class="preview"><div class="toolbar"><div><span class="mini">LIVE PREVIEW</span><b id="previewTitle">디자인 미리보기</b></div><div class="viewModes" role="group" aria-label="미리보기 화면 크기"><button type="button" data-view="desktop" class="selected">PC</button><button type="button" data-view="mobile">모바일</button></div><div class="outputs"><button id="saveJson" type="button">JSON 백업</button><button id="loadJson" type="button">JSON 가져오기</button><button id="exportHtml" class="primary" type="button">HTML 내보내기 ↗</button></div></div>
+<div class="previewSurface"><div class="previewOuter" id="previewOuter"><iframe id="livePreview" title="실제 업종별 디자인 미리보기" src="about:blank"></iframe></div></div>
+<div class="bottomNote"><span>같은 편집 도구를 사용하지만 미리보기는 업종별 독립 HTML입니다.</span><span>저장해도 공개 사이트는 변경되지 않습니다.</span></div>
+</section></main><input type="file" id="jsonFile" accept=".json,application/json" hidden><script defer src="/admin/assets/design-editor.js"></script></body></html>
