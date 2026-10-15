@@ -34,6 +34,17 @@ function localServer(){
       });
       return;
     }
+    if(req.method==='POST'&&req.url==='/api/blog-rank-observation'){
+      let body='';
+      req.on('data',chunk=>body+=chunk);
+      req.on('end',async()=>{
+        let status=200;
+        const adapter={setHeader(){},status(n){status=n;return this},json(data){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return this}};
+        try{await require('../api/blog-rank-observation.js')({method:'POST',headers:{host:req.headers.host,origin:req.headers.origin,'x-forwarded-for':'127.0.0.1'},body:JSON.parse(body)},adapter);}
+        catch(err){res.writeHead(500);res.end(JSON.stringify({error:String(err)}))}
+      });
+      return;
+    }
     let target;
     try{
       const u=new URL(req.url,'http://localhost');
@@ -635,6 +646,42 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await keywordPage.screenshot({path:path.join(root,'artifacts/keyword-explorer-mobile.png'),fullPage:true});
     await keywordPage.close();
     console.log('PASS: keyword explorer live API, intent-based ranking, mobile and no invented search volume');
+
+
+    // Ranking measurement is real user-observed data, not an invented position.
+    const rankPage=await ctx.newPage();
+    const rankErrors=[];rankPage.on('pageerror',e=>rankErrors.push(String(e)));
+    await rankPage.goto('http://127.0.0.1:'+port+'/lab/rank/',{waitUntil:'load'});
+    await rankPage.locator('#target').fill('테스트 미용실');
+    await rankPage.locator('#rankNumber').fill('12');
+    await rankPage.locator('#measure').click();
+    assert.equal(await rankPage.locator('#latest').innerText(),'12위');
+    await rankPage.locator('#rankNumber').fill('7');
+    await rankPage.locator('#measure').click();
+    assert.equal(await rankPage.locator('#latest').innerText(),'7위');
+    assert.match(await rankPage.locator('#delta').innerText(),/▲ 5/);
+    assert.equal(await rankPage.locator('#history tr').count(),2);
+    await rankPage.reload({waitUntil:'load'});
+    await rankPage.locator('#target').fill('테스트 미용실');
+    assert.equal(await rankPage.locator('#latest').innerText(),'7위');
+    await rankPage.locator('input[name="method"][value="paste"]').check();
+    await rankPage.locator('#list').fill('1. 다른매장\n2. 테스트 미용실\n3. 세번째매장');
+    await rankPage.locator('#measure').click();
+    assert.equal(await rankPage.locator('#latest').innerText(),'2위');
+    await rankPage.locator('#kind').selectOption('blog');
+    await rankPage.locator('#keyword').fill('부산 맛집');
+    await rankPage.locator('#target').fill('https://blog.naver.com/exampleblog/12345678');
+    await rankPage.locator('input[name="method"][value="api"]').check();
+    await rankPage.locator('#measure').click();
+    assert.match(await rankPage.locator('#message').innerText(),/연결되지|승인/);
+    assert.equal(await rankPage.locator('#latest').innerText(),'—');
+    await rankPage.setViewportSize({width:390,height:844});
+    const rd=await rankPage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+    assert.ok(rd.scrollWidth<=rd.viewport+3,'Rank mobile overflow '+JSON.stringify(rd));
+    assert.equal(rankErrors.length,0,'Rank browser errors: '+rankErrors.join(' | '));
+    await rankPage.screenshot({path:path.join(root,'artifacts/rank-tracker-mobile.png'),fullPage:true});
+    await rankPage.close();
+    console.log('PASS: rank observation recording and history comparisons');
 
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});

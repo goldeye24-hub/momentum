@@ -600,3 +600,25 @@ test('keyword explorer produces intent-first candidates without invented search 
  assert.match(fs.readFileSync('lab/index.html','utf8'),/href="\/lab\/keywords\/"/);
  assert.doesNotThrow(()=>new vm.Script(script));
 });
+
+
+test('rank tracker distinguishes actual observation from blog API ranking and never invents position',()=>{
+ const endpoint=require('../api/blog-rank-observation.js');
+ const parsed=endpoint.parseTarget('https://blog.naver.com/testblog/12345678');
+ assert.deepEqual({id:parsed.blogId,post:parsed.postId,kind:parsed.kind},{id:'testblog',post:'12345678',kind:'post'});
+ assert.throws(()=>endpoint.parseTarget('https://evil.com/blog/testblog/1234'));
+ assert.equal(endpoint.enabled(),false);
+ assert.deepEqual(endpoint.rankOf([{link:'https://blog.naver.com/otherid/111'},{link:'https://blog.naver.com/testblog/12345678'}],'https://blog.naver.com/testblog/12345678').rank,2);
+ assert.equal(endpoint.rankOf([{link:'https://blog.naver.com/testblog/12345679'}],'https://blog.naver.com/testblog/12345678').rank,null);
+ assert.equal(endpoint.rankOf([{link:'https://blog.naver.com/testblog/12345679'}],'https://blog.naver.com/testblog').rank,1);
+ const page=fs.readFileSync('lab/rank/index.html','utf8');
+ const js=fs.readFileSync('lab/rank/rank.js','utf8');
+ assert.match(page,/id="rankForm"/);
+ assert.match(page,/id="history"/);
+ assert.match(page,/블로그 검색 API/);
+ assert.match(page,/자동 일간 추적·알림은 아직 연결되지 않았습니다/);
+ assert.doesNotThrow(()=>new vm.Script(js));
+ assert.match(js,/momentum-rank-observations-v1/);
+ assert.match(js,/rankNumber/);
+ assert.match(fs.readFileSync('lab/index.html','utf8'),/href="\/lab\/rank\/"/);
+});
