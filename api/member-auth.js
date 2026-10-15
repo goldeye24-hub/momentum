@@ -37,7 +37,7 @@ module.exports=async function(req,res){
   }
   const response=await member.authCall('token?grant_type=password',{body:{email,password}});
   const user=response?.user;
-  if(!user||!db.uuid(user.id)||!user.email||!user.email_confirmed_at){
+  if(!response?.access_token||!user||!db.uuid(user.id)||!user.email||!user.email_confirmed_at){
    return res.status(403).json({error:'이메일 인증을 완료한 계정으로 로그인해 주세요.'});
   }
   const account=await db.request('rpc/momentum_member_ensure',{
