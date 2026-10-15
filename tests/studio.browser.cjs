@@ -29,7 +29,7 @@ function localServer(){
         let status=200;
         const adapter={setHeader(){},status(n){status=n;return this},json(data){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return this}};
         try{
-          await require('../api/keyword-opportunities.js')({method:'POST',headers:{host:'127.0.0.1','x-forwarded-for':'127.0.0.1'},body:JSON.parse(body)},adapter);
+          await require('../api/keyword-opportunities.js')({method:'POST',headers:{host:req.headers.host,origin:req.headers.origin,'x-forwarded-for':'127.0.0.1'},body:JSON.parse(body)},adapter);
         }catch(err){res.writeHead(500);res.end(JSON.stringify({error:String(err)}))}
       });
       return;
