@@ -26,12 +26,13 @@ function render(){
  }
  $('matrixHead').innerHTML='<tr><th>순위</th>'+columns.map(c=>'<th>'+esc(c.date)+'<small style="display:block;margin-top:6px">'+esc(String(c.observedCount||0))+'개 관측</small></th>').join('')+'</tr>';
  const indexes=columns.map((col,i)=>{
-  const map=new Map();
-  for(const row of rows){
-   if(!known(row,i))continue;
-   const rank=row.ranks[i];
+  const map=new Map(),before=i>0?new Map((columns[i-1].entries||[]).map(x=>[x.placeId,x.rank])):null;
+  for(const entry of col.entries||[]){
+   const rank=entry.rank;
+   if(!Number.isInteger(rank)||rank<1||rank>500)continue;
    if(!map.has(rank))map.set(rank,[]);
-   map.get(rank).push({...row,rank,approx:row.approximate[i],previous:i>0&&known(row,i-1)?row.ranks[i-1]:null});
+   map.get(rank).push({id:entry.placeId,name:entry.name,rank,
+    approx:entry.approximate===true,previous:before?.get(entry.placeId)??null});
   }
   return map;
  });
@@ -131,7 +132,15 @@ $('movementRows').addEventListener('click',e=>{const el=e.target.closest('button
 $('exportCsv').addEventListener('click',()=>{
  const data=state.data;if(!data?.columns?.length){note('내보낼 관측 기록이 없습니다.',true);return}
  const csvRows=[['플레이스 ID','업체명',...data.columns.map(c=>c.date)]];
- for(const r of data.rows||[])csvRows.push([r.id,r.name,...r.ranks.map((v,i)=>v==null?'':String(v)+(r.approximate[i]?' (근사)':''))]);
+ const union=new Map();
+ data.columns.forEach((column,i)=>{
+  for(const entry of column.entries||[]){
+   if(!union.has(entry.placeId))union.set(entry.placeId,{name:entry.name,ranks:Array(data.columns.length).fill('')});
+   const row=union.get(entry.placeId);row.name=entry.name;
+   row.ranks[i]=String(entry.rank)+(entry.approximate?' (근사)':'');
+  }
+ });
+ for(const [id,r] of union)csvRows.push([id,r.name,...r.ranks]);
  const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
  const blob=new Blob(['\ufeff'+csvRows.map(r=>r.map(quote).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});
  const url=URL.createObjectURL(blob),link=document.createElement('a');
