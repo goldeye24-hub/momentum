@@ -3,7 +3,7 @@ const crypto=require('node:crypto');
 const fs=require('node:fs');
 const path=require('node:path');
 
-const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json','design-editor.html','design-editor.css','design-editor.js','rank-watch-index.html','rank-watch.css','rank-watch.js']);
+const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json','design-editor.html','design-editor.css','design-editor.js','rank-watch-index.html','rank-watch.css','rank-watch.js','keyword-matrix-index.html','keyword-matrix.css','keyword-matrix.js']);
 const COOKIE='momentum_admin_session';
 const SIX_HOURS=6*60*60;
 const MAX_FORM=4096;
@@ -82,7 +82,7 @@ module.exports=function(req,res){
   if(asset)return pageError(res,401,'로그인이 필요합니다');
   res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(LOGIN);
  }
- const file=asset||(view==='crm'?'crm-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':'index.html');
+ const file=asset||(view==='crm'?'crm-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':view==='keywords'?'keyword-matrix-index.html':'index.html');
  if(!ASSETS.has(file))return pageError(res,404,'페이지를 찾을 수 없습니다');
  let data;
  try{data=fs.readFileSync(path.join(__dirname,'..','site-builder',file),'utf8')}
@@ -90,7 +90,7 @@ module.exports=function(req,res){
  if(file==='index.html'){
   data=data.replaceAll('/site-builder/','/admin/assets/');
  }
- const MIME={ 'editor.css':'text/css; charset=utf-8','site-template.css':'text/css; charset=utf-8','editor.js':'text/javascript; charset=utf-8','kit.js':'text/javascript; charset=utf-8','presets.json':'application/json; charset=utf-8','crm.js':'text/javascript; charset=utf-8','crm-commerce.js':'text/javascript; charset=utf-8','crm.css':'text/css; charset=utf-8','products.json':'application/json; charset=utf-8','design-editor.js':'text/javascript; charset=utf-8','design-editor.css':'text/css; charset=utf-8','rank-watch.css':'text/css; charset=utf-8','rank-watch.js':'text/javascript; charset=utf-8'};
+ const MIME={ 'editor.css':'text/css; charset=utf-8','site-template.css':'text/css; charset=utf-8','editor.js':'text/javascript; charset=utf-8','kit.js':'text/javascript; charset=utf-8','presets.json':'application/json; charset=utf-8','crm.js':'text/javascript; charset=utf-8','crm-commerce.js':'text/javascript; charset=utf-8','crm.css':'text/css; charset=utf-8','products.json':'application/json; charset=utf-8','design-editor.js':'text/javascript; charset=utf-8','design-editor.css':'text/css; charset=utf-8','rank-watch.css':'text/css; charset=utf-8','rank-watch.js':'text/javascript; charset=utf-8','keyword-matrix.css':'text/css; charset=utf-8','keyword-matrix.js':'text/javascript; charset=utf-8'};
  res.setHeader('Content-Type',MIME[file]||'text/html; charset=utf-8');
  return res.end(data);
 };

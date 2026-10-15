@@ -211,7 +211,7 @@ function reduceMobile(items,target){
   message:item?(approximate?'네이버 모바일 플레이스 목록에서 약 '+item.rank+'번째로 관측했습니다. 업체 ID 미확인, 광고 또는 동적 로딩 때문에 정확한 자연검색 순위와 다를 수 있습니다.':'네이버 모바일 플레이스 목록에 표시된 '+item.rank+'번째 항목으로 확인했습니다. 광고 제외 자연검색 순위를 의미하지 않습니다.'):
   '관측된 모바일 플레이스 업체 '+list.length+'곳에서 대상을 찾지 못했습니다. 더 아래 순위 또는 검색 미노출이라는 뜻은 아닙니다.'};
 }
-async function runMobile(keyword,target){
+async function runMobile(keyword,target,options={}){
  const playwright=require('playwright-core'),chromiumBinary=require('@sparticuz/chromium');
  const browser=await playwright.chromium.launch({
   args:chromiumBinary.args,executablePath:await chromiumBinary.executablePath(),headless:true,timeout:12000
@@ -259,7 +259,7 @@ async function runMobile(keyword,target){
       return found;
      });
      for(const x of items)if(!ids.has(x.id)){ids.add(x.id);rows.push(x)}
-     if(rows.some(x=>x.id===target.id||(target.name&&normalizeBusinessName(x.name)===normalizeBusinessName(target.name)))||rows.length>=100)break;
+     if((!options.captureList&&rows.some(x=>x.id===target?.id||(target?.name&&normalizeBusinessName(x.name)===normalizeBusinessName(target.name))))||rows.length>=100)break;
      await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
      await page.waitForTimeout(450);
     }
@@ -268,9 +268,15 @@ async function runMobile(keyword,target){
   }
   if(!rows.length)return {status:'no_place_block',rank:null,observedCount:0,scope:'naver_mobile_place_list',query:keyword,
    observedAt:new Date().toISOString(),source:'none',message:'모바일 플레이스 목록을 자동으로 읽지 못했습니다. 네이버 페이지 구조나 네트워크 차단 여부를 확인해야 합니다.',diagnostics:{httpStatus,host:usedUrl?new URL(usedUrl).hostname:null}};
+  if(options.captureList){
+   const summary=require('./_rank-keyword-model').reduceMobileList(rows);
+   return {...summary,query:keyword,observedAt:new Date().toISOString(),
+    source:'browser_observed'};
+  }
   return {...reduceMobile(rows,target),scope:'naver_mobile_place_list',query:keyword,observedAt:new Date().toISOString(),source:'browser_observed',
    disclaimer:'모바일 화면 390px 기준 관측입니다. 위치·로그인·광고·동적 로딩에 따라 순위가 달라질 수 있으며, 확인 범위를 넘어선 순위는 추측하지 않습니다.'};
  }finally{await browser.close().catch(()=>{})}
 }
 
-module.exports={placeId,validateKeyword,reduceResult,reduceMap,run,runMap,normalizeBusinessName,mobileTarget,reduceMobile,runMobile};
+async function runMobileList(keyword){return runMobile(keyword,null,{captureList:true})}
+module.exports={placeId,validateKeyword,reduceResult,reduceMap,run,runMap,normalizeBusinessName,mobileTarget,reduceMobile,runMobile,runMobileList};

@@ -30,6 +30,18 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/keyword-matrix/api",
+      "destination": "/api/admin-keyword-matrix"
+    },
+    {
+      "source": "/admin/keyword-matrix",
+      "destination": "/api/admin-site-builder?view=keywords"
+    },
+    {
+      "source": "/admin/keyword-matrix/",
+      "destination": "/api/admin-site-builder?view=keywords"
+    },
+    {
       "source": "/admin/watches/api",
       "destination": "/api/admin-rank-watches"
     },
@@ -72,6 +84,10 @@
     },
     "api/rank-watch-cron.js": {
       "maxDuration": 60
+    },
+    "api/admin-keyword-matrix.js": {
+      "maxDuration": 30,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     }
   }
 }
