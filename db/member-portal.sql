@@ -134,3 +134,67 @@ grant execute on function public.momentum_member_ensure(uuid,text) to service_ro
 grant execute on function public.momentum_member_add_target(uuid,text,text,text,text,text) to service_role;
 grant execute on function public.momentum_member_remove_target(uuid,uuid) to service_role;
 grant execute on function public.momentum_member_overview(uuid) to service_role;
+
+
+-- Internal operator-only pilot controls. These do not charge customers,
+-- confirm a subscription, or change the billing plan.
+create table if not exists public.momentum_member_slot_audit (
+ id bigint generated always as identity primary key,
+ user_id uuid not null references public.momentum_member_accounts(user_id) on delete cascade,
+ old_limit integer not null,
+ new_limit integer not null,
+ reason text not null check(length(reason) between 5 and 200),
+ performed_by text not null default 'momentum_admin',
+ created_at timestamptz not null default now()
+);
+alter table public.momentum_member_slot_audit enable row level security;
+revoke all on public.momentum_member_slot_audit from PUBLIC,anon,authenticated;
+grant select,insert on public.momentum_member_slot_audit to service_role;
+grant usage,select on sequence public.momentum_member_slot_audit_id_seq to service_role;
+
+create or replace function public.momentum_admin_member_summary()
+returns table(
+ user_id uuid,email text,plan text,slot_limit integer,
+ used_slots bigint,created_at timestamptz
+) language sql stable security definer set search_path=public as $$
+ select a.user_id,a.email,a.plan,a.slot_limit,
+  (select count(*) from public.momentum_member_targets t where t.owner_id=a.user_id),
+  a.created_at
+ from public.momentum_member_accounts a
+ order by a.created_at desc limit 100;
+$$;
+
+create or replace function public.momentum_admin_set_pilot_slots(
+ p_user uuid,p_limit integer,p_reason text
+) returns jsonb language plpgsql security definer set search_path=public as $$
+declare v_previous integer;v_used integer;v_plan text;
+begin
+ if p_user is null or p_limit is null or p_limit<1 or p_limit>200
+  or p_reason is null or length(trim(p_reason)) not between 5 and 200
+ then raise exception 'invalid_pilot_slot_change';end if;
+ perform pg_advisory_xact_lock(hashtextextended(p_user::text,0));
+ select slot_limit,plan into v_previous,v_plan from public.momentum_member_accounts
+  where user_id=p_user for update;
+ if not found then raise exception 'member_not_found';end if;
+ -- Only free beta accounts can receive manual test slots. Paid entitlements
+ -- must later be based on verified payment events, never an operator shortcut.
+ if v_plan<>'free' then raise exception 'paid_plan_managed_by_billing';end if;
+ select count(*) into v_used from public.momentum_member_targets where owner_id=p_user;
+ if p_limit<v_used then raise exception 'pilot_limit_below_existing_use';end if;
+ if p_limit<>v_previous then
+  update public.momentum_member_accounts set slot_limit=p_limit,updated_at=now()
+   where user_id=p_user;
+  insert into public.momentum_member_slot_audit(user_id,old_limit,new_limit,reason)
+   values(p_user,v_previous,p_limit,trim(p_reason));
+ end if;
+ return jsonb_build_object('userId',p_user,'plan','free',
+  'slotLimit',p_limit,'usedSlots',v_used,'previousLimit',v_previous);
+end;
+$$;
+revoke all on function public.momentum_admin_member_summary()
+ from PUBLIC,anon,authenticated;
+revoke all on function public.momentum_admin_set_pilot_slots(uuid,integer,text)
+ from PUBLIC,anon,authenticated;
+grant execute on function public.momentum_admin_member_summary() to service_role;
+grant execute on function public.momentum_admin_set_pilot_slots(uuid,integer,text)
+ to service_role;
