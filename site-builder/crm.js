@@ -270,18 +270,40 @@ function restore(file){
 function icsEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;').slice(0,220)}
 function calendar(){
  const events=[];
+ const stampNow=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+ function appendEvent(uid,title,date,description){
+  if(!date||daysUntil(date)<0)return;
+  const dateStamp=date.replace(/-/g,'');
+  const safeTitle=icsEscape(title);
+  const alarms=[60,30,7].map(n=>'BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:'+safeTitle+'\r\nTRIGGER:-P'+n+'D\r\nEND:VALARM\r\n').join('');
+  events.push('BEGIN:VEVENT\r\nUID:'+icsEscape(uid)+
+   '\r\nDTSTAMP:'+stampNow+
+   '\r\nDTSTART;VALUE=DATE:'+dateStamp+
+   '\r\nSUMMARY:'+safeTitle+
+   '\r\nDESCRIPTION:'+icsEscape(description)+
+   '\r\n'+alarms+'END:VEVENT');
+ }
  db.contracts.filter(x=>x.status!=='종료').forEach(x=>{
   const c=customer(x.customerId);if(!c)return;
-  [{label:'계약 재연장',date:x.endDate},{label:'도메인 연장',date:x.domainEnd}].forEach(y=>{
-   if(!y.date||daysUntil(y.date)<0)return;
-   const stamp=y.date.replace(/-/g,'');
-   const title=icsEscape(c.name+' · '+product(x.productId).name+' '+y.label);
-   events.push('BEGIN:VEVENT\r\nUID:'+icsEscape(x.id+'-'+y.label+'@momentum-crm')+'\r\nDTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')+'\r\nDTSTART;VALUE=DATE:'+stamp+'\r\nSUMMARY:'+title+'\r\nDESCRIPTION:'+icsEscape('모멘텀마케팅 계약·도메인 만료 일정')+'\r\n'+[60,30,7].map(n=>'BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:'+title+'\r\nTRIGGER:-P'+n+'D\r\nEND:VALARM\r\n').join('')+'END:VEVENT');
+  [{label:'계약 재연장',date:x.endDate},{label:'도메인 연장',date:x.domainEnd}].forEach(item=>{
+   appendEvent(x.id+'-'+item.label+'@momentum-crm',c.name+' · '+product(x.productId).name+' '+item.label,item.date,'모멘텀마케팅 계약·도메인 만료 일정');
   });
  });
- if(!events.length){message('미래 만료일이 있는 계약을 먼저 등록하세요.');return;}
- dl('momentum-contract-renewals.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Momentum Marketing//CRM//KO\r\nCALSCALE:GREGORIAN\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n','text/calendar');
- message('만료 일정을 캘린더 파일로 저장했습니다. 캘린더 앱에 가져오면 알림을 설정할 수 있습니다. 변경 시 새 파일을 다시 가져와야 합니다.');
+ const bundles=window.MomentumCommerce?.read()?.bundles||[];
+ bundles.filter(x=>['계약','진행중','완료'].includes(x.status)).forEach(bundle=>{
+  const c=customer(bundle.customerId);if(!c)return;
+  bundle.lines.forEach((line,index)=>{
+   const date=line.endDate||bundle.endDate;
+   const productName=line.productName||product(line.productId).name;
+   appendEvent('bundle-'+bundle.id+'-'+(line.id||index)+'-renewal@momentum-crm',
+    c.name+' · '+productName+' 묶음계약 만료',date,'모멘텀마케팅 묶음 계약 · '+bundle.title+' / 상품별 서비스 만료 일정');
+  });
+ });
+ if(!events.length){message('미래 만료일이 있는 단일·묶음 계약을 먼저 등록하세요.');return;}
+ dl('momentum-contract-renewals.ics',
+  'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Momentum Marketing//CRM//KO\r\nCALSCALE:GREGORIAN\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n',
+  'text/calendar');
+ message('단일·묶음 계약 만료 일정을 캘린더 파일로 저장했습니다. 캘린더 앱에 가져와 알림을 설정하고, 일정 변경 시 다시 가져오세요.');
 }
 function setup(){
  try{
