@@ -100,11 +100,18 @@ async function runMap(keyword,id){
   if(!response||response.status()!==200||new URL(page.url()).hostname!=='map.naver.com')return {status:'blocked',rank:null,message:'네이버지도 검색 화면에 접속할 수 없습니다 (HTTP '+(response?.status()||'?')+').'};
   let frame=null;
   try{
-   await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>(el.getAttribute('src')||'').includes('pcmap.place.naver.com')),{timeout:7000});
-   frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()));
-   if(!frame){await page.waitForTimeout(1100);frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()))}
+   await page.waitForFunction(()=>[...document.querySelectorAll('iframe')].some(el=>(el.getAttribute('src')||'').includes('pcmap.place.naver.com')),{timeout:10000});
   }catch{}
-  if(!frame)return {status:'no_place_block',rank:null,message:'네이버지도 업체 목록 화면을 찾지 못했습니다.'};
+  for(let i=0;i<5;i++){
+   frame=page.frames().find(f=>/^https:\/\/pcmap\.place\.naver\.com\//.test(f.url()));
+   if(frame)break;
+   await page.waitForTimeout(750);
+  }
+  if(!frame){
+   const frameInfo=page.frames().map(f=>{try{return new URL(f.url()).hostname}catch{return 'about:blank'}}).filter(Boolean);
+   const hasMapIframe=await page.locator('iframe#searchIframe').count().catch(()=>0);
+   return {status:'no_place_block',rank:null,message:'네이버지도 업체 목록 화면을 확인하지 못했습니다. 브라우저 실행 환경 또는 로딩 상태 문제일 수 있습니다.',diagnostics:{iframePresent:!!hasMapIframe,frameHosts:frameInfo.slice(0,9)}};
+  }
   try{await frame.locator('[data-nlog-params*="place_id"]').first().waitFor({state:'attached',timeout:5500})}catch{}
   let items=[],maxScroll=2;
   for(let i=0;i<=maxScroll;i++){
