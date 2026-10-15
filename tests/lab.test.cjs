@@ -778,3 +778,5 @@ test('mobile rank is conservative when names overlap or provider positions resta
 });
 
 require('./rank-live-control.test.cjs');
+
+require('./rank-live-shared.test.cjs');
