@@ -412,6 +412,22 @@ test('page builder has real section, image, style, reorder, persistence and expo
  }
  assert.equal((gallery.match(/class="filter-tabs"/g)||[]).length,1);
 
+
+ const quoteScript=fs.readFileSync('website-samples/service-inquiry.js','utf8');
+ const quoteStyles=fs.readFileSync('website-samples/service-inquiry.css','utf8');
+ assert.doesNotThrow(()=>new vm.Script(quoteScript));
+ assert.match(quoteScript,/event.preventDefault/);
+ assert.doesNotMatch(quoteScript,/fetch\(|localStorage|sessionStorage/);
+ for(const kind of ['ladder','movers','cleaning','aircon','petgroom']){
+   const content=fs.readFileSync('website-samples/'+kind+'/index.html','utf8');
+   assert.match(content,/id="serviceQuoteForm"/);
+   assert.match(content,new RegExp('data-quote-kind="'+kind+'"'));
+   assert.match(content,/data-demo-only="true"/);
+   assert.match(content,/service-inquiry\.css/);
+   assert.match(content,/service-inquiry\.js/);
+   assert.match(content,/개인정보/);
+ }
+ assert.match(quoteStyles,/quote-grid/);
  const thumbStyles=fs.readFileSync('website-samples/gallery-distinct.css','utf8');
  for(const id of ['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate']){
    assert.match(gallery,new RegExp('preview-'+id+'(?:\\s|\\")'));

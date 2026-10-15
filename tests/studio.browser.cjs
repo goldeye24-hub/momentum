@@ -261,6 +261,44 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(dims.scrollWidth<=dims.viewport+3,'New sample mobile overflow '+id+' '+JSON.stringify(dims));
     }
+
+    // Industry-specific consultation forms are navigable, validated and privacy-safe.
+    for(const service of ['ladder','movers','cleaning','aircon','petgroom']){
+      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+service+'/',{waitUntil:'load'});
+      const form=templatePage.locator('#serviceQuoteForm');
+      assert.equal(await form.count(),1,'Missing service inquiry form '+service);
+      assert.equal(await form.getAttribute('data-demo-only'),'true');
+      assert.match(await templatePage.locator('.quote-privacy').innerText(),/저장되지|저장되거나 전송되지/);
+      assert.match(await templatePage.locator('a.ind-button.alt').getAttribute('href'),/#quote/);
+      const count=await form.locator('.quote-field').count();
+      assert.ok(count>=7,'Need industry-specific service questions '+service);
+      const submit=templatePage.locator('#serviceQuoteForm button[type="submit"]');
+      await submit.click();
+      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),false,'Empty form must not submit');
+      await form.evaluate(el=>{
+        const today=new Date();
+        const local=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+        for(const input of el.querySelectorAll('[required]')){
+          if(input.tagName==='SELECT')input.value=input.options[1].value;
+          else if(input.type==='date')input.value=local;
+          else if(input.tagName==='TEXTAREA')input.value='시연용 내용';
+          else input.value='부산 테스트 지역';
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+      });
+      const postUrls=[];
+      const onPost=req=>{if(req.method()==='POST')postUrls.push(req.url())};
+      templatePage.on('request',onPost);
+      await submit.click();
+      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),true,'Form demo result missing '+service);
+      assert.match(await templatePage.locator('#quoteDemoResult').innerText(),/전달되지 않으며|전송되지|저장되지/);
+      assert.deepEqual(postUrls,[],'Demo form must not transmit customer data '+service);
+      templatePage.off('request',onPost);
+      await templatePage.setViewportSize({width:390,height:844});
+      const bounds=await templatePage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+      assert.ok(bounds.scrollWidth<=bounds.viewport+3,'Service form mobile overflow '+service+' '+JSON.stringify(bounds));
+      await templatePage.setViewportSize({width:1440,height:900});
+    }
     // Layout diversity: the portfolio must NOT be one wireframe with changed photos/colors.
     const designSignatures=new Map();
     await templatePage.setViewportSize({width:1440,height:900});
