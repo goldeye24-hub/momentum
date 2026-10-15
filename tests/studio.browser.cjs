@@ -737,6 +737,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       await qp.close();
     } catch(err){console.log('NAVER_FEASIBILITY error='+String(err.message).slice(0,220));}
 
+    // One-off production health probe for the newly deployed browser-powered API.
+    try{
+      const begin=Date.now();
+      const endpoint='https://momentum-goldeye24-hubs-projects.vercel.app/api/place-rank-live?'+new URLSearchParams({keyword:'포항 물회',placeId:'34908033'});
+      const rr=await fetch(endpoint,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(28000)});
+      const t=await rr.text();
+      console.log('RANK_PRODUCTION_PROBE '+JSON.stringify({http:rr.status,ms:Date.now()-begin,body:t.slice(0,600)}));
+    }catch(err){console.log('RANK_PRODUCTION_PROBE error='+String(err.message).slice(0,240))}
+
     // Mobile viewport: no unexplained viewport overflow and the editor is usable.
     await page.setViewportSize({width:390,height:844});
     await page.waitForTimeout(120);
