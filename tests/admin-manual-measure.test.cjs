@@ -25,7 +25,7 @@ test('manual observation writes only actual measured rank and source, then updat
   request:async(table,opts)=>{calls.push({table,opts});
    return table==='rank_watch_targets'&&opts?.method!== 'PATCH'?[base]:[]},
   measure:async opts=>{measurement=opts;return {status:'ranked',rank:11,
-   rankApproximate:true,observedCount:90,source:'browser_observed'}}
+   rankApproximate:true,observedCount:90,source:'browser_observed',observedAt:'2026-10-15T09:22:17.344Z'}}
  },async()=>{const r=reply();await handle(request(),r);assert.equal(r.code,200);assert.equal(r.body.rank,11)});
  assert.equal(calls.length,3);
  assert.equal(calls[0].table,'rank_watch_targets');
@@ -33,9 +33,41 @@ test('manual observation writes only actual measured rank and source, then updat
  assert.equal(calls[1].opts.body.rank,11);
  assert.equal(calls[1].opts.body.rank_approximate,true);
  assert.equal(calls[1].opts.body.source,'browser_observed');
+ assert.equal(calls[1].opts.body.observed_at,'2026-10-15T09:22:17.344Z');
  assert.equal(calls[2].opts.method,'PATCH');
  assert.equal(measurement.scope,'mobile');
  assert.equal(measurement.key,'mobile\n부산미용실\n2085358113');
+});
+test('cached rank reuses the original observation without new DB history or last-run update',async()=>{
+ let writes=0;
+ await mocked({
+  request:async(table,opts)=>{if(opts?.method==='POST'||opts?.method==='PATCH')writes++;
+   return table==='rank_watch_targets'?[base]:[]},
+  measure:async()=>({status:'ranked',rank:11,rankApproximate:true,observedCount:90,
+   source:'browser_observed',cached:true,observedAt:'2026-10-15T09:22:17.344Z'})
+ },async()=>{
+  const r=reply();await handle(request(),r);
+  assert.equal(r.code,200);assert.equal(r.body.cached,true);
+  assert.equal(r.body.rank,11);assert.equal(r.body.observedAt,'2026-10-15T09:22:17.344Z');
+ });
+ assert.equal(writes,0);
+});
+test('failed or ambiguous source results are not stored as real rank observations',async()=>{
+ for(const result of [
+  {status:'unavailable',source:'none',message:'공유 DB 오류'},
+  {status:'ambiguous',source:'browser_observed',message:'동명 업체'}
+ ]){
+  let writes=0;
+  await mocked({
+   request:async(table,opts)=>{if(opts?.method==='POST'||opts?.method==='PATCH')writes++;
+    return table==='rank_watch_targets'?[base]:[]},
+   measure:async()=>result
+  },async()=>{
+   const r=reply();await handle(request(),r);
+   assert.equal(r.code,503);assert.equal(r.body.rank,null);
+  });
+  assert.equal(writes,0);
+ }
 });
 test('manual observation respects pause and per-target cooldown without calling provider',async()=>{
  let called=0;
