@@ -67,4 +67,19 @@ const html='<div class="neo neo--'+id+'"><div class="neo-ribbon"><div><b>모멘�
 '<header class="neo-header"><a class="neo-brand" href="#top">'+safe(c.name)+'</a><nav class="neo-menu" aria-label="주요 메뉴"><a href="#story">브랜드</a><a href="#offer">안내·서비스</a><a href="#gallery">사진·공간</a><a href="#faq">FAQ</a><a href="#inquiry" class="neo-nav-cta">제작 문의 ↗</a></nav></header>'+
 '<main id="top">'+heroes[c.hero]+highlights[id]+order.join('')+price+contact+'</main><footer class="neo-footer"><div class="neo-shell neo-footer-inner"><strong>'+safe(c.name)+' · ORIGINAL DESIGN DEMO</strong><span>가상 브랜드 데모 · 실제 납품 실적이 아닙니다.</span><a href="/portfolio/">모멘텀 포트폴리오 ↗</a></div></footer></div>';
 document.getElementById('site').innerHTML=html;
+// A rejected/blocked stock-image request must never leave a blank hero. Try other
+// licensed demo-photo references first; then render branded local SVG artwork.
+const art=()=>{
+ const color={restaurant:'#987157',foodie:'#b45c35',franchise:'#214735',poolvilla:'#164f56',pension:'#56714d',glamping:'#1c3027',petgroom:'#cc9bac',ladder:'#174969',movers:'#3b6490',cleaning:'#26968d',aircon:'#268abc',beauty:'#a87d92',academy:'#3d5696',clinic:'#558b7d',corporate:'#17395b'}[id]||'#223750';
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840"><rect width="1200" height="840" fill="'+color+'"/><circle cx="850" cy="430" r="390" fill="#fff" opacity=".07"/><circle cx="880" cy="445" r="270" fill="#fff" opacity=".08"/><path d="M110 690h950" stroke="#fff" opacity=".28" stroke-width="2"/><text x="110" y="130" fill="#fff" font-size="38" font-family="sans-serif" opacity=".75">MOMENTUM / ORIGINAL CONCEPT</text><text x="110" y="650" fill="#fff" font-size="68" font-family="sans-serif" font-weight="bold">'+safe(c.name)+'</text></svg>';
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+};
+const backup=art();
+document.querySelectorAll('.neo img').forEach((img,index)=>{
+ let next=index===0?1:99;
+ img.addEventListener('error',()=>{
+  if(index===0&&next<c.images.length){img.src=photo(c.images[next++]);return}
+  if(!img.src.startsWith('data:image/svg+xml'))img.src=backup;
+ });
+});
 })();
