@@ -22,16 +22,16 @@ corporate:{name:'지음 테크',area:'ENGINEERING / INDUSTRY',headline:'IDEAS.<b
 const id=document.body.dataset.design, c=configs[id];if(!c){document.body.textContent='시안을 찾을 수 없습니다.';return}
 const safe=(v)=>String(v||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const photo=(x,w=1600)=>'https://images.unsplash.com/photo-'+x+'?auto=format&fit=crop&w='+w+'&q=83';
-const image=(x,tag,extra='')=>'<div class="neo-image '+extra+'"><img src="'+photo(x)+'" alt="'+safe(tag)+'를 표현한 디자인 참고 사진" loading="lazy" decoding="async"><span class="neo-caption">'+safe(c.name)+' / DESIGN CONCEPT</span></div>';
+const image=(x,tag,extra='')=>'<div class="neo-image '+extra+'"><img src="'+photo(x)+'" alt="'+safe(tag)+'를 표현한 디자인 참고 사진" loading="'+(extra==='hero'?'eager':'lazy')+'" '+(extra==='hero'?'fetchpriority="high"':'')+' decoding="async"><span class="neo-caption">'+safe(c.name)+' / DESIGN CONCEPT</span></div>';
 const cta='/?service='+encodeURIComponent('홈페이지 제작')+'&design='+encodeURIComponent(id)+'#contact';
 const buttons='<div class="neo-hero-buttons"><a class="neo-button" href="#offer">'+safe(c.action)+' ↗</a><a class="neo-button light" href="#inquiry">방문·문의 안내 →</a></div>';
 const heroCopy='<div class="neo-hero-copy"><span class="neo-eyebrow">'+safe(c.area)+'</span><h1>'+c.headline+'</h1><p>'+safe(c.lead)+'</p>'+buttons+'</div>';
 const heroes={
- split:'<section class="neo-hero neo-split">'+heroCopy+image(c.images[0],c.name+' 메인')+'</section>',
- overlap:'<section class="neo-hero neo-overlap"><div class="neo-title-row">'+heroCopy+'<p class="neo-eyebrow">A MOMENTUM ORIGINAL WEB EXPERIENCE / 2026</p></div>'+image(c.images[0],c.name+' 메인')+'</section>',
- immersive:'<section class="neo-hero neo-immersive">'+heroCopy+image(c.images[0],c.name+' 메인')+'</section>',
- centered:'<section class="neo-hero neo-centered">'+heroCopy+image(c.images[0],c.name+' 메인')+'</section>',
- diagonal:'<section class="neo-hero neo-diagonal"><div class="neo-shell neo-top">'+heroCopy+image(c.images[0],c.name+' 메인')+'</div></section>'
+ split:'<section class="neo-hero neo-split">'+heroCopy+image(c.images[0],c.name+' 메인','hero')+'</section>',
+ overlap:'<section class="neo-hero neo-overlap"><div class="neo-title-row">'+heroCopy+'<p class="neo-eyebrow">A MOMENTUM ORIGINAL WEB EXPERIENCE / 2026</p></div>'+image(c.images[0],c.name+' 메인','hero')+'</section>',
+ immersive:'<section class="neo-hero neo-immersive">'+heroCopy+image(c.images[0],c.name+' 메인','hero')+'</section>',
+ centered:'<section class="neo-hero neo-centered">'+heroCopy+image(c.images[0],c.name+' 메인','hero')+'</section>',
+ diagonal:'<section class="neo-hero neo-diagonal"><div class="neo-shell neo-top">'+heroCopy+image(c.images[0],c.name+' 메인','hero')+'</div></section>'
 };
 const features='<section id="offer" class="neo-section"><div class="neo-shell"><div class="neo-section-head"><div><span class="neo-kicker">SERVICES / WHAT WE OFFER</span><h2>필요한 정보를<br>한눈에.</h2></div><p>이 업종의 고객이 먼저 찾는 내용을 기준으로 구성했습니다. 실제 제공 서비스와 금액은 고객 자료를 확인한 뒤 채웁니다.</p></div><div class="neo-feature-grid">'+c.items.map((s,i)=>{const [h,p]=s.split('|');return '<article class="neo-feature"><span class="no">'+String(i+1).padStart(2,'0')+'</span><h3>'+safe(h)+'</h3><p>'+safe(p)+'</p></article>'}).join('')+'</div></div></section>';
 const story='<section id="story" class="neo-section"><div class="neo-shell neo-story"><div class="neo-story-copy"><span class="neo-kicker">OUR STORY / PHILOSOPHY</span><h2>'+safe(c.story)+'</h2><p>'+safe(c.desc)+'</p><div class="neo-pullquote">Designed to make the difference visible.</div></div><div class="neo-story-image">'+image(c.images[1],c.name+' 브랜드 스토리')+'</div></div></section>';
