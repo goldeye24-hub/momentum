@@ -28,7 +28,7 @@ async function request(table,{method='GET',query={},body,prefer=''}={}){
     if(['slot_limit_reached','member_not_found','invalid_target'].includes(detail?.message))reason=detail.message;
     // PostgREST / PostgreSQL identifiers are safe to surface in admin-only
     // diagnostics; never forward raw messages, SQL text, URLs or credentials.
-    if(typeof detail?.code==='string'&&/^(?:PGRST\\d{3}|[0-9A-Z]{5})$/.test(detail.code)){
+    if(typeof detail?.code==='string'&&/^(?:PGRST\d{3}|[0-9A-Z]{5})$/.test(detail.code)){
      upstreamCode=detail.code;
     }
    }catch{}
