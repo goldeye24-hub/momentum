@@ -3,6 +3,7 @@ const auth=require('../api/admin-site-builder');
 const db=require('../api/_rank-store');
 const observer=require('../api/_place-observe');
 const sourceGate=require('../api/_rank-live-shared');
+const diagnosis=require('../api/_db-failure');
 const clean=(v,max=90)=>String(v??'').trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max);
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Robots-Tag','noindex');
@@ -86,5 +87,5 @@ module.exports=async function(req,res){
    return res.status(200).json({updated:true});
   }
   return res.status(400).json({error:'알 수 없는 관리 명령입니다.'});
- }catch(err){return res.status(err.code==='not_configured'?503:502).json({error:err.code==='not_configured'?err.message:'순위 기록 DB 접근에 실패했습니다. 설정 및 테이블을 확인하세요.'})}
+ }catch(err){return res.status(err.code==='not_configured'?503:502).json({error:diagnosis.message(err),diagnostic:diagnosis.analyze(err)})}
 };

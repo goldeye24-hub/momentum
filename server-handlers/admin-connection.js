@@ -2,6 +2,7 @@
 const admin=require('../api/admin-site-builder');
 const db=require('../api/_rank-store');
 const member=require('../api/_member-session');
+const diagnosis=require('../api/_db-failure');
 const tables=[
  'momentum_member_accounts','momentum_member_targets','momentum_member_slot_audit',
  'rank_keyword_snapshots','rank_keyword_entries',
@@ -26,8 +27,8 @@ module.exports=async function(req,res){
   try{
    const rows=await db.request(name,{query:{select:'*',limit:1}});
    return {name,status:Array.isArray(rows)?'ok':'unexpected_response'};
-  }catch{
-   return {name,status:'failed'};
+  }catch(error){
+   return {name,status:'failed',...diagnosis.analyze(error)};
   }
  }));
  let authStatus='not_configured';

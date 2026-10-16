@@ -23,10 +23,17 @@ async function request(table,{method='GET',query={},body,prefer=''}={}){
   });
   if(!rsp.ok){
    let reason=null;
+   let upstreamCode=null;
    try{const detail=await rsp.json();
     if(['slot_limit_reached','member_not_found','invalid_target'].includes(detail?.message))reason=detail.message;
+    // PostgREST / PostgreSQL identifiers are safe to surface in admin-only
+    // diagnostics; never forward raw messages, SQL text, URLs or credentials.
+    if(typeof detail?.code==='string'&&/^(?:PGRST\d{3}|[0-9A-Z]{5})$/.test(detail.code)){
+     upstreamCode=detail.code;
+    }
    }catch{}
-   throw Object.assign(new Error('DB 요청 오류 ('+rsp.status+')'),{code:'database_error',status:rsp.status,reason});
+   throw Object.assign(new Error('DB 요청 오류 ('+rsp.status+')'),
+    {code:'database_error',status:rsp.status,reason,upstreamCode});
   }
   if(rsp.status===204)return [];
   const raw=await rsp.text();
