@@ -279,6 +279,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       await templatePage.waitForSelector('.neo-hero h1',{timeout:12000});
       assert.ok((await templatePage.locator('.neo-hero h1').innerText()).length>7,id+' absent title');
       assert.equal(await templatePage.locator('.neo-feature').count(),3,id+' unique business services');
+      assert.equal(await templatePage.locator('.neo-moment.moment-'+id).count(),1,id+' missing individual designed industry module');
       assert.equal(await templatePage.locator('.neo-gallery figure').count(),3,id+' photo editorial');
       assert.equal(await templatePage.locator('.neo-faq details').count(),2,id+' functional Q&A');
       assert.match(await templatePage.locator('.neo-price').innerText(),/30만원으로 제작 가능합니다/);
@@ -298,6 +299,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       layouts.set(id,JSON.stringify(signature));
       if(['restaurant','foodie','poolvilla','petgroom','ladder','beauty','corporate'].includes(id))
         await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
+      if(['restaurant','poolvilla','ladder','beauty'].includes(id))
+        await templatePage.screenshot({path:path.join(root,'artifacts/full-industry-'+id+'.png'),fullPage:true});
       await templatePage.setViewportSize({width:390,height:844});
       const bounds=await templatePage.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(bounds.width<=bounds.viewport+4,'Mobile horizontal overflow '+id+' '+JSON.stringify(bounds));
