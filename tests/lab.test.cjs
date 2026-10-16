@@ -357,6 +357,7 @@ test('15 independent industry websites retain working business-specific DOM dire
   assert.doesNotMatch(page,/id="serviceQuoteForm"/,'Do not repeat an inert same-form design in each sample');
   assert.ok(styles.includes('.neo--'+id),id+' must have independent art direction');
   assert.ok(script.includes(id+':{name:'),id+' must have business-specific content model');
+  assert.ok(script.includes('moment-'+id),id+' must include original industry-specific content module');
  }
  for(const marker of ['neo-overlap','neo-immersive','neo-centered','neo-diagonal','neo-split','process-first','gallery-first','story-first','editorial'])
   assert.ok(script.includes(marker),marker+' distinct page system');
