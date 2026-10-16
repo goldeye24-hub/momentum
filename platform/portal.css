@@ -18,3 +18,13 @@
 
 /* Remember only the member's email address on this device, never the password. */
 .remember-email{display:flex;align-items:center;gap:9px;margin:18px 0 2px;cursor:pointer;font-weight:700;color:#405c78}.remember-email input{width:16px;height:16px;margin:0;accent-color:#2b6ac6;flex:none}.remember-email span{color:inherit;font-size:12px;font-weight:750}.remember-note{margin:4px 0 0;color:#8393a7;font-size:11px;line-height:1.5}.remember-email[hidden],.remember-note[hidden]{display:none!important}
+
+/* Authenticated member services — existing working paths only. */
+.member-service-hub{border:1px solid #dae4f0;background:#fff;border-radius:16px;padding:24px;margin:22px 0 30px}
+.member-service-title h2{margin:9px 0 5px;font-size:24px;letter-spacing:-.04em}
+.member-service-title p{color:#657b92;font-size:13px;line-height:1.75;margin:3px 0 17px}
+.member-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.member-service-link{background:#f5f8fd;border:1px solid #dce7f4;border-radius:11px;padding:15px;min-width:0;text-decoration:none;color:#234c73;display:flex;flex-direction:column;gap:6px}
+.member-service-link:hover,.member-service-link:focus-visible{border-color:#6d9bd0;background:#ebf4ff}
+.member-service-link b{font-size:14px}.member-service-link small{font-size:11px;line-height:1.6;color:#70879f}
+@media(max-width:800px){.member-service-grid{grid-template-columns:1fr}.member-service-hub{padding:16px}}
