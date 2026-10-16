@@ -330,7 +330,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
     assert.equal(await designer.locator('#designSelect option').count(),15);
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
-    assert.match(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),/Silence|우리만|푸른/);
+    assert.match(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),/바다와|여유/);
     const initialTitle=await designer.frameLocator('#livePreview').locator('h1').first().innerText();
     await designer.locator('#headlineInput').fill('풀빌라 전용 테스트 문구');
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
@@ -339,12 +339,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
     await designer.locator('#designSelect').selectOption('ladder');
-    await designer.frameLocator('#livePreview').locator('body.theme-ladder').waitFor();
+    await designer.frameLocator('#livePreview').locator('.neo--ladder').waitFor();
     assert.equal(await designer.locator('#headlineInput').isDisabled(),false);
-    assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),1);
-    assert.equal(await designer.frameLocator('#livePreview').locator('body.theme-ladder').count(),1);
+    assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),0,'No recycled fake form should be injected');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.neo--ladder').count(),1);
     await designer.locator('#brandInput').fill('테스트 사다리차');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.ind-head .ind-logo').innerText(),'테스트 사다리차');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.neo-brand').innerText(),'테스트 사다리차');
     await designer.locator('#designSelect').selectOption('poolvilla');
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
