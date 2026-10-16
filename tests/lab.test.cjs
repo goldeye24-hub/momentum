@@ -795,3 +795,5 @@ require('./admin-connection.test.cjs');
 
 require('./admin-manual-measure.test.cjs');
 require('./admin-password-remember.test.cjs');
+
+require('./db-failure-diagnostics.test.cjs');
