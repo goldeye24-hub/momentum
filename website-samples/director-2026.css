@@ -129,3 +129,97 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-off
 @media(max-width:960px){.neo-shell,.neo-header{width:calc(100% - 42px)}.neo-menu{gap:10px;font-size:11px}.neo-split,.neo-immersive,.neo-story,.neo-diagonal .neo-top{grid-template-columns:1fr}.neo-split>.neo-hero-copy{padding:60px 30px}.neo-immersive .neo-hero-copy{padding:55px 30px}.neo-image,.neo-split .neo-image,.neo-immersive .neo-image,.neo-diagonal .neo-image{min-height:380px;height:430px}.neo-section{padding:75px 0}.neo-overlap .neo-title-row{grid-template-columns:1fr}.neo-pricing .neo-price-head{grid-template-columns:1fr}.neo-story-image,.neo-story-image img{min-height:380px}.neo-process{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.neo-ribbon{padding:11px 18px;gap:7px}.neo-ribbon a{font-size:11px}.neo-ribbon small{display:none}.neo-price{font-size:11px}.neo-header{padding:15px 0;min-height:70px;display:block}.neo-brand{display:block;margin-bottom:12px}.neo-menu{justify-content:space-between;gap:9px}.neo-nav-cta{padding:9px}.neo-hero h1{font-size:clamp(48px,13vw,74px)}.neo-hero-buttons .neo-button{flex:1;padding:13px 11px;white-space:nowrap}.neo-overlap{padding:50px 20px 0;min-height:0}.neo-overlap .neo-title-row{padding:0 0 27px}.neo-overlap .neo-title-row h1{font-size:clamp(55px,13vw,82px)}.neo-overlap .neo-image{min-height:290px;height:300px}.neo-split .neo-image,.neo-immersive .neo-image,.neo-diagonal .neo-image{height:335px;min-height:335px;clip-path:none}.neo-centered{min-height:0;padding:65px 20px}.neo-centered .neo-image{height:240px}.neo-section{padding:60px 0}.neo-section-head{display:block}.neo-section-head p{margin-top:18px}.neo-feature-grid,.neo-faq,.neo-gallery,.neo-pricing .neo-price-head{grid-template-columns:1fr}.neo-gallery{grid-auto-rows:230px}.neo-gallery figure:first-child{grid-row:auto}.neo-process{grid-template-columns:1fr}.neo-feature{min-height:180px}.neo-feature h3{margin-top:22px}.neo-story{gap:22px}.neo-story-image,.neo-story-image img{min-height:340px}.neo-contact{padding:70px 0}.neo-contact-inner{display:block}.neo-footer-inner{display:block}.neo-footer-inner span{display:block;margin-top:10px}.neo--glamping .neo-menu{color:#eee}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.neo-gallery img{transition:none}}
+
+/* Fifteen original, business-specific content compositions. Not reused generic form blocks. */
+.neo-moment{padding:clamp(54px,7vw,110px) max(26px,calc((100vw - 1320px)/2));position:relative;overflow:hidden}
+.neo-moment h2{letter-spacing:-.07em;line-height:1.13;margin:13px 0 28px;font-size:clamp(45px,5.4vw,82px)}
+.neo-moment small{font-size:11px;font-weight:850;letter-spacing:.17em}
+.neo-moment p{line-height:1.85;font-size:14px}
+.neo-moment a{display:inline-block;font-weight:850;font-size:13px;border-bottom:1px solid currentColor;padding-bottom:6px}
+.moment-restaurant{display:grid;grid-template-columns:.8fr 1fr;gap:60px;background:#2e4032;color:#efe3d3}
+.moment-restaurant .moment-head strong{display:block;font:400 clamp(42px,5vw,76px)/1.3 Georgia,serif;margin:35px 0}
+.moment-restaurant-book>div{display:grid;grid-template-columns:60px 1fr;gap:5px 15px;border-bottom:1px solid #c3b69a;padding:23px 0}
+.moment-restaurant-book span{font:italic 38px Georgia,serif;grid-row:span 2;color:#deae7c}
+.moment-restaurant-book b{font:500 24px Georgia,serif;letter-spacing:-.02em}
+.moment-restaurant-book p{margin:0;color:#cbd4c7}
+.moment-foodie{display:grid;grid-template-columns:.7fr 1.3fr;gap:45px;align-items:center;background:#ffdd8b;color:#a52f1b}
+.moment-foodie h2{font-weight:1000;font-size:clamp(54px,7vw,105px)}
+.moment-foodie-stamp{font-weight:1000;font-size:clamp(48px,6vw,87px);line-height:.95;letter-spacing:-.09em;border:13px solid #a52f1b;border-radius:50%;width:min(380px,100%);aspect-ratio:1;display:grid;place-content:center;text-align:center;transform:rotate(-11deg)}
+.moment-franchise{background:#143c30;color:#f1f5e9}
+.moment-franchise h2{font-weight:950}
+.moment-stage{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.moment-stage>div{padding:25px 18px;min-height:260px;background:#27604b;border-left:4px solid #ef9e5d;display:flex;flex-direction:column;gap:12px}
+.moment-stage span{font-size:12px;color:#f3b781}.moment-stage strong{font-size:26px;line-height:1.35}.moment-stage small{line-height:1.7;letter-spacing:0;color:#d7e7db;margin-top:auto}
+.moment-poolvilla{background:#e1eeeb;color:#21525b;display:grid;grid-template-columns:1fr 1fr;gap:70px}
+.moment-poolvilla h2{font:400 clamp(80px,9vw,150px)/.98 Georgia,serif}
+.moment-poolvilla-units{border-top:1px solid #6cabb0;padding-top:14px}.moment-poolvilla-units article{border-bottom:1px solid #8bb9b8;padding:28px 0}
+.moment-poolvilla-units span{font-size:11px;letter-spacing:.17em}.moment-poolvilla-units strong{font-size:23px;display:block;margin:14px 0}
+.moment-poolvilla-units a{margin-top:27px}
+.moment-pension{background:#ebeee2;color:#36523b}
+.moment-pension h2{font:500 clamp(44px,5vw,82px)/1.18 "Noto Serif KR",serif}
+.moment-pension-log{margin:50px 0 32px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.moment-pension-log>div{border-top:1px solid #719578;padding:30px 10px;min-height:145px}
+.moment-pension-log span{display:block;letter-spacing:.16em;font-size:11px}.moment-pension-log strong{display:block;font-size:22px;line-height:1.5;margin-top:18px}
+.moment-glamping{background:#0d1e17;color:#f7eed1;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
+.moment-glamping-moon{width:300px;height:300px;border:1px solid #c6ac79;border-radius:50%;display:grid;place-items:center;font:240px Georgia,serif;color:#d8c391;transform:rotate(-25deg)}
+.moment-glamping p{max-width:550px}
+.moment-petgroom{background:#f6e3eb;color:#63475a;display:grid;grid-template-columns:1fr 1fr;gap:55px;align-items:center}
+.moment-petgroom h2{font-weight:950}
+.moment-pet-steps{display:flex;flex-direction:column;gap:10px;border:2px solid #d49caf;border-radius:100px 100px 22px 22px;padding:55px 32px}
+.moment-pet-steps>span{font:italic 43px Georgia,serif}
+.moment-pet-steps>strong{font-size:18px;border-bottom:1px solid #d9aaba;padding:16px}
+.moment-pet-steps a{align-self:flex-start;margin-top:10px}
+.moment-ladder{background:#153d61;color:#f7f8ef;padding-top:75px;padding-bottom:85px}
+.moment-ladder-bar{display:flex;justify-content:space-between;border-bottom:5px solid #e98447;padding-bottom:28px;gap:14px}
+.moment-ladder-bar strong{font-size:clamp(30px,4vw,66px);letter-spacing:-.06em}
+.moment-ladder-bar span{font-size:17px;align-self:center}
+.moment-ladder-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:36px}
+.moment-ladder details{background:#265779;padding:25px 20px;min-height:180px;cursor:pointer}
+.moment-ladder summary{font-size:20px;font-weight:900}
+.moment-ladder p{color:#d7e4ee}
+.moment-movers{background:#e2f2ff;color:#2a4b7c}.moment-movers h2{font-weight:990}
+.moment-movers-options{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:35px 0}
+.moment-movers article{background:#fff;color:#28416f;padding:25px;min-height:225px;border-radius:22px 22px 4px 4px}
+.moment-movers article span{font-size:11px;letter-spacing:.15em}
+.moment-movers article strong{font-size:25px;display:block;margin:24px 0 12px}
+.moment-cleaning{background:#dcf2ec;color:#155357}
+.moment-cleaning{display:grid;grid-template-columns:.65fr 1fr;gap:50px}
+.moment-cleaning-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.moment-cleaning article{padding:24px;background:#f5fefa;border:1px solid #b4dcd0;border-radius:15px}
+.moment-cleaning article span{font-size:30px;font-weight:1000;color:#09a697}
+.moment-cleaning article strong{font-size:25px;display:block;margin:12px 0}
+.moment-cleaning article p{margin:0;font-size:13px}.moment-disclaimer{grid-column:1/-1;font-size:12px!important}
+.moment-aircon{background:#0b385c;color:#edf8ff;display:grid;grid-template-columns:1fr 1fr;gap:50px}
+.moment-aircon h2{font-weight:1000}
+.moment-aircon-types details{border-bottom:1px solid #6d9abe;padding:21px 0;cursor:pointer}
+.moment-aircon-types summary{font-size:23px;font-weight:900;display:flex;justify-content:space-between}
+.moment-aircon-types summary span{color:#76cdf6}
+.moment-beauty{background:#d5bdca;color:#4d3341;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.moment-beauty h2{font:400 clamp(53px,6vw,92px)/1.25 Georgia,"Noto Serif KR",serif}
+.moment-beauty-look{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.moment-beauty-look span{border:1px solid #866371;height:245px;display:flex;align-items:flex-end;padding:16px;font:14px Georgia,serif}
+.moment-beauty-look span:nth-child(2){background:#ad879a;transform:translateY(20px)}
+.moment-beauty-look a{grid-column:1/-1;justify-self:end;margin-top:24px}
+.moment-academy{background:#f8e9c6;color:#223969}
+.moment-academy h2{font-weight:980}
+.moment-academy-path{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.moment-academy-path div{border-top:5px solid #34538d;background:#fff9ed;padding:27px 18px;min-height:225px}
+.moment-academy-path span{font-weight:900;font-size:11px;letter-spacing:.18em}
+.moment-academy-path strong{display:block;font-size:25px;line-height:1.4;margin:55px 0 0}
+.moment-clinic{display:grid;grid-template-columns:1fr 1fr;gap:50px;background:#eaf3ef;color:#2d5d58;align-items:center}
+.moment-clinic h2{font:500 clamp(46px,5vw,78px)/1.2 "Noto Serif KR",serif}
+.moment-clinic-guide article{border-bottom:1px solid #b4cdc5;padding:24px 0;display:flex;gap:35px;align-items:center}
+.moment-clinic-guide article span{font:italic 38px Georgia,serif;color:#689a8a}
+.moment-clinic-guide article strong{font-size:23px}
+.moment-clinic-guide small{display:block;margin-top:25px}
+.moment-corporate{background:#1a3255;color:#e6f2fc;display:grid;grid-template-columns:.8fr 1.2fr;gap:40px}
+.moment-corporate h2{font-size:clamp(50px,6.1vw,98px);font-weight:1000}
+.moment-corporate em{font-style:normal;color:#73c6f5}
+.moment-corporate-systems{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.moment-corporate-systems article{padding:23px;background:#24476d;border:1px solid #55779c}
+.moment-corporate-systems article:last-child{grid-column:1/-1}
+.moment-corporate-systems article b{color:#81d7f5;font-size:12px}
+.moment-corporate-systems article strong{font-size:30px;display:block;margin:25px 0 5px}
+.moment-corporate-systems article p{margin:0;color:#c7d9e9}
+@media(max-width:860px){.moment-restaurant,.moment-foodie,.moment-poolvilla,.moment-glamping,.moment-petgroom,.moment-cleaning,.moment-aircon,.moment-beauty,.moment-clinic,.moment-corporate{grid-template-columns:1fr}.moment-stage,.moment-pension-log,.moment-movers-options,.moment-academy-path,.moment-ladder-grid{grid-template-columns:1fr 1fr}.moment-glamping-moon{width:210px;height:210px;font-size:170px}.moment-beauty-look span{height:145px}}
+@media(max-width:560px){.moment-stage,.moment-pension-log,.moment-movers-options,.moment-academy-path,.moment-ladder-grid,.moment-cleaning-grid,.moment-corporate-systems{grid-template-columns:1fr}.moment-corporate-systems article:last-child{grid-column:auto}.moment-foodie-stamp{width:230px;font-size:53px;border-width:7px}.moment-restaurant-book>div{grid-template-columns:40px 1fr}.moment-restaurant-book b{font-size:18px}.moment-restaurant .moment-head strong{font-size:44px}.moment-corporate h2,.moment-academy h2,.moment-ladder-bar strong{font-size:47px}.moment-beauty-look{grid-template-columns:1fr 1fr 1fr}.moment-beauty-look span{padding:7px;writing-mode:vertical-lr}.moment-ladder-bar{display:block}.moment-ladder-bar span{display:block;margin-top:12px}.moment-restaurant-book span{font-size:27px}}
