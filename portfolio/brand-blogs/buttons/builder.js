@@ -89,5 +89,5 @@ $('downloadHeader').addEventListener('click',()=>download($('pcCanvas'),'momentu
 $('downloadMobile').addEventListener('click',()=>download($('mobileCanvas'),'momentum-blog-mobile-cover-720x720.png'));
 $('downloadButton').addEventListener('click',()=>{const i=Number(select.value||0);download(buttonCanvas(i),'momentum-blog-menu-'+String(i+1).padStart(2,'0')+'.png')});
 $('copyCode').addEventListener('click',async()=>{if(!$('widgetCode').value.startsWith('<a ')){show('유효한 연결 URL과 업로드 이미지 주소를 입력하세요');return}try{await navigator.clipboard.writeText($('widgetCode').value);show('위젯 코드 복사 완료')}catch{$('widgetCode').select();document.execCommand('copy');show('위젯 코드를 선택했습니다')}});
-makeFields();redraw();show('디자인/버튼 제작 도구 준비됨');
+makeFields();const requested=new URLSearchParams(location.search).get('theme');if(requested&&Object.hasOwn(themes,requested))changeTheme(requested);else redraw();show('디자인/버튼 제작 도구 준비됨');
 })();
