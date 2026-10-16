@@ -74,3 +74,18 @@ test('README/QA matrix calls out live DB failure, no background collection and l
  for(const term of ['운영 실패 보고','운영 미검증','관리자 DB 접근 오류','정기 자동 추적','로컬 저장','외부 서비스','로그인 회원 서비스','관리자 모드'])
   assert.ok(doc.includes(term),term);
 });
+
+test('all private business APIs require the right role, never accepting the opposite session type',async()=>adminConfigured(async()=>{
+ for(const handlerName of ['admin-connection','admin-keyword-matrix','admin-competitor-compare','admin-members','admin-place-keyword-insights','admin-rank-watches']){
+  const handler=require('../server-handlers/'+handlerName);
+  const r=response();
+  await handler({method:'GET',headers:{cookie:'momentum_member_session=fake.member',host:'example.test'},query:{}},r);
+  assert.equal(r.statusCode,401,handlerName+' must block member cookies');
+ }
+ for(const handlerName of ['member-watches','member-history']){
+  const handler=require('../server-handlers/'+handlerName);
+  const r=response();
+  await handler({method:'GET',headers:{cookie:'momentum_admin_session=fake.admin',host:'example.test'},query:{}},r);
+  assert.equal(r.statusCode,401,handlerName+' must block admin cookies and anonymous access');
+ }
+}));
