@@ -50,9 +50,20 @@ module.exports=async function(req,res){
     return res.status(503).json({status:result.status,retryAfterSeconds:result.retryAfterSeconds||60,
      error:result.message||'네이버 요청 제한이나 다른 측정으로 새 관측을 진행하지 않았습니다.'});
    }
-   const allowed=['ranked','not_in_block','no_place_block','unavailable'];
-   const status=allowed.includes(result.status)?result.status:'unavailable';
-   const observedAt=new Date().toISOString();
+   // Reusing a shared 30-minute snapshot must not create a second observation
+   // or move the target's last-run timestamp forward.
+   if(result.cached===true){
+    return res.status(200).json({status:result.status,rank:result.status==='ranked'?result.rank:null,
+     rankApproximate:result.rankApproximate===true,cached:true,observedAt:result.observedAt||null,
+     message:'기존 관측 결과를 재사용했습니다. 새 측정이나 순위 기록은 추가하지 않았습니다.'});
+   }
+   const allowed=['ranked','not_in_block','no_place_block'];
+   if(result.source!=='browser_observed'||!allowed.includes(result.status)){
+    return res.status(503).json({status:result.status||'unavailable',rank:null,
+     error:result.message||'실제 순위 관측을 완료하지 못했습니다. 새 기록은 저장하지 않았습니다.'});
+   }
+   const status=result.status;
+   const observedAt=Number.isFinite(Date.parse(result.observedAt||''))?result.observedAt:new Date().toISOString();
    await db.request('rank_watch_observations',{method:'POST',
     body:{target_id:row.id,rank:status==='ranked'?result.rank:null,
      rank_approximate:result.rankApproximate===true,status,

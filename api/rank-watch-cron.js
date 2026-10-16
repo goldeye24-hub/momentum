@@ -1,6 +1,6 @@
 'use strict';
 const db=require('./_rank-store'),observer=require('./_place-observe');
-const {sharedMeasure}=require('./_rank-live-shared');
+const sourceGate=require('./_rank-live-shared');
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
  if(req.method!=='GET')return res.status(405).json({error:'GET만 지원합니다.'});
@@ -17,7 +17,7 @@ module.exports=async function(req,res){
    try{
     const target=item.place_id||observer.normalizeBusinessName(item.target_name);
     const key=item.scope+'\n'+item.keyword+'\n'+target;
-    result=await sharedMeasure({key,scope:item.scope,measure:()=>item.scope==='mobile'?
+    result=await sourceGate.sharedMeasure({key,scope:item.scope,measure:()=>item.scope==='mobile'?
      observer.runMobile(item.keyword,{id:item.place_id||null,name:item.target_name||null}):item.scope==='map'?
       observer.runMap(item.keyword,item.place_id):observer.run(item.keyword,item.place_id)});
    }
@@ -26,8 +26,18 @@ module.exports=async function(req,res){
     out.push({id:item.id,status:'deferred',retryAfterSeconds:result.retryAfterSeconds});
     continue; // Do not mark as checked: the next invocation may retry after the gate opens.
    }
-   const status=['ranked','not_in_block','no_place_block','blocked','unavailable'].includes(result.status)?result.status:'unavailable';
-   const at=new Date().toISOString();
+   if(result.cached===true){
+    out.push({id:item.id,status:'cached',rank:result.status==='ranked'?result.rank:null,
+     observedAt:result.observedAt||null});
+    continue; // A shared snapshot is not a new observation.
+   }
+   const observed=['ranked','not_in_block','no_place_block'];
+   if(result.source!=='browser_observed'||!observed.includes(result.status)){
+    out.push({id:item.id,status:'unavailable',rank:null});
+    continue; // Failed or ambiguous reads must not overwrite the real rank history.
+   }
+   const status=result.status;
+   const at=Number.isFinite(Date.parse(result.observedAt||''))?result.observedAt:new Date().toISOString();
    await db.request('rank_watch_observations',{method:'POST',body:{target_id:item.id,rank:status==='ranked'?result.rank:null,rank_approximate:result.rankApproximate===true,status,observed_count:result.observedCount||0,source:result.source||'none',scope:item.scope,observed_at:at},prefer:'return=minimal'});
    await db.request('rank_watch_targets',{method:'PATCH',query:{id:'eq.'+item.id},body:{last_run_at:at},prefer:'return=minimal'});
    out.push({id:item.id,status,rank:status==='ranked'?result.rank:null});
