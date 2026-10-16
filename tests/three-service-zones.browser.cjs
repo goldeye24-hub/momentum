@@ -64,7 +64,7 @@ const server=http.createServer(async(req,res)=>{
   await page.locator('#password').fill(PASSWORD);
   await page.locator('#adminLoginSubmit').click();
   await page.waitForFunction(()=>document.title.includes('관리자 운영센터'),{timeout:8000});
-  assert.ok(await page.locator('a[href="/admin/crm/"]').isVisible());
+  assert.ok(await page.locator('a[href="/admin/crm/"]').first().isVisible());
   await page.waitForFunction(()=>document.querySelector('#dbConnectionStatus').textContent.includes('상세 진단'),{timeout:8000});
   assert.doesNotMatch(await page.locator('#dbConnectionStatus').textContent(),/모두 정상/);
   await page.goto(origin+'/admin/studio/',{waitUntil:'domcontentloaded'});
