@@ -1,0 +1,10 @@
+/* Consistent, accessible pricing disclosure without altering the design of any existing sample */
+.price-offer{background:#152338;color:#fff;border-radius:12px;padding:22px 26px;margin:0 0 42px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.price-offer strong{font-size:clamp(18px,2.2vw,27px);letter-spacing:-.045em;line-height:1.35;display:block}
+.price-offer small{display:block;color:#d1d9e4;font-size:12px;line-height:1.55;margin-top:7px}
+.price-offer a{display:inline-flex;align-items:center;padding:12px 18px;border-radius:7px;background:#ed783b;color:#fff;font-weight:800;font-size:13px}
+.momentum-price-copy{font-size:11px!important;font-weight:800!important;line-height:1.6!important;color:inherit!important;letter-spacing:-.01em!important}
+.momentum-price-copy em{font-style:normal;font-size:10px!important;font-weight:500!important;opacity:.8;margin-left:4px}
+.industry-demo .momentum-price-copy{margin-left:13px}
+.demo-topbar .momentum-price-copy{margin-left:10px}
+@media(max-width:720px){.price-offer{padding:18px;margin-bottom:28px}.price-offer a{width:100%;justify-content:center}.industry-demo .momentum-price-copy,.demo-topbar .momentum-price-copy{display:block;margin:4px 0 0}}

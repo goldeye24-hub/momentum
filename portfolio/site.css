@@ -1,0 +1,48 @@
+/* Momentum design portfolio · independently art-directed experiences */
+:root{color-scheme:light;--ink:#101a29;--muted:#687588;--line:#e3e7ee;--blue:#3159ea;--canvas:#f5f7fa}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,"Pretendard","Noto Sans KR",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}img{max-width:100%;display:block}a:focus-visible,button:focus-visible{outline:3px solid #ff9d3b;outline-offset:4px}
+.container{width:min(1280px,calc(100% - 48px));margin:auto}
+.port-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(16px)}
+.port-nav-inner{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.port-logo{font-weight:950;letter-spacing:-.055em;font-size:20px}.port-logo span{color:#ef6d2c}
+.port-links{display:flex;align-items:center;gap:23px;font-size:13px;font-weight:720}.port-links a:hover{color:var(--blue)}
+.port-cta{border:1px solid #101a29;padding:11px 17px;border-radius:8px;background:#101a29;color:white!important}
+.port-hero{background:radial-gradient(circle at 85% 10%,#f1e8da 0,transparent 35%),linear-gradient(145deg,#f5f7fc,#fff);padding:108px 0 88px;overflow:hidden}
+.port-kicker{font-size:12px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#d56237}
+.port-hero h1{font-size:clamp(48px,7.4vw,104px);letter-spacing:-.085em;line-height:1.07;max-width:1050px;margin:27px 0;font-weight:900}
+.port-hero h1 em{font-family:Georgia,serif;font-style:italic;font-weight:500;color:#df6736}
+.port-hero p{max-width:700px;color:#4d5b6c;font-size:19px;line-height:1.85;word-break:keep-all}
+.port-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:35px}.port-pill{border:1px solid #cbd3df;background:#fff;border-radius:100px;padding:12px 19px;font-size:14px;font-weight:750;transition:.2s}
+.port-pill:hover{background:#142238;color:#fff}
+.port-feature{padding:94px 0}.port-feature.soft{background:var(--canvas)}.port-feature.dark{background:#101a28;color:#fff}
+.port-heading{display:flex;align-items:end;justify-content:space-between;gap:35px;margin-bottom:36px}
+.port-heading h2{font-size:clamp(36px,4.6vw,66px);line-height:1.1;letter-spacing:-.065em;margin:11px 0 0}.port-heading p{max-width:350px;line-height:1.75;color:#66778e;margin:0}.dark .port-heading p{color:#bac4d1}
+.port-link{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:850;border-bottom:1px solid currentColor;padding-bottom:7px}
+.port-premium{border:1px solid #ccd6e5;background:#fff;border-radius:18px;padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.port-premium strong{font-size:17px;letter-spacing:-.035em}.port-premium small{font-size:12px;color:#768196;display:block;margin-top:5px}.port-premium a{padding:13px 19px;color:#fff;background:#13233b;border-radius:8px;font-weight:750;font-size:13px}
+.port-foot{padding:48px 0;background:#0b1320;color:#cbd5e1}.port-foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;font-size:13px}.port-foot b{color:white;font-size:18px}
+.port-note{font-size:12px;color:#708094;line-height:1.7}
+.port-collection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px}
+.port-tile{min-width:0;overflow:hidden;border-radius:14px;background:#fff;border:1px solid #e3e9f2;transition:transform .2s,box-shadow .2s}
+.port-tile:hover{transform:translateY(-4px);box-shadow:0 20px 42px #12213d15}
+.port-tile .preview{position:relative;min-height:350px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:25px}
+.port-tile .meta{padding:24px;display:flex;justify-content:space-between;gap:15px;align-items:center}
+.port-tile .meta h3{font-size:22px;margin:0 0 5px;letter-spacing:-.06em}.port-tile .meta p{font-size:13px;color:#728198;margin:0;line-height:1.65}
+.port-tile .meta .go{border:1px solid #d5dce8;border-radius:50%;padding:12px 16px;white-space:nowrap;font-size:18px}
+.preview-no{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+.preview-visual{width:100%;display:grid;gap:10px}
+.preview-web{color:#fffcf5;background:#293624!important}.preview-web:before{content:"";position:absolute;width:230px;height:230px;background:#97b583;border-radius:50%;right:-45px;top:80px;filter:blur(1px)}
+.preview-web .editorial{font-family:Georgia,serif;font-size:clamp(43px,4vw,67px);line-height:1.02;position:relative;letter-spacing:-.07em}.preview-web .stripe{position:relative;border-top:1px solid #b8c9a3;padding-top:12px;font-size:10px;letter-spacing:.2em}
+.preview-product{background:#e9d9c1!important;color:#3a281b}.preview-product h3{font-size:53px;letter-spacing:-.07em;line-height:1.08;margin:0;z-index:2;max-width:85%}.preview-product .product-jar{height:156px;width:112px;position:absolute;right:12%;bottom:60px;border-radius:14px 14px 22px 22px;background:linear-gradient(90deg,#845c3c,#cda57d 35%,#a1724c);box-shadow:18px 22px 18px #80664643;transform:rotate(12deg)}.preview-product .product-jar:before{content:"";position:absolute;top:-17px;left:-5px;right:-5px;height:27px;background:#342d28;border-radius:8px}.preview-product .product-jar:after{content:"MORINGA";position:absolute;top:45px;left:8px;right:8px;background:#f2e9d8;padding:16px 0;font-size:10px;text-align:center;font-weight:900;letter-spacing:.07em}
+.preview-blog{background:#f3e9e7!important;color:#60434e}.preview-blog .blog-banner{height:215px;border-radius:120px 120px 8px 8px;border:16px solid #d5b9ba;background:radial-gradient(circle at 38% 32%,#f5dddb 0 10%,#bd959e 45%,#825e6c);margin:15px auto 0;width:73%}.preview-blog h3{font-family:Georgia,serif;text-align:center;font-size:37px;line-height:1.05;letter-spacing:-.07em;margin:-42px 0 0;z-index:2}
+.port-band{margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.port-band>div{padding:24px;border:1px solid #dce3eb;border-radius:12px}.port-band h3{margin:0 0 10px;font-size:17px}.port-band p{margin:0;color:#61738b;line-height:1.7;font-size:14px}
+.port-back{display:inline-flex;align-items:center;gap:8px;font-weight:820;font-size:13px;border-bottom:1px solid currentColor;padding-bottom:5px}
+.subhero{padding:85px 0 65px;background:#f3f5f9}.subhero h1{margin:16px 0 14px;font-size:clamp(46px,6vw,86px);line-height:1.08;letter-spacing:-.08em}.subhero p{font-size:17px;color:#657084;line-height:1.75;max-width:700px}
+.case-section{padding:95px 0;border-bottom:1px solid #eef0f5}.case-head{display:flex;justify-content:space-between;gap:18px;align-items:start;margin-bottom:35px}.case-head h2{font-size:clamp(36px,5vw,63px);line-height:1.1;letter-spacing:-.075em;margin:10px 0}.case-head p{max-width:410px;color:#697489;line-height:1.8}
+.case-number{font-size:12px;letter-spacing:.2em;font-weight:900;color:#c8783c}
+.case-cta{padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.case-cta .port-link{color:#285cd0}.case-cta small{color:#748396;font-size:12px}
+@media(max-width:950px){.port-collection{grid-template-columns:1fr 1fr}.port-collection .port-tile:last-child{grid-column:1/-1}.port-hero{padding:85px 0 65px}}
+@media(max-width:680px){.container{width:min(100% - 30px,1280px)}.port-nav-inner{min-height:66px}.port-links{gap:11px;font-size:11px;flex-wrap:wrap;justify-content:flex-end}.port-links a:not(.port-cta):nth-child(2){display:none}.port-cta{padding:8px 10px}.port-hero{padding:65px 0}.port-hero p{font-size:16px}.port-heading,.case-head{display:block}.port-heading p{margin-top:16px}.port-feature,.case-section{padding:64px 0}.port-collection{grid-template-columns:1fr}.port-collection .port-tile:last-child{grid-column:auto}.port-band{grid-template-columns:1fr}.port-premium{align-items:stretch}.port-premium a{width:100%;text-align:center}.subhero{padding:62px 0 45px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}

@@ -1,0 +1,47 @@
+/* Homepage portfolio: three different visual directions, not uniform photo boxes */
+.momentum-portfolio-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:30px 0 25px}
+.momentum-portfolio-links a{display:flex;flex-direction:column;gap:9px;min-width:0;padding:22px;border:1px solid #dce4f0;border-radius:12px;background:#fff;transition:background .2s,transform .2s}
+.momentum-portfolio-links a:hover{background:#edf4ff;transform:translateY(-3px)}
+.momentum-portfolio-links span{font-size:11px;font-weight:900;color:#6174ae;letter-spacing:.18em}
+.momentum-portfolio-links strong{font-size:18px;letter-spacing:-.035em;line-height:1.3}
+.momentum-portfolio-links small{font-size:12px;color:#73839c;line-height:1.5}
+.momentum-price-banner{display:flex;justify-content:space-between;align-items:center;gap:18px;background:#13223a;color:white;padding:23px 27px;border-radius:12px;margin:0 0 24px}
+.momentum-price-banner strong{font-size:clamp(17px,2vw,24px);letter-spacing:-.045em;line-height:1.35;display:block}
+.momentum-price-banner small{display:block;font-size:12px;color:#c6d2df;margin-top:7px}
+.momentum-price-banner a{font-size:13px;font-weight:800;white-space:nowrap;padding:11px 17px;background:#f57b3d;border-radius:7px;color:#fff}
+.agency-sample-work .agency-sample-grid{grid-template-columns:1.17fr .83fr;gap:19px}
+.agency-sample-work .agency-sample-card{border-radius:12px;overflow:hidden}
+.agency-sample-work .agency-sample-restaurant{grid-row:span 2;background:#15271e;color:#fff;display:flex;flex-direction:column;border-color:#294a35}
+.agency-sample-restaurant .agency-sample-label{color:#c4d1b1;border-color:#517058}
+.agency-sample-restaurant .agency-sample-viewport{height:535px;background:#314538}
+.agency-sample-restaurant .agency-sample-info{margin-top:auto;background:#15271e;padding:34px}
+.agency-sample-restaurant .agency-sample-info h3{font:500 36px Georgia,"Noto Serif KR",serif;color:#fff}
+.agency-sample-restaurant .agency-sample-info p{color:#bfcab8}
+.agency-sample-restaurant .agency-sample-actions{border-color:#49624d}
+.agency-sample-restaurant .agency-sample-actions a{color:#f4c99b!important}
+.agency-sample-beauty{background:#fff9f6!important;border-color:#ebdcd8!important}
+.agency-sample-beauty .agency-sample-viewport{height:250px;background:#eedad6;clip-path:inset(0 round 50% 50% 0 0)}
+.agency-sample-beauty .agency-sample-info{padding:20px 24px}
+.agency-sample-beauty .agency-sample-info h3{font:500 30px Georgia,"Noto Serif KR",serif;color:#614b56}
+.agency-sample-corporate{background:#e9f0f9!important;border-color:#d4dfed!important}
+.agency-sample-corporate .agency-sample-viewport{height:255px;background:#112e50}
+.agency-sample-corporate .agency-sample-info{background:#142e4b;color:#eef5fc;padding:20px 24px}
+.agency-sample-corporate .agency-sample-info h3{font-size:26px;color:#fff}
+.agency-sample-corporate .agency-sample-info p{color:#bdcbd9}
+.agency-sample-corporate .agency-sample-actions{border-color:#48617e}
+.agency-sample-corporate .agency-sample-actions a{color:#d5ecff!important}
+@media(max-width:1000px){.agency-sample-work .agency-sample-grid{grid-template-columns:1fr 1fr}.agency-sample-work .agency-sample-restaurant{grid-row:auto}.agency-sample-restaurant .agency-sample-viewport{height:300px}.agency-sample-corporate{grid-column:1/-1;max-width:none!important}.agency-sample-beauty .agency-sample-viewport,.agency-sample-corporate .agency-sample-viewport{height:300px}}
+@media(max-width:730px){.momentum-portfolio-links{grid-template-columns:1fr;gap:8px}.momentum-portfolio-links a{padding:14px 17px;display:grid;grid-template-columns:26px 1fr;align-items:center;gap:5px 12px}.momentum-portfolio-links small{grid-column:2}.momentum-price-banner{flex-direction:column;align-items:stretch;padding:20px}.momentum-price-banner a{text-align:center}.agency-sample-work .agency-sample-grid{grid-template-columns:1fr}.agency-sample-corporate{grid-column:auto}.agency-sample-beauty .agency-sample-viewport,.agency-sample-corporate .agency-sample-viewport{height:270px}}
+@media(prefers-reduced-motion:reduce){.momentum-portfolio-links a{transition:none}}
+
+/* Marketing information hub teaser. Cards show content hierarchy, not generic photo frames. */
+.momentum-insights-preview{background:#fff}
+.momentum-info-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}
+.momentum-info-cards a{min-width:0;min-height:260px;border-radius:13px;border:1px solid #dce3ed;padding:26px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,box-shadow .2s}
+.momentum-info-cards a:nth-child(1){background:#faf1e5;color:#513321}.momentum-info-cards a:nth-child(2){background:#152b3d;color:#f0f7ff;border-color:#152b3d}.momentum-info-cards a:nth-child(3){background:#e9efe7;color:#2d4a33}
+.momentum-info-cards a:hover{transform:translateY(-4px);box-shadow:0 14px 34px #1e345317}
+.momentum-info-cards small{font-size:11px;letter-spacing:.13em;font-weight:850;opacity:.76}
+.momentum-info-cards strong{font-size:clamp(22px,2.6vw,31px);line-height:1.25;font-weight:850;letter-spacing:-.06em}
+.momentum-info-cards span{font-size:13px;font-weight:850;border-bottom:1px solid currentColor;padding-bottom:6px;align-self:flex-start}
+.momentum-insights-more{margin-top:25px;font-size:14px;font-weight:850;color:#3159ea}
+@media(max-width:760px){.momentum-info-cards{grid-template-columns:1fr}.momentum-info-cards a{min-height:220px}}
