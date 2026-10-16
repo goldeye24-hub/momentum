@@ -797,6 +797,7 @@ require('./admin-manual-measure.test.cjs');
 require('./admin-password-remember.test.cjs');
 
 require('./db-failure-diagnostics.test.cjs');
+require('./three-service-zones.test.cjs');
 
 test('rank-watch UI never treats a failed database request as confirmed zero rows',()=>{
  const source=fs.readFileSync('site-builder/rank-watch.js','utf8');
