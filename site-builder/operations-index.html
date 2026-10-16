@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>관리자 운영센터 | 모멘텀마케팅</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#1a3148}*{box-sizing:border-box}body{margin:0;background:#f5f7fb}a{text-decoration:none;color:inherit}a:focus-visible,button:focus-visible{outline:3px solid #6399df;outline-offset:3px}.top{background:#102b48;color:white;padding:16px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;gap:18px;justify-content:space-between;flex-wrap:wrap}.top strong{font-size:17px}.top nav{display:flex;gap:15px;align-items:center;flex-wrap:wrap;font-size:12px}.top a{color:#dce8f6}.top form{margin:0}.top button{background:none;border:1px solid #6e829f;color:white;padding:8px 12px;border-radius:6px;cursor:pointer}main{max-width:1180px;margin:0 auto;padding:50px 20px 70px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;color:#417eaf}h1{font-size:clamp(27px,4vw,43px);letter-spacing:-.06em;margin:12px 0 10px}h2{font-size:20px;letter-spacing:-.03em;margin:0 0 15px}p{font-size:13px;color:#637992;line-height:1.8}.intro{max-width:850px}.notice{border:1px solid #d5e0ee;background:#edf4fb;border-radius:9px;padding:18px 20px;margin:25px 0;color:#385878;line-height:1.8;font-size:13px}.notice a{color:#195fba;text-decoration:underline}.group{margin:37px 0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.tile{border:1px solid #dbe3ee;background:white;border-radius:13px;padding:19px;min-height:160px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s,transform .15s}.tile:hover{border-color:#95b5de;transform:translateY(-2px)}.tile b{font-size:15px}.tile p{margin:0;font-size:12px;flex:1}.tile .access{font-size:11px;color:#5375a0;font-weight:750}.badge{font-size:11px;color:#755a21;background:#faf0d6;border-radius:5px;padding:5px 8px;display:inline-block;align-self:flex-start}.small{font-size:11px;color:#8293a7;margin-top:27px}.status{font-weight:800}button.retry{background:#214c80;color:white;border:0;border-radius:7px;padding:8px 11px;cursor:pointer;font-weight:700}.top .active{color:white;font-weight:850}@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.grid{grid-template-columns:1fr}main{padding-top:30px}.top{gap:10px}}
+</style></head><body>
+<header class="top"><strong>M ↗ 모멘텀마케팅 | 운영센터</strong><nav aria-label="관리자 메뉴"><a class="active" href="/admin/overview/" aria-current="page">운영센터</a><a href="/admin/studio/">홈페이지 제작</a><a href="/admin/crm/">고객 관리</a><a href="/" target="_blank" rel="noopener">외부 서비스 ↗</a><a href="/platform/" target="_blank" rel="noopener">회원 서비스 ↗</a><form action="/admin/logout" method="post"><button type="submit">로그아웃</button></form></nav></header>
+<main><div class="intro"><span class="eyebrow">PRIVATE / AGENCY OPERATIONS</span><h1>관리자 운영센터</h1><p>운영자만 접근할 수 있는 공간입니다. 회원 서비스와 외부 공개 서비스의 데이터·권한을 구분해 운영합니다. 기능의 실제 정상 동작은 연결 진단 및 업무 흐름 검증 결과로 확인해야 합니다.</p></div>
+<div class="notice" role="status" aria-live="polite"><strong>운영 DB 연결 진단</strong><p id="dbConnectionStatus">Supabase 연결 상태를 확인하는 중입니다.</p><button type="button" class="retry" id="recheck">다시 확인</button>　<a href="/admin/connection/">테이블별 상세 진단 ↗</a></div>
+<section class="group" aria-labelledby="opBusiness"><h2 id="opBusiness">01 · 고객 및 회원 운영</h2><div class="grid">
+<a class="tile" href="/admin/crm/"><b>거래처·계약·매출 관리 ↗</b><p>거래처, 계약 상품, 만료일, 영업 파이프라인. 현재 브라우저 로컬 저장 방식이며 민감한 고객정보 입력은 제한합니다.</p><span class="badge">서버 저장 미구현</span></a>
+<a class="tile" href="/admin/members/"><b>회원 및 슬롯 관리 ↗</b><p>회원 가입 현황과 무료 파일럿 슬롯 배정을 관리합니다. DB 연결과 회원 실제 업무 흐름 검증이 필요합니다.</p><span class="badge">운영 통합검증 필요</span></a>
+<a class="tile" href="/admin/watches/"><b>순위 추적 대상 관리 ↗</b><p>업체·검색어 등록, 직접 측정, 관측 결과 조회. 정기 자동 측정은 별도 스케줄 활성화가 필요합니다.</p><span class="badge">DB 오류 해결 우선</span></a>
+</div></section>
+<section class="group" aria-labelledby="opAnalysis"><h2 id="opAnalysis">02 · 데이터 및 분석 관리</h2><div class="grid">
+<a class="tile" href="/admin/keyword-matrix/"><b>키워드 순위표 ↗</b><p>실제로 저장된 검색 결과를 바탕으로 키워드별 노출 현황을 확인합니다. 관측되지 않은 항목은 빈 결과로 남습니다.</p><span class="access">측정 데이터 필요</span></a>
+<a class="tile" href="/admin/place-insights/"><b>업체별 키워드 종합분석 ↗</b><p>업체 기준 키워드 관측 현황과 이력 분석. 서비스 구축과 실제 데이터 축적을 구분합니다.</p><span class="access">측정 데이터 필요</span></a>
+<a class="tile" href="/admin/competitors/"><b>경쟁업체 비교 ↗</b><p>동일한 키워드의 경쟁업체 노출 기록 비교. 아직 실사용 검증이 완료되지 않았습니다.</p><span class="access">측정 데이터 필요</span></a>
+</div></section>
+<section class="group" aria-labelledby="opCreative"><h2 id="opCreative">03 · 제작 및 시스템</h2><div class="grid">
+<a class="tile" href="/admin/studio/"><b>홈페이지 제작 스튜디오 ↗</b><p>기존 업종별 템플릿 편집과 HTML 내보내기 기능. 브라우저 로컬 초안 저장을 사용합니다.</p><span class="access">제작 도구</span></a>
+<a class="tile" href="/admin/designs/"><b>업종별 디자인 편집 ↗</b><p>독립 샘플 디자인 편집 및 결과 내보내기.</p><span class="access">제작 도구</span></a>
+<a class="tile" href="/admin/connection/"><b>Supabase 연결 진단 ↗</b><p>회원 인증 API와 DB 테이블 9개의 서버 연결 상태를 운영자 권한으로 확인합니다.</p><span class="access">장애 확인 우선</span></a>
+</div></section>
+<p class="small">이 페이지는 기능 경로를 분리한 운영 메뉴입니다. 메뉴가 존재한다는 사실과 실제 업무가 정상 작동한다는 판단은 별개입니다.</p>
+</main>
+<script>
+(function(){'use strict';
+const el=document.getElementById('dbConnectionStatus'),btn=document.getElementById('recheck');
+async function load(){
+ btn.disabled=true;el.textContent='실제 운영 DB 연결 상태를 확인하고 있습니다.';
+ try{
+  const r=await fetch('/admin/connection/api',{cache:'no-store',credentials:'same-origin'});
+  const j=await r.json();
+  if(!r.ok||j.status!=='ok'){
+   el.textContent='DB 정상 ' + String(j.database?.passedCount??0)+' / '+String(j.database?.checkedCount??9)+'개, 인증 API: '+String(j.authentication?.connectivity||'미확인')+'. 상세 진단을 확인하세요.';
+  }else el.textContent='9개 DB 테이블과 회원 인증 API가 응답했습니다. 실제 회원가입·데이터 쓰기 검증은 별도입니다.';
+ }catch{el.textContent='운영 진단 응답을 읽을 수 없습니다. 상세 진단 화면에서 확인하세요.'}
+ finally{btn.disabled=false}
+}
+btn.addEventListener('click',load);load();
+})();
+</script>
+</body></html>

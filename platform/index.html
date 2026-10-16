@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/platform/portal.css"></head>
 <body>
 <header class="top"><a class="brand" href="/"><span class="mark">M<span>↗</span></span><b>모멘텀마케팅</b><small>PLACE INTELLIGENCE</small></a>
-<nav><a href="/lab/rank/">무료 순위조회</a><a href="/">홈페이지</a><button id="logout" type="button" hidden>로그아웃</button></nav></header>
+<nav aria-label="서비스 구분"><a href="/platform/" aria-current="page">내 회원 서비스</a><a href="/lab/rank/">외부 무료 순위조회 ↗</a><a href="/">외부 홈페이지 ↗</a><button id="logout" type="button" hidden>로그아웃</button></nav></header>
 <main>
 <section class="hero"><span class="eyebrow">KEYWORD · PLACE · HISTORY</span><h1>내 가게 검색 노출,<br><em>기록으로 관리하세요.</em></h1>
 <p>네이버 모바일 플레이스의 관측 가능한 위치를 저장된 데이터로 확인합니다. 조회 결과는 광고 제외 자연검색 순위와 다를 수 있으며, 관측하지 않은 날짜는 순위를 만들어 표시하지 않습니다.</p></section>
@@ -21,6 +21,14 @@
 </form><p id="authMessage" class="notice" role="status" aria-live="polite">회원 시스템이 연결되지 않은 경우 준비 중으로 표시됩니다.</p>
 </section>
 <section id="dashboard" hidden>
+ <section class="member-service-hub" aria-label="로그인 회원 서비스">
+  <div class="member-service-title"><span class="eyebrow">MEMBER / PRIVATE WORKSPACE</span><h2>내 회원 서비스</h2><p>로그인한 내 계정의 업체·키워드와 실제 관측 기록만 관리합니다. 외부 무료 분석 및 관리자 운영은 별도 영역입니다.</p></div>
+  <div class="member-service-grid">
+   <a class="member-service-link" href="#watchForm"><b>업체·키워드 등록</b><small>내 슬롯에 업체 × 검색어 저장 · 자동 측정과 별도</small></a>
+   <a class="member-service-link" href="#memberWatchList"><b>내 등록 업체·순위 이력</b><small>실제 저장된 모바일 관측 결과만 조회</small></a>
+   <a class="member-service-link" href="/lab/" target="_blank" rel="noopener"><b>무료 마케팅 도구 ↗</b><small>로그인이 필요 없는 공개 분석 도구</small></a>
+  </div>
+ </section>
  <div class="section-title"><div><span class="eyebrow">PERSONAL WORKSPACE</span><h2>내 업체·키워드 관리</h2><p id="accountLabel" class="desc">회원 정보 조회 중</p></div><span class="pill">모바일 플레이스 기준</span></div>
  <div class="metrics"><div><small>회원 요금제</small><strong id="plan">무료</strong><span>유료 결제는 아직 연결되지 않았습니다.</span></div><div><small>등록 슬롯</small><strong id="slots">0 / 1</strong><span>업체 × 검색 키워드 조합</span></div><div><small>저장된 추적 대상</small><strong id="count">0</strong><span>실측 기록이 없으면 순위를 표시하지 않습니다.</span></div></div>
  <div class="card register"><div class="section-title"><div><span class="eyebrow">01 / REGISTER</span><h3>측정 대상 등록</h3></div><span class="pill small">슬롯 1개 사용</span></div>
@@ -32,7 +40,7 @@
  </form>
  <p class="hint">숫자 플레이스 ID를 사용하면 업체명이 비슷해도 정확한 업체를 식별할 수 있습니다. 회원 등록은 자동 일일 측정을 보장하지 않습니다.</p>
  </div>
- <div class="card listing"><div class="section-title"><div><span class="eyebrow">02 / SAVED TARGETS</span><h3>내 등록 목록</h3></div><button id="refresh" type="button" class="secondary">새로고침</button></div>
+ <div class="card listing" id="memberWatchList"><div class="section-title"><div><span class="eyebrow">02 / SAVED TARGETS</span><h3>내 등록 목록</h3></div><button id="refresh" type="button" class="secondary">새로고침</button></div>
  <p id="dashboardMessage" class="notice" role="status" aria-live="polite">저장된 대상을 확인하고 있습니다.</p>
  <div class="scroll"><table><thead><tr><th>업체</th><th>검색 키워드</th><th>최근 관측</th><th>관측 시각</th><th>관리</th></tr></thead><tbody id="watchRows"><tr><td colspan="5">로그인이 필요합니다.</td></tr></tbody></table></div></div>
  <section id="historyPanel" class="card history" hidden>

@@ -73,6 +73,22 @@
       "destination": "/api/admin-site-builder"
     },
     {
+      "source": "/admin/overview",
+      "destination": "/api/admin-site-builder?view=overview"
+    },
+    {
+      "source": "/admin/overview/",
+      "destination": "/api/admin-site-builder?view=overview"
+    },
+    {
+      "source": "/admin/studio",
+      "destination": "/api/admin-site-builder?view=studio"
+    },
+    {
+      "source": "/admin/studio/",
+      "destination": "/api/admin-site-builder?view=studio"
+    },
+    {
       "source": "/admin/crm",
       "destination": "/api/admin-site-builder?view=crm"
     },
