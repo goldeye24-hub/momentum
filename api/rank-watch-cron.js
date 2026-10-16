@@ -1,6 +1,6 @@
 'use strict';
 const db=require('./_rank-store'),observer=require('./_place-observe');
-const {sharedMeasure}=require('./_rank-live-shared');
+const sourceGate=require('./_rank-live-shared');
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');
  if(req.method!=='GET')return res.status(405).json({error:'GET만 지원합니다.'});
@@ -17,7 +17,7 @@ module.exports=async function(req,res){
    try{
     const target=item.place_id||observer.normalizeBusinessName(item.target_name);
     const key=item.scope+'\n'+item.keyword+'\n'+target;
-    result=await sharedMeasure({key,scope:item.scope,measure:()=>item.scope==='mobile'?
+    result=await sourceGate.sharedMeasure({key,scope:item.scope,measure:()=>item.scope==='mobile'?
      observer.runMobile(item.keyword,{id:item.place_id||null,name:item.target_name||null}):item.scope==='map'?
       observer.runMap(item.keyword,item.place_id):observer.run(item.keyword,item.place_id)});
    }
