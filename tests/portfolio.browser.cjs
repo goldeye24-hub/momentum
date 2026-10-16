@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/website-samples/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -51,6 +51,13 @@ const server=http.createServer((req,res)=>{
     assert.match(await page.locator('.momentum-price-copy').innerText(),/30만원으로 제작 가능합니다\./,demo+' price');
     assert.match(await page.locator('.momentum-price-copy em').innerText(),/호스팅비는 별도/,demo+' hosting');
    }
+   await page.goto(origin+'/?service='+encodeURIComponent('브랜드블로그 디자인')+'#contact',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('#requestedProduct').inputValue(),'브랜드블로그 디자인','Brand blog inquiry selection');
+   await page.goto(origin+'/?service='+encodeURIComponent('상세페이지 제작')+'#contact',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('#requestedProduct').inputValue(),'상세페이지 제작','Detail page inquiry selection');
+   await page.goto(origin+'/?service='+encodeURIComponent('홈페이지 제작')+'&design=foodie#contact',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('#requestedProduct').inputValue(),'홈페이지 제작','Chosen website product');
+   assert.match(await page.locator('#selectedDesign').inputValue(),/온기집/,'Chosen website ID for inquiry');
    await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
    assert.ok(await page.locator('a[href="/portfolio/"]').count(),'home portfolio navigation');
    assert.match(await page.locator('.momentum-price-banner').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
