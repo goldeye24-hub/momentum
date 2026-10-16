@@ -286,7 +286,7 @@ test('integrated agency visual redesign retains accurate products and live inqui
  assert.match(home,/href="\/lab\/"/);
  assert.match(home,/id="open-packages"/);
  assert.match(home,/id="industries"/);
- assert.match(home,/실제 월간 검색량·플레이스 순위는 API 미연동/);
+ assert.match(home,/실측 순위는 요청 제한·연동 상태에 영향을 받으며, 미측정 수치는 표시하지 않습니다/);
  assert.doesNotMatch(home,/class="hero-form"/);
  for(const product of ['키워드 검색광고','바이럴마케팅','블로그 체험단','플레이스 진단 및 SEO 최적화','플레이스 등록 및 수정대행','플레이스 리뷰 신고 및 삭제 요청 지원','오픈마켓 상세페이지 제작','홈페이지 제작','사진촬영','오픈패키지 1','오픈패키지 2']){
   assert.ok(home.includes('data-product="'+product+'"'),product);
@@ -310,7 +310,11 @@ test('homepage displays editable original templates instead of confusing client 
  assert.match(home,/실제 고객 제작 실적이 아닌 편집 가능한 디자인 샘플/);
  assert.match(home,/href="\/website-samples\/"/);
  assert.doesNotMatch(home,/href="\/site-builder\//);
- assert.equal((home.match(/class="agency-sample-card"/g)||[]).length,3);
+ assert.equal((home.match(/class="agency-sample-card agency-sample-(?:restaurant|beauty|corporate)"/g)||[]).length,3);
+ assert.match(home,/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
+ assert.match(home,/호스팅비는 별도/);
+ assert.match(home,/href="\/portfolio\/product-pages\/"/);
+ assert.match(home,/href="\/portfolio\/brand-blogs\/"/);
  assert.doesNotMatch(home,/class="agency-work-card /);
  assert.doesNotMatch(home,/src="\/assets\/portfolio-mukdori\.jpg"/);
  assert.match(home,/href="\/website-samples\/restaurant\/"/);
