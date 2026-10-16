@@ -26,8 +26,18 @@ module.exports=async function(req,res){
     out.push({id:item.id,status:'deferred',retryAfterSeconds:result.retryAfterSeconds});
     continue; // Do not mark as checked: the next invocation may retry after the gate opens.
    }
-   const status=['ranked','not_in_block','no_place_block','blocked','unavailable'].includes(result.status)?result.status:'unavailable';
-   const at=new Date().toISOString();
+   if(result.cached===true){
+    out.push({id:item.id,status:'cached',rank:result.status==='ranked'?result.rank:null,
+     observedAt:result.observedAt||null});
+    continue; // A shared snapshot is not a new observation.
+   }
+   const observed=['ranked','not_in_block','no_place_block'];
+   if(result.source!=='browser_observed'||!observed.includes(result.status)){
+    out.push({id:item.id,status:'unavailable',rank:null});
+    continue; // Failed or ambiguous reads must not overwrite the real rank history.
+   }
+   const status=result.status;
+   const at=Number.isFinite(Date.parse(result.observedAt||''))?result.observedAt:new Date().toISOString();
    await db.request('rank_watch_observations',{method:'POST',body:{target_id:item.id,rank:status==='ranked'?result.rank:null,rank_approximate:result.rankApproximate===true,status,observed_count:result.observedCount||0,source:result.source||'none',scope:item.scope,observed_at:at},prefer:'return=minimal'});
    await db.request('rank_watch_targets',{method:'PATCH',query:{id:'eq.'+item.id},body:{last_run_at:at},prefer:'return=minimal'});
    out.push({id:item.id,status,rank:status==='ranked'?result.rank:null});
