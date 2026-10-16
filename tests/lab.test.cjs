@@ -797,3 +797,11 @@ require('./admin-manual-measure.test.cjs');
 require('./admin-password-remember.test.cjs');
 
 require('./db-failure-diagnostics.test.cjs');
+
+test('rank-watch UI never treats a failed database request as confirmed zero rows',()=>{
+ const source=fs.readFileSync('site-builder/rank-watch.js','utf8');
+ assert.match(source,/DB 연결 오류로 등록 내역을 확인할 수 없습니다/);
+ assert.match(source,/실제 등록 건수가 0건이라는 뜻은 아닙니다/);
+ assert.match(source,/\$\('add'\)\.disabled=true/);
+ assert.doesNotMatch(source,/catch\(err\)\{targets=\[\];observations=\[\];render\(\)/);
+});
