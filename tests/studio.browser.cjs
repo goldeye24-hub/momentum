@@ -278,6 +278,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.equal(response.status(),200,'Industry route '+id);
       await templatePage.waitForSelector('.neo-hero h1',{timeout:12000});
       assert.ok((await templatePage.locator('.neo-hero h1').innerText()).length>7,id+' absent title');
+      await templatePage.waitForFunction(()=>document.querySelector('.neo-hero .neo-image img')?.naturalWidth>200,{timeout:12000}).catch(()=>{throw new Error(id+' hero visual did not resolve, including fallback')});
       assert.equal(await templatePage.locator('.neo-feature').count(),3,id+' unique business services');
       assert.equal(await templatePage.locator('.neo-moment.moment-'+id).count(),1,id+' missing individual designed industry module');
       assert.equal(await templatePage.locator('.neo-gallery figure').count(),3,id+' photo editorial');

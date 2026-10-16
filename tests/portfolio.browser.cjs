@@ -35,6 +35,10 @@ const server=http.createServer((req,res)=>{
    assert.match(await page.locator('.port-premium small').innerText(),/호스팅비는 별도/);
    await page.goto(origin+'/portfolio/product-pages/',{waitUntil:'domcontentloaded'});
    for(const id of ['ferment','lumin','brew'])assert.ok(await page.locator('#'+id+' .detail-demo').count(),id+' product design');
+   if(viewport.width===1440){
+     await page.goto(origin+'/portfolio/product-pages/',{waitUntil:'load'});
+     await page.screenshot({path:path.join(ROOT,'artifacts','longform-product-portfolio.png'),fullPage:true});
+   }
    await page.goto(origin+'/portfolio/brand-blogs/',{waitUntil:'domcontentloaded'});
    for(const id of ['salon','studio','local'])assert.ok(await page.locator('#'+id+' .blog-case').count(),id+' blog design');
    await page.goto(origin+'/website-samples/',{waitUntil:'domcontentloaded'});
@@ -68,6 +72,8 @@ const server=http.createServer((req,res)=>{
    const mobilePromise=page.waitForEvent('download');
    await page.locator('#downloadMobile').click();
    assert.match((await mobilePromise).suggestedFilename(),/720x720\.png/);
+   fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
+   await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'brand-blog-button-builder-desktop.png':'brand-blog-button-builder-mobile.png'),fullPage:true});
    await page.locator('#buttonFields .button-row').first().locator('input[type="url"]').fill('javascript:alert(1)');
    assert.doesNotMatch(await page.locator('#widgetCode').inputValue(),/^<a /,'Unsafe links must not produce live widget code');
    await page.goto(origin+'/portfolio/brand-blogs/',{waitUntil:'domcontentloaded'});
