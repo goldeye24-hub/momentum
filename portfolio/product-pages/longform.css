@@ -1,0 +1,31 @@
+/* Long-form product storytelling beyond a decorative hero. Three completely different product journeys. */
+.detail-food-journey{display:grid;grid-template-columns:1fr .94fr;gap:0;background:#faf3e7;color:#40352c}
+.detail-food-journey figure{margin:0;min-height:560px;position:relative;overflow:hidden}
+.detail-food-journey figure img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.detail-food-journey article{padding:clamp(28px,7vw,100px);display:flex;flex-direction:column;justify-content:center}
+.detail-food-journey .eyebrow{font:600 11px sans-serif;letter-spacing:.2em;color:#a97550}
+.detail-food-journey h4{font:400 clamp(43px,5vw,72px)/1.15 Georgia,"Noto Serif KR",serif;letter-spacing:-.07em;margin:20px 0}
+.detail-food-journey p{font-size:15px;line-height:2;max-width:440px;color:#72675a}
+.detail-food-journey .facts{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:25px}
+.detail-food-journey .facts span{border-top:1px solid #b9a996;padding-top:15px;font-size:12px;line-height:1.8}
+.detail-food-journey .facts strong{display:block;font-size:18px;color:#4b3a2b;margin-bottom:9px}
+.detail-food-timeline{display:grid;grid-template-columns:repeat(3,1fr);background:#3a5038;color:#f6efe1;padding:40px;gap:23px}
+.detail-food-timeline article{padding:17px 10px;border-top:1px solid #adbba1}.detail-food-timeline strong{font:italic 40px Georgia,serif;color:#c9dbbd}.detail-food-timeline h4{font-size:20px}.detail-food-timeline p{font-size:13px;line-height:1.9;color:#d2dfcd}
+.detail-beauty-journey{background:#eeeee4;color:#213330}
+.detail-beauty-journey .magazine{padding:clamp(35px,8vw,100px);display:grid;grid-template-columns:.75fr 1.25fr;gap:60px;align-items:center}
+.detail-beauty-journey h4{font:400 clamp(54px,7vw,100px)/1.05 Georgia,serif;letter-spacing:-.085em;margin:15px 0}
+.detail-beauty-journey p{font-size:15px;line-height:2;color:#51645e}.detail-beauty-journey img{width:100%;height:560px;object-fit:cover;filter:saturate(.7)}
+.detail-beauty-journey .beauty-safety{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;background:#d7e1d6;padding:45px clamp(25px,8vw,100px)}
+.detail-beauty-journey .beauty-safety article{border-top:1px solid #617b70;padding:18px 8px}.detail-beauty-journey .beauty-safety span{font:italic 29px Georgia,serif;color:#4c7462}.detail-beauty-journey .beauty-safety h5{font-size:19px;margin:12px 0}.detail-beauty-journey .beauty-safety p{font-size:13px;line-height:1.85}
+.detail-coffee-journey{background:#1d4a35;color:#f8e7c1;padding:clamp(38px,7vw,90px)}
+.detail-coffee-journey .coffee-campaign{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+.detail-coffee-journey h4{font-size:clamp(60px,9vw,130px);font-weight:990;letter-spacing:-.1em;line-height:.96;margin:16px 0 25px}
+.detail-coffee-journey p{color:#d9e5c9;line-height:1.9;font-size:15px;max-width:530px}
+.detail-coffee-journey figure{margin:0;overflow:hidden;border-radius:50% 50% 3px 3px;min-height:500px;max-height:550px}
+.detail-coffee-journey img{height:100%;min-height:500px;object-fit:cover}
+.detail-coffee-journey .coffee-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;border-top:3px solid #efd5a7;padding-top:28px;margin-top:46px}
+.detail-coffee-journey .coffee-stats article{border-left:1px solid #b4c5a7;padding-left:15px}
+.detail-coffee-journey .coffee-stats strong{font-size:26px;letter-spacing:-.06em}
+.detail-coffee-journey .coffee-stats p{font-size:13px;line-height:1.65}
+.demo-indicator{font-size:11px;letter-spacing:.09em;font-weight:750;line-height:1.8;padding:13px 20px;background:#eef1f4;color:#3d4d5d;text-align:center}
+@media(max-width:780px){.detail-food-journey,.detail-beauty-journey .magazine,.detail-coffee-journey .coffee-campaign{grid-template-columns:1fr}.detail-food-journey figure{min-height:380px}.detail-food-journey .facts,.detail-food-timeline,.detail-beauty-journey .beauty-safety,.detail-coffee-journey .coffee-stats{grid-template-columns:1fr}.detail-food-timeline{padding:20px}.detail-beauty-journey .magazine{padding:36px 24px;gap:18px}.detail-beauty-journey img{height:380px}.detail-coffee-journey figure,.detail-coffee-journey img{min-height:350px}.detail-food-journey h4,.detail-beauty-journey h4{font-size:49px}}
