@@ -266,118 +266,54 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await landing.close();
     console.log('PASS: four real service landings, two protected-media-safe case studies, mobile accessibility and cross-page inquiry preselection');
 
-    // Real industry template pages: actual navigable pages, not fictional screenshots.
+    // Each client-facing demo must be a real working page, not the same form with another stock image.
     const templatePage=await ctx.newPage();
     const templateErrors=[];
     templatePage.on('pageerror',e=>templateErrors.push(String(e)));
-    for(const id of ['restaurant','beauty','academy','clinic','corporate']){
+    const allDesigns=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
+    const layouts=new Map();
+    await templatePage.setViewportSize({width:1440,height:900});
+    for(const id of allDesigns){
       const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      assert.equal(response.status(),200,'Template route '+id);
-      await templatePage.waitForSelector('.site-hero h1',{timeout:15000});
-      assert.ok((await templatePage.locator('h1').innerText()).length>=6,id+' empty heading');
-      assert.equal(await templatePage.locator('.service-card').count(),3,'Service cards '+id);
-      assert.equal(await templatePage.locator('.gallery-tile').count(),3,'Gallery '+id);
-      assert.match(await templatePage.locator('.sample-ribbon').innerText(),/실제 업체가 아닙니다/);
-      await templatePage.setViewportSize({width:390,height:844});
-      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
-      assert.ok(dims.scrollWidth<=dims.viewport+3,'Mobile sample overflow '+id+' '+JSON.stringify(dims));
-    }
-    // Ten new real websites: food/franchise, lodging, pet grooming and local services.
-    for(const id of ['foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon']){
-      const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      assert.equal(response.status(),200,'New sample route '+id);
-      await templatePage.waitForSelector('.ind-hero h1',{timeout:10000});
-      assert.ok((await templatePage.locator('h1').innerText()).length>7,'New sample heading '+id);
-      assert.equal(await templatePage.locator('.ind-feature').count(),3,'New services '+id);
-      assert.equal(await templatePage.locator('.ind-shot').count(),3,'New gallery '+id);
-      assert.match(await templatePage.locator('.industry-demo').innerText(),/가상 브랜드/);
-      assert.match(await templatePage.locator('.ind-final a').getAttribute('href'),new RegExp('design='+id));
-      await templatePage.setViewportSize({width:390,height:844});
-      const dims=await templatePage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
-      assert.ok(dims.scrollWidth<=dims.viewport+3,'New sample mobile overflow '+id+' '+JSON.stringify(dims));
-    }
-
-    // Industry-specific consultation forms are navigable, validated and privacy-safe.
-    for(const service of ['ladder','movers','cleaning','aircon','petgroom']){
-      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+service+'/',{waitUntil:'load'});
-      const form=templatePage.locator('#serviceQuoteForm');
-      assert.equal(await form.count(),1,'Missing service inquiry form '+service);
-      assert.equal(await form.getAttribute('data-demo-only'),'true');
-      assert.match(await templatePage.locator('.quote-privacy').innerText(),/저장하지 않습니다|저장되거나 전송되지/);
-      assert.equal(await templatePage.locator('.sig-hero a.sig-primary').getAttribute('href'),'#quote');
-      const count=await form.locator('.quote-field').count();
-      assert.ok(count>=7,'Need industry-specific service questions '+service);
-      const submit=templatePage.locator('#serviceQuoteForm button[type="submit"]');
-      await submit.click();
-      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),false,'Empty form must not submit');
-      await form.evaluate(el=>{
-        const today=new Date();
-        const local=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
-        for(const input of el.querySelectorAll('[required]')){
-          if(input.tagName==='SELECT')input.value=input.options[1].value;
-          else if(input.type==='date')input.value=local;
-          else if(input.tagName==='TEXTAREA')input.value='시연용 내용';
-          else input.value='부산 테스트 지역';
-          input.dispatchEvent(new Event('input',{bubbles:true}));
-        }
+      assert.equal(response.status(),200,'Industry route '+id);
+      await templatePage.waitForSelector('.neo-hero h1',{timeout:12000});
+      assert.ok((await templatePage.locator('.neo-hero h1').innerText()).length>7,id+' absent title');
+      assert.equal(await templatePage.locator('.neo-feature').count(),3,id+' unique business services');
+      assert.equal(await templatePage.locator('.neo-gallery figure').count(),3,id+' photo editorial');
+      assert.equal(await templatePage.locator('.neo-faq details').count(),2,id+' functional Q&A');
+      assert.match(await templatePage.locator('.neo-price').innerText(),/30만원으로 제작 가능합니다/);
+      assert.match(await templatePage.locator('.neo-price small').innerText(),/호스팅비는 별도/);
+      assert.equal(await templatePage.locator('#serviceQuoteForm').count(),0,'Repeated fake form found in '+id);
+      assert.match(await templatePage.locator('.neo-contact a').getAttribute('href'),new RegExp('design='+id));
+      assert.equal(await templatePage.locator('.neo-hero-buttons a[href="#offer"]').count(),1,'Working section CTA '+id);
+      assert.equal(await templatePage.locator('.neo-hero-buttons a[href="#inquiry"]').count(),1,'Working consultation CTA '+id);
+      const signature=await templatePage.evaluate(()=>{
+        const hero=document.querySelector('.neo-hero');
+        const sections=[...document.querySelectorAll('.neo-section')].map(s=>s.id);
+        return {hero:hero.className,sections:sections.slice(0,3).join('|'),
+          type:getComputedStyle(hero).display,
+          photo:getComputedStyle(hero.querySelector('.neo-image')).clipPath,
+          line:Math.round(hero.querySelector('h1').getBoundingClientRect().width/40)};
       });
-      const postUrls=[];
-      const onPost=req=>{if(req.method()==='POST')postUrls.push(req.url())};
-      templatePage.on('request',onPost);
-      await submit.click();
-      assert.equal(await templatePage.locator('#quoteDemoResult').isVisible(),true,'Form demo result missing '+service);
-      assert.match(await templatePage.locator('#quoteDemoResult').innerText(),/전달되지 않으며|전송되지|저장되지/);
-      assert.deepEqual(postUrls,[],'Demo form must not transmit customer data '+service);
-      templatePage.off('request',onPost);
+      layouts.set(id,JSON.stringify(signature));
+      if(['restaurant','foodie','poolvilla','petgroom','ladder','beauty','corporate'].includes(id))
+        await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
       await templatePage.setViewportSize({width:390,height:844});
-      const bounds=await templatePage.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
-      assert.ok(bounds.scrollWidth<=bounds.viewport+3,'Service form mobile overflow '+service+' '+JSON.stringify(bounds));
+      const bounds=await templatePage.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(bounds.width<=bounds.viewport+4,'Mobile horizontal overflow '+id+' '+JSON.stringify(bounds));
       await templatePage.setViewportSize({width:1440,height:900});
     }
-    // Layout diversity: the portfolio must NOT be one wireframe with changed photos/colors.
-    const designSignatures=new Map();
-    await templatePage.setViewportSize({width:1440,height:900});
-    for(const id of ['poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','foodie','franchise','aircon']){
-      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      const shape=await templatePage.evaluate(()=>{
-        const hero=document.querySelector('.ind-hero'),copy=hero.querySelector('.ind-copy'),media=hero.querySelector('.ind-media');
-        const a=copy.getBoundingClientRect(),b=media.getBoundingClientRect();
-        return {layout:getComputedStyle(hero).display,position:getComputedStyle(copy).position,photo:getComputedStyle(media).position,
-          copyX:Math.round(a.x/30),photoX:Math.round(b.x/30),photoY:Math.round(b.y/30),copyY:Math.round(a.y/30)};
-      });
-      designSignatures.set(id,JSON.stringify(shape));
-      if(['poolvilla','petgroom','ladder','foodie','franchise'].includes(id)){
-        await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
-      }
-    }
-    assert.ok(new Set(designSignatures.values()).size>=6,'Portfolio design layouts too similar: '+JSON.stringify([...designSignatures]));
-
-    // Every art-directed sample has unique business-specific content and nearby booking integration note.
-    for(const id of ['poolvilla','pension','glamping','petgroom','foodie','restaurant','beauty','clinic']){
-      await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      const booking=templatePage.locator('.sig-hero .sig-book');
-      assert.equal(await booking.count(),1,'Booking CTA missing '+id);
-      assert.equal(await booking.locator('small.naver-reserve-note').innerText(),'네이버예약 연동 가능');
-      assert.equal(await booking.locator('a').getAttribute('href'),id==='petgroom'?'#quote':'#contact');
-      const rect=await booking.evaluate(el=>{
-        const a=el.querySelector('a').getBoundingClientRect(),b=el.querySelector('small').getBoundingClientRect();
-        return {buttonBottom:a.bottom,labelTop:b.top,labelHeight:b.height};
-      });
-      assert.ok(rect.labelTop>=rect.buttonBottom-2&&rect.labelTop<=rect.buttonBottom+25&&rect.labelHeight>8,
-        'Booking note must stay immediately underneath reservation CTA '+id+' '+JSON.stringify(rect));
-    }
-    assert.equal(templateErrors.length,0,'Template page errors: '+templateErrors.join(' | '));
-    await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'load'});
+    assert.ok(new Set(layouts.values()).size>=10,'Layouts still too similar: '+JSON.stringify([...layouts]));
+    assert.equal(templateErrors.length,0,'Design preview JS errors: '+templateErrors.join(' | '));
+    // Gallery displays actual interactive-site thumbnails and still filters and selects them.
+    await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'domcontentloaded'});
     assert.equal(await templatePage.locator('.sample-card').count(),15);
+    assert.equal(await templatePage.locator('iframe.neo-live-preview').count(),15);
     assert.match(await templatePage.locator('h1').innerText(),/선택하고 싶은/);
-    await templatePage.locator('[data-filter="food"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
-    await templatePage.locator('[data-filter="stay"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
-    await templatePage.locator('[data-filter="services"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),4);
-    await templatePage.locator('[data-filter="professional"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),3);
+    for(const [group,count] of [['food',3],['stay',3],['services',4],['professional',3]]){
+      await templatePage.locator('[data-filter="'+group+'"]').click();
+      assert.equal(await templatePage.locator('.sample-card:visible').count(),count,'Filter '+group);
+    }
     await templatePage.locator('[data-filter="all"]').click();
     assert.equal(await templatePage.locator('.sample-card:visible').count(),15);
     await templatePage.locator('[data-choose="franchise"]').click();
@@ -385,6 +321,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await templatePage.locator('#selectedDesignConsult').getAttribute('href'),/design=franchise/);
     await templatePage.screenshot({path:path.join(root,'artifacts/momentum-website-samples.png'),fullPage:true});
     await templatePage.close();
+    console.log('PASS: 15 independently directed responsive sites, no repeated fake forms, live previews and actual navigation');
 
     // New independent editing studio keeps each original site's structure intact.
     const designer=await ctx.newPage();
@@ -393,7 +330,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
     assert.equal(await designer.locator('#designSelect option').count(),15);
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
-    assert.match(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),/Silence|우리만|푸른/);
+    assert.match(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),/바다와|여유/);
     const initialTitle=await designer.frameLocator('#livePreview').locator('h1').first().innerText();
     await designer.locator('#headlineInput').fill('풀빌라 전용 테스트 문구');
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
@@ -402,12 +339,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
     await designer.locator('#designSelect').selectOption('ladder');
-    await designer.frameLocator('#livePreview').locator('body.theme-ladder').waitFor();
+    await designer.frameLocator('#livePreview').locator('.neo--ladder').waitFor();
     assert.equal(await designer.locator('#headlineInput').isDisabled(),false);
-    assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),1);
-    assert.equal(await designer.frameLocator('#livePreview').locator('body.theme-ladder').count(),1);
+    assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),0,'No recycled fake form should be injected');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.neo--ladder').count(),1);
     await designer.locator('#brandInput').fill('테스트 사다리차');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.ind-head .ind-logo').innerText(),'테스트 사다리차');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.neo-brand').innerText(),'테스트 사다리차');
     await designer.locator('#designSelect').selectOption('poolvilla');
     await designer.frameLocator('#livePreview').locator('h1').waitFor();
     assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');

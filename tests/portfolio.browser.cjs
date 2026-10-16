@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/website-samples/','/insights/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -48,9 +48,31 @@ const server=http.createServer((req,res)=>{
    for(const demo of ['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate']){
     const r=await page.goto(origin+'/website-samples/'+demo+'/',{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,demo+' sample');
-    assert.match(await page.locator('.momentum-price-copy').innerText(),/30만원으로 제작 가능합니다\./,demo+' price');
-    assert.match(await page.locator('.momentum-price-copy em').innerText(),/호스팅비는 별도/,demo+' hosting');
+    assert.match(await page.locator('.neo-price').innerText(),/30만원으로 제작 가능합니다\./,demo+' price');
+    assert.match(await page.locator('.neo-price small').innerText(),/호스팅비는 별도/,demo+' hosting');
    }
+   // Export actual Naver blog button, desktop skin and mobile cover PNGs.
+   await page.goto(origin+'/portfolio/brand-blogs/buttons/?theme=expert',{waitUntil:'load'});
+   assert.equal(await page.locator('[data-theme="expert"]').getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('#buttonPreview button').count(),5);
+   await page.locator('#buttonFields .button-row').first().locator('input[type="url"]').fill('https://blog.naver.com/');
+   await page.locator('#hostedImage').fill('https://blog.naver.com/example/btn01.png');
+   assert.match(await page.locator('#widgetCode').inputValue(),/<a href="https:\/\/blog.naver.com\//);
+   assert.match(await page.locator('#widgetCode').inputValue(),/<img src=/);
+   const bdownloadPromise=page.waitForEvent('download');
+   await page.locator('#downloadButton').click();
+   assert.match((await bdownloadPromise).suggestedFilename(),/momentum-blog-menu-01\.png/);
+   const pcPromise=page.waitForEvent('download');
+   await page.locator('#downloadHeader').click();
+   assert.match((await pcPromise).suggestedFilename(),/1920x650\.png/);
+   const mobilePromise=page.waitForEvent('download');
+   await page.locator('#downloadMobile').click();
+   assert.match((await mobilePromise).suggestedFilename(),/720x720\.png/);
+   await page.locator('#buttonFields .button-row').first().locator('input[type="url"]').fill('javascript:alert(1)');
+   assert.doesNotMatch(await page.locator('#widgetCode').inputValue(),/^<a /,'Unsafe links must not produce live widget code');
+   await page.goto(origin+'/portfolio/brand-blogs/',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('.brand-blog-action-nav').count(),3);
+   assert.ok(await page.locator('a[href*="/portfolio/brand-blogs/buttons/"]').count());
    await page.goto(origin+'/?service='+encodeURIComponent('브랜드블로그 디자인')+'#contact',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('#requestedProduct').inputValue(),'브랜드블로그 디자인','Brand blog inquiry selection');
    await page.goto(origin+'/?service='+encodeURIComponent('상세페이지 제작')+'#contact',{waitUntil:'domcontentloaded'});
