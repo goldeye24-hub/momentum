@@ -2,7 +2,17 @@
 'use strict';
 const designs=[['restaurant','음식점 · 레스토랑','메뉴·방문 예약형'],['foodie','동네 맛집','메뉴·음식 비주얼형'],['franchise','프랜차이즈','브랜드·가맹 상담형'],['poolvilla','풀빌라','대형 수영장 사진·객실형'],['pension','펜션','감성 숙박·여행형'],['glamping','글램핑','자연·체험·예약형'],['petgroom','애견미용','반려견 스타일·예약형'],['ladder','사다리차','현장 작업·견적형'],['movers','이삿짐센터','이사 조건·견적형'],['cleaning','입주청소','작업 범위·견적형'],['aircon','에어컨청소','기기 종류·방문 견적형'],['beauty','미용실','스타일 화보·예약형'],['academy','학원','학습 과정·상담형'],['clinic','병원·의원','진료 정보·예약형'],['corporate','B2B 기업','사업 역량·제휴 상담형']];
 const $=id=>document.getElementById(id), ids=['brand','headline','intro','heroUrl','ctaText','ctaLink','sectionTitle','sectionText','detailUrl'];
-const sel={brand:'.brand-nav > a, .ind-head .ind-logo, .site-header .site-logo',headline:'main > section:first-child h1',intro:'main > section:first-child p',heroUrl:'main > section:first-child img',ctaText:'main > section:first-child .booking-cta > a,main > section:first-child .sig-book > a,main > section:first-child a.sig-primary,main > section:first-child a.art-button',ctaLink:'main > section:first-child .booking-cta > a,main > section:first-child .sig-book > a,main > section:first-child a.sig-primary,main > section:first-child a.art-button',sectionTitle:'main > section:nth-child(2) h2',sectionText:'main > section:nth-child(2) p',detailUrl:'main > section:nth-child(2) img'};
+const sel={
+ brand:'.neo-brand',
+ headline:'.neo-hero h1',
+ intro:'.neo-hero-copy > p',
+ heroUrl:'.neo-hero .neo-image img',
+ ctaText:'.neo-hero-buttons .neo-button:first-child',
+ ctaLink:'.neo-hero-buttons .neo-button:first-child',
+ sectionTitle:'main > section.neo-section h2',
+ sectionText:'main > section.neo-section p',
+ detailUrl:'.neo-story img, .neo-gallery img'
+}
 const fields={brand:'brandInput',headline:'headlineInput',intro:'introInput',heroUrl:'heroUrlInput',ctaText:'ctaTextInput',ctaLink:'ctaLinkInput',sectionTitle:'sectionTitleInput',sectionText:'sectionTextInput',detailUrl:'detailUrlInput'};
 const frame=$('livePreview');let selected='poolvilla',base={},draft={},loading=false;
 function status(s){$('saveStatus').textContent=s}
