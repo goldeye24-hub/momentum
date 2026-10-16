@@ -20,8 +20,8 @@ async function api(action,payload){
 }
 async function load(){
  $('status').textContent='서버 저장소를 확인하고 있습니다…';
- try{const data=await api('read');targets=data.targets||[];observations=data.observations||[];render();$('status').textContent='등록 대상 '+targets.length+'건 · 최근 관측 기록 '+observations.length+'건'}
- catch(err){targets=[];observations=[];render();$('status').textContent=err.message}
+ try{const data=await api('read');targets=data.targets||[];observations=data.observations||[];render();$('add').disabled=false;$('status').textContent='등록 대상 '+targets.length+'건 · 최근 관측 기록 '+observations.length+'건'}
+ catch(err){targets=[];observations=[];$('add').disabled=true;$('watchList').innerHTML='<tr><td colspan="5">DB 연결 오류로 등록 내역을 확인할 수 없습니다. 실제 등록 건수가 0건이라는 뜻은 아닙니다.</td></tr>';$('status').textContent=err.message}
 }
 $('watchForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=$('add');b.disabled=true;
