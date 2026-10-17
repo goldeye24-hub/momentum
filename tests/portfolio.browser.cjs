@@ -127,8 +127,8 @@ const server=http.createServer((req,res)=>{
     await page.goto(origin+'/portfolio/conversion/'+m.id+'/',{waitUntil:'domcontentloaded'});
     assert.equal(await page.locator('h1').count(),1,m.id+' single H1');
     assert.equal(await page.locator(m.selector).count(),1,m.id+' unique demo control');
-    assert.match(await page.locator('.agency-price').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
-    assert.match(await page.locator('.agency-price small').innerText(),/호스팅비는 별도/);
+    assert.match(await page.locator('.agency-price,.studio-price').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+    assert.match(await page.locator('.agency-price small,.studio-price small').innerText(),/호스팅비는 별도/);
     assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
     await m.action();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
