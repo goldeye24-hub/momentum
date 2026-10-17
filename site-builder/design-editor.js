@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비']];
+const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비'],['legal','법률사무소','법률 업무·상담 준비'],['tax','세무회계','개인/법인 사업 유형'],['moving','이사업체','이사 조건·짐 규모'],['cleaning','입주청소','청소 범위·비교'],['auto','자동차 디테일링','차량 관리 패키지'],['pilates','필라테스 스튜디오','요일별 클래스 탐색']];
 const selectors={
 restaurant:{brand:'.restaurant-brand',headline:'.hero-caption h1',intro:'.hero-caption p',heroUrl:'.editorial-hero > img',ctaText:'.hero-caption .gallery-link',ctaLink:'.hero-caption .gallery-link',sectionTitle:'.letter h2',sectionText:'.letter p',detailUrl:'.menu-photo img'},
 beauty:{brand:'.head .name',headline:'.cover-copy h1',intro:'.cover-copy .intro',heroUrl:'.cover .look img',ctaText:'.cover-copy .linkline',ctaLink:'.cover-copy .linkline',sectionTitle:'.lookbook-head h2',sectionText:'.lookbook-head p',detailUrl:'.look-strip img'},
@@ -9,7 +9,13 @@ shop:{brand:'.shop-header .logo',headline:'.product-details h1',intro:'.product-
 stay:{brand:'.top .logo',headline:'.view h1',intro:'.view p',heroUrl:'.view > img',ctaText:'.end a',ctaLink:'.end a',sectionTitle:'.story h2',sectionText:'.story p',detailUrl:'.story img'},
 interior:{brand:'.top .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.hero-image img',ctaText:'.hero .action',ctaLink:'.hero .action',sectionTitle:'.projects h2',sectionText:'.projects .head p',detailUrl:'.proj-grid figure img'},
 academy:{brand:'.header .brand',headline:'.hero h1',intro:'.hero p',heroUrl:'.lesson-art img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.track h2',sectionText:'.track-head p',detailUrl:'.journal img'},
-pet:{brand:'.head .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.portrait img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.services h2',sectionText:'.section-head p',detailUrl:'.groom img'}
+pet:{brand:'.head .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.portrait img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.services h2',sectionText:'.section-head p',detailUrl:'.groom img'},
+legal:{brand:'.law-top .wordmark',headline:'.law-paper h1',intro:'.law-paper > p',ctaText:'.law-seal',ctaLink:'.law-seal',sectionTitle:'.law-topics h2',sectionText:'.law-topics-head p'},
+tax:{brand:'.tax-header .tax-brand',headline:'.tax-hero h1',intro:'.tax-hero p',ctaText:'.tax-hero a',ctaLink:'.tax-hero a',sectionTitle:'.tax-switch h2',sectionText:'.tax-switch .tax-board p'},
+moving:{brand:'.move-top .logo',headline:'.move-hero h1',intro:'.move-hero .content p',ctaText:'.move-hero a',ctaLink:'.move-hero a',sectionTitle:'.step-builder h2',sectionText:'.step-builder .title p'},
+cleaning:{brand:'.clean-nav .logo',headline:'.diff-copy h1',intro:'.diff-copy p',ctaText:'.diff-copy a',ctaLink:'.diff-copy a',sectionTitle:'.scope h2',sectionText:'.scope-header p'},
+auto:{brand:'.nav .brand',headline:'.cover h1',intro:'.cover p',ctaText:'.cover a',ctaLink:'.cover a',sectionTitle:'.packages h2',sectionText:'.packages .heading p'},
+pilates:{brand:'.pil-nav .brand',headline:'.pil-hero h1',intro:'.pil-hero p',ctaText:'.pil-hero a',ctaLink:'.pil-hero a',sectionTitle:'.classes h2',sectionText:'.classes-top p'}
 };
 const $=id=>document.getElementById(id), ids=['brand','headline','intro','heroUrl','ctaText','ctaLink','sectionTitle','sectionText','detailUrl'];
 
