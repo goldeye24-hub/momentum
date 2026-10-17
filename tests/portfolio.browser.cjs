@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium}=require('playwright');
 const ROOT=path.resolve(__dirname,'..');
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.svg':'image/svg+xml'};
+const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml'};
 const server=http.createServer((req,res)=>{
  const url=new URL(req.url,'http://qa.test');
  const pathname=url.pathname.endsWith('/')?url.pathname+'index.html':url.pathname;
@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/portfolio/conversion/stay/','/portfolio/conversion/interior/','/portfolio/conversion/academy/','/portfolio/conversion/pet/','/portfolio/conversion/legal/','/portfolio/conversion/clinic/','/portfolio/conversion/auto/','/portfolio/conversion/fitness/','/portfolio/conversion/estate/','/portfolio/conversion/hrd/','/website-samples/','/insights/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/portfolio/conversion/stay/','/portfolio/conversion/interior/','/portfolio/conversion/academy/','/portfolio/conversion/pet/','/portfolio/conversion/legal/','/portfolio/conversion/clinic/','/portfolio/conversion/auto/','/portfolio/conversion/fitness/','/portfolio/conversion/estate/','/portfolio/conversion/hrd/','/portfolio/conversion/tax/','/portfolio/conversion/moving/','/portfolio/conversion/cleaning/','/portfolio/conversion/pilates/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -42,7 +42,7 @@ const server=http.createServer((req,res)=>{
    };
    fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.showcase').count(),14,'Fourteen independent industry previews displayed in hub');
+   assert.equal(await page.locator('.showcase').count(),18,'Eighteen independent industry previews displayed in hub');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
    const signatures=new Set();
    for(const [id,v] of Object.entries(independent)){
@@ -81,12 +81,12 @@ const server=http.createServer((req,res)=>{
    }
    await page.goto(origin+'/portfolio/brand-blogs/',{waitUntil:'domcontentloaded'});
    for(const id of ['salon','studio','local'])assert.ok(await page.locator('#'+id+' .blog-case').count(),id+' blog design');
-   // Retired public routes direct users to current 8 independent designs.
+   // Retired public routes direct users to current 18 independent designs.
    await page.goto(origin+'/website-samples/',{waitUntil:'domcontentloaded'});
    await page.waitForFunction(()=>location.pathname.startsWith('/portfolio/conversion/')||document.querySelector('h1')?.textContent.includes('새로운 업종별 포트폴리오'),{timeout:7000});
    assert.ok((await page.evaluate(()=>location.pathname)).startsWith('/portfolio/conversion/')||(await page.locator('h1').innerText()).includes('새로운 업종별'),'Legacy gallery must lead to current collection');
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.showcase').count(),14);
+   assert.equal(await page.locator('.showcase').count(),18);
    for(const id of ['stay','interior','academy','pet']){
      const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
      assert.equal(r.status(),200,'new vertical '+id);
@@ -154,6 +154,22 @@ const server=http.createServer((req,res)=>{
       assert.match(await page.locator('body').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
       await test();
       if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','new-'+id+'-desktop.png'),fullPage:true});
+   }
+   // Four incremental industry structures and interactive demos, without disturbing latest main's other six.
+   for(const id of ['tax','moving','cleaning','pilates']){
+     const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
+     assert.equal(r.status(),200,id+' route');
+     assert.equal(await page.locator('h1').count(),1,id+' single H1');
+     assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
+     assert.match(await page.locator('.agency-price,.studio-price').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+     assert.match(await page.locator('.agency-price small,.studio-price small').innerText(),/호스팅비는 별도/);
+     if(id==='tax'){await page.locator('[data-tax="company"]').click();assert.match(await page.locator('#taxTitle').innerText(),/법인사업자/)}
+     if(id==='moving'){await page.locator('input[value="원룸이사"]').check();await page.locator('#moveForm button').click();assert.match(await page.locator('#moveResult').innerText(),/원룸이사/)}
+     if(id==='cleaning'){await page.locator('#cleanCompare').fill('73');assert.match(await page.locator('#beforeMask').getAttribute('style'),/27%/);await page.locator('[data-clean="office"]').click();assert.match(await page.locator('#cleanTitle').innerText(),/사무실 청소/)}
+     if(id==='pilates'){await page.locator('[data-day="wed"]').click();assert.match(await page.locator('#classSlots').innerText(),/WED/);assert.equal(await page.locator('#classSlots .slot').count(),3)}
+     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+     assert.ok(overflow<10,id+' mobile/desktop horizontal overflow '+overflow);
+     if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','new-'+id+'-desktop.png'),fullPage:true});
    }
    // Export actual Naver blog button, desktop skin and mobile cover PNGs.
    await page.goto(origin+'/portfolio/brand-blogs/buttons/?theme=expert',{waitUntil:'load'});
