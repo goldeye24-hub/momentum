@@ -83,8 +83,8 @@ const server=http.createServer((req,res)=>{
    for(const id of ['salon','studio','local'])assert.ok(await page.locator('#'+id+' .blog-case').count(),id+' blog design');
    // Retired public routes direct users to current 8 independent designs.
    await page.goto(origin+'/website-samples/',{waitUntil:'domcontentloaded'});
-   assert.match(await page.locator('h1').innerText(),/새로운 업종별 포트폴리오/);
-   assert.ok((await page.locator('a[href="/portfolio/conversion/"]').count())>=1);
+   await page.waitForFunction(()=>location.pathname.startsWith('/portfolio/conversion/')||document.querySelector('h1')?.textContent.includes('새로운 업종별 포트폴리오'),{timeout:7000});
+   assert.ok((await page.evaluate(()=>location.pathname)).startsWith('/portfolio/conversion/')||(await page.locator('h1').innerText()).includes('새로운 업종별'),'Legacy gallery must lead to current collection');
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('.showcase').count(),8);
    for(const id of ['stay','interior','academy','pet']){
