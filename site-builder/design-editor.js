@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비']];
+const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비'],['legal','법률사무소','업무 분야별 상담 안내'],['clinic','의원','방문정보·체크리스트'],['auto','자동차 정비','정비항목·방문 준비'],['fitness','피트니스','요일별 클래스 탐색'],['estate','부동산','가상 매물 조건 필터'],['hrd','기업교육·HRD','프로그램 맞춤 구성']];
 const selectors={
 restaurant:{brand:'.restaurant-brand',headline:'.hero-caption h1',intro:'.hero-caption p',heroUrl:'.editorial-hero > img',ctaText:'.hero-caption .gallery-link',ctaLink:'.hero-caption .gallery-link',sectionTitle:'.letter h2',sectionText:'.letter p',detailUrl:'.menu-photo img'},
 beauty:{brand:'.head .name',headline:'.cover-copy h1',intro:'.cover-copy .intro',heroUrl:'.cover .look img',ctaText:'.cover-copy .linkline',ctaLink:'.cover-copy .linkline',sectionTitle:'.lookbook-head h2',sectionText:'.lookbook-head p',detailUrl:'.look-strip img'},
@@ -9,7 +9,13 @@ shop:{brand:'.shop-header .logo',headline:'.product-details h1',intro:'.product-
 stay:{brand:'.top .logo',headline:'.view h1',intro:'.view p',heroUrl:'.view > img',ctaText:'.end a',ctaLink:'.end a',sectionTitle:'.story h2',sectionText:'.story p',detailUrl:'.story img'},
 interior:{brand:'.top .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.hero-image img',ctaText:'.hero .action',ctaLink:'.hero .action',sectionTitle:'.projects h2',sectionText:'.projects .head p',detailUrl:'.proj-grid figure img'},
 academy:{brand:'.header .brand',headline:'.hero h1',intro:'.hero p',heroUrl:'.lesson-art img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.track h2',sectionText:'.track-head p',detailUrl:'.journal img'},
-pet:{brand:'.head .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.portrait img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.services h2',sectionText:'.section-head p',detailUrl:'.groom img'}
+pet:{brand:'.head .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.portrait img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.services h2',sectionText:'.section-head p',detailUrl:'.groom img'},
+legal:{brand:'.mast .brand',headline:'.lead h1',intro:'.lead p',ctaText:'.lead a',ctaLink:'.lead a',sectionTitle:'.practice h2',sectionText:'.lead-aside p'},
+clinic:{brand:'.head .name',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.index h2',sectionText:'.index .small'},
+auto:{brand:'.nav .logo',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.index h2',sectionText:'.services article p'},
+fitness:{brand:'.top .brand',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.classes h2',sectionText:'.class-list article p'},
+estate:{brand:'.top .logo',headline:'.splash h1',intro:'.splash p',ctaText:'.splash a',ctaLink:'.splash a',sectionTitle:'.results h2',sectionText:'.results-top p'},
+hrd:{brand:'.head .brand',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.program h2',sectionText:'.program-grid article p'}
 };
 const $=id=>document.getElementById(id), ids=['brand','headline','intro','heroUrl','ctaText','ctaLink','sectionTitle','sectionText','detailUrl'];
 
