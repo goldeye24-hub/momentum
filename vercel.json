@@ -44,12 +44,12 @@
     },
     {
       "source": "/website-samples/franchise",
-      "destination": "/portfolio/conversion/b2b/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/franchise/",
-      "destination": "/portfolio/conversion/b2b/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
@@ -94,42 +94,42 @@
     },
     {
       "source": "/website-samples/ladder",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/ladder/",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/movers",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/movers/",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/cleaning",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/cleaning/",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/aircon",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/aircon/",
-      "destination": "/portfolio/conversion/interior/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
@@ -154,12 +154,12 @@
     },
     {
       "source": "/website-samples/clinic",
-      "destination": "/portfolio/conversion/academy/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
       "source": "/website-samples/clinic/",
-      "destination": "/portfolio/conversion/academy/",
+      "destination": "/portfolio/conversion/",
       "permanent": true
     },
     {
