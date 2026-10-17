@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/portfolio/conversion/stay/','/portfolio/conversion/interior/','/portfolio/conversion/academy/','/portfolio/conversion/pet/','/website-samples/','/insights/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/portfolio/conversion/stay/','/portfolio/conversion/interior/','/portfolio/conversion/academy/','/portfolio/conversion/pet/','/portfolio/conversion/legal/','/portfolio/conversion/clinic/','/portfolio/conversion/auto/','/portfolio/conversion/fitness/','/portfolio/conversion/estate/','/portfolio/conversion/hrd/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -42,7 +42,7 @@ const server=http.createServer((req,res)=>{
    };
    fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.showcase').count(),8,'Eight independently presented industries visible from the hub');
+   assert.equal(await page.locator('.showcase').count(),14,'Fourteen independent industry previews displayed in hub');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
    const signatures=new Set();
    for(const [id,v] of Object.entries(independent)){
@@ -86,7 +86,7 @@ const server=http.createServer((req,res)=>{
    await page.waitForFunction(()=>location.pathname.startsWith('/portfolio/conversion/')||document.querySelector('h1')?.textContent.includes('새로운 업종별 포트폴리오'),{timeout:7000});
    assert.ok((await page.evaluate(()=>location.pathname)).startsWith('/portfolio/conversion/')||(await page.locator('h1').innerText()).includes('새로운 업종별'),'Legacy gallery must lead to current collection');
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.showcase').count(),8);
+   assert.equal(await page.locator('.showcase').count(),14);
    for(const id of ['stay','interior','academy','pet']){
      const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
      assert.equal(r.status(),200,'new vertical '+id);
@@ -113,6 +113,47 @@ const server=http.createServer((req,res)=>{
        await page.locator('#petSurvey button').click();
        assert.match(await page.locator('#surveyOutput').innerText(),/대형견/);
      }
+   }
+   // Six newly launched independent verticals, including live demo controls.
+   for(const [id,test] of Object.entries({
+    legal:async()=>{
+       await page.locator('[data-topic="contract"]').click();
+       assert.equal(await page.locator('[data-item]:visible').count(),1);
+       assert.match(await page.locator('#topicStatus').innerText(),/선택한 분야/);
+    },
+    clinic:async()=>{
+       await page.locator('[data-check]').first().check();
+       assert.match(await page.locator('#progress').innerText(),/1 \/ 3/);
+    },
+    auto:async()=>{
+       await page.locator('#category').selectOption('tire');
+       await page.locator('#showInfo').click();
+       assert.match(await page.locator('#result').innerText(),/타이어 규격/);
+    },
+    fitness:async()=>{
+       await page.locator('[data-day="wed"]').click();
+       assert.equal(await page.locator('.class-list article:visible').count(),1);
+    },
+    estate:async()=>{
+       await page.locator('#region').selectOption('urban');
+       await page.locator('#purpose').selectOption('commercial');
+       await page.locator('#searchForm button').click();
+       assert.equal(await page.locator('.cards article:visible').count(),1);
+    },
+    hrd:async()=>{
+       await page.locator('#audience').selectOption('승진자');
+       await page.locator('#brief button').click();
+       assert.match(await page.locator('#summary').innerText(),/승진자/);
+    }
+   })){
+      const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
+      assert.equal(r.status(),200,id+' new independent route');
+      assert.equal(await page.locator('h1').count(),1,id+' needs one H1');
+      assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
+      assert.ok((await page.locator('a[href*="service="]').count())>0,id+' must link to agency');
+      assert.match(await page.locator('body').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+      await test();
+      if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','new-'+id+'-desktop.png'),fullPage:true});
    }
    // Export actual Naver blog button, desktop skin and mobile cover PNGs.
    await page.goto(origin+'/portfolio/brand-blogs/buttons/?theme=expert',{waitUntil:'load'});
