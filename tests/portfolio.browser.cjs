@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/website-samples/','/insights/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/portfolio/conversion/stay/','/portfolio/conversion/interior/','/portfolio/conversion/academy/','/portfolio/conversion/pet/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -29,7 +29,7 @@ const server=http.createServer((req,res)=>{
     assert.ok(overflow<10,route+' horizontal overflow '+overflow+'px at '+viewport.width);
    }
    await page.goto(origin+'/portfolio/',{waitUntil:'domcontentloaded'});
-   for(const dest of ['/website-samples/','/portfolio/product-pages/','/portfolio/brand-blogs/'])
+   for(const dest of ['/portfolio/conversion/','/portfolio/product-pages/','/portfolio/brand-blogs/'])
     assert.ok(await page.locator('a[href="'+dest+'"]').count(),dest+' category navigation');
    assert.match(await page.locator('.port-premium').last().innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
    assert.match(await page.locator('.port-premium small').last().innerText(),/호스팅비는 별도/);
@@ -42,7 +42,7 @@ const server=http.createServer((req,res)=>{
    };
    fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.showcase').count(),4,'Four independently presented industries visible from the hub');
+   assert.equal(await page.locator('.showcase').count(),8,'Eight independently presented industries visible from the hub');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
    const signatures=new Set();
    for(const [id,v] of Object.entries(independent)){
@@ -81,19 +81,38 @@ const server=http.createServer((req,res)=>{
    }
    await page.goto(origin+'/portfolio/brand-blogs/',{waitUntil:'domcontentloaded'});
    for(const id of ['salon','studio','local'])assert.ok(await page.locator('#'+id+' .blog-case').count(),id+' blog design');
+   // Retired public routes direct users to current 8 independent designs.
    await page.goto(origin+'/website-samples/',{waitUntil:'domcontentloaded'});
-   assert.match(await page.locator('.price-offer').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
-   assert.match(await page.locator('.price-offer small').innerText(),/호스팅비는 별도/);
-   await page.locator('[data-filter="stay"]').click();
-   assert.equal(await page.locator('.sample-card:not([hidden])').count(),3,'stay category filter');
-   assert.equal(await page.locator('[data-filter="stay"]').getAttribute('aria-pressed'),'true');
-   await page.locator('[data-filter="all"]').click();
-   assert.equal(await page.locator('.sample-card:not([hidden])').count(),15,'all website samples');
-   for(const demo of ['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate']){
-    const r=await page.goto(origin+'/website-samples/'+demo+'/',{waitUntil:'domcontentloaded',timeout:20000});
-    assert.equal(r.status(),200,demo+' sample');
-    assert.match(await page.locator('.neo-price').innerText(),/30만원으로 제작 가능합니다\./,demo+' price');
-    assert.match(await page.locator('.neo-price small').innerText(),/호스팅비는 별도/,demo+' hosting');
+   assert.match(await page.locator('h1').innerText(),/새로운 업종별 포트폴리오/);
+   assert.ok((await page.locator('a[href="/portfolio/conversion/"]').count())>=1);
+   await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('.showcase').count(),8);
+   for(const id of ['stay','interior','academy','pet']){
+     const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
+     assert.equal(r.status(),200,'new vertical '+id);
+     assert.equal(await page.locator('h1').count(),1,'unique heading '+id);
+     assert.match(await page.locator('.price').innerText(),/30만원으로 제작 가능합니다/);
+     assert.match(await page.locator('.price small').innerText(),/호스팅비는 별도/);
+     if(id==='stay'){
+       await page.locator('#arrival').fill('2027-05-10');
+       await page.locator('#departure').fill('2027-05-13');
+       await page.locator('#demoBooking button[type="submit"]').click();
+       assert.match(await page.locator('#bookingStatus').innerText(),/2027-05-10/);
+       assert.match(await page.locator('#bookingStatus').innerText(),/실제 예약/);
+     }else if(id==='interior'){
+       await page.locator('#spaceType').selectOption('사무실');
+       await page.locator('#briefForm button').click();
+       assert.match(await page.locator('#briefResult').innerText(),/사무실/);
+       assert.match(await page.locator('#briefResult').innerText(),/실제 시공 견적/);
+     }else if(id==='academy'){
+       await page.locator('[data-level="adult"]').click();
+       assert.equal(await page.locator('[data-level="adult"]').getAttribute('aria-selected'),'true');
+       assert.match(await page.locator('#courseTitle').innerText(),/목표에 맞춰/);
+     }else if(id==='pet'){
+       await page.locator('#petSize').selectOption('대형견');
+       await page.locator('#petSurvey button').click();
+       assert.match(await page.locator('#surveyOutput').innerText(),/대형견/);
+     }
    }
    // Export actual Naver blog button, desktop skin and mobile cover PNGs.
    await page.goto(origin+'/portfolio/brand-blogs/buttons/?theme=expert',{waitUntil:'load'});
