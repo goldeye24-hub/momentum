@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비'],['legal','법률사무소','업무 분야별 상담 안내'],['clinic','의원','방문정보·체크리스트'],['auto','자동차 정비','정비항목·방문 준비'],['fitness','피트니스','요일별 클래스 탐색'],['estate','부동산','가상 매물 조건 필터'],['hrd','기업교육·HRD','프로그램 맞춤 구성']];
+const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비'],['legal','법률사무소','업무 분야별 상담 안내'],['clinic','의원','방문정보·체크리스트'],['auto','자동차 정비','정비항목·방문 준비'],['fitness','피트니스','요일별 클래스 탐색'],['estate','부동산','가상 매물 조건 필터'],['hrd','기업교육·HRD','프로그램 맞춤 구성'],['tax','세무회계','개인·법인 유형별 서비스'],['moving','이사업체','이사 조건·짐 규모'],['cleaning','입주청소','작업 범위·시연 비교'],['pilates','필라테스 스튜디오','요일별 수업 시간표']];
 const selectors={
 restaurant:{brand:'.restaurant-brand',headline:'.hero-caption h1',intro:'.hero-caption p',heroUrl:'.editorial-hero > img',ctaText:'.hero-caption .gallery-link',ctaLink:'.hero-caption .gallery-link',sectionTitle:'.letter h2',sectionText:'.letter p',detailUrl:'.menu-photo img'},
 beauty:{brand:'.head .name',headline:'.cover-copy h1',intro:'.cover-copy .intro',heroUrl:'.cover .look img',ctaText:'.cover-copy .linkline',ctaLink:'.cover-copy .linkline',sectionTitle:'.lookbook-head h2',sectionText:'.lookbook-head p',detailUrl:'.look-strip img'},
@@ -15,7 +15,11 @@ clinic:{brand:'.head .name',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a
 auto:{brand:'.nav .logo',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.index h2',sectionText:'.services article p'},
 fitness:{brand:'.top .brand',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.classes h2',sectionText:'.class-list article p'},
 estate:{brand:'.top .logo',headline:'.splash h1',intro:'.splash p',ctaText:'.splash a',ctaLink:'.splash a',sectionTitle:'.results h2',sectionText:'.results-top p'},
-hrd:{brand:'.head .brand',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.program h2',sectionText:'.program-grid article p'}
+hrd:{brand:'.head .brand',headline:'.hero h1',intro:'.hero p',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.program h2',sectionText:'.program-grid article p'},
+tax:{brand:'.tax-header .tax-brand',headline:'.tax-hero h1',intro:'.tax-hero p',ctaText:'.tax-hero a',ctaLink:'.tax-hero a',sectionTitle:'.tax-switch h2',sectionText:'.tax-board p'},
+moving:{brand:'.move-top .logo',headline:'.move-hero h1',intro:'.move-hero .content p',ctaText:'.move-hero a',ctaLink:'.move-hero a',sectionTitle:'.step-builder h2',sectionText:'.step-builder .title p'},
+cleaning:{brand:'.clean-nav .logo',headline:'.diff-copy h1',intro:'.diff-copy p',ctaText:'.diff-copy a',ctaLink:'.diff-copy a',sectionTitle:'.scope h2',sectionText:'.scope-header p'},
+pilates:{brand:'.pil-nav .brand',headline:'.pil-hero h1',intro:'.pil-hero p',ctaText:'.pil-hero a',ctaLink:'.pil-hero a',sectionTitle:'.classes h2',sectionText:'.classes-top p'}
 };
 const $=id=>document.getElementById(id), ids=['brand','headline','intro','heroUrl','ctaText','ctaLink','sectionTitle','sectionText','detailUrl'];
 
