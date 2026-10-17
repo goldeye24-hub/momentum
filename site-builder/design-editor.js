@@ -1,25 +1,25 @@
 (function(){
 'use strict';
-const designs=[['restaurant','음식점 · 레스토랑','메뉴·방문 예약형'],['foodie','동네 맛집','메뉴·음식 비주얼형'],['franchise','프랜차이즈','브랜드·가맹 상담형'],['poolvilla','풀빌라','대형 수영장 사진·객실형'],['pension','펜션','감성 숙박·여행형'],['glamping','글램핑','자연·체험·예약형'],['petgroom','애견미용','반려견 스타일·예약형'],['ladder','사다리차','현장 작업·견적형'],['movers','이삿짐센터','이사 조건·견적형'],['cleaning','입주청소','작업 범위·견적형'],['aircon','에어컨청소','기기 종류·방문 견적형'],['beauty','미용실','스타일 화보·예약형'],['academy','학원','학습 과정·상담형'],['clinic','병원·의원','진료 정보·예약형'],['corporate','B2B 기업','사업 역량·제휴 상담형']];
+const designs=[['restaurant','음식점 · 다이닝 매거진','전체 사진·메뉴북'],['beauty','미용실 · 스타일 저널','비대칭 패션 매거진'],['b2b','B2B 기업 · 솔루션 플랫폼','좌측 메뉴·기술·견적'],['shop','쇼핑몰 · 브랜드 커머스','옵션·장바구니 체험'],['stay','풀빌라 · 숙박','객실·날짜 선택'],['interior','인테리어 · 시공','프로젝트·견적 준비'],['academy','학원 · 교육','과정 탐색·학습로드맵'],['pet','반려견 미용','케어·상담 준비']];
+const selectors={
+restaurant:{brand:'.restaurant-brand',headline:'.hero-caption h1',intro:'.hero-caption p',heroUrl:'.editorial-hero > img',ctaText:'.hero-caption .gallery-link',ctaLink:'.hero-caption .gallery-link',sectionTitle:'.letter h2',sectionText:'.letter p',detailUrl:'.menu-photo img'},
+beauty:{brand:'.head .name',headline:'.cover-copy h1',intro:'.cover-copy .intro',heroUrl:'.cover .look img',ctaText:'.cover-copy .linkline',ctaLink:'.cover-copy .linkline',sectionTitle:'.lookbook-head h2',sectionText:'.lookbook-head p',detailUrl:'.look-strip img'},
+b2b:{brand:'.rail .brand',headline:'.intro h1',intro:'.intro .lead',ctaText:'.intro .actions a',ctaLink:'.intro .actions a',sectionTitle:'.problem h2',sectionText:'.problem-head p'},
+shop:{brand:'.shop-header .logo',headline:'.product-details h1',intro:'.product-details .sub',heroUrl:'.gallery figure img',ctaText:'.product-actions a',ctaLink:'.product-actions a',sectionTitle:'.full-story h2',sectionText:'.full-story p',detailUrl:'.full-story img'},
+stay:{brand:'.top .logo',headline:'.view h1',intro:'.view p',heroUrl:'.view > img',ctaText:'.end a',ctaLink:'.end a',sectionTitle:'.story h2',sectionText:'.story p',detailUrl:'.story img'},
+interior:{brand:'.top .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.hero-image img',ctaText:'.hero .action',ctaLink:'.hero .action',sectionTitle:'.projects h2',sectionText:'.projects .head p',detailUrl:'.proj-grid figure img'},
+academy:{brand:'.header .brand',headline:'.hero h1',intro:'.hero p',heroUrl:'.lesson-art img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.track h2',sectionText:'.track-head p',detailUrl:'.journal img'},
+pet:{brand:'.head .logo',headline:'.hero h1',intro:'.hero p',heroUrl:'.portrait img',ctaText:'.hero a',ctaLink:'.hero a',sectionTitle:'.services h2',sectionText:'.section-head p',detailUrl:'.groom img'}
+};
 const $=id=>document.getElementById(id), ids=['brand','headline','intro','heroUrl','ctaText','ctaLink','sectionTitle','sectionText','detailUrl'];
-const sel={
- brand:'.neo-brand',
- headline:'.neo-hero h1',
- intro:'.neo-hero-copy > p',
- heroUrl:'.neo-hero .neo-image img',
- ctaText:'.neo-hero-buttons .neo-button:first-child',
- ctaLink:'.neo-hero-buttons .neo-button:first-child',
- sectionTitle:'main > section.neo-section h2',
- sectionText:'main > section.neo-section p',
- detailUrl:'.neo-story img, .neo-gallery img'
-}
+
 const fields={brand:'brandInput',headline:'headlineInput',intro:'introInput',heroUrl:'heroUrlInput',ctaText:'ctaTextInput',ctaLink:'ctaLinkInput',sectionTitle:'sectionTitleInput',sectionText:'sectionTextInput',detailUrl:'detailUrlInput'};
-const frame=$('livePreview');let selected='poolvilla',base={},draft={},loading=false;
+const frame=$('livePreview');let selected='stay',base={},draft={},loading=false;
 function status(s){$('saveStatus').textContent=s}
-function key(id){return 'momentum-independent-design-draft-v1:'+id}
+function key(id){return 'momentum-independent-design-draft-v2:'+id}
 function safeImage(v){if(typeof v!=='string'||v.length>2800000)return false;if(/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(v))return true;try{const u=new URL(v,location.origin);return u.protocol==='https:'&&(!u.username&&!u.password)}catch{return false}}
 function safeLink(v){if(typeof v!=='string'||v.length>500)return false;if(v.startsWith('#'))return /^#[a-z0-9_-]+$/i.test(v);try{const u=new URL(v,location.origin);return u.protocol==='https:'&&!u.username&&!u.password}catch{return false}}
-function targets(){const d=frame.contentDocument;if(!d||!d.querySelector('main'))return {};const out={};for(const [id,s] of Object.entries(sel))out[id]=d.querySelector(s)||null;return out}
+function targets(){const d=frame.contentDocument;if(!d||!d.querySelector('main'))return {};const out={};for(const [id,s] of Object.entries(selectors[selected]||{}))out[id]=d.querySelector(s)||null;return out}
 function textWithBreak(el){return el?el.innerText.replace(/\r/g,'').trim().replace(/\n{3,}/g,'\n\n'):''}
 function values(){const t=targets(),o={};for(const id of ids){const el=t[id];o[id]=!el?'':id==='heroUrl'||id==='detailUrl'?(el.getAttribute('src')||''):id==='ctaLink'?(el.getAttribute('href')||''):textWithBreak(el)}return o}
 function applyOne(id,val){const el=targets()[id];if(!el||typeof val!=='string')return false;if(id==='heroUrl'||id==='detailUrl'){if(!safeImage(val))return false;el.src=val;return true}
@@ -30,7 +30,7 @@ function applyOne(id,val){const el=targets()[id];if(!el||typeof val!=='string')r
 function paint(){if(!frame.contentDocument?.querySelector('main'))return;for(const [id,v] of Object.entries(draft))if(ids.includes(id))applyOne(id,v)}
 function sync(){const t=targets();for(const id of ids){const input=$(fields[id]);const element=t[id];input.disabled=!element;input.closest('label')?.classList.toggle('isDisabled',!element);input.value=element?(draft[id]??base[id]??''):'';input.placeholder=element?'': '이 디자인에는 해당 영역이 없습니다.'}}
 function readStored(id){try{const s=JSON.parse(localStorage.getItem(key(id))||'null');return s&&s.version===1&&s.id===id&&s.fields&&typeof s.fields==='object'?s.fields:{}}catch{return{}}}
-function display(id){selected=id;loading=true;draft={};base={};$('previewTitle').textContent=designs.find(x=>x[0]===id)?.[1]||id;$('designInfo').textContent=(designs.find(x=>x[0]===id)?.[2]||'')+' · 별도의 홈페이지 HTML·레이아웃';frame.src='/website-samples/'+encodeURIComponent(id)+'/';status('디자인 불러오는 중…')}
+function display(id){selected=id;loading=true;draft={};base={};$('previewTitle').textContent=designs.find(x=>x[0]===id)?.[1]||id;$('designInfo').textContent=(designs.find(x=>x[0]===id)?.[2]||'')+' · 별도의 홈페이지 HTML·레이아웃';frame.src='/portfolio/conversion/'+encodeURIComponent(id)+'/';status('디자인 불러오는 중…')}
 frame.addEventListener('load',()=>{if(!frame.contentDocument?.querySelector('main'))return;loading=false;base=values();draft=readStored(selected);paint();sync();status(Object.keys(draft).length?'임시 저장된 수정 내용을 불러왔습니다.':'원본 디자인을 불러왔습니다. 변경 시 임시 저장됩니다.')});
 function syncSave(){try{localStorage.setItem(key(selected),JSON.stringify({version:1,id:selected,fields:draft,savedAt:new Date().toISOString()}));status('이 브라우저에 임시 저장했습니다. 공개 사이트에는 반영되지 않습니다.')}catch(e){status('브라우저 저장 공간이 부족합니다. JSON/HTML 파일로 백업하세요.')}}
 for(const id of ids){const input=$(fields[id]);input.addEventListener('input',()=>{if(loading)return;const v=input.value;if(id==='heroUrl'||id==='detailUrl'){if(v&&!safeImage(v)){status('이미지는 안전한 HTTPS URL 또는 업로드된 사진만 사용할 수 있습니다.');return}}
