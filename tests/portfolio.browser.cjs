@@ -21,7 +21,7 @@ const server=http.createServer((req,res)=>{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
-   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/website-samples/','/insights/']){
+   for(const route of ['/','/portfolio/','/portfolio/product-pages/','/portfolio/brand-blogs/','/portfolio/brand-blogs/buttons/','/portfolio/conversion/','/portfolio/conversion/restaurant/','/portfolio/conversion/beauty/','/portfolio/conversion/b2b/','/portfolio/conversion/shop/','/website-samples/','/insights/']){
     const r=await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:20000});
     assert.equal(r.status(),200,route);
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
@@ -33,6 +33,32 @@ const server=http.createServer((req,res)=>{
     assert.ok(await page.locator('a[href="'+dest+'"]').count(),dest+' category navigation');
    assert.match(await page.locator('.port-premium').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
    assert.match(await page.locator('.port-premium small').innerText(),/호스팅비는 별도/);
+   // Direct semantic CRO pages must work without JS-based content injection or fake booking.
+   const cf={
+    restaurant:{hero:'.dining-hero',unique:'.dining-menu',cta:'#menu'},
+    beauty:{hero:'.beauty-hero',unique:'.beauty-style',cta:'#looks'},
+    b2b:{hero:'.b2b-hero',unique:'.b2b-process',cta:'#solutions'},
+    shop:{hero:'.shop-hero',unique:'.shop-benefits',cta:'#benefits'}
+   };
+   await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
+   assert.equal(await page.locator('.hub-card').count(),4,'Four distinct conversion intent designs');
+   await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
+   for(const [id,v] of Object.entries(cf)){
+    const url=origin+'/portfolio/conversion/'+id+'/';
+    const r=await page.goto(url,{waitUntil:'domcontentloaded'});
+    assert.equal(r.status(),200,id+' route available');
+    assert.equal(await page.locator('h1').count(),1,id+' H1');
+    assert.equal(await page.locator(v.hero).count(),1,id+' unique hero layout');
+    assert.equal(await page.locator(v.unique).count(),1,id+' unique content hierarchy');
+    assert.equal(await page.locator('details').count(),3,id+' useful FAQ');
+    assert.match(await page.locator('.coffer').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+    assert.match(await page.locator('.coffer small').innerText(),/호스팅비는 별도/);
+    assert.equal(await page.locator('form').count(),0,id+' cannot have nonfunctional order or booking form');
+    assert.ok((await page.locator('a[href="'+v.cta+'"]').count())>=1,id+' working section navigation');
+    assert.ok((await page.locator('.caction a[href*="/?service="]').count())>0,id+' agency inquiry');
+    assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow','Sample should not be indexed as business');
+    if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','conversion-'+id+'-desktop.png'),fullPage:true});
+   }
    await page.goto(origin+'/portfolio/product-pages/',{waitUntil:'domcontentloaded'});
    for(const id of ['ferment','lumin','brew'])assert.ok(await page.locator('#'+id+' .detail-demo').count(),id+' product design');
    if(viewport.width===1440){
