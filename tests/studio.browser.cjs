@@ -299,7 +299,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(heroes.size,18,'Eighteen hero and header combinations must differ');
     await templatePage.goto('http://127.0.0.1:'+port+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
     assert.equal(await templatePage.locator('.showcase').count(),18);
-    assert.equal(await templatePage.locator('iframe').count(),14,'All previews render actual independent websites');
+    assert.equal(await templatePage.locator('iframe').count(),18,'All previews render actual independent websites');
     assert.equal(templateErrors.length,0,'Preview runtime errors: '+templateErrors.join(' | '));
     await templatePage.close();
     console.log('PASS: 18 independent website structures, new verticals and desktop/mobile screenshot QA');
