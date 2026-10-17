@@ -269,7 +269,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     // Eight truly independent standalone sites: independent landmarks, headings, responsive layouts.
     const templatePage=await ctx.newPage(),templateErrors=[];
     templatePage.on('pageerror',e=>templateErrors.push(String(e)));
-    const allDesigns=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+    const allDesigns=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','tax','moving','cleaning','auto','pilates'];
     const heroes=new Set();
     await templatePage.setViewportSize({width:1440,height:900});
     for(const id of allDesigns){
@@ -280,35 +280,35 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(id==='academy')await templatePage.waitForFunction(()=>{const img=document.querySelector('.lesson-art img');return img?.complete&&img.naturalWidth>=900},null,{timeout:12000});
       assert.equal(await templatePage.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
       assert.equal(await templatePage.locator('form').count()<=1,true,'No fake intake form except explicit demo selectors');
-      assert.match(await templatePage.locator('.price,.disclosure').innerText(),/30만원으로 제작 가능합니다/);
+      assert.match(await templatePage.locator('.price,.disclosure,.studio-price,.agency-price').innerText(),/30만원으로 제작 가능합니다/);
       heroes.add(await templatePage.evaluate(()=>{
         const hero=document.querySelector('main > section'),header=document.querySelector('header');
         const layout=getComputedStyle(hero).display;
         const grid=getComputedStyle(hero).gridTemplateColumns;
         return [hero?.className,header?.className,layout,grid].join('|');
       }));
-      if(['stay','interior','academy','pet'].includes(id))
+      if(['stay','interior','academy','pet','legal','tax','moving','cleaning','auto','pilates'].includes(id))
         await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-desktop.png'),fullPage:true});
       await templatePage.setViewportSize({width:390,height:844});
       const sizes=await templatePage.evaluate(()=>({doc:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(sizes.doc<=sizes.viewport+4,id+' horizontal overflow '+JSON.stringify(sizes));
-      if(['stay','interior','academy','pet'].includes(id))
+      if(['stay','interior','academy','pet','legal','tax','moving','cleaning','auto','pilates'].includes(id))
         await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-mobile.png'),fullPage:true});
       await templatePage.setViewportSize({width:1440,height:900});
     }
-    assert.equal(heroes.size,8,'No repeat of shared frame / first section');
+    assert.equal(heroes.size,14,'No repeat of shared frame / first section');
     await templatePage.goto('http://127.0.0.1:'+port+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-    assert.equal(await templatePage.locator('.showcase').count(),8);
-    assert.equal(await templatePage.locator('iframe').count(),8,'All previews render actual independent websites');
+    assert.equal(await templatePage.locator('.showcase').count(),14);
+    assert.equal(await templatePage.locator('iframe').count(),14,'All previews render actual independent websites');
     assert.equal(templateErrors.length,0,'Preview runtime errors: '+templateErrors.join(' | '));
     await templatePage.close();
-    console.log('PASS: 8 independent website structures, new verticals and desktop/mobile screenshot QA');
+    console.log('PASS: 14 independent website structures, new verticals and desktop/mobile screenshot QA');
 
     // Existing authenticated visual editor must switch to the 8 independent design pages.
     const designer=await ctx.newPage(),designErrors=[];
     designer.on('pageerror',e=>designErrors.push(String(e)));
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
-    assert.equal(await designer.locator('#designSelect option').count(),8);
+    assert.equal(await designer.locator('#designSelect option').count(),14);
     await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
     await designer.locator('#headlineInput').fill('풀빌라 디자인 수정 테스트');
     assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
