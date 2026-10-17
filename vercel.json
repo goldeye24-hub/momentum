@@ -13,6 +13,166 @@
       "permanent": false
     },
     {
+      "source": "/website-samples",
+      "destination": "/portfolio/conversion/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/",
+      "destination": "/portfolio/conversion/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/restaurant",
+      "destination": "/portfolio/conversion/restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/restaurant/",
+      "destination": "/portfolio/conversion/restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/foodie",
+      "destination": "/portfolio/conversion/restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/foodie/",
+      "destination": "/portfolio/conversion/restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/franchise",
+      "destination": "/portfolio/conversion/b2b/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/franchise/",
+      "destination": "/portfolio/conversion/b2b/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/poolvilla",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/poolvilla/",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/pension",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/pension/",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/glamping",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/glamping/",
+      "destination": "/portfolio/conversion/stay/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/petgroom",
+      "destination": "/portfolio/conversion/pet/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/petgroom/",
+      "destination": "/portfolio/conversion/pet/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/ladder",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/ladder/",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/movers",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/movers/",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/cleaning",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/cleaning/",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/aircon",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/aircon/",
+      "destination": "/portfolio/conversion/interior/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/beauty",
+      "destination": "/portfolio/conversion/beauty/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/beauty/",
+      "destination": "/portfolio/conversion/beauty/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/academy",
+      "destination": "/portfolio/conversion/academy/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/academy/",
+      "destination": "/portfolio/conversion/academy/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/clinic",
+      "destination": "/portfolio/conversion/academy/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/clinic/",
+      "destination": "/portfolio/conversion/academy/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/corporate",
+      "destination": "/portfolio/conversion/b2b/",
+      "permanent": true
+    },
+    {
+      "source": "/website-samples/corporate/",
+      "destination": "/portfolio/conversion/b2b/",
+      "permanent": true
+    },
+    {
       "source": "/site-builder",
       "destination": "/admin/",
       "permanent": false
