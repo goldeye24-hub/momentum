@@ -277,7 +277,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const response=await templatePage.goto(url,{waitUntil:'domcontentloaded'});
       assert.equal(response.status(),200,id+' active demo URL');
       assert.equal(await templatePage.locator('h1').count(),1,id+' one H1');
-      if(id==='academy')await templatePage.waitForFunction(()=>{const img=document.querySelector('.lesson-art img');return img?.complete&&img.naturalWidth>=900},{timeout:8000});
+      if(id==='academy')await templatePage.waitForFunction(()=>{const img=document.querySelector('.lesson-art img');return img?.complete&&img.naturalWidth>=900},null,{timeout:12000});
       assert.equal(await templatePage.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
       assert.equal(await templatePage.locator('form').count()<=1,true,'No fake intake form except explicit demo selectors');
       assert.match(await templatePage.locator('.price,.disclosure').innerText(),/30만원으로 제작 가능합니다/);
