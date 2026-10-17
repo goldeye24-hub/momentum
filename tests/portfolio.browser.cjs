@@ -33,33 +33,46 @@ const server=http.createServer((req,res)=>{
     assert.ok(await page.locator('a[href="'+dest+'"]').count(),dest+' category navigation');
    assert.match(await page.locator('.port-premium').last().innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
    assert.match(await page.locator('.port-premium small').last().innerText(),/호스팅비는 별도/);
-   // Direct semantic CRO pages must work without JS-based content injection or fake booking.
-   const cf={
-    restaurant:{hero:'.dining-hero',unique:'.dining-menu',cta:'#menu'},
-    beauty:{hero:'.beauty-hero',unique:'.beauty-style',cta:'#looks'},
-    b2b:{hero:'.b2b-hero',unique:'.b2b-process',cta:'#solutions'},
-    shop:{hero:'.shop-hero',unique:'.shop-benefits',cta:'#benefits'}
+   // Distinct standalone industry sites: no shared template or fake order form.
+   const independent={
+    restaurant:{hero:'.editorial-hero',unique:'.menu-story',nav:'.restaurant-navigation',cta:'#menu',faq:3},
+    beauty:{hero:'.cover-grid',unique:'.look-strip',nav:'.head',cta:'#lookbook',faq:3},
+    b2b:{hero:'.intro',unique:'.problem-matrix',nav:'.railnav',cta:'#solutions',faq:4},
+    shop:{hero:'.product-shell',unique:'.product-actions',nav:'.shop-header',cta:'#benefits',faq:4}
    };
    fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.hub-card').count(),4,'Four distinct conversion intent designs');
+   assert.equal(await page.locator('.hub-card').count(),4,'Four industries visible from the hub');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
-   for(const [id,v] of Object.entries(cf)){
-    const url=origin+'/portfolio/conversion/'+id+'/';
-    const r=await page.goto(url,{waitUntil:'domcontentloaded'});
-    assert.equal(r.status(),200,id+' route available');
-    assert.equal(await page.locator('h1').count(),1,id+' H1');
-    assert.equal(await page.locator(v.hero).count(),1,id+' unique hero layout');
-    assert.equal(await page.locator(v.unique).count(),1,id+' unique content hierarchy');
-    assert.equal(await page.locator('details').count(),3,id+' useful FAQ');
-    assert.match(await page.locator('.coffer').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
-    assert.match(await page.locator('.coffer small').innerText(),/호스팅비는 별도/);
-    assert.equal(await page.locator('form').count(),0,id+' cannot have nonfunctional order or booking form');
-    assert.ok((await page.locator('a[href="'+v.cta+'"]').count())>=1,id+' working section navigation');
-    assert.ok((await page.locator('.caction a[href*="/?service="]').count())>0,id+' agency inquiry');
-    assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow','Sample should not be indexed as business');
-    if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','conversion-'+id+'-desktop.png'),fullPage:true});
+   const signatures=new Set();
+   for(const [id,v] of Object.entries(independent)){
+    const r=await page.goto(origin+'/portfolio/conversion/'+id+'/',{waitUntil:'domcontentloaded'});
+    assert.equal(r.status(),200,id+' route');
+    assert.equal(await page.locator('h1').count(),1,id+' unique H1');
+    assert.equal(await page.locator(v.hero).count(),1,id+' own hero');
+    assert.equal(await page.locator(v.unique).count(),1,id+' own content composition');
+    assert.equal(await page.locator(v.nav).count(),1,id+' own navigation');
+    assert.equal(await page.locator('details').count(),v.faq,id+' FAQ tailored to industry');
+    assert.match(await page.locator('.price,.disclosure').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+    assert.match(await page.locator('.price small,.disclosure small').innerText(),/호스팅비는 별도/);
+    assert.equal(await page.locator('form').count(),0,id+' cannot display fake booking form');
+    assert.ok((await page.locator('a[href="'+v.cta+'"]').count())>=1,id+' functional anchor');
+    assert.ok((await page.locator('a[href*="/?service="]').count())>=1,id+' real agency inquiry link');
+    assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow','samples should not index as real businesses');
+    signatures.add(await page.locator('main > section').first().getAttribute('class'));
+    if(id==='shop'){
+       assert.equal(await page.locator('#quantity').innerText(),'1');
+       await page.locator('#plus').click();
+       await page.locator('input[value="500g"]').check();
+       await page.locator('#addToBag').click();
+       assert.equal(await page.locator('#bagCount').innerText(),'2');
+       assert.match(await page.locator('#bagMessage').innerText(),/500g × 2개/);
+       assert.match(await page.locator('#bagMessage').innerText(),/실제 주문/);
+    }
+    if(viewport.width===1440)await page.screenshot({path:path.join(ROOT,'artifacts','independent-'+id+'-desktop.png'),fullPage:true});
+    else await page.screenshot({path:path.join(ROOT,'artifacts','independent-'+id+'-mobile.png'),fullPage:true});
    }
+   assert.equal(signatures.size,4,'Hero HTML structures must be different, not four shared templates');
    await page.goto(origin+'/portfolio/product-pages/',{waitUntil:'domcontentloaded'});
    for(const id of ['ferment','lumin','brew'])assert.ok(await page.locator('#'+id+' .detail-demo').count(),id+' product design');
    if(viewport.width===1440){
