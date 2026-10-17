@@ -280,7 +280,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.equal(await templatePage.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
       assert.equal(await templatePage.locator('form').count()<=1,true,'No fake intake form except explicit demo selectors');
       assert.match(await templatePage.locator('.price,.disclosure').innerText(),/30만원으로 제작 가능합니다/);
-      heroes.add(await templatePage.locator('main > section').first().getAttribute('class'));
+      heroes.add(await templatePage.evaluate(()=>{
+        const hero=document.querySelector('main > section'),header=document.querySelector('header');
+        const layout=getComputedStyle(hero).display;
+        const grid=getComputedStyle(hero).gridTemplateColumns;
+        return [hero?.className,header?.className,layout,grid].join('|');
+      }));
       if(['stay','interior','academy','pet'].includes(id))
         await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-desktop.png'),fullPage:true});
       await templatePage.setViewportSize({width:390,height:844});
