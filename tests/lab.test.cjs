@@ -320,9 +320,9 @@ test('agency homepage showcases active independent designs and preserves real cl
   assert.ok(fs.readFileSync('assets/portfolio-'+slug+'.jpg').length>20000);
  }
 });
-test('retire all 15 common-frame URLs, preserve old visitors with redirects and migrate admin editor to 8 real sites',()=>{
+test('retire all 15 common-frame URLs, preserve old visitors with redirects and migrate admin editor to 14 real sites',()=>{
  const retired=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
- const current=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+ const current=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd'];
  const vercel=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  const gallery=fs.readFileSync('website-samples/index.html','utf8');
  assert.match(gallery,/portfolio\/conversion/);
@@ -334,7 +334,7 @@ test('retire all 15 common-frame URLs, preserve old visitors with redirects and 
  const editor=fs.readFileSync('site-builder/design-editor.js','utf8');
  const ui=fs.readFileSync('site-builder/design-editor.html','utf8');
  assert.doesNotThrow(()=>new vm.Script(editor));
- assert.match(ui,/디자인 편집 \(8종\)/);
+ assert.match(ui,/디자인 편집 \(14종\)/);
  assert.match(ui,/href="\/portfolio\/conversion\/"/);
  assert.match(editor,/const selectors=/);
  assert.match(editor,/frame.src='\/portfolio\/conversion\//);
@@ -343,10 +343,10 @@ test('retire all 15 common-frame URLs, preserve old visitors with redirects and 
  assert.doesNotThrow(()=>new vm.Script(builder));
  assert.match(fs.readFileSync('site-builder/index.html','utf8'),/id="sitePreview"/);
 });
-test('eight independent portfolios have genuinely different semantic structures and working industry interactions',()=>{
- const ids=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+test('fourteen independent portfolios have genuinely different semantic structures and working industry interactions',()=>{
+ const ids=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd'];
  const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
- assert.equal((hub.match(/class="showcase /g)||[]).length,8);
+ assert.equal((hub.match(/class="showcase /g)||[]).length,14);
  const seen=new Set();
  for(const id of ids){
   const h=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
@@ -361,13 +361,19 @@ test('eight independent portfolios have genuinely different semantic structures 
   assert.doesNotMatch(h,/portfolio\/conversion\/design\.css/);
   seen.add((h.match(/<main[^>]*>[\s\S]{0,300}/)||[''])[0].replace(/\s+/g,' ').slice(0,135));
  }
- assert.equal(seen.size,8,'eight sections should not share the same main DOM');
+ assert.equal(seen.size,14,'fourteen sites must have distinct first section structure');
  for(const [id,required] of Object.entries({
   stay:['id="demoBooking"','id="arrival"','id="departure"','id="bookingStatus"'],
   interior:['id="briefForm"','id="spaceType"','id="briefResult"'],
   academy:['role="tablist"','id="coursePanel"','data-level="adult"'],
   pet:['id="petSurvey"','id="surveyOutput"','id="petSize"'],
-  shop:['id="addToBag"','id="bagCount"','id="quantity"']
+  shop:['id="addToBag"','id="bagCount"','id="quantity"'],
+  legal:['data-topic="corporate"','id="topicStatus"'],
+  clinic:['data-check','id="progress"'],
+  auto:['id="showInfo"','id="result"'],
+  fitness:['data-day="wed"','id="classStatus"'],
+  estate:['id="searchForm"','id="searchResult"'],
+  hrd:['id="brief"','id="summary"']
  }))for(const marker of required)assert.match(fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8'),new RegExp(marker));
 });
 test('Naver blog button studio and long-form detailed product portfolio remain intact',()=>{
