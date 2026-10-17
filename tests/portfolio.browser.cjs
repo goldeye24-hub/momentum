@@ -31,8 +31,8 @@ const server=http.createServer((req,res)=>{
    await page.goto(origin+'/portfolio/',{waitUntil:'domcontentloaded'});
    for(const dest of ['/website-samples/','/portfolio/product-pages/','/portfolio/brand-blogs/'])
     assert.ok(await page.locator('a[href="'+dest+'"]').count(),dest+' category navigation');
-   assert.match(await page.locator('.port-premium').innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
-   assert.match(await page.locator('.port-premium small').innerText(),/호스팅비는 별도/);
+   assert.match(await page.locator('.port-premium').last().innerText(),/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
+   assert.match(await page.locator('.port-premium small').last().innerText(),/호스팅비는 별도/);
    // Direct semantic CRO pages must work without JS-based content injection or fake booking.
    const cf={
     restaurant:{hero:'.dining-hero',unique:'.dining-menu',cta:'#menu'},
@@ -40,6 +40,7 @@ const server=http.createServer((req,res)=>{
     b2b:{hero:'.b2b-hero',unique:'.b2b-process',cta:'#solutions'},
     shop:{hero:'.shop-hero',unique:'.shop-benefits',cta:'#benefits'}
    };
+   fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
    assert.equal(await page.locator('.hub-card').count(),4,'Four distinct conversion intent designs');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
