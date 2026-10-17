@@ -38,11 +38,11 @@ const server=http.createServer((req,res)=>{
     restaurant:{hero:'.editorial-hero',unique:'.menu-story',nav:'.restaurant-navigation',cta:'#menu',faq:3},
     beauty:{hero:'.cover-grid',unique:'.look-strip',nav:'.head',cta:'#lookbook',faq:3},
     b2b:{hero:'.intro',unique:'.problem-matrix',nav:'.railnav',cta:'#solutions',faq:4},
-    shop:{hero:'.product-shell',unique:'.product-actions',nav:'.shop-header',cta:'#benefits',faq:4}
+    shop:{hero:'.product-shell',unique:'.product-actions',nav:'.shop-header',cta:'#details',faq:4}
    };
    fs.mkdirSync(path.join(ROOT,'artifacts'),{recursive:true});
    await page.goto(origin+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-   assert.equal(await page.locator('.hub-card').count(),4,'Four industries visible from the hub');
+   assert.equal(await page.locator('.showcase').count(),4,'Four independently presented industries visible from the hub');
    await page.screenshot({path:path.join(ROOT,'artifacts',viewport.width===1440?'conversion-portfolio-desktop.png':'conversion-portfolio-mobile.png'),fullPage:true});
    const signatures=new Set();
    for(const [id,v] of Object.entries(independent)){
