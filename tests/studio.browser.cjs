@@ -280,7 +280,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(id==='academy')await templatePage.waitForFunction(()=>{const img=document.querySelector('.lesson-art img');return img?.complete&&img.naturalWidth>=900},null,{timeout:12000});
       assert.equal(await templatePage.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
       assert.equal(await templatePage.locator('form').count()<=1,true,'No fake intake form except explicit demo selectors');
-      assert.match(await templatePage.locator('.price,.disclosure,.foot').innerText(),/30만원으로 제작 가능합니다/);
+      assert.match(await templatePage.locator('.price,.disclosure,.foot,.agency-price,.studio-price').innerText(),/30만원으로 제작 가능합니다/);
       heroes.add(await templatePage.evaluate(()=>{
         const hero=document.querySelector('main > section'),header=document.querySelector('header');
         const layout=getComputedStyle(hero).display;
