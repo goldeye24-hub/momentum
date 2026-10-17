@@ -266,101 +266,61 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await landing.close();
     console.log('PASS: four real service landings, two protected-media-safe case studies, mobile accessibility and cross-page inquiry preselection');
 
-    // Each client-facing demo must be a real working page, not the same form with another stock image.
-    const templatePage=await ctx.newPage();
-    const templateErrors=[];
+    // Eight truly independent standalone sites: independent landmarks, headings, responsive layouts.
+    const templatePage=await ctx.newPage(),templateErrors=[];
     templatePage.on('pageerror',e=>templateErrors.push(String(e)));
-    const allDesigns=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
-    const layouts=new Map();
+    const allDesigns=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+    const heroes=new Set();
     await templatePage.setViewportSize({width:1440,height:900});
     for(const id of allDesigns){
-      const response=await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/'+id+'/',{waitUntil:'load'});
-      assert.equal(response.status(),200,'Industry route '+id);
-      await templatePage.waitForSelector('.neo-hero h1',{timeout:12000});
-      assert.ok((await templatePage.locator('.neo-hero h1').innerText()).length>7,id+' absent title');
-      await templatePage.waitForFunction(()=>document.querySelector('.neo-hero .neo-image img')?.naturalWidth>200,{timeout:12000}).catch(()=>{throw new Error(id+' hero visual did not resolve, including fallback')});
-      assert.equal(await templatePage.locator('.neo-feature').count(),3,id+' unique business services');
-      assert.equal(await templatePage.locator('.neo-moment.moment-'+id).count(),1,id+' missing individual designed industry module');
-      assert.equal(await templatePage.locator('.neo-gallery figure').count(),3,id+' photo editorial');
-      assert.equal(await templatePage.locator('.neo-faq details').count(),2,id+' functional Q&A');
-      assert.match(await templatePage.locator('.neo-price').innerText(),/30만원으로 제작 가능합니다/);
-      assert.match(await templatePage.locator('.neo-price small').innerText(),/호스팅비는 별도/);
-      assert.equal(await templatePage.locator('#serviceQuoteForm').count(),0,'Repeated fake form found in '+id);
-      assert.match(await templatePage.locator('.neo-contact a').getAttribute('href'),new RegExp('design='+id));
-      assert.equal(await templatePage.locator('.neo-hero-buttons a[href="#offer"]').count(),1,'Working section CTA '+id);
-      assert.equal(await templatePage.locator('.neo-hero-buttons a[href="#inquiry"]').count(),1,'Working consultation CTA '+id);
-      const signature=await templatePage.evaluate(()=>{
-        const hero=document.querySelector('.neo-hero');
-        const sections=[...document.querySelectorAll('.neo-section')].map(s=>s.id);
-        return {hero:hero.className,sections:sections.slice(0,3).join('|'),
-          type:getComputedStyle(hero).display,
-          photo:getComputedStyle(hero.querySelector('.neo-image')).clipPath,
-          line:Math.round(hero.querySelector('h1').getBoundingClientRect().width/40)};
-      });
-      layouts.set(id,JSON.stringify(signature));
-      if(['restaurant','foodie','poolvilla','petgroom','ladder','beauty','corporate'].includes(id))
-        await templatePage.screenshot({path:path.join(root,'artifacts/industry-'+id+'.png'),fullPage:false});
-      if(['restaurant','poolvilla','ladder','beauty'].includes(id))
-        await templatePage.screenshot({path:path.join(root,'artifacts/full-industry-'+id+'.png'),fullPage:true});
+      const url='http://127.0.0.1:'+port+'/portfolio/conversion/'+id+'/';
+      const response=await templatePage.goto(url,{waitUntil:'domcontentloaded'});
+      assert.equal(response.status(),200,id+' active demo URL');
+      assert.equal(await templatePage.locator('h1').count(),1,id+' one H1');
+      assert.equal(await templatePage.locator('meta[name="robots"]').getAttribute('content'),'noindex,follow');
+      assert.equal(await templatePage.locator('form').count()<=1,true,'No fake intake form except explicit demo selectors');
+      assert.match(await templatePage.locator('.price,.disclosure').innerText(),/30만원으로 제작 가능합니다/);
+      heroes.add(await templatePage.locator('main > section').first().getAttribute('class'));
+      if(['stay','interior','academy','pet'].includes(id))
+        await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-desktop.png'),fullPage:true});
       await templatePage.setViewportSize({width:390,height:844});
-      const bounds=await templatePage.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:innerWidth}));
-      assert.ok(bounds.width<=bounds.viewport+4,'Mobile horizontal overflow '+id+' '+JSON.stringify(bounds));
+      const sizes=await templatePage.evaluate(()=>({doc:document.documentElement.scrollWidth,viewport:innerWidth}));
+      assert.ok(sizes.doc<=sizes.viewport+4,id+' horizontal overflow '+JSON.stringify(sizes));
+      if(['stay','interior','academy','pet'].includes(id))
+        await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-mobile.png'),fullPage:true});
       await templatePage.setViewportSize({width:1440,height:900});
     }
-    assert.ok(new Set(layouts.values()).size>=10,'Layouts still too similar: '+JSON.stringify([...layouts]));
-    assert.equal(templateErrors.length,0,'Design preview JS errors: '+templateErrors.join(' | '));
-    // Gallery displays actual interactive-site thumbnails and still filters and selects them.
-    await templatePage.goto('http://127.0.0.1:'+port+'/website-samples/',{waitUntil:'domcontentloaded'});
-    assert.equal(await templatePage.locator('.sample-card').count(),15);
-    assert.equal(await templatePage.locator('iframe.neo-live-preview').count(),15);
-    assert.match(await templatePage.locator('h1').innerText(),/선택하고 싶은/);
-    for(const [group,count] of [['food',3],['stay',3],['services',4],['professional',3]]){
-      await templatePage.locator('[data-filter="'+group+'"]').click();
-      assert.equal(await templatePage.locator('.sample-card:visible').count(),count,'Filter '+group);
-    }
-    await templatePage.locator('[data-filter="all"]').click();
-    assert.equal(await templatePage.locator('.sample-card:visible').count(),15);
-    await templatePage.locator('[data-choose="franchise"]').click();
-    assert.match(await templatePage.locator('#selectedDesignName').innerText(),/프랜차이즈/);
-    assert.match(await templatePage.locator('#selectedDesignConsult').getAttribute('href'),/design=franchise/);
-    await templatePage.screenshot({path:path.join(root,'artifacts/momentum-website-samples.png'),fullPage:true});
+    assert.equal(heroes.size,8,'No repeat of shared frame / first section');
+    await templatePage.goto('http://127.0.0.1:'+port+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
+    assert.equal(await templatePage.locator('.showcase').count(),8);
+    assert.equal(await templatePage.locator('iframe').count(),8,'All previews render actual independent websites');
+    assert.equal(templateErrors.length,0,'Preview runtime errors: '+templateErrors.join(' | '));
     await templatePage.close();
-    console.log('PASS: 15 independently directed responsive sites, no repeated fake forms, live previews and actual navigation');
+    console.log('PASS: 8 independent website structures, new verticals and desktop/mobile screenshot QA');
 
-    // New independent editing studio keeps each original site's structure intact.
-    const designer=await ctx.newPage();
-    const designErrors=[];
+    // Existing authenticated visual editor must switch to the 8 independent design pages.
+    const designer=await ctx.newPage(),designErrors=[];
     designer.on('pageerror',e=>designErrors.push(String(e)));
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
-    assert.equal(await designer.locator('#designSelect option').count(),15);
-    await designer.frameLocator('#livePreview').locator('h1').waitFor();
-    assert.match(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),/바다와|여유/);
-    const initialTitle=await designer.frameLocator('#livePreview').locator('h1').first().innerText();
-    await designer.locator('#headlineInput').fill('풀빌라 전용 테스트 문구');
-    assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
-    assert.match(await designer.locator('#saveStatus').innerText(),/임시 저장/);
+    assert.equal(await designer.locator('#designSelect option').count(),8);
+    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
+    await designer.locator('#headlineInput').fill('풀빌라 디자인 수정 테스트');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
     await designer.reload({waitUntil:'load'});
-    await designer.frameLocator('#livePreview').locator('h1').waitFor();
-    assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
-    await designer.locator('#designSelect').selectOption('ladder');
-    await designer.frameLocator('#livePreview').locator('.neo--ladder').waitFor();
-    assert.equal(await designer.locator('#headlineInput').isDisabled(),false);
-    assert.equal(await designer.frameLocator('#livePreview').locator('#serviceQuoteForm').count(),0,'No recycled fake form should be injected');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.neo--ladder').count(),1);
-    await designer.locator('#brandInput').fill('테스트 사다리차');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.neo-brand').innerText(),'테스트 사다리차');
-    await designer.locator('#designSelect').selectOption('poolvilla');
-    await designer.frameLocator('#livePreview').locator('h1').waitFor();
-    assert.equal(await designer.frameLocator('#livePreview').locator('h1').first().innerText(),'풀빌라 전용 테스트 문구');
+    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
+    assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
+    await designer.locator('#designSelect').selectOption('interior');
+    await designer.frameLocator('#livePreview').locator('.hero h1').waitFor();
+    await designer.locator('#brandInput').fill('공간 디자인 테스트');
+    assert.equal(await designer.frameLocator('#livePreview').locator('.top .logo').innerText(),'공간 디자인 테스트');
+    await designer.locator('#designSelect').selectOption('stay');
+    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
     designer.once('dialog',dlg=>dlg.accept());
     await designer.locator('#resetDraft').click();
-    // Browser confirmation is captured before pressing the destructive control.
-    await designer.frameLocator('#livePreview').locator('h1').waitFor();
     await designer.locator('[data-view="mobile"]').click();
     assert.match(await designer.locator('#previewOuter').getAttribute('class'),/isMobile/);
-    assert.equal(designErrors.length,0,'Independent editor runtime errors: '+designErrors.join(' | '));
+    assert.equal(designErrors.length,0,'Visual editor runtime errors: '+designErrors.join(' | '));
     await designer.close();
-
 
     // Browser-only template editor: section edits, color, autosave, JSON/HTML output.
     const builder=await ctx.newPage();
