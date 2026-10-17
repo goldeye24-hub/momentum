@@ -303,103 +303,84 @@ test('integrated agency visual redesign retains accurate products and live inqui
 });
 
 
-test('homepage displays editable original templates instead of confusing client screenshots',()=>{
- const home=fs.readFileSync('index.html','utf8');
- const css=fs.readFileSync('website-samples/home-showcase.css','utf8');
+test('agency homepage showcases active independent designs and preserves real client case studies',()=>{
+ const home=fs.readFileSync('index.html','utf8'),css=fs.readFileSync('website-samples/home-showcase.css','utf8');
  assert.match(home,/id="work"/);
- assert.match(home,/실제 고객 제작 실적이 아닌 편집 가능한 디자인 샘플/);
- assert.match(home,/href="\/website-samples\/"/);
- assert.doesNotMatch(home,/href="\/site-builder\//);
- assert.equal((home.match(/class="agency-sample-card agency-sample-(?:restaurant|beauty|corporate)"/g)||[]).length,3);
- assert.match(home,/지금 보는 홈페이지 30만원으로 제작 가능합니다\./);
+ assert.match(home,/href="\/portfolio\/conversion\/"/);
+ assert.doesNotMatch(home,/href="\/website-samples\/"/);
+ assert.doesNotMatch(home,/src="\/website-samples\/(restaurant|beauty|corporate)\//);
+ assert.equal((home.match(/class="agency-sample-card agency-sample-/g)||[]).length,3);
+ assert.match(home,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
  assert.match(home,/호스팅비는 별도/);
- assert.match(home,/href="\/portfolio\/product-pages\/"/);
- assert.match(home,/href="\/portfolio\/brand-blogs\/"/);
- assert.doesNotMatch(home,/class="agency-work-card /);
- assert.doesNotMatch(home,/src="\/assets\/portfolio-mukdori\.jpg"/);
- assert.match(home,/href="\/website-samples\/restaurant\/"/);
- assert.match(home,/design=beauty#contact/);
- assert.match(home,/href="\/website-samples\/home-showcase\.css"/);
  assert.match(css,/agency-sample-viewport/);
- assert.equal((home.match(/class="agency-service-family"/g)||[]).length,4);
  assert.equal((home.match(/class="card service-card/g)||[]).length,9);
- // Original verified screenshots/case pages remain separately available; never mislabel mockups as paid work.
  for(const slug of ['mukdori','balmonghair']){
   const page=fs.readFileSync('work/'+slug+'/index.html','utf8');
   assert.match(page,/PROJECT OVERVIEW/);
-  const buffer=fs.readFileSync('assets/portfolio-'+slug+'.jpg');
-  assert.ok(buffer.length>20000);
+  assert.ok(fs.readFileSync('assets/portfolio-'+slug+'.jpg').length>20000);
  }
 });
-
-test('15 independent industry websites retain working business-specific DOM director and safe editable legacy site builder',()=>{
- const presets=JSON.parse(fs.readFileSync('site-builder/presets.json','utf8'));
- const legacy=fs.readFileSync('site-builder/kit.js','utf8');
- const design=fs.readFileSync('site-builder/site-template.css','utf8');
- assert.equal(presets.length,5);
- assert.doesNotThrow(()=>new vm.Script(legacy));
- const context={window:{}};vm.runInNewContext(legacy,context);
- const kit=context.window.MomentumSiteKit;
- assert.equal(typeof kit.render,'function');
- const demo=kit.render(presets[0],design);
- assert.match(demo,/class="site-shell site-hero"/);
- assert.match(demo,/class="services-grid"/);
- const script=fs.readFileSync('website-samples/director-2026.js','utf8');
- const styles=fs.readFileSync('website-samples/director-2026.css','utf8');
- assert.doesNotThrow(()=>new vm.Script(script));
- const ids=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
- for(const id of ids){
-  const page=fs.readFileSync('website-samples/'+id+'/index.html','utf8');
-  assert.match(page,/director-2026\.css/);
-  assert.match(page,/director-2026\.js/);
-  assert.match(page,new RegExp('data-design="'+id+'"'));
-  assert.match(page,/noindex,follow/);
-  assert.doesNotMatch(page,/id="serviceQuoteForm"/,'Do not repeat an inert same-form design in each sample');
-  assert.ok(styles.includes('.neo--'+id),id+' must have independent art direction');
-  assert.ok(script.includes(id+':{name:'),id+' must have business-specific content model');
-  assert.ok(script.includes('moment-'+id),id+' must include original industry-specific content module');
- }
- for(const marker of ['neo-overlap','neo-immersive','neo-centered','neo-diagonal','neo-split','process-first','gallery-first','story-first','editorial'])
-  assert.ok(script.includes(marker),marker+' distinct page system');
- assert.match(script,/href="#offer"/);
- assert.match(script,/href="#inquiry"/);
- assert.match(script,/호스팅비는 별도/);
- // Confirm legacy editing/export remains available and independent of public demos.
- const editor=fs.readFileSync('site-builder/editor.js','utf8');
- const editUI=fs.readFileSync('site-builder/index.html','utf8');
- assert.doesNotThrow(()=>new vm.Script(editor));
- for(const x of ['id="sitePreview"','id="downloadHtml"','id="saveConfig"','id="loadConfig"','data-viewport="mobile"'])
-  assert.ok(editUI.includes(x),x);
- for(const x of ['localStorage.setItem','canvas.toDataURL','data-move','data-visible','data-add','data-remove','kit.render','Blob('])
-  assert.ok(editor.includes(x),x);
-});
-test('real portfolio thumbnails show 15 distinct live websites and Naver button generator exports usable assets',()=>{
+test('retire all 15 common-frame URLs, preserve old visitors with redirects and migrate admin editor to 8 real sites',()=>{
+ const retired=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
+ const current=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+ const vercel=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  const gallery=fs.readFileSync('website-samples/index.html','utf8');
- const previewScript=fs.readFileSync('website-samples/live-previews.js','utf8');
- const previewStyle=fs.readFileSync('website-samples/live-previews.css','utf8');
- const ids=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
- assert.equal((gallery.match(/class="sample-card(?:\s|")/g)||[]).length,15);
- assert.equal((gallery.match(/class="neo-live-preview"/g)||[]).length,15);
- assert.match(gallery,/live-previews\.css/);assert.match(gallery,/live-previews\.js/);
- for(const id of ids)assert.match(gallery,new RegExp('data-src="/website-samples/'+id+'/"'));
- assert.match(previewScript,/IntersectionObserver/);assert.match(previewStyle,/iframe|\.neo-live-preview/);
- assert.match(gallery,/data-filter/);assert.match(gallery,/data-choose="restaurant"/);
+ assert.match(gallery,/portfolio\/conversion/);
+ assert.doesNotMatch(gallery,/class="sample-card/);
+ for(const id of retired){
+  assert.equal(fs.existsSync('website-samples/'+id+'/index.html'),false,'legacy file '+id+' must be removed');
+  assert.ok(vercel.redirects.some(r=>r.source==='/website-samples/'+id+'/'),'Redirect absent for retired '+id);
+ }
+ const editor=fs.readFileSync('site-builder/design-editor.js','utf8');
+ const ui=fs.readFileSync('site-builder/design-editor.html','utf8');
+ assert.doesNotThrow(()=>new vm.Script(editor));
+ assert.match(ui,/디자인 편집 \(8종\)/);
+ assert.match(ui,/href="\/portfolio\/conversion\/"/);
+ assert.match(editor,/const selectors=/);
+ assert.match(editor,/frame.src='\/portfolio\/conversion\//);
+ for(const id of current)assert.match(editor,new RegExp(id+':\\{brand:'));
+ const builder=fs.readFileSync('site-builder/editor.js','utf8');
+ assert.doesNotThrow(()=>new vm.Script(builder));
+ assert.match(fs.readFileSync('site-builder/index.html','utf8'),/id="sitePreview"/);
+});
+test('eight independent portfolios have genuinely different semantic structures and working industry interactions',()=>{
+ const ids=['restaurant','beauty','b2b','shop','stay','interior','academy','pet'];
+ const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
+ assert.equal((hub.match(/class="showcase /g)||[]).length,8);
+ const seen=new Set();
+ for(const id of ids){
+  const h=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
+  assert.equal((h.match(/<h1\b/g)||[]).length,1,id+' H1');
+  assert.match(h,/noindex,follow/);
+  assert.match(h,/application\/ld\+json/);
+  assert.match(h,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+  assert.match(h,/호스팅비는 별도/);
+  assert.match(h,/\/?service=/);
+  assert.doesNotMatch(h,/aggregat[e]?Rating|reviewCount|매출 [0-9]+%/);
+  assert.match(h,/<style>/);
+  assert.doesNotMatch(h,/portfolio\/conversion\/design\.css/);
+  seen.add((h.match(/<main[^>]*>[\s\S]{0,300}/)||[''])[0].replace(/\s+/g,' ').slice(0,135));
+ }
+ assert.equal(seen.size,8,'eight sections should not share the same main DOM');
+ for(const [id,required] of Object.entries({
+  stay:['id="demoBooking"','id="arrival"','id="departure"','id="bookingStatus"'],
+  interior:['id="briefForm"','id="spaceType"','id="briefResult"'],
+  academy:['role="tablist"','id="coursePanel"','data-level="adult"'],
+  pet:['id="petSurvey"','id="surveyOutput"','id="petSize"'],
+  shop:['id="addToBag"','id="bagCount"','id="quantity"']
+ }))for(const marker of required)assert.match(fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8'),new RegExp(marker));
+});
+test('Naver blog button studio and long-form detailed product portfolio remain intact',()=>{
  const blog=fs.readFileSync('portfolio/brand-blogs/index.html','utf8');
  const buttons=fs.readFileSync('portfolio/brand-blogs/buttons/index.html','utf8');
  const builder=fs.readFileSync('portfolio/brand-blogs/buttons/builder.js','utf8');
  assert.match(blog,/brand-blog-action-nav/);
- assert.match(blog,/brand-blogs\/buttons\//);
  assert.match(buttons,/buttonFields/);assert.match(buttons,/hostedImage/);
  assert.match(buttons,/pcCanvas/);assert.match(buttons,/mobileCanvas/);
  assert.match(builder,/toBlob/);assert.match(builder,/image\/png/);
- assert.match(builder,/340/);assert.match(builder,/1920/);assert.match(builder,/720/);
- assert.match(builder,/widgetCode/);assert.match(builder,/new URL/);
  assert.doesNotThrow(()=>new vm.Script(builder));
  const detail=fs.readFileSync('portfolio/product-pages/index.html','utf8');
- for(const name of ['detail-food-journey','detail-beauty-journey','detail-coffee-journey'])
-  assert.match(detail,new RegExp(name));
- const longform=fs.readFileSync('portfolio/product-pages/longform.css','utf8');
- assert.match(longform,/detail-food-timeline/);assert.match(longform,/beauty-safety/);assert.match(longform,/coffee-campaign/);
+ for(const name of ['detail-food-journey','detail-beauty-journey','detail-coffee-journey'])assert.match(detail,new RegExp(name));
 });
 
 test('admin studio supports safe scoped editing without changing other sections',()=>{

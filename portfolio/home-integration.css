@@ -1,5 +1,5 @@
 /* Homepage portfolio: three different visual directions, not uniform photo boxes */
-.momentum-portfolio-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:30px 0 25px}
+.momentum-portfolio-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:30px 0 25px}
 .momentum-portfolio-links a{display:flex;flex-direction:column;gap:9px;min-width:0;padding:22px;border:1px solid #dce4f0;border-radius:12px;background:#fff;transition:background .2s,transform .2s}
 .momentum-portfolio-links a:hover{background:#edf4ff;transform:translateY(-3px)}
 .momentum-portfolio-links span{font-size:11px;font-weight:900;color:#6174ae;letter-spacing:.18em}

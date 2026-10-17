@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1100" viewBox="0 0 1000 1100" role="img" aria-labelledby="title desc">
+<title id="title">배움의 시간, 열린 책과 노트가 놓인 학습 공간</title>
+<desc id="desc">크림색과 코럴 오렌지, 네이비 블루의 조화로 만든 모멘텀 학원 웹사이트용 교육 일러스트</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7bd9d"/><stop offset="1" stop-color="#df9074"/></linearGradient><linearGradient id="pages" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#fff9ea"/><stop offset="1" stop-color="#e9e3d9"/></linearGradient><filter id="drop" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur in="SourceAlpha" stdDeviation="17"/><feOffset dx="15" dy="25"/><feComponentTransfer><feFuncA type="linear" slope=".25"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="1000" height="1100" fill="url(#bg)"/>
+<circle cx="825" cy="190" r="250" fill="#fff1dd" opacity=".17"/><circle cx="880" cy="830" r="320" fill="#a85b6d" opacity=".12"/><path d="M0 890C230 790 450 1080 690 945S1000 840 1000 840V1100H0Z" fill="#c97876" opacity=".33"/>
+<g opacity=".6" stroke="#f8e6ca" stroke-width="4" fill="none"><circle cx="140" cy="245" r="60"/><circle cx="140" cy="245" r="24"/><path d="M775 110l95 0m-48-48v96"/><path d="M80 890l55-55m0 55l-55-55"/></g>
+<g transform="translate(480 570) rotate(-12)" filter="url(#drop)">
+<rect x="-250" y="-250" width="545" height="730" rx="24" fill="#244b75" transform="rotate(9)"/>
+<rect x="-235" y="-255" width="515" height="700" rx="14" fill="#f3eddd" transform="rotate(9)"/>
+<rect x="-212" y="-233" width="475" height="664" rx="5" fill="#fffdf4" transform="rotate(9)"/>
+<path d="M-154 -150l341 54M-165 -105l355 59M-174 -60l353 60M-177 -14l355 52M-185 39l355 49M-194 85l359 52M-202 134l359 55" stroke="#9bb5cb" stroke-width="4" opacity=".4" transform="rotate(9)"/>
+<rect x="-105" y="-210" width="235" height="52" rx="7" fill="#e76e4f" transform="rotate(9)"/>
+<text x="-74" y="-174" fill="#fff" font-size="25" font-family="Arial, sans-serif" font-weight="bold" letter-spacing="3" transform="rotate(9)">STUDY NOTES</text>
+<path d="M-115 180l75 30" stroke="#e5764f" stroke-width="10" stroke-linecap="round" transform="rotate(9)"/>
+</g>
+<g transform="translate(770 535) rotate(20)" filter="url(#drop)"><rect x="-20" y="-225" width="42" height="390" rx="14" fill="#f5d89c"/><rect x="-20" y="-225" width="42" height="70" rx="13" fill="#244d73"/><path d="M-20 166L1 236L22 166Z" fill="#ead2a6"/><path d="M-6 216L1 238L8 216Z" fill="#374658"/></g>
+<g transform="translate(110 670) rotate(-18)" filter="url(#drop)"><rect width="165" height="165" rx="8" fill="#f8df93"/><path d="M25 52h115M25 80h100M25 108h90" stroke="#d89953" stroke-width="7" stroke-linecap="round"/></g>
+<path d="M680 965H820" stroke="#fff4e0" stroke-width="3" opacity=".9"/>
+<text x="110" y="100" font-size="22" letter-spacing="10" fill="#284268" font-weight="bold" font-family="Arial, sans-serif">BEAUM  /  ACADEMY</text>
+<text x="680" y="1015" font-size="28" letter-spacing="2" fill="#ffffff" font-weight="bold" font-family="Arial, sans-serif">LEARN / PRACTICE / GROW</text>
+</svg>
