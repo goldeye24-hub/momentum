@@ -350,7 +350,7 @@ test('eight independent portfolios have genuinely different semantic structures 
  const seen=new Set();
  for(const id of ids){
   const h=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
-  assert.equal((h.match(/<h1\\b/g)||[]).length,1,id+' H1');
+  assert.equal((h.match(/<h1\b/g)||[]).length,1,id+' H1');
   assert.match(h,/noindex,follow/);
   assert.match(h,/application\/ld\+json/);
   assert.match(h,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
