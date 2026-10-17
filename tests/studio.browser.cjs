@@ -269,7 +269,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     // Eight truly independent standalone sites: independent landmarks, headings, responsive layouts.
     const templatePage=await ctx.newPage(),templateErrors=[];
     templatePage.on('pageerror',e=>templateErrors.push(String(e)));
-    const allDesigns=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd'];
+    const allDesigns=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd','tax','moving','cleaning','pilates'];
     const heroes=new Set();
     await templatePage.setViewportSize({width:1440,height:900});
     for(const id of allDesigns){
@@ -292,23 +292,23 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       await templatePage.setViewportSize({width:390,height:844});
       const sizes=await templatePage.evaluate(()=>({doc:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(sizes.doc<=sizes.viewport+4,id+' horizontal overflow '+JSON.stringify(sizes));
-      if(['stay','interior','academy','pet'].includes(id))
+      if(['stay','interior','academy','pet','tax','moving','cleaning','pilates'].includes(id))
         await templatePage.screenshot({path:path.join(root,'artifacts/new-industry-'+id+'-mobile.png'),fullPage:true});
       await templatePage.setViewportSize({width:1440,height:900});
     }
-    assert.equal(heroes.size,14,'Fourteen hero and header combinations must differ');
+    assert.equal(heroes.size,18,'Eighteen hero and header combinations must differ');
     await templatePage.goto('http://127.0.0.1:'+port+'/portfolio/conversion/',{waitUntil:'domcontentloaded'});
-    assert.equal(await templatePage.locator('.showcase').count(),14);
+    assert.equal(await templatePage.locator('.showcase').count(),18);
     assert.equal(await templatePage.locator('iframe').count(),14,'All previews render actual independent websites');
     assert.equal(templateErrors.length,0,'Preview runtime errors: '+templateErrors.join(' | '));
     await templatePage.close();
-    console.log('PASS: 14 independent website structures, new verticals and desktop/mobile screenshot QA');
+    console.log('PASS: 18 independent website structures, new verticals and desktop/mobile screenshot QA');
 
     // Existing authenticated visual editor must switch to the 8 independent design pages.
     const designer=await ctx.newPage(),designErrors=[];
     designer.on('pageerror',e=>designErrors.push(String(e)));
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
-    assert.equal(await designer.locator('#designSelect option').count(),14);
+    assert.equal(await designer.locator('#designSelect option').count(),18);
     await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
     await designer.locator('#headlineInput').fill('풀빌라 디자인 수정 테스트');
     assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
