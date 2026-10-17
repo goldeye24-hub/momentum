@@ -1,5 +1,5 @@
 /* Homepage portfolio: three different visual directions, not uniform photo boxes */
-.momentum-portfolio-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:30px 0 25px}
+.momentum-portfolio-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:30px 0 25px}
 .momentum-portfolio-links a{display:flex;flex-direction:column;gap:9px;min-width:0;padding:22px;border:1px solid #dce4f0;border-radius:12px;background:#fff;transition:background .2s,transform .2s}
 .momentum-portfolio-links a:hover{background:#edf4ff;transform:translateY(-3px)}
 .momentum-portfolio-links span{font-size:11px;font-weight:900;color:#6174ae;letter-spacing:.18em}
@@ -45,3 +45,5 @@
 .momentum-info-cards span{font-size:13px;font-weight:850;border-bottom:1px solid currentColor;padding-bottom:6px;align-self:flex-start}
 .momentum-insights-more{margin-top:25px;font-size:14px;font-weight:850;color:#3159ea}
 @media(max-width:760px){.momentum-info-cards{grid-template-columns:1fr}.momentum-info-cards a{min-height:220px}}
+
+@media(min-width:731px) and (max-width:1100px){.momentum-portfolio-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
