@@ -707,42 +707,46 @@ test('mobile rank is conservative when names overlap or provider positions resta
  assert.equal(duplicate.rank,null);
 });
 
-test('conversion portfolio implements four genuinely distinct semantic/SEO sales journeys without fabricated results',()=>{
+test('conversion portfolios are standalone sites with different information architecture, menus and interactions',()=>{
  const types={
-  restaurant:['dining-hero','dining-menu','id="menu"','메뉴 이야기'],
-  beauty:['beauty-hero','beauty-style','id="looks"','스타일북'],
-  b2b:['b2b-hero','b2b-problem','id="solutions"','프로젝트'],
-  shop:['shop-hero','shop-benefits','id="how"','상품'],
+  restaurant:{hero:'editorial-hero',unique:'menu-story',menu:'restaurant-navigation',marker:'THE MENU BOOK',faq:3},
+  beauty:{hero:'cover-grid',unique:'look-strip',menu:'head',marker:'STYLE EDITORIAL',faq:3},
+  b2b:{hero:'railnav',unique:'solution-layout',menu:'rail',marker:'BUSINESS QUESTIONS',faq:4},
+  shop:{hero:'product-shell',unique:'product-actions',menu:'shop-header',marker:'PACK SIZE',faq:4}
  };
- const css=fs.readFileSync('portfolio/conversion/design.css','utf8');
  const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
  const homepage=fs.readFileSync('index.html','utf8');
- const port=fs.readFileSync('portfolio/index.html','utf8');
  assert.match(homepage,/href="\/portfolio\/conversion\/"/);
- assert.match(port,/href="\/portfolio\/conversion\/"/);
- assert.match(hub,/<title>전업종 전환형 홈페이지 포트폴리오/);
- assert.match(hub,/호스팅비는 별도/);
- for(const [id,required] of Object.entries(types)){
+ assert.match(hub,/portfolio\/conversion\/restaurant/);
+ for(const [id,v] of Object.entries(types)){
   const html=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
   assert.match(html,/<html lang="ko">/);
   assert.match(html,/<meta name="robots" content="noindex,follow">/);
-  assert.match(html,/<link rel="canonical" href="https:\/\/momentum-goldeye24-hubs-projects\.vercel\.app\/portfolio\/conversion\//);
+  assert.match(html,new RegExp('canonical" href="https://momentum-goldeye24-hubs-projects\\.vercel\\.app/portfolio/conversion/'+id+'/'));
   assert.match(html,/<meta name="description" content="[^"]{30,}"/);
   assert.match(html,/<meta property="og:title" /);
   assert.match(html,/<script type="application\/ld\+json">/);
-  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' single H1');
-  assert.match(html,/<main /);
-  assert.match(html,/<header>/);
-  assert.match(html,/<footer /);
-  assert.match(html,/<details>/);
+  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' requires single H1');
+  assert.match(html,/<main\b/);
+  assert.match(html,/<header\b/);
+  assert.match(html,/<footer\b/);
+  assert.equal((html.match(/<details\b/g)||[]).length,v.faq,id+' unique FAQ requirements');
+  assert.ok(html.includes(v.hero)&&html.includes(v.unique)&&html.includes(v.menu),id+' requires distinct structure');
+  assert.ok(html.includes(v.marker),id+' requires industry-specific information');
   assert.match(html,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
   assert.match(html,/호스팅비는 별도/);
   assert.match(html,/\/?service=/);
-  assert.doesNotMatch(html,/<form\b/,'No fictional fake inquiry form');
+  assert.doesNotMatch(html,/<form\b/,'No false ordering/booking form');
   assert.doesNotMatch(html,/aggregateRating|reviewCount|평점 4\.9|매출 [0-9]+%/);
-  for(const needle of required)assert.ok(html.includes(needle),id+' missing '+needle);
-  assert.ok(css.includes('.'+(id==='restaurant'?'dining':id==='b2b'?'b2b':id)),id+' art direction missing');
+  assert.doesNotMatch(html,/portfolio\/conversion\/design\.css/,'No universal look from conversion shared CSS');
+  assert.ok(html.includes('<style>'),id+' needs its own CSS');
  }
+ const shop=fs.readFileSync('portfolio/conversion/shop/index.html','utf8');
+ for(const marker of ['id="addToBag"','id="quantity"','id="bagCount"','type="radio"','실제 주문은 처리되지 않습니다'])
+  assert.ok(shop.includes(marker),marker+' actual demo interaction');
+ const b2b=fs.readFileSync('portfolio/conversion/b2b/index.html','utf8');
+ assert.match(b2b,/class="rail"/);
+ assert.match(b2b,/class="problem-matrix"/);
 });
 
 require('./rank-live-control.test.cjs');
