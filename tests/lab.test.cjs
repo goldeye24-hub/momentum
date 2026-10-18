@@ -380,6 +380,39 @@ test('eighteen independent portfolios have genuinely different semantic structur
   pilates:['data-day="wed"','id="classSlots"']
  }))for(const marker of required)assert.match(fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8'),new RegExp(marker));
 });
+test('all 18 award-inspired fictional websites have business identities, tailored service content, and honest demo disclosure',()=>{
+ const brands={
+  restaurant:'계절상회',beauty:'온결',b2b:'지음시스템즈',shop:'GOOD BEANS',
+  stay:'라움 스테이',interior:'폼스페이스',academy:'봄아카데미',pet:'몽글살롱',
+  legal:'베리타스',clinic:'클리어케어',auto:'핏웍스',fitness:'무브모어',
+  estate:'룸인덱스',hrd:'런웍스',tax:'밸런스택스',moving:'무브온',cleaning:'클린랩',pilates:'포르마'
+ };
+ const sig={
+  restaurant:'season-atelier',beauty:'ongyeol-book',b2b:'zieum-network',shop:'goodbeans-product',
+  stay:'raum-letter',interior:'formspace-plan',academy:'beaum-route',pet:'mongle-play',
+  legal:'veritas-notes',clinic:'clinic-visit',auto:'pitworks-parts',fitness:'movemore-tiles',
+  estate:'roomindex-properties',hrd:'learnworks-program',tax:'balance-ledger',moving:'moveon-checklist',
+  cleaning:'cleanlab-index',pilates:'forma-classes'
+ };
+ const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
+ assert.match(hub,/18 DIFFERENT/);
+ assert.equal((hub.match(/class="showcase /g)||[]).length,18);
+ assert.equal((hub.match(/class="case-chip"/g)||[]).length,18);
+ assert.equal((hub.match(/class="studio-index"/g)||[]).length,1);
+ for(const [id,name] of Object.entries(brands)){
+  const html=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
+  assert.ok(html.includes(name),id+' must explain its fictional business identity');
+  assert.ok(html.includes('class="'+sig[id]+'"'),id+' must have unique new art-directed section');
+  assert.ok(html.includes('id="brand-highlights"'),id+' custom narrative section anchor');
+  assert.ok(html.includes('실존 업체가 아닌')||html.includes('가상'),id+' must disclose fictional nature');
+  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' must have one hero H1');
+  assert.match(html,/portfolio-creator-cta/);
+  assert.match(html,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+  assert.match(html,/호스팅비는 별도/);
+  assert.match(html,/noindex,follow/);
+ }
+});
+
 test('Naver blog button studio and long-form detailed product portfolio remain intact',()=>{
  const blog=fs.readFileSync('portfolio/brand-blogs/index.html','utf8');
  const buttons=fs.readFileSync('portfolio/brand-blogs/buttons/index.html','utf8');
