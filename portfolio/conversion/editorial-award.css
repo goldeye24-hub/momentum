@@ -1,0 +1,94 @@
+/* MOMENTUM / EDITORIAL DESIGN LIBRARY 2026
+   Case study navigation only. Each of the 18 original sites retains its own aesthetic. */
+:root{--portfolio-ink:#111510;--portfolio-paper:#f5f2e9;--portfolio-acid:#d7fa62}
+body{color:var(--portfolio-ink);background:var(--portfolio-paper);overflow-x:clip}
+::selection{background:var(--portfolio-acid);color:var(--portfolio-ink)}
+a:focus-visible{outline-color:#708d25}
+.top{position:relative;z-index:10;min-height:86px;background:var(--portfolio-paper);border-bottom:1px solid #bdc3b4;padding:20px clamp(20px,4.4vw,84px)}
+.top b{font-size:25px;letter-spacing:-.08em}
+.top nav{gap:26px;letter-spacing:-.01em}
+.top nav a:last-child{background:var(--portfolio-ink);color:var(--portfolio-acid);padding:15px 20px;transition:background .22s}
+.top nav a:last-child:hover{background:#293b1d}
+.hero{background:var(--portfolio-ink);color:var(--portfolio-paper);min-height:580px;padding:105px clamp(22px,5vw,100px) 110px;isolation:isolate}
+.hero::before{width:clamp(250px,32vw,600px);height:clamp(250px,32vw,600px);right:-10vw;top:-15vw;border-radius:50%;background:var(--portfolio-acid);opacity:1;z-index:-1;box-shadow:0 0 0 90px #d7fa6210,0 0 0 180px #d7fa6209}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:repeating-linear-gradient(90deg,transparent 0 calc(12.5% - 1px),#ffffff0b calc(12.5% - 1px) 12.5%);mask-image:linear-gradient(180deg,black 0%,transparent 90%)}
+.hero small{color:var(--portfolio-acid);font-size:12px;letter-spacing:.24em}
+.hero h1{max-width:1200px;font-size:clamp(62px,8.3vw,147px);font-weight:950;letter-spacing:-.105em;line-height:.96;margin-top:27px;color:#f4f4ed}
+.hero h1 em{color:var(--portfolio-acid);font-weight:400;font-style:italic;font-family:Georgia,serif}
+.hero p{color:#c7d0bb;max-width:700px;font-size:16px;line-height:1.9;margin-top:30px}
+.scroll{color:var(--portfolio-acid);border-color:var(--portfolio-acid);margin-top:35px}
+.intro{background:var(--portfolio-acid);color:#26301b;padding:29px clamp(22px,5vw,100px);border:0;letter-spacing:.035em}
+.intro b{color:#111910}
+.showcase{padding:120px clamp(22px,6vw,108px);column-gap:clamp(32px,6vw,105px);border-bottom:1px solid #141b1417;overflow:hidden}
+.showcase .typography{position:relative;z-index:2}
+.showcase .typography .num{display:block;font-size:clamp(64px,9vw,147px);font-style:normal;font-family:Georgia,"Times New Roman",serif;opacity:.27;line-height:.8;margin-bottom:45px;letter-spacing:-.13em}
+.showcase small{font-size:10px;letter-spacing:.23em;text-transform:uppercase}
+.showcase h2{font-size:clamp(55px,6vw,105px);line-height:1;letter-spacing:-.092em;font-weight:900;margin:22px 0 31px}
+.showcase p{font-size:15px;line-height:1.95}
+.showcase .view{font-size:14px;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:22px;border-width:1px;margin-top:23px;padding-bottom:11px;transition:letter-spacing .25s}
+.showcase .view:hover{letter-spacing:.13em}
+.preview{border:10px solid #fff!important;border-radius:0!important;box-shadow:24px 35px 0 #13201324,0 30px 65px #14221e20;transition:transform .5s cubic-bezier(.2,.85,.2,1),box-shadow .5s}
+.showcase:hover .preview{box-shadow:32px 47px 0 #13201322,0 35px 75px #14221e27}
+.preview a:focus-visible{outline:5px solid #d1fb4f;outline-offset:-7px}
+.showcase.restaurant .preview{transform:rotate(-2.4deg)}
+.showcase.restaurant:hover .preview{transform:rotate(-.2deg) scale(1.01)}
+.showcase.beauty .preview{transform:rotate(2.2deg)}
+.showcase.beauty:hover .preview{transform:rotate(0deg) scale(1.01)}
+.showcase.interior .preview,.showcase.shop .preview{transform:rotate(1.4deg)}
+.showcase.interior:hover .preview,.showcase.shop:hover .preview{transform:rotate(0deg) scale(1.01)}
+.showcase.b2b .preview{border-color:#b1caf0!important;box-shadow:none}
+.showcase.b2b:hover .preview{box-shadow:20px 24px 0 #5d85a532}
+.quality{background:var(--portfolio-paper);padding:125px clamp(22px,5vw,100px)}
+.quality h2{font-size:clamp(49px,6.2vw,99px);line-height:1;letter-spacing:-.09em;max-width:1120px}
+.quality-grid{gap:0;border-top:1px solid #adb3a7;border-left:1px solid #adb3a7}
+.quality-grid article{min-height:280px;padding:33px;border:0;border-right:1px solid #adb3a7;border-bottom:1px solid #adb3a7;background:transparent}
+.quality-grid article span{font-family:Georgia,serif;font-size:44px;font-style:italic;color:#566d2c}
+.quality-grid article h3{font-size:26px;letter-spacing:-.055em}
+.quality-grid article p{color:#687061}
+.last{padding:100px clamp(22px,5vw,100px);background:#161d14;color:#f0f3e9;align-items:end}
+.last h2{font-size:clamp(56px,7vw,113px);letter-spacing:-.098em;line-height:.97}
+.last a{background:var(--portfolio-acid);color:#171e13;padding:23px 32px;font-weight:900;transition:transform .2s}
+.last a:hover{transform:translateY(-3px)}
+.last p{color:#b4c0aa}
+.price{background:#d7fa62;padding:25px clamp(22px,5vw,100px);color:#141a0e}
+.price small{color:#46552e}
+footer{background:#0d120c;color:#a9b5a2;padding:36px clamp(22px,5vw,100px)}
+@media(max-width:950px){
+ .hero{min-height:0;padding-top:90px}
+ .showcase{padding:80px 28px;gap:40px}
+ .showcase h2{font-size:clamp(52px,8vw,84px)}
+ .showcase .typography .num{font-size:91px;margin-bottom:23px}
+ .showcase .preview{height:470px!important;transform:none!important}
+ .showcase .typography,.showcase .preview{grid-column:1!important;grid-row:auto!important}
+ .showcase.b2b .typography,.showcase.academy .typography{grid-template-columns:1fr;gap:15px}
+ .quality-grid{grid-template-columns:1fr}
+ .quality-grid article{min-height:210px}
+}
+@media(max-width:620px){
+ .top{padding:18px}
+ .top b{font-size:21px;margin-bottom:14px}
+ .top nav{gap:9px 14px;font-size:11px}
+ .top nav a:last-child{padding:10px 12px}
+ .hero{padding:70px 18px 73px}
+ .hero::before{width:260px;height:260px;right:-95px;top:-125px}
+ .hero h1{font-size:clamp(52px,13vw,81px);letter-spacing:-.098em;word-break:keep-all}
+ .hero p{font-size:14px}
+ .intro{padding:21px 18px;font-size:11px}
+ .showcase{padding:67px 18px}
+ .showcase h2{font-size:clamp(48px,12vw,75px)}
+ .showcase .typography .num{font-size:78px;margin-bottom:28px}
+ .showcase .preview{height:370px!important;border-width:6px!important;box-shadow:10px 13px 0 #13201320}
+ .showcase:hover .preview{box-shadow:10px 13px 0 #13201320}
+ .quality{padding:75px 18px}
+ .quality h2{font-size:clamp(43px,10vw,66px)}
+ .quality-grid article{padding:26px}
+ .last{padding:75px 18px}
+ .last h2{font-size:clamp(47px,11vw,76px)}
+ .last a{display:inline-block}
+ .price{padding:20px 18px}
+ footer{padding:30px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .preview,.showcase .view,.last a{transition:none!important}
+}
