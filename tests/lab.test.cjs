@@ -405,7 +405,7 @@ test('all 18 award-inspired fictional websites have business identities, tailore
   assert.ok(html.includes('class="'+sig[id]+'"'),id+' must have unique new art-directed section');
   assert.ok(html.includes('id="brand-highlights"'),id+' custom narrative section anchor');
   assert.ok(html.includes('실존 업체가 아닌')||html.includes('가상'),id+' must disclose fictional nature');
-  assert.equal((html.match(/<h1\\b/g)||[]).length,1,id+' must have one hero H1');
+  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' must have one hero H1');
   assert.match(html,/portfolio-creator-cta/);
   assert.match(html,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
   assert.match(html,/호스팅비는 별도/);
