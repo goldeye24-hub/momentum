@@ -27,6 +27,13 @@ const server=http.createServer((req,res)=>{
     assert.ok((await page.locator('body').innerText()).length>100,route+' readable content');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     assert.ok(overflow<10,route+' horizontal overflow '+overflow+'px at '+viewport.width);
+    if(/^\/portfolio\/conversion\/[^/]+\/$/.test(route)){
+      const imgs=await page.locator('img').evaluateAll(nodes=>nodes.map(x=>({src:(x.getAttribute('src')||'').split('?')[0],alt:x.getAttribute('alt')})));
+      assert.ok(imgs.length>=3,route+' should have at least three photos, not only abstract graphics');
+      assert.equal(new Set(imgs.map(x=>x.src)).size,imgs.length,route+' should not repeat photographic assets');
+      assert.ok(imgs.every(x=>x.alt&&x.alt.trim()),route+' should describe imagery accessibly');
+      assert.equal(await page.locator('link[href="/portfolio/conversion/photography-upgrade.css"]').count(),1,route+' has photography layout');
+    }
    }
    await page.goto(origin+'/portfolio/',{waitUntil:'domcontentloaded'});
    for(const dest of ['/portfolio/conversion/','/portfolio/product-pages/','/portfolio/brand-blogs/'])
