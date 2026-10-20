@@ -423,7 +423,14 @@ test('Naver blog button studio and long-form detailed product portfolio remain i
  assert.match(builder,/toBlob/);assert.match(builder,/image\/png/);
  assert.doesNotThrow(()=>new vm.Script(builder));
  const detail=fs.readFileSync('portfolio/product-pages/index.html','utf8');
- for(const name of ['detail-food-journey','detail-beauty-journey','detail-coffee-journey'])assert.match(detail,new RegExp(name));
+ for(const slug of ['moringa','lumin','brew']){
+  assert.ok(detail.includes('href="/portfolio/product-pages/'+slug+'/"'),slug+' must have an openable full-page link');
+  const product=fs.readFileSync('portfolio/product-pages/'+slug+'/index.html','utf8');
+  assert.match(product,/THE BRAND STORY/);
+  assert.match(product,/PRODUCT INFORMATION/);
+  assert.match(product,/BEFORE YOU CHOOSE/);
+  assert.ok((product.match(/<img\\b/g)||[]).length>=9,slug+' needs a photo-led long page');
+ }
 });
 
 test('admin studio supports safe scoped editing without changing other sections',()=>{
