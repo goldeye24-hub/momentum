@@ -36,7 +36,7 @@ const products=[
 const blogs=[
 {name:'미용실 블로그',desc:'감각적인 브랜드 스토리',kind:'salon',title:'TheSalon<br>Journal.',text:'일상이 아름다워지는 순간',img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/#salon'},
 {name:'맛집 블로그',desc:'방문을 부르는 콘텐츠',kind:'food',title:'오늘도 맛있는<br>하루',text:'우리 동네 식탁의 기록',img:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/#local'},
-{name:'전문가 블로그',desc:'신뢰를 쌓는 전문 콘텐츠',kind:'expert',title:'생각이 모여<br>성장을 만들다',text:'조직의 변화를 기록하는 이야기',img:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/#expert-articles'}
+{name:'인테리어 블로그',desc:'전문성과 감각이 담긴 디자인',kind:'interior',title:'공간이 주는<br>일상의 여유',text:'인테리어와 공간의 이야기',img:'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/interior/'}
 ];
 const htmlEscape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const state={web:0,detail:0,blog:0};
