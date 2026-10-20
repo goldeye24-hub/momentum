@@ -334,7 +334,7 @@ test('retire all 15 common-frame URLs, preserve old visitors with redirects and 
  const editor=fs.readFileSync('site-builder/design-editor.js','utf8');
  const ui=fs.readFileSync('site-builder/design-editor.html','utf8');
  assert.doesNotThrow(()=>new vm.Script(editor));
- assert.match(ui,/디자인 편집 \(18종\)/);
+ assert.match(ui,/디자인 편집 \(19종\)/);
  assert.match(ui,/href="\/portfolio\/conversion\/"/);
  assert.match(editor,/const selectors=/);
  assert.match(editor,/frame.src='\/portfolio\/conversion\//);
