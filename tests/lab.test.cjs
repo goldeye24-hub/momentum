@@ -705,7 +705,7 @@ test('portfolio routes retain isolated marketing contact and avoid fake real con
  assert.match(hub,/\/portfolio\/conversion\/restaurant\//);
  assert.match(hub,/\/portfolio\/conversion\/legal\//);
  const legal=fs.readFileSync('portfolio/conversion/legal/index.html','utf8');
- assert.match(legal,/href="\/?service=법률사무소/);
+ assert.match(legal,/href="\/\?service=법률사무소/);
  assert.match(legal,/실제 법률상담 접수 기능은 없으며/);
  assert.match(legal,/class="step-grid"/);
  assert.equal((legal.match(/class="step-number"/g)||[]).length,4);
