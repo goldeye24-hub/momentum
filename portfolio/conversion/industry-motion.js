@@ -22,7 +22,7 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (reduceMotion.matches) return;
 
-  const nodes = [...new Set(preset.targets.flatMap(s => [...document.querySelectorAll(s)]))]
+  const nodes = [...new Set([...document.querySelectorAll('.mm-feature-card'),...preset.targets.flatMap(s => [...document.querySelectorAll(s)])])]
     .filter(el => el instanceof HTMLElement && !el.closest('[hidden],dialog,[aria-hidden="true"]'));
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
