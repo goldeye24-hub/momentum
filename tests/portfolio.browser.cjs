@@ -57,6 +57,7 @@ async function start(){await new Promise(done=>server.listen(0,'127.0.0.1',done)
     await page.locator('#primary-menu a[href="#practice"]').click();
     assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'),'false','mobile menu should close');
    }
+   await page.waitForFunction(()=>[...document.querySelectorAll('#practice img,#approach img')].every(img=>img.complete&&img.naturalWidth>0),null,{timeout:20000});
    await page.screenshot({path:path.join(artifacts,'legal-reference-implementation-'+viewport.width+'.png'),fullPage:true,animations:'disabled'});
    await page.close();
   }
