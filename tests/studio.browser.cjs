@@ -292,25 +292,25 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(await templatePage.locator('.case-grid .site-case:not([hidden])').count(),3);
     assert.equal(templateErrors.length,0,'Preview runtime errors: '+templateErrors.join(' | '));
     await templatePage.close();
-    console.log('PASS: 18 independent website structures, new verticals and desktop/mobile screenshot QA');
+    console.log('PASS: 19 live website structures, new verticals and desktop/mobile screenshot QA');
 
     // Existing authenticated visual editor must switch to the 8 independent design pages.
     const designer=await ctx.newPage(),designErrors=[];
     designer.on('pageerror',e=>designErrors.push(String(e)));
     await designer.goto('http://127.0.0.1:'+port+'/site-builder/design-editor.html',{waitUntil:'load'});
-    assert.equal(await designer.locator('#designSelect option').count(),18);
-    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
+    assert.equal(await designer.locator('#designSelect option').count(),19);
+    await designer.frameLocator('#livePreview').locator('h1').waitFor();
     await designer.locator('#headlineInput').fill('풀빌라 디자인 수정 테스트');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
+    assert.equal(await designer.frameLocator('#livePreview').locator('h1').innerText(),'풀빌라 디자인 수정 테스트');
     await designer.reload({waitUntil:'load'});
-    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
-    assert.equal(await designer.frameLocator('#livePreview').locator('.view h1').innerText(),'풀빌라 디자인 수정 테스트');
+    await designer.frameLocator('#livePreview').locator('h1').waitFor();
+    assert.equal(await designer.frameLocator('#livePreview').locator('h1').innerText(),'풀빌라 디자인 수정 테스트');
     await designer.locator('#designSelect').selectOption('interior');
-    await designer.frameLocator('#livePreview').locator('.hero h1').waitFor();
+    await designer.frameLocator('#livePreview').locator('h1').waitFor();
     await designer.locator('#brandInput').fill('공간 디자인 테스트');
-    assert.equal(await designer.frameLocator('#livePreview').locator('.top .logo').innerText(),'공간 디자인 테스트');
+    assert.equal(await designer.frameLocator('#livePreview').locator('header .brand').innerText(),'공간 디자인 테스트');
     await designer.locator('#designSelect').selectOption('stay');
-    await designer.frameLocator('#livePreview').locator('.view h1').waitFor();
+    await designer.frameLocator('#livePreview').locator('h1').waitFor();
     designer.once('dialog',dlg=>dlg.accept());
     await designer.locator('#resetDraft').click();
     await designer.locator('[data-view="mobile"]').click();
