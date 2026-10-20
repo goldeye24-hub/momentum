@@ -29,7 +29,26 @@ function status(s){$('saveStatus').textContent=s}
 function key(id){return 'momentum-independent-design-draft-v2:'+id}
 function safeImage(v){if(typeof v!=='string'||v.length>2800000)return false;if(/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(v))return true;try{const u=new URL(v,location.origin);return u.protocol==='https:'&&(!u.username&&!u.password)}catch{return false}}
 function safeLink(v){if(typeof v!=='string'||v.length>500)return false;if(v.startsWith('#'))return /^#[a-z0-9_-]+$/i.test(v);try{const u=new URL(v,location.origin);return u.protocol==='https:'&&!u.username&&!u.password}catch{return false}}
-function targets(){const d=frame.contentDocument;if(!d||!d.querySelector('main'))return {};const out={};for(const [id,s] of Object.entries(selectors[selected]||{}))out[id]=d.querySelector(s)||null;return out}
+const modernSelectors={
+ brand:'header .logo strong,header .brand,header .name,header .wordmark,header .logo',
+ headline:'main h1',
+ intro:'.hero .copy p,.hero-copy p,main section p',
+ heroUrl:'.hero-picture img,.hero img,.hero-image img,.view > img',
+ ctaText:'main a.cta,main a.line-button,main a.action,main a',
+ ctaLink:'main a.cta,main a.line-button,main a.action,main a',
+ sectionTitle:'main section:nth-of-type(2) h2,main h2',
+ sectionText:'main section:nth-of-type(2) p,main section p',
+ detailUrl:'main section:nth-of-type(2) img,main img'
+};
+function targets(){
+ const d=frame.contentDocument;if(!d||!d.querySelector('main'))return {};
+ const out={};
+ for(const id of ids){
+   const selector=(selectors[selected]||{})[id];
+   out[id]=(selector&&d.querySelector(selector))||d.querySelector(modernSelectors[id])||null;
+ }
+ return out;
+}
 function textWithBreak(el){return el?el.innerText.replace(/\r/g,'').trim().replace(/\n{3,}/g,'\n\n'):''}
 function values(){const t=targets(),o={};for(const id of ids){const el=t[id];o[id]=!el?'':id==='heroUrl'||id==='detailUrl'?(el.getAttribute('src')||''):id==='ctaLink'?(el.getAttribute('href')||''):textWithBreak(el)}return o}
 function applyOne(id,val){const el=targets()[id];if(!el||typeof val!=='string')return false;if(id==='heroUrl'||id==='detailUrl'){if(!safeImage(val))return false;el.src=val;return true}
