@@ -34,3 +34,21 @@ test('all category samples are long content-rich product sales pages with real p
  }
  assert.ok(read('portfolio/product-pages/moringa/index.html').includes('장단콩'),'moringa content must mention 장단콩');
 });
+
+
+test('expanded portfolio lists all eight new sale-style examples in addition to the existing three',()=>{
+ const additions=['puremild','coolrest','taily','rootvein','cleandock','airy','galbitang','crab'];
+ const listing=read('portfolio/product-pages/index.html');
+ const hub=read('portfolio/index.html');
+ assert.match(hub,/상세페이지 11개 전체 보기/);
+ for(const name of additions){
+  const url='/portfolio/product-pages/'+name+'/';
+  assert.ok(listing.includes('href="'+url+'"'),name+' is missing from the portfolio listing');
+  const doc=read('portfolio/product-pages/'+name+'/index.html');
+  for(const section of ['SPECIAL POINTS','BRAND STORY','PRODUCT INFORMATION','HOW TO USE','id="demo-buy"']){
+   assert.ok(doc.includes(section),name+' missing '+section);
+  }
+  assert.ok(!/이런 상세페이지 제작|견적 문의|제작 상담/.test(doc),name+' should read as a product page, not agency sales copy');
+  assert.ok(doc.includes('가상'),name+' requires a clear concept disclosure');
+ }
+});
