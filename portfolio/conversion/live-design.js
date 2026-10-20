@@ -74,5 +74,5 @@ function mount(){
    document.querySelectorAll(".mm-itemcard,.mm-philosophy-values>div,.mm-step").forEach(el=>{if(el.getBoundingClientRect().top>innerHeight*.8)observer.observe(el);});
  }
 }
-if(document.readyState==="complete")mount();else window.addEventListener("load",mount,{once:true});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
 })();
