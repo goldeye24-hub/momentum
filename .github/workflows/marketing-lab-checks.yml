@@ -11,9 +11,11 @@ on:
       - 'platform/**'
       - 'vercel.json'
       - 'website-samples/**'
+      - 'portfolio/**'
+      - 'docs/conversion-portfolio-master-v2.md'
       - '.github/workflows/marketing-lab-checks.yml'
   push:
-    branches: [main]
+    branches: [main, 'preview/**']
     paths:
       - 'server-handlers/**'
       - 'platform/**'
@@ -25,6 +27,8 @@ on:
       - 'site-builder/**'
       - 'vercel.json'
       - 'website-samples/**'
+      - 'portfolio/**'
+      - 'docs/conversion-portfolio-master-v2.md'
 permissions:
   contents: read
 jobs:
