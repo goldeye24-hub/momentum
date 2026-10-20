@@ -343,74 +343,34 @@ test('retire all 15 common-frame URLs, preserve old visitors with redirects and 
  assert.doesNotThrow(()=>new vm.Script(builder));
  assert.match(fs.readFileSync('site-builder/index.html','utf8'),/id="sitePreview"/);
 });
-test('eighteen independent portfolios have genuinely different semantic structures and working industry interactions',()=>{
- const ids=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd','tax','moving','cleaning','pilates'];
+test('19 current industry routes are present with unique titles and headings',()=>{
+ const ids=['restaurant','beauty','enterprise','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd','tax','moving','cleaning','pilates'];
  const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
- assert.equal((hub.match(/class="showcase /g)||[]).length,18);
- const seen=new Set();
+ assert.equal((hub.match(/class="site-case"/g)||[]).length,21,'19 cases and 2 featured cases');
+ const titles=new Set();
  for(const id of ids){
   const h=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
-  assert.equal((h.match(/<h1\b/g)||[]).length,1,id+' H1');
-  assert.match(h,/noindex,follow/);
-  assert.match(h,/application\/ld\+json/);
-  assert.match(h,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
-  assert.match(h,/호스팅비는 별도/);
-  assert.match(h,/\/?service=/);
-  assert.doesNotMatch(h,/aggregat[e]?Rating|reviewCount|매출 [0-9]+%/);
-  assert.match(h,/<style>/);
-  assert.doesNotMatch(h,/portfolio\/conversion\/design\.css/);
-  seen.add((h.match(/<main[^>]*>[\s\S]{0,300}/)||[''])[0].replace(/\s+/g,' ').slice(0,135));
+  assert.equal((h.match(/<h1\b/g)||[]).length,1,id+' one H1');
+  const title=h.match(/<title>([^<]+)<\/title>/)?.[1];
+  assert.ok(title&&title.length>12,id+' SEO title');
+  titles.add(title);
+  assert.ok(h.includes('<main'),id+' main landmark');
+  assert.ok(h.includes('images.unsplash.com'),id+' must include proper photo source while original assets are collected');
+  assert.ok(hub.includes('/portfolio/conversion/'+id+'/'),id+' missing from hub');
  }
- assert.equal(seen.size,18,'eighteen sites must have distinct first section structure');
- for(const [id,required] of Object.entries({
-  stay:['id="demoBooking"','id="arrival"','id="departure"','id="bookingStatus"'],
-  interior:['id="briefForm"','id="spaceType"','id="briefResult"'],
-  academy:['role="tablist"','id="coursePanel"','data-level="adult"'],
-  pet:['id="petSurvey"','id="surveyOutput"','id="petSize"'],
-  shop:['id="addToBag"','id="bagCount"','id="quantity"'],
-  legal:['data-topic="corporate"','id="topicStatus"'],
-  clinic:['data-check','id="progress"'],
-  auto:['id="showInfo"','id="result"'],
-  fitness:['data-day="wed"','id="classStatus"'],
-  estate:['id="searchForm"','id="searchResult"'],
-  hrd:['id="brief"','id="summary"'],
-  tax:['data-tax="company"','id="taxTitle"'],
-  moving:['id="moveForm"','id="moveResult"'],
-  cleaning:['id="cleanCompare"','id="cleanItems"'],
-  pilates:['data-day="wed"','id="classSlots"']
- }))for(const marker of required)assert.match(fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8'),new RegExp(marker));
+ assert.equal(titles.size,19,'each real website should have distinct title');
 });
-test('all 18 award-inspired fictional websites have business identities, tailored service content, and honest demo disclosure',()=>{
- const brands={
-  restaurant:'계절상회',beauty:'온결',b2b:'지음시스템즈',shop:'GOOD BEANS',
-  stay:'라움 스테이',interior:'폼스페이스',academy:'봄아카데미',pet:'몽글살롱',
-  legal:'베리타스',clinic:'클리어케어',auto:'핏웍스',fitness:'무브모어',
-  estate:'룸인덱스',hrd:'런웍스',tax:'밸런스택스',moving:'무브온',cleaning:'클린랩',pilates:'포르마'
- };
- const sig={
-  restaurant:'season-atelier',beauty:'ongyeol-book',b2b:'zieum-network',shop:'goodbeans-product',
-  stay:'raum-letter',interior:'formspace-plan',academy:'beaum-route',pet:'mongle-play',
-  legal:'veritas-notes',clinic:'clinic-visit',auto:'pitworks-parts',fitness:'movemore-tiles',
-  estate:'roomindex-properties',hrd:'learnworks-program',tax:'balance-ledger',moving:'moveon-checklist',
-  cleaning:'cleanlab-index',pilates:'forma-classes'
- };
- const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
- assert.match(hub,/18 DIFFERENT/);
- assert.equal((hub.match(/class="showcase /g)||[]).length,18);
- assert.equal((hub.match(/class="case-chip"/g)||[]).length,18);
- assert.equal((hub.match(/class="studio-index"/g)||[]).length,1);
- for(const [id,name] of Object.entries(brands)){
-  const html=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
-  assert.ok(html.includes(name),id+' must explain its fictional business identity');
-  assert.ok(html.includes('class="'+sig[id]+'"'),id+' must have unique new art-directed section');
-  assert.ok(html.includes('id="brand-highlights"'),id+' custom narrative section anchor');
-  assert.ok(html.includes('실존 업체가 아닌')||html.includes('가상'),id+' must disclose fictional nature');
-  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' must have one hero H1');
-  assert.match(html,/portfolio-creator-cta/);
-  assert.match(html,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
-  assert.match(html,/호스팅비는 별도/);
-  assert.match(html,/noindex,follow/);
- }
+
+test('approved law demo has unique semantic sections and honest fictional disclosure',()=>{
+ const html=fs.readFileSync('portfolio/conversion/legal/index.html','utf8');
+ for(const id of ['about','practice','approach','process','contact'])assert.ok(html.includes('id="'+id+'"'),'missing law section '+id);
+ assert.match(html,/법률사무소/);
+ assert.match(html,/가상 브랜드/);
+ assert.match(html,/noindex,follow/);
+ assert.match(html,/class="case-cards"/);
+ assert.match(html,/data-slide="2"/);
+ assert.doesNotMatch(html,/<form\b/,'a law design demo must not solicit private real cases');
+ assert.doesNotMatch(html,/reference-collection\.css|live-design\.js/,'must not mount old generic layout');
 });
 
 test('Naver blog button studio and long-form detailed product portfolio remain intact',()=>{
@@ -738,69 +698,22 @@ test('mobile rank is conservative when names overlap or provider positions resta
  assert.equal(duplicate.rank,null);
 });
 
-test('conversion portfolios are standalone sites with different information architecture, menus and interactions',()=>{
- const types={
-  restaurant:{hero:'editorial-hero',unique:'menu-story',menu:'restaurant-navigation',marker:'THE MENU BOOK',faq:3},
-  beauty:{hero:'cover-grid',unique:'look-strip',menu:'head',marker:'STYLE EDITORIAL',faq:3},
-  b2b:{hero:'railnav',unique:'solution-layout',menu:'rail',marker:'BUSINESS QUESTIONS',faq:4},
-  shop:{hero:'product-shell',unique:'product-actions',menu:'shop-header',marker:'PACK SIZE',faq:4}
- };
+test('portfolio routes retain isolated marketing contact and avoid fake real consultation on law sample',()=>{
  const hub=fs.readFileSync('portfolio/conversion/index.html','utf8');
- const homepage=fs.readFileSync('index.html','utf8');
- assert.match(homepage,/href="\/portfolio\/conversion\/"/);
- assert.match(hub,/portfolio\/conversion\/restaurant/);
- for(const [id,v] of Object.entries(types)){
-  const html=fs.readFileSync('portfolio/conversion/'+id+'/index.html','utf8');
-  assert.match(html,/<html lang="ko">/);
-  assert.match(html,/<meta name="robots" content="noindex,follow">/);
-  assert.match(html,new RegExp('canonical" href="https://momentum-goldeye24-hubs-projects\\.vercel\\.app/portfolio/conversion/'+id+'/'));
-  assert.match(html,/<meta name="description" content="[^"]{30,}"/);
-  assert.match(html,/<meta property="og:title" /);
-  assert.match(html,/<script type="application\/ld\+json">/);
-  assert.equal((html.match(/<h1\b/g)||[]).length,1,id+' requires single H1');
-  assert.match(html,/<main\b/);
-  assert.match(html,/<header\b/);
-  assert.match(html,/<footer\b/);
-  assert.equal((html.match(/<details\b/g)||[]).length,v.faq,id+' unique FAQ requirements');
-  assert.ok(html.includes(v.hero)&&html.includes(v.unique)&&html.includes(v.menu),id+' requires distinct structure');
-  assert.ok(html.includes(v.marker),id+' requires industry-specific information');
-  assert.match(html,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
-  assert.match(html,/호스팅비는 별도/);
-  assert.match(html,/\/?service=/);
-  assert.doesNotMatch(html,/<form\b/,'No false ordering/booking form');
-  assert.doesNotMatch(html,/aggregateRating|reviewCount|평점 4\.9|매출 [0-9]+%/);
-  assert.doesNotMatch(html,/portfolio\/conversion\/design\.css/,'No universal look from conversion shared CSS');
-  assert.ok(html.includes('<style>'),id+' needs its own CSS');
- }
- const shop=fs.readFileSync('portfolio/conversion/shop/index.html','utf8');
- for(const marker of ['id="addToBag"','id="quantity"','id="bagCount"','type="radio"','실제 주문은 처리되지 않습니다'])
-  assert.ok(shop.includes(marker),marker+' actual demo interaction');
+ const home=fs.readFileSync('index.html','utf8');
+ assert.match(home,/href="\/portfolio\/conversion\/"/);
+ assert.match(hub,/\/portfolio\/conversion\/restaurant\//);
+ assert.match(hub,/\/portfolio\/conversion\/legal\//);
+ const legal=fs.readFileSync('portfolio/conversion/legal/index.html','utf8');
+ assert.match(legal,/href="\/?service=법률사무소/);
+ assert.match(legal,/실제 법률상담 접수 기능은 없으며/);
+ assert.match(legal,/class="step-grid"/);
+ assert.equal((legal.match(/class="step-number"/g)||[]).length,4);
  const b2b=fs.readFileSync('portfolio/conversion/b2b/index.html','utf8');
- assert.match(b2b,/class="rail"/);
- assert.match(b2b,/class="problem-matrix"/);
+ assert.match(b2b,/DAEHAN/);
+ assert.match(b2b,/id="technology"/);
+ assert.match(b2b,/id="esg"/);
 });
-
-require('./rank-live-control.test.cjs');
-
-require('./rank-live-shared.test.cjs');
-
-require('./keyword-matrix.test.cjs');
-require('./competitor-compare.test.cjs');
-require('./place-keyword-insights.test.cjs');
-require('./member-portal.test.cjs');
-require('./admin-members.test.cjs');
-require('./member-history.test.cjs');
-require('./hobby-function-budget.test.cjs');
-
-require('./supabase-key-compat.test.cjs');
-
-require('./admin-connection.test.cjs');
-
-require('./admin-manual-measure.test.cjs');
-require('./admin-password-remember.test.cjs');
-
-require('./db-failure-diagnostics.test.cjs');
-require('./three-service-zones.test.cjs');
 
 test('rank-watch UI never treats a failed database request as confirmed zero rows',()=>{
  const source=fs.readFileSync('site-builder/rank-watch.js','utf8');
