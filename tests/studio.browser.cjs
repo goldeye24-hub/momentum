@@ -280,7 +280,10 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.ok(imageCount>=3,id+' has photo elements');
       const meta=await templatePage.locator('meta[name="robots"]').count();
       if(id==='legal')assert.equal(meta,1,'approved draft excludes fictional brand indexing');
-      if(id==='legal')await templatePage.screenshot({path:path.join(root,'artifacts/legal-review-desktop.png'),fullPage:true});
+      if(id==='legal'){
+        await templatePage.waitForFunction(()=>[...document.querySelectorAll('#practice img,#approach img')].every(img=>img.complete&&img.naturalWidth>0),null,{timeout:20000});
+        await templatePage.screenshot({path:path.join(root,'artifacts/legal-review-desktop.png'),fullPage:true});
+      }
       await templatePage.setViewportSize({width:390,height:844});
       const sizes=await templatePage.evaluate(()=>({doc:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(sizes.doc<=sizes.viewport+10,id+' horizontal overflow '+JSON.stringify(sizes));
