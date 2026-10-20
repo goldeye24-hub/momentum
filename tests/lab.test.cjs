@@ -429,7 +429,7 @@ test('Naver blog button studio and long-form detailed product portfolio remain i
   assert.match(product,/THE BRAND STORY/);
   assert.match(product,/PRODUCT INFORMATION/);
   assert.match(product,/BEFORE YOU CHOOSE/);
-  assert.ok((product.match(/<img\\b/g)||[]).length>=9,slug+' needs a photo-led long page');
+  assert.ok((product.match(/<img\b/g)||[]).length>=9,slug+' needs a photo-led long page');
  }
 });
 
