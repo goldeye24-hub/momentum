@@ -1,0 +1,49 @@
+/* Premium photo-led industry portfolio; actual demos remain functional */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&display=swap');
+body[data-mood] .mm-hero{min-height:660px;display:flex;align-items:center;position:relative;isolation:isolate;overflow:hidden;background:#f7f3ec;color:#1e2c37}
+body[data-mood] .mm-hero.mm-dark{color:white;background:#101d2b}
+body[data-mood] .mm-photo{position:absolute;inset:0 0 0 41%;z-index:-1;background:linear-gradient(90deg,#f7f3ec 0%,#f7f3ec44 32%,transparent 82%),var(--photo) center/cover no-repeat}
+body[data-mood] .mm-dark .mm-photo{inset:0;background:linear-gradient(90deg,#0a1423ed,#0a1423a8 38%,#0a142328 90%),var(--photo) center/cover no-repeat}
+body[data-mood] .mm-copy{padding:96px 25px 116px clamp(25px,6.5vw,110px);width:min(760px,66vw);z-index:1}
+body[data-mood] .mm-copy small{display:block;color:#997050;font:bold 11px system-ui,sans-serif;letter-spacing:.2em;margin-bottom:22px}
+body[data-mood] .mm-dark .mm-copy small{color:#e2c39a}
+body[data-mood] .mm-hero h1{font:600 clamp(40px,5.4vw,77px)/1.3 "Noto Serif KR",Georgia,serif!important;letter-spacing:-.075em;color:inherit;margin:0 0 22px;word-break:keep-all;text-shadow:none}
+body[data-mood="b2b"] .mm-hero h1{font-family:system-ui,"Pretendard",sans-serif!important;font-weight:800!important}
+body[data-mood] .mm-copy p{font-size:17px;line-height:1.9;max-width:570px;color:#58616b;word-break:keep-all;margin:0}
+body[data-mood] .mm-dark .mm-copy p{color:#dce2e8}
+body[data-mood] .mm-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:32px}
+body[data-mood] .mm-actions a{display:inline-flex;padding:14px 20px;align-items:center;gap:15px;background:#203247;color:white;border:1px solid #203247;font:750 13px system-ui,sans-serif;text-decoration:none;box-shadow:none;border-radius:2px}
+body[data-mood] .mm-actions a.mm-secondary{background:transparent;color:inherit;border-color:#84817c}
+body[data-mood] .mm-dark .mm-actions a{color:#203247;background:#fff;border-color:#fff}
+body[data-mood] .mm-dark .mm-actions a.mm-secondary{color:white;background:transparent;border-color:#ffffff8f}
+body[data-mood] .mm-actions a:hover{filter:brightness(.9)}
+body[data-mood] .mm-side{position:absolute;right:25px;bottom:20px;font:bold 10px system-ui,sans-serif;letter-spacing:.13em;opacity:.76}
+body[data-mood] .mm-stories{background:#fff;padding:85px clamp(24px,5vw,88px);color:#203044}
+body[data-mood] .mm-story-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:26px}
+body[data-mood] .mm-story-head small{color:#a16b49;font:bold 10px system-ui,sans-serif;letter-spacing:.15em}
+body[data-mood] .mm-story-head h2{font:600 clamp(27px,3.2vw,46px)/1.34 "Noto Serif KR",serif;letter-spacing:-.06em;color:#233240;margin:9px 0 0}
+body[data-mood] .mm-story-head p{max-width:350px;color:#727d88;font-size:14px;line-height:1.85;margin:0}
+body[data-mood] .mm-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+body[data-mood] .mm-feature-card{min-width:0;background:#f6f3ef;margin:0;overflow:hidden}
+body[data-mood] .mm-feature-card img{display:block;width:100%;height:clamp(175px,20vw,300px);object-fit:cover;transition:transform .6s ease}
+body[data-mood] .mm-feature-card:hover img{transform:scale(1.055)}
+body[data-mood] .mm-feature-card figcaption{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:18px 19px;font:bold 15px system-ui,sans-serif;color:#243747}
+body[data-mood] .mm-feature-card figcaption small{font-size:10px;color:#a87d5f}
+body[data-mood] .mm-disclaimer{margin:19px 0 0;font-size:11px;color:#89919a;line-height:1.6}
+body[data-mood="b2b"] .rail{position:relative!important;top:auto!important;left:auto!important;bottom:auto!important;height:auto!important;width:100%!important;padding:16px 5vw!important;flex-direction:row!important;justify-content:space-between;align-items:center;gap:19px;box-shadow:none!important}
+body[data-mood="b2b"] .rail .bottom{display:none!important}
+body[data-mood="b2b"] .railnav{display:flex;flex-direction:row;gap:23px;flex-wrap:wrap}
+body[data-mood="b2b"] .railnav a{border:0!important;padding:4px!important;display:inline-flex;gap:7px}
+body[data-mood="b2b"] .site{margin-left:0!important;width:100%}
+body[data-mood="b2b"] .status{padding:10px 5vw}
+body[data-mood="b2b"] .mm-stories{background:#f1f5f9}
+body[data-mood="beauty"] .mm-photo,body[data-mood="pet"] .mm-photo{inset:0 0 0 50%}
+body[data-mood="legal"] .mm-stories,body[data-mood="tax"] .mm-stories{background:#f7f4f0}
+body[data-mood="shop"] .product-shell{background:#f7f1e8;padding-top:75px;padding-bottom:92px}
+body[data-mood="shop"] .hero-product{position:relative;isolation:isolate;background:#dfc6a2}
+body[data-mood="shop"] .hero-product:before{content:"";position:absolute;inset:0;z-index:-1;background:url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=82') center/cover;opacity:.5}
+body[data-mood="cleaning"] .visual-diff{background:#f4f9f9}
+body[data-mood="cleaning"] .diff-demo{box-shadow:0 24px 55px #182b3e2e;border:7px solid white;overflow:hidden}
+@media(max-width:900px){body[data-mood] .mm-copy{width:80vw}body[data-mood] .mm-story-head{display:block}body[data-mood] .mm-story-head p{margin-top:14px}body[data-mood="b2b"] .railnav{gap:9px}}
+@media(max-width:620px){body[data-mood] .mm-hero{min-height:680px;align-items:flex-end}body[data-mood] .mm-photo,body[data-mood="beauty"] .mm-photo,body[data-mood="pet"] .mm-photo{inset:0;background:linear-gradient(0deg,#f7f3ec 5%,#f7f3ecd5 35%,transparent 85%),var(--photo) center/cover}body[data-mood] .mm-dark .mm-photo{background:linear-gradient(0deg,#0a1423ef,#0a1423b8 38%,transparent 84%),var(--photo) center/cover}body[data-mood] .mm-copy{width:100%;padding:275px 20px 58px}body[data-mood] .mm-hero h1{font-size:clamp(35px,8.9vw,49px)!important}body[data-mood] .mm-copy p{font-size:14px}body[data-mood] .mm-stories{padding:60px 18px}body[data-mood] .mm-feature-grid{grid-template-columns:1fr}body[data-mood] .mm-feature-card img{height:250px}body[data-mood] .mm-side{bottom:10px;font-size:9px}body[data-mood="b2b"] .rail{flex-wrap:wrap!important}body[data-mood="b2b"] .railnav{width:100%}body[data-mood="b2b"] .status{display:none}}
+@media(prefers-reduced-motion:reduce){body[data-mood] .mm-feature-card img{transition:none!important}}
