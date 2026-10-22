@@ -28,13 +28,12 @@ function limit(ip){
  return v.n>6;
 }
 async function callProvider(args,env,fetchFn=fetch){
- const id=env.NAVER_API_HUB_CLIENT_ID,secret=env.NAVER_API_HUB_CLIENT_SECRET;
- const standard=!id||!secret;
- const clientId=standard?env.NAVER_CLIENT_ID:id;
- const clientSecret=standard?env.NAVER_CLIENT_SECRET:secret;
+ const clientId=env.NAVER_DATALAB_CLIENT_ID||env.NAVER_CLIENT_ID;
+ const clientSecret=env.NAVER_DATALAB_CLIENT_SECRET||env.NAVER_CLIENT_SECRET;
  if(!clientId||!clientSecret)return {error:'네이버 검색어 트렌드 API 인증 정보가 연결되지 않았습니다.',status:503};
- const endpoint=standard?'https://openapi.naver.com/v1/datalab/search':'https://naverapihub.apigw.ntruss.com/search-trend/v1/search';
- const headers=standard?{'X-Naver-Client-Id':clientId,'X-Naver-Client-Secret':clientSecret}:{'X-NCP-APIGW-API-KEY-ID':clientId,'X-NCP-APIGW-API-KEY':clientSecret};
+ // Official Naver Open API endpoint, not the unrelated Ncloud Search API HUB.
+ const endpoint='https://openapi.naver.com/v1/datalab/search';
+ const headers={'X-Naver-Client-Id':clientId,'X-Naver-Client-Secret':clientSecret};
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
  try {
   const response=await fetchFn(endpoint,{method:'POST',signal:controller.signal,
