@@ -209,6 +209,10 @@ test('marketing homepage offers approved paid agency products and two open packa
  }
  for(const channel of ['네이버','카카오','구글'])assert.match(h,new RegExp(channel));
  assert.equal((h.match(/class="mk-service-card"/g)||[]).length,6);
+ assert.match(h,/class="mk-photo-service"/);
+ assert.match(h,/플레이스용 촬영 상담하기/);
+ assert.match(h,/data-product="플레이스 사진촬영"/);
+ assert.match(h,/<option value="플레이스 사진촬영">/);
  assert.equal((h.match(/class="package-card card/g)||[]).length,2);
  const package1=h.slice(h.indexOf('>오픈패키지 1</div>'),h.indexOf('>오픈패키지 2</div>'));
  for(const service of ['사진촬영','플레이스 등록대행','SEO 최적화','네이버 예약 세팅','블로그 체험단'])assert.ok(package1.includes(service),'Package 1 missing '+service);
