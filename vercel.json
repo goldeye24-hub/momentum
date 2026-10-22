@@ -253,6 +253,14 @@
       "destination": "/api/admin-site-builder?view=studio"
     },
     {
+      "source": "/admin/finance",
+      "destination": "/api/admin-site-builder?view=finance"
+    },
+    {
+      "source": "/admin/finance/",
+      "destination": "/api/admin-site-builder?view=finance"
+    },
+    {
       "source": "/admin/crm",
       "destination": "/api/admin-site-builder?view=crm"
     },
