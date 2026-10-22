@@ -83,6 +83,8 @@ a:focus-visible,button:focus-visible{outline:3px solid #d98350;outline-offset:4p
 .work-card .work-info h3{font-size:14px;font-weight:850;letter-spacing:-.035em;margin:0 0 5px}
 .work-card .work-info p{font-size:11px;line-height:1.55;color:#8b929a;margin:0}
 .work-card .work-preview iframe{border:0;display:block;pointer-events:none;transform:scale(.26);transform-origin:0 0;width:384.6154%;height:384.6154%;background:#fff}
+.product-page-preview{background:#f7f3ec}
+.product-page-preview .preview-label{position:absolute;right:9px;bottom:9px;z-index:1;font-size:10px;font-weight:800;color:#fff;background:#162333e8;padding:7px 10px;border-radius:3px;pointer-events:none;white-space:nowrap}
 .work-preview .product-img{width:100%;height:100%;object-fit:cover}
 .work-preview .image-shade{position:absolute;inset:0;background:linear-gradient(90deg,#151312bf 0%,#19110e13 85%)}
 .work-preview .product-copy{position:absolute;top:17px;left:18px;max-width:64%;color:#fff}
