@@ -13,7 +13,8 @@ const handlers=Object.freeze({
  'member-watches':require('../server-handlers/member-watches'),
  'member-history':require('../server-handlers/member-history'),
  'admin-rank-watches':require('../server-handlers/admin-rank-watches'),
- 'admin-connection':require('../server-handlers/admin-connection')
+ 'admin-connection':require('../server-handlers/admin-connection'),
+ 'datalab-trend':require('../server-handlers/datalab-trend')
 });
 module.exports=async function(req,res){
  const raw=req?.query?.op;
