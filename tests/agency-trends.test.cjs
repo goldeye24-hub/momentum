@@ -30,7 +30,7 @@ test('DataLab does not synthesize results without API credentials',async()=>{
  assert.equal(output.status,503);
  assert.equal(called,false);
 });
-test('Public agency retains conversion links and displays separate free tools',()=>{
+test('Marketing homepage prioritizes ads, separates free and paid services, and links agency',()=>{
  const home=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
  assert.match(home,/agency-brand-2026\.css/);
  assert.match(home,/mm-intelligence-board/);
@@ -39,6 +39,10 @@ test('Public agency retains conversion links and displays separate free tools',(
  assert.match(home,/id="open-packages"/);
  assert.match(home,/id="contact"/);
  assert.match(home,/id="requestedProduct"/);
- assert.match(home,/id="full-catalog"/);
+ assert.match(home,/id="services"/);
+ assert.match(home,/id="free-tools"/);
+ assert.match(home,/id="paid-service"/);
+ assert.match(home,/href="\\/agency\\/"/);
+ assert.doesNotMatch(home,/id="work"|WEBSITE DESIGN LIBRARY/);
  assert.doesNotMatch(home,/지식iN 상위노출|지식인 상위노출/);
 });
