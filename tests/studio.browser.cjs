@@ -196,9 +196,9 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     agencyHome.on('pageerror',e=>agencyErrors.push(String(e)));
     const agencyResponse=await agencyHome.goto('http://127.0.0.1:'+port+'/',{waitUntil:'load'});
     assert.equal(agencyResponse.status(),200);
-    assert.match(await agencyHome.locator('h1').innerText(),/고객의 선택을 만드는/);
-    assert.equal(await agencyHome.locator('.agency-visual .visual-modules>div').count(),4);
-    assert.match(await agencyHome.locator('.agency-tools-preview').innerText(),/API 미연동/);
+    assert.match(await agencyHome.locator('h1').innerText(),/고객의 선택까지/);
+    assert.equal(await agencyHome.locator('.mk-art-panel').count(),1);
+    assert.match(await agencyHome.locator('#free-tools').innerText(),/무료 마케팅 도구/);
     assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
     assert.ok(await agencyHome.locator('#contactForm').count()===1);
     const cssAvailable=await agencyHome.evaluate(async()=>{const r=await fetch('/agency.css');return r.status===200&&(await r.text()).includes('.agency-hero-grid')});
@@ -212,12 +212,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.setViewportSize({width:390,height:844});
     assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
-    assert.equal(await agencyHome.locator('#work .agency-sample-card').count(),3);
-    assert.match(await agencyHome.locator('#work').innerText(),/디자인 샘플/);
-    assert.equal(await agencyHome.locator('#work a[href="/site-builder/"]').count(),0);
-    assert.ok(await agencyHome.locator('#work a[href*="design=restaurant"]').count()>=1);
-    assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
-    assert.equal(await agencyHome.locator('#services .service-card').count(),9);
+    assert.equal(await agencyHome.locator('#work').count(),0);
+    assert.equal(await agencyHome.locator('#free-tools .mk-tool').count(),4);
+    assert.equal(await agencyHome.locator('#services .mk-service-card').count(),6);
+    assert.ok(await agencyHome.locator('a[href="/agency/"]').count()>=1);
+    assert.ok(await agencyHome.locator('#paid-service').count()===1);
+    assert.equal(await agencyHome.locator('#open-packages .package-card').count(),2);
     const customCss=await agencyHome.evaluate(async()=>{
       const response=await fetch('/agency-showcase.css');
       return response.status===200&&(await response.text()).includes('.agency-work-card');
@@ -228,8 +228,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.ok(await toggle.isVisible());
     await toggle.click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#work"]').isVisible());
-    await agencyHome.locator('.agency-nav a[href="#work"]').click();
+    assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
+    await agencyHome.locator('.agency-nav a[href="#services"]').click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'false');
     assert.equal(await agencyHome.locator('.agency-nav').isVisible(),false);
         assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
