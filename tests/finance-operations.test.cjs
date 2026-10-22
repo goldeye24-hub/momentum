@@ -22,7 +22,7 @@ test('finance workspace has safe local-only workflow and displays financial dist
  assert.match(html,/periodType/);
  assert.match(js,/momentum-internal-crm-mvp-v1/);
  assert.match(js,/momentum-internal-crm-commerce-v1/);
- assert.match(js,/value===?['"]?year/); // period mode uses exact date prefixes, not arbitrary 30-day time windows
+ assert.match(js,/mode==='year'/); // period mode uses exact date prefixes, not arbitrary 30-day time windows
  assert.match(js,/Math\.max\(0,subtotal-moneyField/);
  assert.match(js,/document\.createElement\('td'\)/);
  assert.match(js,/toCsv\(latest\(\)\)/);
