@@ -35,3 +35,14 @@ test('legacy food beauty and coffee routes remain intact',()=>{
   assert.match(html,/PRODUCT INFORMATION/);
  }
 });
+
+test('portfolio home links the 11 product pages and previews their actual HTML',()=>{
+ const home=load('portfolio/index.html');
+ const script=load('portfolio/portfolio-home.js');
+ const styles=load('portfolio/portfolio-home.css');
+ assert.match(home,/href="#detail"/);
+ assert.match(home,/상세페이지 11종 보기/);
+ assert.match(home,/전체 11개 상세페이지 보기/);
+ assert.ok(script.includes('iframe src="/portfolio/product-pages/${item.slug}/"'), 'actual product pages must be previewed');
+ assert.match(styles,/\.product-page-preview \.preview-label/);
+});
