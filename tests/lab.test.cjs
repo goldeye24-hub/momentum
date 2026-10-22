@@ -289,7 +289,7 @@ test('marketing-first homepage separates paid advertising, free tools, and premi
 test('design catalog is no longer on marketing homepage and is accessible via agency entrypoint',()=>{
  const home=fs.readFileSync('index.html','utf8');
  const agency=fs.readFileSync('agency/index.html','utf8');
- assert.ok(h.includes('href="/agency/"'));
+ assert.ok(home.includes('href="/agency/"'));
  assert.doesNotMatch(home,/id="work"|agency-sample-grid|지금 보는 홈페이지 30만원으로 제작 가능합니다/);
  assert.match(agency,/모멘텀에이전시/);
  assert.match(agency,/독립 도메인·독립 호스팅 배포는 아직 진행하지 않았습니다/);
