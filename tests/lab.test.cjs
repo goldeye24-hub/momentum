@@ -209,8 +209,9 @@ test('marketing homepage offers approved paid agency products and two open packa
  }
  for(const channel of ['네이버','카카오','구글'])assert.match(h,new RegExp(channel));
  assert.equal((h.match(/class="mk-service-card"/g)||[]).length,6);
- assert.match(h,/class="mk-photo-service"/);
- assert.match(h,/플레이스용 촬영 상담하기/);
+ assert.doesNotMatch(h,/class="mk-photo-service"/);
+ assert.match(h,/class="mk-supporting-option"/);
+ assert.match(h,/네이버 플레이스용 사진촬영/);
  assert.match(h,/data-product="플레이스 사진촬영"/);
  assert.match(h,/<option value="플레이스 사진촬영">/);
  assert.equal((h.match(/class="package-card card/g)||[]).length,2);
