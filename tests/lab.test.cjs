@@ -273,9 +273,11 @@ test('integrated agency visual redesign retains accurate products and live inqui
  const home=fs.readFileSync('index.html','utf8');
  const agency=fs.readFileSync('agency.css','utf8');
  assert.match(home,/INTEGRATED DIGITAL AGENCY/);
- assert.match(home,/고객의 선택을 만드는/);
- assert.match(home,/Built for[\s\S]*Your Next Move/);
- assert.match(home,/agency-visual/);
+ assert.match(home,/검색에서 발견되고/);
+ assert.match(home,/선택으로 이어지게/);
+ assert.match(home,/mm-intelligence-board/);
+ assert.match(home,/10\\<span\\>\\+\\<\\/span\\>/);
+ assert.match(home,/agency-brand-2026\\.css/);
  assert.match(home,/SEARCH ADVERTISING/);
  assert.match(home,/VIRAL & EXPERIENCES/);
  assert.match(home,/BRAND & WEB DESIGN/);
