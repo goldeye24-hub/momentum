@@ -185,6 +185,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/datalab-trend",
+      "destination": "/api/compact?op=datalab-trend"
+    },
+    {
       "source": "/api/admin-keyword-matrix",
       "destination": "/api/compact?op=admin-keyword-matrix"
     },
