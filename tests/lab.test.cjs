@@ -811,3 +811,6 @@ test('rank-watch UI never treats a failed database request as confirmed zero row
  assert.match(source,/\$\('add'\)\.disabled=true/);
  assert.doesNotMatch(source,/catch\(err\)\{targets=\[\];observations=\[\];render\(\)/);
 });
+
+require('./agency-trends.test.cjs');
+require('./finance-operations.test.cjs');
