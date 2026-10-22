@@ -34,7 +34,7 @@ test('Marketing homepage prioritizes ads, separates free and paid services, and 
  const home=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
  assert.match(home,/agency-brand-2026\.css/);
  assert.match(home,/mm-intelligence-board/);
- assert.match(home,/10\<span\>\+\<\/span\>/);
+ assert.ok(home.includes('10<span>+</span>'));
  assert.match(home,/href="\/lab\/trends\/"/);
  assert.match(home,/id="open-packages"/);
  assert.match(home,/id="contact"/);
@@ -42,7 +42,7 @@ test('Marketing homepage prioritizes ads, separates free and paid services, and 
  assert.match(home,/id="services"/);
  assert.match(home,/id="free-tools"/);
  assert.match(home,/id="paid-service"/);
- assert.match(home,/href="\\/agency\\/"/);
+ assert.ok(home.includes('href="/agency/"'));
  assert.doesNotMatch(home,/id="work"|WEBSITE DESIGN LIBRARY/);
  assert.doesNotMatch(home,/지식iN 상위노출|지식인 상위노출/);
 });
