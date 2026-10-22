@@ -171,23 +171,8 @@ footer .brand-sub,footer .footer-right{color:#b5c0b4}
 @media(max-width:385px){.agency-hero.mk-editorial-hero h1{font-size:41px}.mk-art-main strong{font-size:65px}.mk-overline{letter-spacing:.045em}.mk-editorial-hero .mk-hero-actions .btn{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.mk-service-card,.mk-tool,.topbar-cta{transition:none;transform:none!important}}
 
-/* Naver Place photography: image-led service panel between marketing catalog and advisory services. */
-.mk-photo-service{margin-top:17px;border:1px solid #cdd9d0;background:#e8f0ee;display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);min-height:342px;overflow:hidden;position:relative}
-.mk-photo-content{padding:38px 43px 35px;display:flex;flex-direction:column;align-items:flex-start}
-.mk-photo-kicker{font-size:11px;letter-spacing:.125em;color:#245d73;font-weight:850}
-.mk-photo-content h3{font-size:clamp(27px,3vw,42px);line-height:1.16;letter-spacing:-.07em;font-weight:900;margin:18px 0 13px;color:#122936}
-.mk-photo-content h3 em{font-style:normal;color:#2468be}
-.mk-photo-content p{font-size:14px;line-height:1.8;color:#586b72;margin:0 0 19px;max-width:460px;word-break:keep-all}
-.mk-photo-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
-.mk-photo-tags span{border:1px solid #bad0d2;border-radius:3px;font-size:11px;color:#365767;background:#f5fbfa;padding:7px 9px}
-.mk-photo-link{margin-top:auto;display:inline-flex;gap:23px;align-items:center;background:#12354c;color:white;padding:13px 17px;font-size:13px;font-weight:820;border-radius:2px}
-.mk-photo-link:hover{background:#235d82;color:white}
-.mk-photo-gallery{display:grid;grid-template-columns:1fr 1fr;min-width:0;position:relative;background:#d1e1e0;padding:12px;gap:10px}
-.mk-photo-gallery figure{margin:0;position:relative;min-width:0;overflow:hidden;background:#c7d9d4;min-height:265px}
-.mk-photo-gallery figure img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s}
-.mk-photo-gallery figure:hover img{transform:scale(1.04)}
-.mk-photo-gallery figcaption{position:absolute;left:13px;bottom:37px;color:white;font-size:10px;font-weight:900;letter-spacing:.08em;text-shadow:0 1px 6px #0009;z-index:1}
-.mk-photo-gallery figure::after{content:"";position:absolute;inset:55% 0 0;background:linear-gradient(transparent,#0006);pointer-events:none}
-.mk-photo-caption{position:absolute;bottom:11px;left:14px;right:14px;color:#204a51;font-size:10px;letter-spacing:-.01em;background:#e9f1edec;padding:4px 7px;text-align:center;z-index:2}
-@media(max-width:900px){.mk-photo-service{grid-template-columns:1fr}.mk-photo-content{padding:31px 28px}.mk-photo-gallery{min-height:270px}.mk-photo-gallery figure{min-height:270px}}
-@media(max-width:540px){.mk-photo-content{padding:25px 22px}.mk-photo-content h3{font-size:29px}.mk-photo-content p{font-size:13px}.mk-photo-gallery{min-height:200px;gap:6px;padding:7px}.mk-photo-gallery figure{min-height:200px}.mk-photo-gallery figcaption{font-size:9px;left:7px}.mk-photo-caption{font-size:9px;bottom:8px;left:9px;right:9px}}
+/* Optional supporting work: keep photography subordinate to marketing products. */
+.mk-supporting-option{margin:18px 0 0;padding:14px 5px 0;border-top:1px solid #dce3dc;font-size:12px;line-height:1.75;color:#66716a;word-break:keep-all}
+.mk-supporting-option strong{color:#455a4b;font-weight:800}
+.mk-supporting-option a{color:#305a8d;text-decoration:underline;text-underline-offset:3px;font-weight:800;margin-left:7px;white-space:nowrap}
+@media(max-width:600px){.mk-supporting-option{font-size:11px;padding-top:11px}}
