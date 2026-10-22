@@ -44,6 +44,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .mk-proof-tags{margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
 .mk-proof-tags span{font-size:11px;border:1px solid #cbd2c6;padding:7px 8px;color:#505a4e}
 .mk-art-panel{min-width:0;min-height:590px;background:var(--me-green);color:var(--me-black);display:flex;flex-direction:column;position:relative;overflow:hidden;border-radius:3px;isolation:isolate}
+.mk-art-panel.mm-intelligence-board{max-width:none;border:0;border-radius:3px;box-shadow:none;transform:none;padding:0;gap:0;background:var(--me-green);color:var(--me-black)}
+.mk-art-panel.mm-intelligence-board::before{display:none}
 .mk-art-panel::after{content:"";position:absolute;width:600px;height:600px;left:47%;top:3%;border:1px solid rgba(23,28,26,.17);border-radius:50%;pointer-events:none;box-shadow:0 0 0 75px rgba(23,28,26,.035),0 0 0 155px rgba(23,28,26,.035)}
 .mk-art-head,.mk-art-footer{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:24px 28px}
 .mk-art-head{font-family:"Arial",sans-serif;font-size:11px;letter-spacing:.12em;font-weight:800;border-bottom:1px solid #1b271b26}
