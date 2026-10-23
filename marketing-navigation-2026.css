@@ -97,3 +97,10 @@ html{scroll-padding-top:150px}
 #contact .marketing-consult-intro strong{color:#133a6a;font-size:clamp(19px,2vw,25px);letter-spacing:-.055em;line-height:1.4;word-break:keep-all}
 #contact .marketing-consult-intro p{color:#627b99;font-size:12px;line-height:1.85;margin:0;word-break:keep-all}
 @media(max-width:600px){#contact .marketing-consult-intro{padding:20px 17px;gap:7px}#contact .marketing-consult-intro strong{font-size:20px}}
+
+/* Cross-link primary marketing cards to complete product explainers. */
+#services .mk-service-card .mk-detail-link{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 0;padding:10px 14px;border-radius:5px;border:1px solid #b8d0f0;background:#eaf3ff;color:#1955a7;font-size:12px;font-weight:850;text-decoration:none;align-self:flex-start;white-space:nowrap;transition:transform .17s,background .17s}
+#services .mk-service-card .mk-detail-link:hover{transform:translateX(3px);background:#dcecff}
+#services .mk-service-card:first-child .mk-detail-link{background:#ffffff20;color:#fff;border-color:#ffffff55}
+#services .mk-service-card:first-child .mk-detail-link:hover{background:#ffffff35}
+@media(max-width:600px){#services .mk-service-card .mk-detail-link{font-size:12px;padding:10px 12px}}
