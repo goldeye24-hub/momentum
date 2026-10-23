@@ -879,3 +879,23 @@ test('editorial marketing homepage redesign is isolated, honest and navigable',(
  assert.match(h,/@media\(max-width:760px\)/);
  assert.match(h,/aria-expanded/);
 });
+
+test('keyword-led marketing insight guide has substance and working index route',()=>{
+ const fs=require('node:fs');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const path='insights/guides/busan-viral-marketing-agency/index.html';
+ const h=fs.readFileSync(path,'utf8');
+ assert.match(list,/href="\/insights\/guides\/busan-viral-marketing-agency\/"/);
+ assert.match(list,/부산바이럴마케팅 업체/);
+ assert.match(h,/부산바이럴마케팅 업체/);
+ assert.match(h,/블로그·체험단·인스타그램/);
+ assert.match(h,/견적서를 비교할 때/);
+ assert.match(h,/광고 표시/);
+ assert.match(h,/검색량 수치는 확인되지 않았습니다/);
+ assert.match(h,/추천ㆍ보증 등에 관한 표시ㆍ광고 심사지침/);
+ assert.match(h,/<meta name="description"/);
+ assert.match(h,/application\/ld\+json/);
+ assert.match(h,/noindex,follow/);
+ assert.equal((h.match(/<h3>[1-8]\./g)||[]).length,8);
+ assert.doesNotMatch(h,/매출\s*\+\d+%|상위노출\s*100%/);
+});
