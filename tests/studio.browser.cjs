@@ -226,6 +226,11 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       }
       assert.equal(await productPage.locator('.svc-visual figcaption h3').count(),1);
       assert.ok(await productPage.locator('.vis-body').isVisible());
+      if(slug==='photography'){
+        assert.equal(await productPage.locator('.vis-photo-image').count(),4,'Four reference photos should be present');
+        assert.equal(await productPage.locator('.vis-frame-art').count(),0,'Abstract placeholders should be removed');
+        assert.match(await productPage.locator('.svc-visual--photography').innerText(),/스톡 사진 예시/);
+      }
       for(const id of ['about','who','scope','compare','process','faq'])assert.equal(await productPage.locator('#'+id).count(),1,slug+': '+id);
       assert.ok(await productPage.locator('.final-cta a[href*="?service="]').count()>=1);
       await productPage.setViewportSize({width:390,height:844});
