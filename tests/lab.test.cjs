@@ -276,6 +276,17 @@ test('Place SEO card describes an SEO audit without registration or editing clai
  assert.doesNotMatch(card,/등록|수정/);
  assert.match(card,/SEO와 예약 기능을 점검/);
 });
+test('marketing consultation removes street address and emphasizes advertising strategy',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ assert.doesNotMatch(h,/부산 동래구 충렬대로|소재지:|>소재지<|선택한 홈페이지 디자인|selectedDesignWrap/);
+ assert.match(h,/맞춤 광고 전략 상담/);
+ assert.match(h,/우리 사업에 맞는 광고 전략을 제안받아 보세요/);
+ assert.match(h,/광고 전략 상담 신청하기/);
+ assert.match(h,/<input type="hidden" id="selectedDesign"/);
+ assert.match(h,/id="contactForm"/);
+ assert.match(h,/id="requestedProduct"/);
+ assert.match(h,/고객센터: 0507-1313-5668/);
+});
 test('ten top navigation categories point to matching marketing service sections',()=>{
  const h=fs.readFileSync('index.html','utf8');
  const mapping=[['키워드광고','keyword-ads'],['플레이스','place-seo'],['리뷰관리','review-care'],['바이럴마케팅','viral-marketing'],['SNS마케팅','sns-marketing'],['언론홍보','press-pr'],['디자인','design-service'],['촬영대행','photo-service'],['광고교육','ad-education'],['광고 무료도구','free-tools']];
