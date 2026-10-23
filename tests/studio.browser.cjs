@@ -201,6 +201,11 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await agencyHome.locator('#free-tools').innerText(),/무료 마케팅 도구/);
     assert.ok(await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').isVisible());
     assert.ok(await agencyHome.locator('#contactForm').count()===1);
+    assert.equal(await agencyHome.locator('#selectedDesignWrap').count(),0);
+    assert.equal(await agencyHome.locator('#selectedDesign[type="hidden"]').count(),1);
+    assert.equal(await agencyHome.locator('#contact .marketing-consult-intro').count(),1);
+    assert.match(await agencyHome.locator('#contact .marketing-consult-intro').innerText(),/우리 사업에 맞는 광고 전략/);
+    assert.equal(await agencyHome.locator('#contact').getByText('소재지',{exact:true}).count(),0);
     const cssAvailable=await agencyHome.evaluate(async()=>{const r=await fetch('/agency.css');return r.status===200&&(await r.text()).includes('.agency-hero-grid')});
     assert.ok(cssAvailable,'Integrated agency stylesheet missing');
     const v4Ready=await agencyHome.evaluate(async()=>{const r=await fetch('/marketing-v4-enterprise-2026.css');return r.status===200&&(await r.text()).includes('.v4-hero-visual')});
