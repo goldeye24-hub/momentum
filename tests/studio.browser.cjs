@@ -151,7 +151,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await agencyHome.locator('h1').innerText(),/성장의 흐름을/);
     assert.equal(await agencyHome.locator('.v4-hero-visual').count(),1);
     assert.match(await agencyHome.locator('#free-tools').innerText(),/무료 마케팅 도구/);
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').isVisible());
+    assert.ok(await agencyHome.locator('.agency-nav a[href="/services/keyword-ads/"]').isVisible());
     assert.ok(await agencyHome.locator('#contactForm').count()===1);
     assert.equal(await agencyHome.locator('#selectedDesignWrap').count(),0);
     assert.equal(await agencyHome.locator('#selectedDesign[type="hidden"]').count(),1);
@@ -199,13 +199,27 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.ok(await toggle.isVisible());
     await toggle.click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').isVisible());
-    await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').click();
+    assert.ok(await agencyHome.locator('.agency-nav a[href="/services/keyword-ads/"]').isVisible());
+    await agencyHome.locator('.agency-nav a[href="#free-tools"]').click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'false');
     assert.equal(await agencyHome.locator('.agency-nav').isVisible(),false);
         assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
     await agencyHome.close();
     console.log('PASS: agency landing, CSS, original inquiry form, and responsive desktop/tablet/mobile views');
+    const productPage=await ctx.newPage();
+    for(const slug of ['keyword-ads','place-seo','review-care','viral','sns','press','photography','education']){
+      const res=await productPage.goto('http://127.0.0.1:'+port+'/services/'+slug+'/',{waitUntil:'load'});
+      assert.equal(res.status(),200,'Missing detailed product page: '+slug);
+      assert.equal(await productPage.locator('#detailTitle').count(),1);
+      for(const id of ['about','who','scope','compare','process','faq'])assert.equal(await productPage.locator('#'+id).count(),1,slug+': '+id);
+      assert.ok(await productPage.locator('.final-cta a[href*="?service="]').count()>=1);
+      await productPage.setViewportSize({width:390,height:844});
+      const sz=await productPage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,width:window.innerWidth}));
+      assert.ok(sz.scrollWidth<=sz.width+3,'Product detail horizontal overflow '+slug+' '+JSON.stringify(sz));
+    }
+    await productPage.close();
+    console.log('PASS: eight unique marketing detail pages, consultation CTAs and mobile widths');
+
 
     // Service and project case pages must load as standalone public content.
     const landing=await ctx.newPage();
