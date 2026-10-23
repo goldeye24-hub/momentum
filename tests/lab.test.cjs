@@ -312,6 +312,17 @@ test('all eight service detail pages include unique semantic infographics withou
  const media=fs.readFileSync('services/press/index.html','utf8');
  assert.match(media,/매체 심사/);
 });
+test('photography guide displays four real reference photos with disclosure',()=>{
+ const h=fs.readFileSync('services/photography/index.html','utf8');
+ const photos=[...h.matchAll(/<img class="vis-photo-image" src="([^"]+)" alt="([^"]+)"/g)];
+ assert.equal(photos.length,4);
+ for(const [,src,alt] of photos){assert.match(src,/^https:\/\/images\.unsplash\.com\/photo-/);assert.ok(alt.length>=6)}
+ assert.doesNotMatch(h,/class="vis-frame-art/);
+ assert.match(h,/실제 고객사 촬영 실적이나 포트폴리오가 아닙니다/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.svc-visual--photography \.vis-photo-image/);
+ assert.match(css,/object-fit:cover/);
+});
 test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
  const h=fs.readFileSync('index.html','utf8');
  assert.doesNotMatch(h,/portfolio-(?:mukdori|balmonghair)\.jpg/);
