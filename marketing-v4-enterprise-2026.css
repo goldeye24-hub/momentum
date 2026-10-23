@@ -35,9 +35,9 @@ body{background:#fff;color:var(--v4-ink);font-family:Inter,Pretendard,"Noto Sans
 .v4-signal{color:#8ad0ff;font-size:6px;margin-left:3px}
 .v4-hero-subject{margin:32px 0 0;color:#c1daf8;font-size:13px;letter-spacing:.01em;font-weight:750}
 .momentum-v4-hero h1{margin:20px 0 0;font-size:clamp(53px,5.55vw,89px);line-height:1.12;letter-spacing:-.086em;font-weight:910;word-break:keep-all;color:#fff}
-.momentum-v4-hero h1 span{display:block}
+.momentum-v4-hero h1 > span{display:block}
 .momentum-v4-hero h1 .v4-title-accent{color:#88bcff}
-.momentum-v4-hero h1 .v4-title-period{display:inline;color:#6baafc}
+.momentum-v4-hero h1 .v4-title-period{display:inline!important;color:#6baafc}
 .v4-description{font-size:16px;line-height:1.9;max-width:530px;color:#b3c8e2;margin:29px 0 0;word-break:keep-all}
 .v4-description strong{color:#d9eafe;font-weight:790}
 .v4-action-row{display:flex;gap:11px;flex-wrap:wrap;margin-top:32px}
