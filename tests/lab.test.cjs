@@ -866,3 +866,16 @@ test('rank-watch UI never treats a failed database request as confirmed zero row
 
 require('./agency-trends.test.cjs');
 require('./finance-operations.test.cjs');
+
+test('editorial marketing homepage redesign is isolated, honest and navigable',()=>{
+ const h=fs.readFileSync('redesign-preview/index.html','utf8');
+ assert.match(h,/<meta name="robots" content="noindex,follow">/);
+ for(const anchor of ['problems','approach','cases','services','resources','contact'])assert.match(h,new RegExp('id="'+anchor+'"'));
+ for(const url of ['/services/keyword-ads/','/services/place-seo/','/services/viral/','/services/sns/','/services/review-care/','/services/press/','/services/photography/','/services/education/','/lab/','/#contact'])assert.ok(h.includes('href="'+url+'"'),url);
+ assert.match(h,/고객사는 가리고/);
+ assert.match(h,/데모/);
+ assert.match(h,/실제 실적을 나타내지 않습니다/);
+ assert.doesNotMatch(h,/\+320%|\+280%|\+250%/);
+ assert.match(h,/@media\(max-width:760px\)/);
+ assert.match(h,/aria-expanded/);
+});
