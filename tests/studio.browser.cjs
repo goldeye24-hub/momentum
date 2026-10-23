@@ -228,7 +228,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const response=await landing.goto(url,{waitUntil:'load'});
       assert.equal(response.status(),200,'Service landing unavailable: '+slug);
       assert.match(await landing.locator('h1').innerText(),/고객|선택|검색|좋은 제품/);
-      assert.equal(await landing.locator('.services .service').count(),4);
+      if(['place-seo','viral'].includes(slug)){
+        assert.equal(await landing.locator('#scope .scope-panel').count(),2);
+        assert.equal(await landing.locator('#faq details').count(),3);
+      }else{
+        assert.equal(await landing.locator('.services .service').count(),4);
+      }
       assert.ok(await landing.locator('a[href^="/?service="]').count()>=1);
       await landing.setViewportSize({width:390,height:840});
       const dims=await landing.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
