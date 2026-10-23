@@ -208,10 +208,10 @@ test('marketing homepage offers approved paid agency products and two open packa
   assert.ok(h.includes('<option value="'+name+'">'),'Missing marketing inquiry option: '+name);
  }
  for(const channel of ['네이버','카카오','구글'])assert.match(h,new RegExp(channel));
- assert.equal((h.match(/class="mk-service-card"/g)||[]).length,6);
+ assert.equal((h.match(/class="mk-service-card(?:\s|")/g)||[]).length,9);
  assert.doesNotMatch(h,/class="mk-photo-service"/);
- assert.match(h,/class="mk-supporting-option"/);
- assert.match(h,/네이버 플레이스용 사진촬영/);
+ assert.match(h,/id="photo-service"/);
+ assert.match(h,/블로그·네이버 플레이스용/);
  assert.match(h,/data-product="플레이스 사진촬영"/);
  assert.match(h,/<option value="플레이스 사진촬영">/);
  assert.equal((h.match(/class="package-card card/g)||[]).length,2);
@@ -221,7 +221,7 @@ test('marketing homepage offers approved paid agency products and two open packa
  for(const term of ['오픈패키지 1 구성 전체 포함','플레이스 광고 세팅','파워링크 광고 세팅','매체 광고비 별도'])assert.match(package2,new RegExp(term));
  assert.match(h,/권리침해 등 공식 신고 사유/);
  assert.match(h,/삭제를 보장하지 않습니다/);
- assert.doesNotMatch(h,/파워패키지|신규고객 패키지|샤오홍슈/);
+ assert.doesNotMatch(h,/파워패키지|신규고객 패키지/);
 });
 test('industry FAQ, 28 industry category directory, and four useful dedicated sector pages',()=>{
  const home=fs.readFileSync('index.html','utf8');
@@ -272,9 +272,27 @@ test('Place SEO card describes an SEO audit without registration or editing clai
  const end=home.indexOf('03 / VIRAL',start);
  assert.ok(start>=0&&end>start,'Place SEO service card exists');
  const card=home.slice(start,end);
- assert.match(card,/<h3>SEO 점검<\/h3>/);
+ assert.match(card,/<h3>플레이스<\/h3>/);
  assert.doesNotMatch(card,/등록|수정/);
- assert.match(card,/대표키워드|정보 완성도/);
+ assert.match(card,/SEO와 예약 기능을 점검/);
+});
+test('ten top navigation categories point to matching marketing service sections',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const mapping=[['키워드광고','keyword-ads'],['플레이스','place-seo'],['리뷰관리','review-care'],['바이럴마케팅','viral-marketing'],['SNS마케팅','sns-marketing'],['언론홍보','press-pr'],['디자인','design-service'],['촬영대행','photo-service'],['광고교육','ad-education'],['광고 무료도구','free-tools']];
+ const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
+ assert.ok(start>=0&&end>start);
+ const nav=h.slice(start,end);
+ assert.equal((nav.match(/<a href="#/g)||[]).length,10);
+ for(const [title,id] of mapping){assert.ok(nav.includes('href="#'+id+'"'),'Missing menu route '+title);assert.ok(h.includes('id="'+id+'"'),'Missing section '+id)}
+ assert.match(h,/샤오홍슈/);
+ assert.match(h,/삭제를 보장하지 않습니다/);
+ assert.match(h,/모멘텀에이전시 · 포트폴리오 보러가기/);
+ assert.equal((h.match(/class="mk-preview /g)||[]).length,3);
+ assert.match(h,/href="\/agency\/"/);
+ assert.match(h,/marketing-navigation-2026\.css/);
+ const css=fs.readFileSync('marketing-navigation-2026.css','utf8');
+ assert.match(css,/\.momentum-service-nav/);
+ assert.match(css,/max-width:950px/);
 });
 test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
  const h=fs.readFileSync('index.html','utf8');
