@@ -216,6 +216,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
         const logos=productPage.locator('.vis-source .vis-brand-logo img');
         assert.equal(await logos.count(),3);
         for(let i=0;i<3;i++){
+          await logos.nth(i).scrollIntoViewIfNeeded();
           const ok=await logos.nth(i).evaluate(async img=>{
             await img.decode();
             return img.complete&&img.naturalWidth>0;
