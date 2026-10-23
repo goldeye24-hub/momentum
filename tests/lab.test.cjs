@@ -920,3 +920,27 @@ test('three-hour ad education includes the full agenda and 60-day follow-up',()=
    assert.ok(h.includes(term),term);
  assert.doesNotMatch(h,/100% 스스로 운영 가능|모든 수강생.*보장/);
 });
+
+test('homepage design portfolio shows actual rendered website examples instead of abstract SVGs',()=>{
+  const home=fs.readFileSync('index.html','utf8');
+  const start=home.indexOf('<div class="mk-design-previews mk-live-portfolio"');
+  const end=home.indexOf('<a class="mk-design-link"',start);
+  assert.ok(start>0&&end>start,'design section');
+  const design=home.slice(start,end);
+  const slugs=['restaurant','beauty','stay'];
+  assert.equal((design.match(/<iframe /g)||[]).length,3);
+  assert.equal((design.match(/class="mk-preview mk-preview-site"/g)||[]).length,3);
+  for(const slug of slugs){
+    const route='/portfolio/conversion/'+slug+'/';
+    assert.ok(fs.existsSync('portfolio/conversion/'+slug+'/index.html'),slug);
+    assert.ok(design.includes('src="'+route+'"'),slug+' iframe');
+    assert.ok(design.includes('href="'+route+'"'),slug+' link');
+  }
+  for(const stub of ['momentum-preview-web.svg','momentum-preview-detail.svg','momentum-preview-brand.svg'])assert.ok(!design.includes(stub),stub);
+  assert.match(design,/가상 브랜드 홈페이지 제작 시안/);
+  assert.match(design,/실제 고객사 납품 사례로 표시하지 않습니다/);
+  const css=fs.readFileSync('marketing-navigation-2026.css','utf8');
+  assert.match(css,/\.mk-preview-viewport iframe/);
+  assert.match(css,/max-width:680px/);
+  assert.match(css,/pointer-events:none/);
+});
