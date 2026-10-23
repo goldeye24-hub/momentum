@@ -900,3 +900,23 @@ test('keyword-led marketing insight guide has substance and working index route'
  assert.equal((h.match(/<h3>[1-8]\./g)||[]).length,8);
  assert.doesNotMatch(h,/매출\s*\+\d+%|상위노출\s*100%/);
 });
+
+test('simulated proof illustrations never impersonate customer evidence',()=>{
+ const h=fs.readFileSync('redesign-preview/index.html','utf8');
+ assert.match(h,/가상 시뮬레이션 · 실제 고객사 실적 아님/);
+ for(const name of ['marketing-before-after-simulation.svg','marketing-performance-simulation.svg']){
+   const path='assets/demo/'+name;
+   assert.ok(fs.existsSync(path),name);
+   const svg=fs.readFileSync(path,'utf8');
+   assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+   assert.match(svg,/실제 고객사 실적 아님|실제 고객사·성과와 무관/);
+   assert.match(h,new RegExp('src="/assets/demo/'+name.replace(/\./g,'\\.')+'"'));
+ }
+ assert.doesNotMatch(h,/실제 고객 성과 320%|실제 성공 사례/);
+});
+test('three-hour ad education includes the full agenda and 60-day follow-up',()=>{
+ const h=fs.readFileSync('services/education/index.html','utf8');
+ for(const term of ['180분','20분','55분','10분','25분','15분','네이버 플레이스 설정 및 수정법','파워링크·플레이스광고 설정법','체험단','인스타그램','인플루언서','60일 카카오톡 AS'])
+   assert.ok(h.includes(term),term);
+ assert.doesNotMatch(h,/100% 스스로 운영 가능|모든 수강생.*보장/);
+});
