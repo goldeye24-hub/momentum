@@ -215,6 +215,10 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(await agencyHome.locator('#work').count(),0);
     assert.equal(await agencyHome.locator('#free-tools .mk-tool').count(),4);
     assert.equal(await agencyHome.locator('#services .mk-service-card').count(),6);
+    assert.equal(await agencyHome.locator('.mb-sector-images img').count(),0);
+    assert.equal(await agencyHome.locator('.mb-package-cover img').count(),0);
+    assert.equal(await agencyHome.locator('.mb-industry-cover img').count(),0);
+    assert.equal(await agencyHome.locator('.mb-channel-summary').count(),1);
     assert.equal(await agencyHome.locator('#services .mk-photo-service').count(),0);
     assert.equal(await agencyHome.locator('#services .mk-supporting-option').count(),1);
     assert.ok(await agencyHome.locator('#services .mk-supporting-option a[data-product="플레이스 사진촬영"]').count()===1);
