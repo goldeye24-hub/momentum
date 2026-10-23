@@ -266,6 +266,16 @@ test('local SEO GEO check works honestly without NAVER credentials',()=>{
  assert.match(customer,/content-type/);
 });
 
+test('Place SEO card describes an SEO audit without registration or editing claims',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const start=home.indexOf('02 / PLACE SEO');
+ const end=home.indexOf('03 / VIRAL',start);
+ assert.ok(start>=0&&end>start,'Place SEO service card exists');
+ const card=home.slice(start,end);
+ assert.match(card,/<h3>SEO 점검<\/h3>/);
+ assert.doesNotMatch(card,/등록|수정/);
+ assert.match(card,/대표키워드|정보 완성도/);
+});
 test('marketing-first homepage separates paid advertising, free tools, and premium membership',()=>{
  const h=fs.readFileSync('index.html','utf8');
  assert.match(h,/DIGITAL MARKETING COMPANY/);
