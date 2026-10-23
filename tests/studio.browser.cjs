@@ -211,6 +211,9 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const res=await productPage.goto('http://127.0.0.1:'+port+'/services/'+slug+'/',{waitUntil:'load'});
       assert.equal(res.status(),200,'Missing detailed product page: '+slug);
       assert.equal(await productPage.locator('#detailTitle').count(),1);
+      assert.equal(await productPage.locator('.svc-visual--'+slug).count(),1,'Diagram missing for '+slug);
+      assert.equal(await productPage.locator('.svc-visual figcaption h3').count(),1);
+      assert.ok(await productPage.locator('.vis-body').isVisible());
       for(const id of ['about','who','scope','compare','process','faq'])assert.equal(await productPage.locator('#'+id).count(),1,slug+': '+id);
       assert.ok(await productPage.locator('.final-cta a[href*="?service="]').count()>=1);
       await productPage.setViewportSize({width:390,height:844});
