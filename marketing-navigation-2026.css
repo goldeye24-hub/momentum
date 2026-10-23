@@ -1,4 +1,4 @@
-/* Marketing-first ten-category header and service catalog / 2026-10-23.
+/* Marketing-first eleven-category header and service catalog / 2026-10-23.
    Last stylesheet: intentionally wins over previous inherited layout. */
 html{scroll-padding-top:150px}
 .topbar{z-index:120!important}
@@ -7,7 +7,7 @@ html{scroll-padding-top:150px}
 .momentum-header-login{font-weight:820;font-size:12px;color:#61738b;white-space:nowrap}
 .momentum-header-login:hover{color:#175de2}
 .momentum-nav-shell{width:100%;background:#fff;border-top:1px solid #edf1f6;box-shadow:0 10px 16px #082e5a0b}
-.agency-nav.momentum-service-nav{display:grid!important;grid-template-columns:repeat(10,minmax(0,1fr));align-items:stretch;gap:0;margin:0 auto;min-height:79px;padding:0}
+.agency-nav.momentum-service-nav{display:grid!important;grid-template-columns:repeat(11,minmax(0,1fr));align-items:stretch;gap:0;margin:0 auto;min-height:79px;padding:0}
 .momentum-service-nav>a{position:relative;min-width:0;padding:13px 9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#1a355b!important;text-align:center;border-right:1px solid #eff2f7;transition:background .17s,color .17s}
 .momentum-service-nav>a:first-child{border-left:1px solid #eff2f7}
 .momentum-service-nav>a:hover,.momentum-service-nav>a:focus-visible{background:#edf5ff!important;color:#135cc6!important}
@@ -104,3 +104,10 @@ html{scroll-padding-top:150px}
 #services .mk-service-card:first-child .mk-detail-link{background:#ffffff20;color:#fff;border-color:#ffffff55}
 #services .mk-service-card:first-child .mk-detail-link:hover{background:#ffffff35}
 @media(max-width:600px){#services .mk-service-card .mk-detail-link{font-size:12px;padding:10px 12px}}
+
+/* Last menu entry: daily marketing resources, preserving previous ten advertising categories. */
+.momentum-service-nav>.momentum-insights-nav{background:#f4f7fc;color:#1a4e8c!important}
+.momentum-service-nav>.momentum-insights-nav strong{font-weight:900}
+.momentum-service-nav>.momentum-insights-nav span{color:#6985a9}
+@media(min-width:951px) and (max-width:1250px){.momentum-service-nav>a{padding-left:4px;padding-right:4px}.momentum-service-nav>a strong{font-size:10px}}
+@media(max-width:950px){.momentum-service-nav>.momentum-insights-nav{margin-top:7px;border-top:1px solid #e1e9f4}}
