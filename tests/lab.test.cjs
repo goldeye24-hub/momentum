@@ -248,23 +248,33 @@ test('marketing consultation removes street address and emphasizes advertising s
  assert.match(h,/id="requestedProduct"/);
  assert.match(h,/고객센터: 0507-1313-5668/);
 });
-test('ten top navigation categories point to matching marketing service sections',()=>{
+test('marketing service navigation connects product pages, agency and free tools',()=>{
  const h=fs.readFileSync('index.html','utf8');
- const mapping=[['키워드광고','keyword-ads'],['플레이스','place-seo'],['리뷰관리','review-care'],['바이럴마케팅','viral-marketing'],['SNS마케팅','sns-marketing'],['언론홍보','press-pr'],['디자인','design-service'],['촬영대행','photo-service'],['광고교육','ad-education'],['광고 무료도구','free-tools']];
+ const mapping=[['keyword-ads','keyword-ads'],['place-seo','place-seo'],['review-care','review-care'],['viral-marketing','viral'],['sns-marketing','sns'],['press-pr','press'],['photo-service','photography'],['ad-education','education']];
  const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
  assert.ok(start>=0&&end>start);
  const nav=h.slice(start,end);
- assert.equal((nav.match(/<a href="#/g)||[]).length,10);
- for(const [title,id] of mapping){assert.ok(nav.includes('href="#'+id+'"'),'Missing menu route '+title);assert.ok(h.includes('id="'+id+'"'),'Missing section '+id)}
+ assert.equal((nav.match(/<a href=/g)||[]).length,10);
+ for(const [card,slug] of mapping){
+  const page='services/'+slug+'/index.html';
+  assert.ok(fs.statSync(page).isFile(),page);
+  assert.match(nav,new RegExp('href="/services/'+slug+'/"'));
+  const detail=fs.readFileSync(page,'utf8');
+  assert.match(detail,/<h1 id="detailTitle">/);
+  for(const section of ['about','who','scope','compare','process','faq'])assert.ok(detail.includes('id="'+section+'"'),page+': '+section);
+  assert.match(detail,/\/services\/service-pages\.css/);
+  assert.match(detail,/\?service=/);
+  assert.match(detail,/noindex,follow/);
+ }
+ assert.match(nav,/href="\/agency\/"><strong>디자인/);
+ assert.match(nav,/href="#free-tools"/);
+ assert.equal((h.match(/class="mk-detail-link"/g)||[]).length,8);
+ assert.match(h,/모멘텀에이전시 · 포트폴리오 보러가기/);
  assert.match(h,/샤오홍슈/);
  assert.match(h,/삭제를 보장하지 않습니다/);
- assert.match(h,/모멘텀에이전시 · 포트폴리오 보러가기/);
- assert.equal((h.match(/class="mk-preview /g)||[]).length,3);
- assert.match(h,/href="\/agency\/"/);
- assert.match(h,/marketing-navigation-2026\.css/);
- const css=fs.readFileSync('marketing-navigation-2026.css','utf8');
- assert.match(css,/\.momentum-service-nav/);
- assert.match(css,/max-width:950px/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.hero-art/);
+ assert.match(css,/@media\(max-width:560px\)/);
 });
 test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
  const h=fs.readFileSync('index.html','utf8');
