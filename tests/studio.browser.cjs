@@ -199,12 +199,14 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.match(await agencyHome.locator('h1').innerText(),/성장의 흐름을/);
     assert.equal(await agencyHome.locator('.v4-hero-visual').count(),1);
     assert.match(await agencyHome.locator('#free-tools').innerText(),/무료 마케팅 도구/);
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
+    assert.ok(await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').isVisible());
     assert.ok(await agencyHome.locator('#contactForm').count()===1);
     const cssAvailable=await agencyHome.evaluate(async()=>{const r=await fetch('/agency.css');return r.status===200&&(await r.text()).includes('.agency-hero-grid')});
     assert.ok(cssAvailable,'Integrated agency stylesheet missing');
     const v4Ready=await agencyHome.evaluate(async()=>{const r=await fetch('/marketing-v4-enterprise-2026.css');return r.status===200&&(await r.text()).includes('.v4-hero-visual')});
     assert.ok(v4Ready,'New enterprise stylesheet must load');
+    const menuCss=await agencyHome.evaluate(async()=>{const r=await fetch('/marketing-navigation-2026.css');return r.ok&&(await r.text()).includes('.momentum-service-nav')});
+    assert.ok(menuCss,'Ten-category marketing navigation stylesheet missing');
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-desktop.png'),fullPage:true});
     for(const width of [390,768,1280]){
       await agencyHome.setViewportSize({width,height:850});
@@ -216,16 +218,18 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
     assert.equal(await agencyHome.locator('#work').count(),0);
     assert.equal(await agencyHome.locator('#free-tools .mk-tool').count(),4);
-    assert.equal(await agencyHome.locator('#services .mk-service-card').count(),6);
+    assert.equal(await agencyHome.locator('#services .mk-service-card').count(),9);
     assert.equal(await agencyHome.locator('.mb-sector-images img').count(),0);
     assert.equal(await agencyHome.locator('.mb-package-cover img').count(),0);
     assert.equal(await agencyHome.locator('.mb-industry-cover img').count(),0);
     assert.equal(await agencyHome.locator('.v4-navigation-ribbon a').count(),3);
     assert.equal(await agencyHome.locator('#services .mk-photo-service').count(),0);
-    assert.equal(await agencyHome.locator('#services .mk-supporting-option').count(),1);
-    assert.ok(await agencyHome.locator('#services .mk-supporting-option a[data-product="플레이스 사진촬영"]').count()===1);
+    assert.equal(await agencyHome.locator('#services #photo-service').count(),1);
+    assert.ok(await agencyHome.locator('#services #photo-service a[data-product="플레이스 사진촬영"]').count()===1);
     assert.ok(await agencyHome.locator('#requestedProduct option[value="플레이스 사진촬영"]').count()===1);
     assert.ok(await agencyHome.locator('a[href="/agency/"]').count()>=1);
+    assert.equal(await agencyHome.locator('.momentum-service-nav > a').count(),10);
+    assert.equal(await agencyHome.locator('.mk-design-previews .mk-preview').count(),3);
     assert.ok(await agencyHome.locator('#paid-service').count()===1);
     assert.equal(await agencyHome.locator('#open-packages .package-card').count(),2);
     const customCss=await agencyHome.evaluate(async()=>{
@@ -238,8 +242,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.ok(await toggle.isVisible());
     await toggle.click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
-    await agencyHome.locator('.agency-nav a[href="#services"]').click();
+    assert.ok(await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').isVisible());
+    await agencyHome.locator('.agency-nav a[href="#keyword-ads"]').click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'false');
     assert.equal(await agencyHome.locator('.agency-nav').isVisible(),false);
         assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
