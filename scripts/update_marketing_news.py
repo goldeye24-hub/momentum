@@ -95,7 +95,7 @@ def pull(source, now):
     results = []
     for item in nodes:
         title = unescape(child_text(item, "title", ATOM+"title"))
-        date = parse_date(child_text(item, "pubDate", "dc:date", ATOM+"published", ATOM+"updated"))
+        date = parse_date(child_text(item, "pubDate", "{http://purl.org/dc/elements/1.1/}date", ATOM+"published", ATOM+"updated"))
         url = get_link(item, address)
         if not title or len(title) > 230 or not date or not safe_url(url, domains):
             continue
