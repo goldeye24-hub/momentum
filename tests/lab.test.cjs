@@ -276,6 +276,22 @@ test('marketing service navigation connects product pages, agency and free tools
  assert.match(css,/\.hero-art/);
  assert.match(css,/@media\(max-width:560px\)/);
 });
+test('keyword advertising diagram uses local brand logos instead of letter placeholders',()=>{
+ const h=fs.readFileSync('services/keyword-ads/index.html','utf8');
+ for(const brand of ['naver','google','kakao']){
+  const file='assets/logos/'+brand+'.svg';
+  assert.ok(fs.statSync(file).isFile(),file);
+  const svg=fs.readFileSync(file,'utf8');
+  assert.match(svg,/<svg/);
+  assert.match(svg,/<path /);
+  assert.match(h,new RegExp('src="/assets/logos/'+brand+'\\.svg"'));
+ }
+ assert.doesNotMatch(h,/class="vis-source-icon"/);
+ assert.match(h,/공식 제휴·인증을 의미하지 않습니다/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.vis-brand-logo--kakao/);
+ assert.match(css,/@media\(max-width:560px\)/);
+});
 test('all eight service detail pages include unique semantic infographics without fabricated growth metrics',()=>{
  const variants=['keyword-ads','place-seo','review-care','viral','sns','press','photography','education'];
  for(const slug of variants){
