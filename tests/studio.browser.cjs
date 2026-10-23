@@ -212,6 +212,17 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       assert.equal(res.status(),200,'Missing detailed product page: '+slug);
       assert.equal(await productPage.locator('#detailTitle').count(),1);
       assert.equal(await productPage.locator('.svc-visual--'+slug).count(),1,'Diagram missing for '+slug);
+      if(slug==='keyword-ads'){
+        const logos=productPage.locator('.vis-source .vis-brand-logo img');
+        assert.equal(await logos.count(),3);
+        for(let i=0;i<3;i++){
+          const ok=await logos.nth(i).evaluate(async img=>{
+            await img.decode();
+            return img.complete&&img.naturalWidth>0;
+          });
+          assert.ok(ok,'Paid-search logo image failed to decode: '+i);
+        }
+      }
       assert.equal(await productPage.locator('.svc-visual figcaption h3').count(),1);
       assert.ok(await productPage.locator('.vis-body').isVisible());
       for(const id of ['about','who','scope','compare','process','faq'])assert.equal(await productPage.locator('#'+id).count(),1,slug+': '+id);
