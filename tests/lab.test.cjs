@@ -255,7 +255,7 @@ test('marketing service navigation connects product pages, agency and free tools
  assert.ok(start>=0&&end>start);
  const nav=h.slice(start,end);
  assert.equal((nav.match(/<a href=/g)||[]).length,11);
- assert.match(nav,/href="\\/insights\\/" class="momentum-insights-nav"/);
+  assert.ok(nav.includes('href="/insights/" class="momentum-insights-nav"'));
  for(const [card,slug] of mapping){
   const page='services/'+slug+'/index.html';
   assert.ok(fs.statSync(page).isFile(),page);
