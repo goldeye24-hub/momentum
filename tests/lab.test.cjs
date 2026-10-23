@@ -944,3 +944,28 @@ test('homepage design portfolio shows actual rendered website examples instead o
   assert.match(css,/max-width:680px/);
   assert.match(css,/pointer-events:none/);
 });
+
+test('main homepage shows two simulated evidence layouts without changing the service catalogue',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const services=h.indexOf('<section id="services"');
+ const results=h.indexOf('<section id="results"');
+ const tools=h.indexOf('<section id="free-tools"');
+ assert.ok(services<results&&results<tools,'results sit after services and before free tools');
+ const sec=h.slice(results,tools);
+ for(const name of ['marketing-before-after-simulation.svg','marketing-performance-simulation.svg']){
+   const path='assets/demo/'+name;
+   assert.ok(fs.existsSync(path),path);
+   assert.ok(sec.includes('src="/'+path+'"'),name+' image');
+   assert.ok(sec.includes('href="/'+path+'"'),name+' full-size link');
+   const svg=fs.readFileSync(path,'utf8');
+   assert.match(svg,/가상 성과 시뮬레이션|가상 시뮬레이션/);
+ }
+ assert.match(sec,/가상 시뮬레이션 이미지/);
+ assert.match(sec,/실제 고객 실적을 나타내지 않습니다/);
+ assert.match(sec,/id="resultsTitle"/);
+ assert.match(sec,/href="#contact"/);
+ const style=fs.readFileSync('marketing-navigation-2026.css','utf8');
+ assert.match(style,/#results\.mm-results/);
+ assert.match(style,/@media\(max-width:650px\)/);
+ assert.match(h,/id="design-service"/);
+});
