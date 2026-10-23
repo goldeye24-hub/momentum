@@ -276,6 +276,16 @@ test('Place SEO card describes an SEO audit without registration or editing clai
  assert.doesNotMatch(card,/등록|수정/);
  assert.match(card,/대표키워드|정보 완성도/);
 });
+test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ assert.doesNotMatch(h,/portfolio-(?:mukdori|balmonghair)\.jpg/);
+ assert.match(h,/class="mb-channel-summary"/);
+ assert.equal((h.match(/class="mb-package-cover/g)||[]).length,2);
+ assert.equal((h.match(/class="mb-industry-cover/g)||[]).length,4);
+ const css=fs.readFileSync('marketing-blue-enterprise-2026.css','utf8');
+ assert.match(css,/\.mb-channel-summary/);
+ assert.match(css,/\.mb-industry-cover/);
+});
 test('marketing-first homepage separates paid advertising, free tools, and premium membership',()=>{
  const h=fs.readFileSync('index.html','utf8');
  assert.match(h,/DIGITAL MARKETING COMPANY/);
