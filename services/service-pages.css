@@ -124,3 +124,12 @@
  .vis-brand-logo--kakao img{width:54px;height:24px}
  .vis-logo-disclosure{font-size:9px;margin-bottom:0}
 }
+
+/* Photography service: real reference imagery replaces abstract SVG/CSS mock-ups. */
+.svc-visual--photography .vis-photo-board{align-items:stretch}
+.svc-visual--photography .vis-photo-frame{overflow:hidden}
+.svc-visual--photography .vis-photo-image{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center;border-radius:5px;background:#21416c;transition:transform .25s ease}
+.svc-visual--photography .vis-photo-frame:hover .vis-photo-image{transform:scale(1.025)}
+.svc-visual--photography .vis-photo-credit{color:#9db5d1;font-size:10px;text-align:right;margin:8px 0 0}
+.svc-visual--photography .vis-photo-credit a{color:#cce2ff;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:560px){.svc-visual--photography .vis-photo-image{aspect-ratio:4/3}.svc-visual--photography .vis-photo-credit{font-size:9px}}
