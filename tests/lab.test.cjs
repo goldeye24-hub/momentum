@@ -276,6 +276,26 @@ test('marketing service navigation connects product pages, agency and free tools
  assert.match(css,/\.hero-art/);
  assert.match(css,/@media\(max-width:560px\)/);
 });
+test('all eight service detail pages include unique semantic infographics without fabricated growth metrics',()=>{
+ const variants=['keyword-ads','place-seo','review-care','viral','sns','press','photography','education'];
+ for(const slug of variants){
+  const h=fs.readFileSync('services/'+slug+'/index.html','utf8');
+  assert.match(h,new RegExp('class="svc-visual svc-visual--'+slug+'"'));
+  assert.match(h,new RegExp('aria-labelledby="visual-'+slug+'"'));
+  assert.match(h,/class="vis-heading"/);
+  assert.match(h,/class="vis-body"/);
+  assert.match(h,/class="timeline"/);
+  assert.match(h,/noindex,follow/);
+  assert.doesNotMatch(h,/(?:portfolio-mukdori|portfolio-balmonghair)\.jpg/);
+ }
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ for(const selector of ['.vis-inputs','.vis-check-grid','.vis-branches','.vis-two-path','.vis-social','.vis-press-layout','.vis-photo-board','.vis-curriculum']) assert.ok(css.includes(selector),selector);
+ assert.match(css,/max-width:560px/);
+ const review=fs.readFileSync('services/review-care/index.html','utf8');
+ assert.match(review,/삭제를 보장하지 않습니다/);
+ const media=fs.readFileSync('services/press/index.html','utf8');
+ assert.match(media,/매체 심사/);
+});
 test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
  const h=fs.readFileSync('index.html','utf8');
  assert.doesNotMatch(h,/portfolio-(?:mukdori|balmonghair)\.jpg/);
