@@ -90,3 +90,10 @@ html{scroll-padding-top:150px}
 .mk-design-previews .mk-preview{display:block;padding:0!important;height:106px;overflow:hidden;border:1px solid #c9d9f0;border-radius:6px;background:#eff5fb}
 .mk-design-previews .mk-preview img{display:block;width:100%;height:100%;object-fit:cover}
 @media(max-width:600px){.mk-design-previews .mk-preview{height:86px}}
+
+/* Advertising consultation: no design-selection UI, no business street address. */
+#contact .marketing-consult-intro{display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:linear-gradient(115deg,#ecf4ff,#f8fbff);border:1px solid #d9e9fe;border-left:4px solid #286cd7;padding:24px 25px;border-radius:9px;margin-bottom:8px;box-shadow:0 6px 17px #153f7c0a}
+#contact .marketing-consult-eyebrow{font-size:10px;letter-spacing:.15em;font-weight:850;color:#2f68bd}
+#contact .marketing-consult-intro strong{color:#133a6a;font-size:clamp(19px,2vw,25px);letter-spacing:-.055em;line-height:1.4;word-break:keep-all}
+#contact .marketing-consult-intro p{color:#627b99;font-size:12px;line-height:1.85;margin:0;word-break:keep-all}
+@media(max-width:600px){#contact .marketing-consult-intro{padding:20px 17px;gap:7px}#contact .marketing-consult-intro strong{font-size:20px}}
