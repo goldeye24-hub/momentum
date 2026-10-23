@@ -27,7 +27,7 @@ test('public and member navigation directs visitors into correct service area',(
  const lab=fs.readFileSync('lab/index.html','utf8');
  const member=fs.readFileSync('platform/index.html','utf8');
  const adminHub=fs.readFileSync('site-builder/operations-index.html','utf8');
- assert.ok(home.includes('href="/platform/" class="mk-login-nav">로그인</a>'));
+ assert.ok(home.includes('href="/platform/" class="momentum-header-login">로그인</a>'));
  assert.ok(home.includes('href="/agency/"'));
  assert.match(lab,/href="\/platform\/">회원 서비스·로그인/);
  assert.match(member,/id="dashboard" hidden/);
