@@ -269,7 +269,7 @@ test('local SEO GEO check works honestly without NAVER credentials',()=>{
 test('Place SEO card describes an SEO audit without registration or editing claims',()=>{
  const home=fs.readFileSync('index.html','utf8');
  const start=home.indexOf('02 / PLACE SEO');
- const end=home.indexOf('03 / VIRAL',start);
+ const end=home.indexOf('03 / REVIEW CARE',start);
  assert.ok(start>=0&&end>start,'Place SEO service card exists');
  const card=home.slice(start,end);
  assert.match(card,/<h3>플레이스<\/h3>/);
@@ -327,7 +327,7 @@ test('marketing-first homepage separates paid advertising, free tools, and premi
  assert.match(h,/현재 결제·유료 자동 권한 배정은 미연결/);
  assert.doesNotMatch(h,/id="work"|id="full-catalog"|class="agency-sample-card/);
  assert.doesNotMatch(h,/class="hero-form"/);
- assert.equal((h.match(/class="mk-service-card"/g)||[]).length,6);
+ assert.equal((h.match(/class="mk-service-card(?:\s|")/g)||[]).length,9);
  assert.equal((h.match(/class="package-card card/g)||[]).length,2);
  assert.ok(fs.readFileSync('marketing-home-2026.css','utf8').includes('.mk-free-grid'));
 });
