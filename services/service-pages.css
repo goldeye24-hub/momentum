@@ -133,3 +133,19 @@
 .svc-visual--photography .vis-photo-credit{color:#9db5d1;font-size:10px;text-align:right;margin:8px 0 0}
 .svc-visual--photography .vis-photo-credit a{color:#cce2ff;text-decoration:underline;text-underline-offset:2px}
 @media(max-width:560px){.svc-visual--photography .vis-photo-image{aspect-ratio:4/3}.svc-visual--photography .vis-photo-credit{font-size:9px}}
+
+/* Advertising education — 3-hour practical curriculum and 60-day follow-up */
+.svc-edu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0 32px}
+.svc-edu-stats>div{display:grid;gap:8px;border:1px solid #dbe6f5;background:#f5f9fe;padding:25px;border-radius:9px}
+.svc-edu-stats strong{font-size:clamp(24px,2.4vw,37px);font-weight:850;color:#0d4f9e;letter-spacing:-.065em}
+.svc-edu-stats span{font-size:12px;color:#627c9e;line-height:1.6}
+.svc-edu-agenda{border-top:2px solid #1e5395;margin-bottom:34px}
+.svc-edu-agenda article{display:grid;grid-template-columns:120px minmax(0,1fr);gap:25px;padding:24px 8px;border-bottom:1px solid #dce6f0}
+.svc-edu-agenda .edu-duration{font-size:12px;font-weight:820;color:#477bad;display:flex;align-items:center;gap:13px;white-space:nowrap}
+.svc-edu-agenda .edu-duration b{font-size:17px;color:#0e3767}
+.svc-edu-agenda h3{margin:0 0 6px;font-size:20px;letter-spacing:-.05em;color:#133e6c}
+.svc-edu-agenda p{margin:0;color:#586f8c;font-size:13px;line-height:1.9}
+.svc-edu-agenda small{display:inline-block;margin-top:10px;color:#1f68c5;font-size:11px;font-weight:780}
+.svc-edu-agenda article.break{background:#f6f8fb}
+.svc-edu-agenda article.break h3{font-size:15px}
+@media(max-width:680px){.svc-edu-stats{grid-template-columns:1fr 1fr;gap:8px}.svc-edu-stats>div{padding:16px}.svc-edu-stats>div:last-child{grid-column:1/-1}.svc-edu-agenda article{grid-template-columns:75px minmax(0,1fr);gap:12px;padding:20px 2px}.svc-edu-agenda .edu-duration{display:flex;flex-direction:column;align-items:flex-start;gap:0}.svc-edu-agenda .edu-duration b{font-size:15px}.svc-edu-agenda h3{font-size:17px}}
