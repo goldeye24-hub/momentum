@@ -279,11 +279,13 @@ test('Place SEO card describes an SEO audit without registration or editing clai
 test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
  const h=fs.readFileSync('index.html','utf8');
  assert.doesNotMatch(h,/portfolio-(?:mukdori|balmonghair)\.jpg/);
- assert.match(h,/class="mb-channel-summary"/);
+ assert.match(h,/class="v4-hero-visual"/);
+ assert.match(h,/class="v4-navigation-ribbon"/);
+ assert.match(h,/marketing-v4-enterprise-2026\.css/);
  assert.equal((h.match(/class="mb-package-cover/g)||[]).length,2);
  assert.equal((h.match(/class="mb-industry-cover/g)||[]).length,4);
- const css=fs.readFileSync('marketing-blue-enterprise-2026.css','utf8');
- assert.match(css,/\.mb-channel-summary/);
+ const css=fs.readFileSync('marketing-v4-enterprise-2026.css','utf8');
+ assert.match(css,/\.v4-hero-visual/);
  assert.match(css,/\.mb-industry-cover/);
 });
 test('marketing-first homepage separates paid advertising, free tools, and premium membership',()=>{
