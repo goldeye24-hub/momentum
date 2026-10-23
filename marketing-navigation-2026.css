@@ -85,3 +85,8 @@ html{scroll-padding-top:150px}
  .topbar .topbar-inner{min-height:66px}
 }
 @media(prefers-reduced-motion:reduce){.mk-preview{transition:none}}
+
+/* Actual original SVG concept thumbnails, not customer photos. */
+.mk-design-previews .mk-preview{display:block;padding:0!important;height:106px;overflow:hidden;border:1px solid #c9d9f0;border-radius:6px;background:#eff5fb}
+.mk-design-previews .mk-preview img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:600px){.mk-design-previews .mk-preview{height:86px}}
