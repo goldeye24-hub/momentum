@@ -24,6 +24,15 @@ test('customer UI and application javascript parse',()=>{
  assert.match(html,/\/lab\/customer\.js/);
  assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/customer.js','utf8')));
 });
+test('analytics page header omits Free Workspace menu but retains diagnostics',()=>{
+ const html=fs.readFileSync('lab/index.html','utf8');
+ const nav=html.match(/<nav class="mainnav">([\s\S]*?)<\/nav>/)?.[1];
+ assert.ok(nav);
+ assert.doesNotMatch(nav,/무료 작업실|무료작업실/);
+ assert.match(nav,/전문 서비스/);
+ assert.match(html,/무료 매장 통합진단/);
+ assert.match(html,/id="auditForm"/);
+});
 test('homepage still retains services and inquiry form',()=>{
  const root=fs.readFileSync('index.html','utf8');
  assert.match(root,/href="\/lab\/"/);
