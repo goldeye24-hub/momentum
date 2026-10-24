@@ -154,3 +154,13 @@ body{background:#fff;color:var(--editorial-ink)}
   .mm-hero-mobile-flow span{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){.v4-ribbon-inner a,#services .mk-service-card{transition:none!important}}
+
+/* Mobile concise-ribbon improvement / 2026-10-24 */
+@media(max-width:760px){
+  /* Services and tools already have prominent hero links; skip another row of tiny links. */
+  .v4-navigation-ribbon{display:none!important}
+  .v4-hero-layout{padding-top:40px;padding-bottom:10px}
+  .mm-hero-mobile-flow{margin-top:25px}
+  .v4-hero-meta{padding-top:9px;padding-bottom:23px}
+  #services.mk-services{padding-top:52px}
+}
