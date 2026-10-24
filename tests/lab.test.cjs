@@ -1011,3 +1011,18 @@ test('editorial mobile hero has light theme, compact journey and retains service
  const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
  assert.equal((h.slice(start,end).match(/<a href=/g)||[]).length,11);
 });
+
+test('mobile editorial refresh keeps performance demo visible before services',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const style=fs.readFileSync('marketing-editorial-refresh-2026.css','utf8');
+ const teaser=h.indexOf('class="mm-mobile-case-teaser"');
+ const services=h.indexOf('<section id="services"');
+ const results=h.indexOf('<section id="results"');
+ assert.ok(teaser>0&&teaser<services&&services<results);
+ assert.match(h.slice(teaser,teaser+1000),/가상 데이터 디자인 예시/);
+ assert.match(h.slice(teaser,teaser+1000),/href="#results"/);
+ assert.match(style,/\.v4-hero-visual\.mm-intelligence-board\{display:none!important\}/);
+ assert.match(style,/\.mm-mobile-case-teaser\{display:none\}/);
+ assert.match(style,/#services \.mk-service-card:nth-child\(n\+3\)/);
+ assert.match(style,/@media\(max-width:760px\)/);
+});
