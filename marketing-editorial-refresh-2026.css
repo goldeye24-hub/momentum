@@ -137,6 +137,15 @@ body{background:#fff;color:var(--editorial-ink)}
   #free-tools .mk-free-grid .mk-tool{min-height:0;padding:23px}
   #free-tools .mk-free-grid .mk-tool-glyph{margin:12px 0 7px}
 }
+@media(max-width:760px){
+  body{padding-bottom:76px}
+  .mobile-bar{width:min(calc(100% - 24px),440px);bottom:max(10px,env(safe-area-inset-bottom))}
+  .mobile-bar-inner{display:grid;grid-template-columns:1fr 1.38fr;gap:7px;padding:7px;background:rgba(255,255,255,.97)!important;border:1px solid #dce5f0!important;border-radius:15px!important;box-shadow:0 13px 40px #0e2b5124!important}
+  .mobile-bar .btn{height:43px;min-height:43px;border-radius:10px!important;font-size:12px;font-weight:840;padding:9px 12px}
+  .mobile-bar .btn-outline{color:#123b69!important;background:#f3f7fd!important;border:1px solid #d8e5f4!important}
+  .mobile-bar .btn-dark{color:#fff!important;background:#1d5dcc!important;border:1px solid #1d5dcc!important}
+  .mobile-bar .btn-dark:hover{background:#11489f!important}
+}
 @media(max-width:390px){
   .container{width:calc(100% - 32px)}
   .momentum-v4-hero h1{font-size:clamp(35px,10.45vw,41px)}
