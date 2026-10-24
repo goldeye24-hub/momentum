@@ -969,3 +969,26 @@ test('main homepage shows two simulated evidence layouts without changing the se
  assert.match(style,/@media\(max-width:650px\)/);
  assert.match(h,/id="design-service"/);
 });
+
+test('2026-10-24 editorial drafts stay on the feature branch and link from insights',()=>{
+ const fs=require('node:fs');
+ const index=fs.readFileSync('insights/index.html','utf8');
+ const drafts=[
+  ['insights/guides/jeju-tour-experience-booking-conversion/index.html','제주 관광체험','www.visitjeju.net'],
+  ['insights/updates/naver-lodging-permit-booking-2026/index.html','11월 12일','new.smartplace.naver.com/notices/1122']
+ ];
+ for(const [path,subject,source] of drafts){
+   const html=fs.readFileSync(path,'utf8');
+   assert.match(html,/<meta name="robots" content="noindex,follow">/);
+   assert.match(html,/<title>[^<]+<\/title>/);
+   assert.match(html,/<h1>[^<]+<\/h1>/);
+   assert.ok(html.includes(subject),subject);
+   assert.ok(html.includes(source),source);
+   assert.ok(html.includes('2026.10.24'));
+   assert.ok(html.includes('href="/services/'));
+   assert.ok(html.includes('체크리스트'));
+   assert.ok(index.includes('/'+path.replace(/index.html$/,'')),path);
+ }
+ assert.match(index,/<meta name="robots" content="noindex,follow">/);
+ assert.match(fs.readFileSync('insights/updates/naver-lodging-permit-booking-2026/index.html','utf8'),/구체적인 조치 방식.*가이드라인/);
+});
