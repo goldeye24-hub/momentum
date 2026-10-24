@@ -992,3 +992,22 @@ test('2026-10-24 editorial drafts stay on the feature branch and link from insig
  assert.match(index,/<meta name="robots" content="noindex,follow">/);
  assert.match(fs.readFileSync('insights/updates/naver-lodging-permit-booking-2026/index.html','utf8'),/구체적인 조치 방식.*가이드라인/);
 });
+
+test('editorial mobile hero has light theme, compact journey and retains service navigation',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const css=fs.readFileSync('marketing-editorial-refresh-2026.css','utf8');
+ assert.match(h,/<meta name="color-scheme" content="only light"/);
+ assert.match(h,/href="\/marketing-editorial-refresh-2026\.css"/);
+ assert.match(h,/class="mm-hero-mobile-flow"/);
+ for(const step of ['검색·발견','정보·비교','문의·선택'])assert.ok(h.includes(step),step);
+ assert.match(css,/\.v4-hero-visual\.mm-intelligence-board\{display:none!important\}/);
+ assert.match(css,/\.v4-ribbon-inner\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important/);
+ assert.match(css,/\.agency-trust-strip\{display:none!important\}/);
+ assert.match(css,/color-scheme:only light/);
+ assert.match(css,/@media\(max-width:390px\)/);
+ assert.match(h,/href="#contact"/);
+ assert.match(h,/href="#services"/);
+ assert.match(h,/id="results"/);
+ const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
+ assert.equal((h.slice(start,end).match(/<a href=/g)||[]).length,11);
+});
