@@ -185,6 +185,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/datalab-trend",
+      "destination": "/api/compact?op=datalab-trend"
+    },
+    {
       "source": "/api/admin-keyword-matrix",
       "destination": "/api/compact?op=admin-keyword-matrix"
     },
@@ -247,6 +251,14 @@
     {
       "source": "/admin/studio/",
       "destination": "/api/admin-site-builder?view=studio"
+    },
+    {
+      "source": "/admin/finance",
+      "destination": "/api/admin-site-builder?view=finance"
+    },
+    {
+      "source": "/admin/finance/",
+      "destination": "/api/admin-site-builder?view=finance"
     },
     {
       "source": "/admin/crm",

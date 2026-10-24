@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>거래처·상품 관리 | 모멘텀마케팅 관리자</title>
-<link rel="stylesheet" href="/admin/assets/crm.css"></head>
+<link rel="stylesheet" href="/admin/assets/crm.css"><style>.vendor-candidate-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.vendor-candidate{border:1px solid #dce5ed;background:white;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:10px}.vendor-candidate .category{font-size:11px;color:#3d70bf;font-weight:800;letter-spacing:.08em}.vendor-candidate h3{font-size:18px;margin:0;letter-spacing:-.045em}.vendor-candidate p{font-size:12px;color:#718294;line-height:1.7;flex:1;margin:0}.vendor-candidate .buttons{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.vendor-candidate .buttons>a{font-size:12px;color:#1e5ca9;text-decoration:underline}.vendor-candidate button{font-size:12px}.vendor-candidate .tag{font-size:10px;color:#9b6d21;background:#fff8eb;border-radius:4px;padding:4px 7px;align-self:flex-start}@media(max-width:1050px){.vendor-candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.vendor-candidate-grid{grid-template-columns:1fr}}</style></head>
 <body>
-<header class="topbar"><div class="shell topbar-inner"><a class="brand" href="/admin/">M<span>↗</span> 모멘텀마케팅</a><nav><a href="/admin/overview/">운영센터</a><a href="/admin/studio/">홈페이지 제작툴</a><a class="on" href="/admin/crm/">거래처·상품 관리</a></nav><form action="/admin/logout" method="post"><button class="logout" type="submit">로그아웃</button></form></div></header>
+<header class="topbar"><div class="shell topbar-inner"><a class="brand" href="/admin/">M<span>↗</span> 모멘텀마케팅</a><nav><a href="/admin/overview/">운영센터</a><a href="/admin/studio/">홈페이지 제작툴</a><a class="on" href="/admin/crm/">거래처·상품 관리</a><a href="/admin/finance/">매입·마진 관리</a></nav><form action="/admin/logout" method="post"><button class="logout" type="submit">로그아웃</button></form></div></header>
 <div class="crm-layout"><aside class="crm-sidebar">
 <div class="crm-brand"><span class="crm-brandmark">M↗</span><div><strong>MOMENTUM</strong><small>MARKETING OPERATIONS</small></div></div>
 <div class="crm-role">PRIVATE WORKSPACE</div>
@@ -13,6 +13,7 @@
 <a href="#contractSection"><span>▤</span>상품별 계약</a>
 <a href="#bundleSection"><span>▣</span>묶음 견적·계약</a>
 <a href="#supplierSection"><span>▧</span>외주업체 관리</a>
+<a href="/admin/finance/"><span>₩</span>매입·정산 관리</a>
 <a href="#pipelineSection"><span>◷</span>후속영업·업무</a>
 <a href="#catalogSection"><span>▦</span>광고상품 목록</a>
 <a href="#recordsSection"><span>☷</span>광고주 계약 현황</a>
@@ -126,6 +127,11 @@
     <div class="supplier-directory"><h3>등록된 협력업체 <span id="supplierCount">0</span></h3><div id="supplierList"><p class="empty">등록된 협력업체가 없습니다.</p></div></div>
   </div>
 </section>
+<section class="section" id="vendorCandidates" aria-label="외주 협력 검토 후보">
+<div class="section-head"><div><span class="kicker">SOURCING / KMONG SHORTLIST</span><h2>크몽 외주 협력 후보</h2><p>공개 프로필 기준으로 작업 분야가 맞는 제작·마케팅 전문가를 추렸습니다. 모멘텀과 계약된 업체가 아니며, 가격·납기·재하도급 허용 여부는 직접 확인해야 합니다.</p></div></div>
+<div class="vendor-candidate-grid" id="vendorCandidatesList"></div>
+<p class="privacy-tip">후보를 선택하면 위 외주업체 등록 폼에 이름과 URL만 채워집니다. 직접 조건을 확인하고 ‘외주업체 저장’을 눌러야 정식 내부 등록됩니다. 원가·마진을 임의로 채우지 않습니다.</p>
+</section>
 <dialog id="usageDialog" class="usage-dialog" aria-label="상품 사용량 등록">
   <form id="usageForm"><div class="section-head"><div><span class="kicker">FULFILLMENT LOG</span><h2 id="usageTitle">상품 소진 이력</h2></div><button id="closeUsage" type="button" class="outline">닫기 ×</button></div>
   <div id="usageStatus"></div>
@@ -157,4 +163,5 @@
 <footer class="shell foot">모멘텀마케팅 관리자 · 고객용 공개 페이지가 아닙니다. <span>고객 정보의 안전한 운영을 위해 정식 서버 저장 도입 전에는 시험 데이터 사용을 권장합니다.</span></footer>
 <script defer src="/admin/assets/crm.js"></script>
 <script defer src="/admin/assets/crm-commerce.js"></script>
+<script defer src="/admin/assets/vendor-candidates.js"></script>
 </body></html>

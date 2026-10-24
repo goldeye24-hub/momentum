@@ -1,0 +1,57 @@
+name: Daily official marketing insights
+
+# GitHub scheduled workflows run only on the default branch.
+# Until approval and merge this is a preview-only configuration.
+on:
+  schedule:
+    - cron: "0 0 * * *"  # 09:00 Asia/Seoul
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: marketing-insights-daily-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update-official-news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Update verified official marketing news
+        run: python scripts/update_marketing_news.py
+      - name: Validate updated marketing news markup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          h=Path("insights/index.html").read_text("utf-8")
+          assert "<!-- NEWS_ITEMS_START -->" in h
+          assert "<!-- NEWS_ITEMS_END -->" in h
+          assert 'href="/insights/guides/seo-geo-local/"' in h
+          assert 'data-category' in h
+          print("Marketing news and category routes present.")
+          PY
+      - name: Commit only when new official updates are found
+        run: |
+          if git diff --quiet -- insights/index.html insights/official-news.json && [ ! -f insights/official-news.json ]; then
+            echo "No official news changes."
+            exit 0
+          fi
+          git add insights/index.html insights/official-news.json 2>/dev/null || git add insights/index.html
+          if git diff --cached --quiet; then
+            echo "No new verified items."
+            exit 0
+          fi
+          git config user.name "momentum-insights-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(insights): refresh official marketing announcements"
+          git push

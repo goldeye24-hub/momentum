@@ -1,0 +1,22 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>매입·마진 관리 | 모멘텀마케팅 관리자</title><link rel="stylesheet" href="/admin/assets/finance.css"></head>
+<body><header class="bar"><div class="wrap nav"><a class="logo" href="/admin/overview/">M<span>↗</span> MOMENTUM <small>OPERATIONS</small></a><nav aria-label="내부 메뉴"><a href="/admin/overview/">운영센터</a><a href="/admin/crm/">거래처 CRM</a><a aria-current="page" href="/admin/finance/">매입·정산</a><a href="/admin/members/">회원 관리</a></nav><form method="post" action="/admin/logout"><button type="submit" class="logout">로그아웃</button></form></div></header>
+<main class="wrap">
+<div class="intro"><span class="eyebrow">FINANCIAL OPERATIONS / INTERNAL</span><h1>매출과 매입,<br><em>하나의 기준으로.</em></h1><p>광고주 계약과 외주 지출을 구분해 기록합니다. 일별·월별·연별 집계로 상품별 예정 마진, 실제 지출, 계산서 수취 상태를 확인하세요.</p></div>
+<div class="warning" role="note"><b>브라우저 저장 시범 운영</b> — 실제 개인정보, 계좌번호, 민감한 거래내역은 입력하지 마세요. 데이터는 현재 브라우저에만 저장되고 기기 간 동기화되지 않습니다. 세금계산서 발행이 아닌 <b>수취 상태 기록</b> 기능입니다.</div>
+<section class="filter panel"><div><label>기간 단위<select id="periodType"><option value="day">일별</option><option selected value="month">월별</option><option value="year">연별</option></select></label><label>조회 기준일<input type="date" id="periodDate"></label></div><div><button type="button" class="outline" id="exportCsv">CSV 내보내기 ↓</button><button type="button" class="outline" id="exportJson">전체 백업 ↓</button></div></section>
+<section class="stats" aria-label="요약 지표"><article><small>계약 판매액</small><strong id="totalSales">0원</strong><span>예상 매출 · 확정 수금과 다름</span></article><article><small>계약 예정원가</small><strong id="totalCosts">0원</strong><span>CRM 계약에 입력한 원가</span></article><article><small>예상 계약 마진</small><strong id="totalMargin">0원</strong><span>계약 판매액 − 예정원가</span></article><article><small>실제 매입 지출</small><strong id="totalSpend">0원</strong><span>아래에서 직접 기록한 지출</span></article></section>
+<div class="two"><section class="panel"><span class="eyebrow">NEW EXPENSE</span><h2>외주 지출 등록</h2><form id="spendForm" class="form">
+<label>지출일<input name="date" id="spendDate" type="date" required></label><label>지출 금액 (원)<input name="amount" type="number" min="1" max="10000000000" step="1" required placeholder="예: 150000"></label>
+<label>연결 광고주<select name="customerId" id="spendCustomer"><option value="">미지정 / 공통</option></select></label><label>외주 협력업체<select name="supplierId" id="spendSupplier"><option value="">미지정</option></select></label>
+<label class="wide">상품·업무 내용<input name="product" maxlength="90" placeholder="예: 체험단 3건 진행" required></label>
+<label>계산서 수취 여부<select name="invoice"><option value="미수취">미수취</option><option value="수취완료">수취완료</option><option value="해당없음">해당없음</option></select></label>
+<label>지출 유형<select name="category"><option value="외주비">외주비</option><option value="광고비">광고비</option><option value="제작비">제작비</option><option value="운영비">운영비</option><option value="기타">기타</option></select></label>
+<label class="wide">비고 <small>민감정보 제외</small><input name="note" maxlength="160" placeholder="예: 1차 납품분"></label>
+<div class="actions wide"><button type="reset" class="outline">초기화</button><button type="submit" id="saveSpend">지출 기록 저장 +</button></div></form><p id="notice" class="notice" role="status" aria-live="polite"></p></section>
+<section class="panel side"><span class="eyebrow">HOW TO READ THIS</span><h2>정확한 마진을 위한 기준</h2>
+<div><span>01</span><p><b>판매액과 수금액을 분리</b>CRM의 계약 금액을 사용하므로 실제 입금액과 차이가 날 수 있습니다.</p></div>
+<div><span>02</span><p><b>예정원가와 실지출을 분리</b>계약 원가와 아래 지출은 같은 비용일 수 있어 합산하지 않습니다.</p></div>
+<div><span>03</span><p><b>외주업체별 단가 확인</b><a href="/admin/crm/#supplierSection">협력업체 관리 ↗</a>에서 공급단가를 입력하고 계약 상품과 연결할 수 있습니다.</p></div>
+<div><span>04</span><p><b>계산서 상태는 수기 기록</b>전자세금계산서는 국세청 또는 발행 솔루션에서 별도로 확인해야 합니다.</p></div></section></div>
+<section class="panel history"><div class="heading"><div><span class="eyebrow">EXPENSE LEDGER</span><h2>매입 지출 내역</h2></div><span id="recordsCount">0건</span></div><div class="scroll"><table><thead><tr><th>지출일</th><th>광고주</th><th>외주업체</th><th>지출 항목</th><th>유형</th><th>금액</th><th>계산서</th><th>관리</th></tr></thead><tbody id="rows"></tbody></table></div><p class="notice">실제 회계장부 및 부가세 신고 자료를 대체하지 않습니다. 삭제된 기록은 복구할 수 없으므로 정기 백업하세요.</p></section>
+</main><footer>모멘텀마케팅 내부 관리 시스템 · 실제 운영 DB 연결 전 시험 자료만 사용하세요.</footer><script defer src="/admin/assets/finance.js"></script></body></html>
