@@ -1026,3 +1026,42 @@ test('mobile editorial refresh keeps performance demo visible before services',(
  assert.match(style,/#services \.mk-service-card:nth-child\(n\+3\)/);
  assert.match(style,/@media\(max-width:760px\)/);
 });
+
+test('2026-10-25 editorial guides are substantive, disclosed and linked',()=>{
+ const fs=require('node:fs');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const selected=[
+  ['gimhae-move-in-cleaning-search-ads-lead-quality','김해 입주청소','Google Ads'],
+  ['busan-seomyeon-nail-salon-new-customer-booking-ad-budget','서면 네일샵','네이버']
+ ];
+ const titles=new Set();
+ const descriptions=new Set();
+ for(const [slug,topic,platform] of selected){
+  const path='insights/guides/'+slug+'/index.html';
+  assert.ok(fs.existsSync(path),path);
+  const h=fs.readFileSync(path,'utf8');
+  assert.ok(h.length>12000,'substantive content '+slug);
+  assert.match(h,/<meta name="robots" content="noindex,follow">/);
+  const title=h.match(/<title>([^<]+)<\/title>/)?.[1];
+  const desc=h.match(/<meta name="description" content="([^"]+)"/)?.[1];
+  assert.ok(title&&desc&&desc.length>65);
+  assert.ok(!titles.has(title)&&!descriptions.has(desc),'unique metadata');
+  titles.add(title);descriptions.add(desc);
+  assert.equal((h.match(/<h1>/g)||[]).length,1);
+  assert.ok((h.match(/<h2/g)||[]).length>=9);
+  assert.ok(h.includes(topic)&&h.includes(platform));
+  assert.match(h,/2026\.10\.25/);
+  assert.match(h,/가상의 계산 예시/);
+  assert.match(h,/체크리스트/);
+  assert.match(h,/미검증|검색 수요 미검증/);
+  assert.match(h,/광고·협찬|협찬/);
+  assert.match(h,/href="\/services\//);
+  assert.match(h,/href="https:\/\//);
+  assert.ok(list.includes('/insights/guides/'+slug+'/'),'index link '+slug);
+ }
+ const ed=JSON.parse(fs.readFileSync('insights/editorial/2026-10-25.json','utf8'));
+ assert.equal(ed.candidates.length,10);
+ assert.equal(ed.selected.length,2);
+ assert.match(ed.publication,/noindex/);
+ assert.match(ed.publication,/main unmerged/);
+});
