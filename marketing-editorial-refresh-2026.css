@@ -3,6 +3,17 @@
    Service URLs, form elements and consent flows remain intact.
 */
 :root{color-scheme:only light;--editorial-ink:#0e213e;--editorial-blue:#215fda;--editorial-muted:#627189;--editorial-paper:#fff;--editorial-line:#dde5ef}
+/* Explicit paper surfaces override the earlier enterprise dark theme. */
+html body .hero.agency-hero.momentum-v4-hero{background:#fff!important}
+html body .momentum-v4-hero::before{background:none!important}
+#paid-service.mk-membership{background:#f5f8fc!important;color:#0e213e}
+#paid-service.mk-membership::before{display:none}
+#paid-service .eyebrow,#paid-service h2 em,#paid-service .mk-lightlink{color:#215fda}
+#paid-service h2{color:#0e213e}
+#paid-service .mk-membership-lead>p,#paid-service .mk-membership-tiles article p{color:#52647b}
+#paid-service .mk-membership-caution,#paid-service .mk-membership-tiles small{color:#627189}
+#paid-service .mk-membership-tiles article{background:#fff;border-color:#dde5ef;color:#0e213e}
+#paid-service .mk-membership-tiles article>span{color:#215fda}
 html{color-scheme:only light}
 body{background:#fff;color:var(--editorial-ink)}
 .hero.agency-hero.momentum-v4-hero{
@@ -197,3 +208,4 @@ body{background:#fff;color:var(--editorial-ink)}
   .mm-mobile-case-caption{padding:16px 7px 16px 14px}
   .mm-mobile-case-caption>span{font-size:9px}
 }
+
