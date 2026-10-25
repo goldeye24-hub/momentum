@@ -1065,3 +1065,21 @@ test('2026-10-25 editorial guides are substantive, disclosed and linked',()=>{
  assert.match(ed.publication,/noindex/);
  assert.match(ed.publication,/main unmerged/);
 });
+
+test('local geographic SEO/GEO is a standalone resources article, not homepage',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const path='insights/guides/busan-gyeongnam-ulsan-local-seo-geo-strategy/index.html';
+ assert.ok(fs.existsSync(path),'long-form article exists');
+ const article=fs.readFileSync(path,'utf8');
+ assert.doesNotMatch(home,/부산·경남·울산 로컬 SEO|부산·경남·울산 로컬마케팅/);
+ assert.ok(list.includes('/insights/guides/busan-gyeongnam-ulsan-local-seo-geo-strategy/'));
+ assert.match(article,/meta name="robots" content="noindex,follow"/);
+ assert.match(article,/시·구·동 키워드/);
+ assert.match(article,/검색량.*검증하지/);
+ assert.match(article,/지역명.*반복/);
+ assert.match(article,/https:\/\/searchadvisor\.naver\.com/);
+ assert.match(article,/https:\/\/developers\.google\.com/);
+ assert.match(article,/<h1>/);
+ assert.ok((article.match(/<h2>/g)||[]).length>=7);
+});
