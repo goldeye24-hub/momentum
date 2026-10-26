@@ -267,6 +267,14 @@
       "destination": "/api/admin-site-builder?view=crm"
     },
     {
+      "source": "/admin/finance",
+      "destination": "/api/admin-site-builder?view=finance"
+    },
+    {
+      "source": "/admin/finance/",
+      "destination": "/api/admin-site-builder?view=finance"
+    },
+    {
       "source": "/admin/place-insights/api",
       "destination": "/api/compact?op=admin-place-keyword-insights"
     },
