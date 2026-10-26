@@ -93,6 +93,7 @@
     .form-desc { color: #64748b; margin-top: 8px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
     .field { display: flex; flex-direction: column; gap: 8px; }
+    .field[hidden] { display: none; }
     .field.full { grid-column: 1 / -1; }
     label { font-size: 14px; font-weight: 700; }
     input, select, textarea {
@@ -549,7 +550,8 @@
               <input type="checkbox" name="botcheck" style="display:none" />
               
               <div class="form-grid">
-                <div class="field full" id="selectedDesignWrap" hidden><label for="selectedDesign">선택한 홈페이지 디자인</label><input id="selectedDesign" name="selected_design" readonly></div>
+                <div class="field full"><label for="onlineChannelUrl">업체 홈페이지·플레이스·SNS 주소 (선택)</label><input id="onlineChannelUrl" name="online_channel_url" type="text" placeholder="홈페이지, 네이버 플레이스 또는 SNS 링크를 입력해 주세요"></div>
+                <div class="field full" id="selectedDesignWrap" hidden><label for="selectedDesign">참고하신 홈페이지 디자인</label><input id="selectedDesign" name="selected_design" readonly></div>
                 <div class="field full"><label for="requestedProduct">관심 상품 (선택)</label><select name="product" id="requestedProduct"><option value="">선택 또는 직접 문의</option><option value="키워드 검색광고">키워드 검색광고</option><option value="바이럴마케팅">바이럴마케팅</option><option value="블로그 체험단">블로그 체험단</option><option value="플레이스 진단 및 SEO 최적화">플레이스 진단 및 SEO 최적화</option><option value="플레이스 등록 및 수정대행">플레이스 등록 및 수정대행</option><option value="플레이스 리뷰 신고 및 삭제 요청 지원">플레이스 리뷰 신고 및 삭제 요청 지원</option><option value="오픈마켓 상세페이지 제작">오픈마켓 상세페이지 제작</option><option value="홈페이지 제작">홈페이지 제작</option><option value="상세페이지 제작">상세페이지 제작</option><option value="브랜드블로그 디자인">브랜드블로그 디자인</option><option value="사진촬영">사진촬영</option><option value="오픈패키지 1">오픈패키지 1</option><option value="오픈패키지 2">오픈패키지 2</option><option value="맞춤설계 및 컨설팅">맞춤설계 및 컨설팅</option></select></div>
                 <div class="field"><label>상호</label><input name="business" required></div>
                 <div class="field"><label>담당자명</label><input name="manager" required></div>
