@@ -1,549 +1,137 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>부산 온라인마케팅·광고대행사 | 모멘텀마케팅</title>
-  <meta name="description" content="부산 온라인마케팅·광고대행사 모멘텀마케팅. 블로그마케팅, 바이럴마케팅, 체험단, 검색광고, 플레이스 관리, 음식점·미용실 등 업종별 홍보와 홈페이지 제작을 상담합니다." />
-  <link rel="canonical" href="https://momentum-goldeye24-hubs-projects.vercel.app/" />
-  <style>
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
-      background: #fff;
-      color: #0f172a;
-      line-height: 1.6;
-    }
-    a { text-decoration: none; color: inherit; }
-    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
-    .topbar {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .topbar-inner {
-      min-height: 72px; display: flex; justify-content: space-between; align-items: center; gap: 16px;
-    }
-    .brand-title { font-size: 22px; font-weight: 800; }
-    .brand-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
-    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      height: 46px; padding: 0 18px; border-radius: 16px; font-weight: 700;
-      border: 1px solid transparent; cursor: pointer;
-    }
-    .btn-dark { background: #0f172a; color: #fff; }
-    .btn-dark:hover { background: #1e293b; }
-    .btn-brand { background: #f97316; color: #fff; }
-    .btn-brand:hover { background: #ea580c; }
-    .btn-outline { background: #fff; color: #0f172a; border-color: #cbd5e1; }
-    .btn-outline:hover { background: #f8fafc; }
-    .btn-outline-dark { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.2); }
-    .btn-outline-dark:hover { background: rgba(255,255,255,.14); }
-
-    .hero {
-      background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #1e293b 100%);
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: ""; position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(249,115,22,.18), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(59,130,246,.12), transparent 24%);
-      pointer-events: none;
-    }
-    .hero-grid {
-      position: relative;
-      display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px;
-      padding: 72px 0 88px;
-      align-items: start;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 14px; border-radius: 999px;
-      background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12);
-      font-size: 14px;
-    }
-    h1 {
-      margin: 22px 0 0; font-size: clamp(38px, 5vw, 66px); line-height: 1.08; letter-spacing: -0.04em;
-    }
-    h1 .accent { display: block; color: #fb923c; }
-    .lead {
-      margin-top: 20px; font-size: 18px; color: rgba(255,255,255,.82); max-width: 720px;
-    }
-    .hero-points {
-      margin-top: 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-    }
-    .hero-point {
-      padding: 16px; border-radius: 18px;
-      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
-      font-size: 14px; font-weight: 700;
-    }
-    .hero-actions { margin-top: 28px; }
-
-    .card {
-      background: #fff; border: 1px solid #e2e8f0; border-radius: 26px; box-shadow: 0 10px 28px rgba(15,23,42,.08);
-    }
-    .card-body { padding: 28px; }
-    .card h3 { margin: 0; }
-    .form-title { font-size: 28px; font-weight: 800; }
-    .form-desc { color: #64748b; margin-top: 8px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
-    .field { display: flex; flex-direction: column; gap: 8px; }
-    .field.full { grid-column: 1 / -1; }
-    label { font-size: 14px; font-weight: 700; }
-    input, select, textarea {
-      width: 100%; border: 1px solid #cbd5e1; border-radius: 14px;
-      padding: 13px 14px; outline: none; background: #fff;
-      font: inherit;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: #fb923c; box-shadow: 0 0 0 4px rgba(249,115,22,.14);
-    }
-    textarea { min-height: 130px; resize: vertical; }
-    select { cursor: pointer; }
-    .form-actions { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .notice { margin-top: 12px; min-height: 24px; font-size: 14px; }
-    .notice.success { color: #059669; }
-    .notice.error { color: #dc2626; }
-    .tiny { font-size: 12px; color: #64748b; margin-top: 8px; }
-
-    .section { padding: 84px 0; }
-    .section-soft { background: #f8fafc; }
-    .section-dark {
-      background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #1e293b 100%);
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-    }
-    .section-head .eyebrow {
-      color: #f97316; font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
-    }
-    .section-head h2 {
-      margin: 8px 0 0; font-size: clamp(30px, 4vw, 46px); line-height: 1.14; letter-spacing: -0.03em;
-    }
-    .section-head p { margin: 16px 0 0; max-width: 860px; color: #64748b; font-size: 18px; }
-    .section-dark .section-head p { color: rgba(255,255,255,.76); }
-
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-    .pain-card, .strength-card, .service-card, .faq-card, .process-card { border-radius: 24px; }
-    .icon-chip {
-      width: 48px; height: 48px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;
-      background: #fff7ed; color: #f97316; font-size: 22px;
-    }
-    .item-title { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
-    .muted { color: #64748b; }
-    .check-list { list-style: none; padding: 0; margin: 18px 0 0; }
-    .check-list li {
-      display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; color: #64748b;
-    }
-    .check {
-      width: 20px; height: 20px; border-radius: 50%; background: #fff7ed; color: #f97316;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; margin-top: 2px;
-    }
-
-    .packages { margin-top: 42px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-    .package-card {
-      border-radius: 28px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); color: #fff;
-    }
-    .package-card.featured { background: #fff; color: #0f172a; border-color: #fdba74; }
-    .featured-badge {
-      display: inline-flex; margin-bottom: 14px; padding: 7px 12px; border-radius: 999px;
-      background: #ffedd5; color: #ea580c; font-size: 12px; font-weight: 800;
-    }
-    .package-sub { margin-top: 6px; font-size: 14px; font-weight: 800; color: #fdba74; }
-    .package-card.featured .package-sub { color: #ea580c; }
-    .package-card .muted { color: rgba(255,255,255,.8); }
-    .package-card.featured .muted { color: #64748b; }
-    .package-card .btn { width: 100%; margin-top: 22px; }
-
-    .process-grid { display: grid; grid-template-columns: .95fr 1.05fr; gap: 32px; align-items: center; }
-    .step { display: flex; gap: 18px; align-items: center; }
-    .step-no {
-      width: 58px; height: 58px; border-radius: 18px; background: #0f172a; color: #fff;
-      display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;
-    }
-
-    .cta-box { border-radius: 32px; background: #0f172a; color: #fff; padding: 42px; }
-    .cta-box p { color: rgba(255,255,255,.78); font-size: 18px; }
-
-    .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; align-items: start; }
-    .meta-list { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 12px; }
-    .meta-list li { display: flex; gap: 10px; align-items: center; color: #334155; }
-    .info-box {
-      margin-top: 26px; padding: 24px; border-radius: 24px; border: 1px solid #e2e8f0; background: #f8fafc;
-    }
-
-    footer { border-top: 1px solid #e2e8f0; background: #fff; padding: 30px 0; }
-    .footer-inner { display: flex; justify-content: space-between; gap: 22px; align-items: flex-start; }
-    .footer-right { display: grid; gap: 6px; color: #64748b; font-size: 14px; }
-
-    .mobile-bar {
-      position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 60;
-      width: min(calc(100% - 18px), 460px); display: none;
-    }
-    .mobile-bar-inner {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-      padding: 10px; border: 1px solid #e2e8f0; background: rgba(255,255,255,.94);
-      backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 18px 40px rgba(15,23,42,.18);
-    }
-
-    @media (max-width: 1080px) {
-      .hero-grid, .grid-4, .packages, .process-grid, .contact-grid { grid-template-columns: 1fr 1fr; }
-      .hero-points { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 760px) {
-      .topbar .btn-row { display: none; }
-      .section { padding: 64px 0; }
-      .hero-grid, .grid-3, .grid-4, .packages, .process-grid, .contact-grid, .form-grid, .form-actions { grid-template-columns: 1fr; }
-      .hero-grid { padding: 50px 0 72px; }
-      .lead, .section-head p, .cta-box p { font-size: 16px; }
-      .cta-box { padding: 28px; }
-      .footer-inner { flex-direction: column; }
-      .mobile-bar { display: block; }
-    }
-  
-    .lab-promo{padding:54px 0;background:#f8fafc}
-    .lab-promo .box{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:32px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center;box-shadow:0 8px 30px rgba(15,23,42,.05)}
-    .lab-promo h2{margin:5px 0 10px;font-size:clamp(24px,2.8vw,35px);letter-spacing:-.8px;line-height:1.3}
-    .lab-promo p{color:#64748b;margin:0 0 16px}
-    .lab-tags{display:flex;flex-wrap:wrap;gap:8px}
-    .lab-tags span{background:#fff7ed;color:#9a4a0a;padding:7px 11px;font-size:12px;border-radius:9px;font-weight:700}
-    @media(max-width:800px){.lab-promo .box{grid-template-columns:1fr;padding:22px}}
-  
-    .service-card{display:flex;min-height:100%}
-    .service-card>.card-body{display:flex;flex-direction:column;width:100%}
-    .service-card .service-inquiry{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:22px;font-size:14px;font-weight:800;color:#d95a0c}
-    .service-card .service-inquiry:hover{text-decoration:underline}
-    .service-channels{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-    .service-channels span{background:#fff7ed;color:#c95f15;border:1px solid #fed7aa;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:750}
-    .owner-notice{margin-top:30px;padding:22px 24px;border:1px solid #cbd5e1;border-left:4px solid #f97316;background:#f8fafc;border-radius:14px}
-    .owner-notice strong{font-size:16px}.owner-notice p{margin:6px 0 0;color:#475569;font-size:14px}
-    .packages-two{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
-    .packages-two .package-card{height:100%}.packages-two .package-card .card-body{display:flex;flex-direction:column;height:100%}
-    .packages-two .package-card .btn{margin-top:auto;padding-top:13px;padding-bottom:13px}
-    .packages-two .package-card .check-list{padding-bottom:22px}
-    .packages-two .package-card .check-list strong{font-weight:800}
-    .package-badge-outline{color:#ffedd5;background:rgba(249,115,22,.17);border:1px solid rgba(251,146,60,.35)}
-    .package-notes{font-size:12px;color:#cbd5e1;margin-top:24px;line-height:1.7}
-    @media(max-width:900px){.packages-two{grid-template-columns:1fr}}
-
-  
-    .industry-card{display:block;transition:transform .2s,border-color .2s;min-width:0}
-    .industry-card:hover{transform:translateY(-3px);border-color:#fb923c}
-    .industry-card .card-body{height:100%;display:flex;flex-direction:column}
-    .industry-card p{font-size:14px;line-height:1.5}
-    .industry-more{font-size:13px;color:#ea580c;font-weight:800;margin-top:auto;padding-top:16px}
-    .industry-all{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:25px}
-    .industry-faq-link{color:#c2410c;font-weight:800;display:inline-block;text-decoration:underline;text-underline-offset:3px}
-    @media(max-width:900px){.industry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:560px){.industry-grid{grid-template-columns:1fr}.industry-all{align-items:stretch}}
-
-  </style>
-  <link rel="stylesheet" href="/agency.css">
-  <link rel="stylesheet" href="/agency-showcase.css">
-  <link rel="stylesheet" href="/website-samples/home-showcase.css">
-  <link rel="stylesheet" href="/portfolio/home-integration.css">
-  <link rel="stylesheet" href="/agency-award-2026.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"모멘텀마케팅","url":"https://momentum-goldeye24-hubs-projects.vercel.app/","description":"부산 기반 온라인마케팅·광고대행사. 검색광고·바이럴·플레이스·업종별 온라인 홍보·웹 제작 서비스.","address":{"@type":"PostalAddress","streetAddress":"충렬대로 318 한양상가A동 204호","addressLocality":"동래구","addressRegion":"부산광역시","addressCountry":"KR"},"contactPoint":{"@type":"ContactPoint","telephone":"+82-507-1313-5668","contactType":"customer service"}}</script></head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1830">
+<title>부산 온라인마케팅·광고대행사 | 모멘텀마케팅</title>
+<meta name="description" content="부산 온라인마케팅·광고대행사 모멘텀마케팅. 바이럴마케팅, 블로그마케팅, 블로그 체험단, 플레이스 관리, SNS, 디자인, 음식점·피부관리·가발·네일샵·청소업체 홍보와 홈페이지 제작 상담.">
+<link rel="canonical" href="https://momentum-goldeye24-hubs-projects.vercel.app/">
+<meta name="naver-site-verification" content="89e29833d59b018fd96646bf0f03ec9e935d14a5">
+<meta name="google-site-verification" content="rW73GkrTQUJaHFzSpT2AfyA-_qJ6mj5-gkHQCjUrsA8">
+<meta property="og:type" content="website"><meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="성장을 만드는 마케팅 파트너 | 모멘텀마케팅">
+<meta property="og:description" content="검색부터 방문까지. 부산 기반 온라인 광고대행사 모멘텀마케팅 — 검색광고, 바이럴, 플레이스, SNS, 촬영과 홈페이지 제작.">
+<meta property="og:url" content="https://momentum-goldeye24-hubs-projects.vercel.app/">
+<meta property="og:image" content="https://momentum-goldeye24-hubs-projects.vercel.app/assets/portfolio-mukdori.jpg">
+<link rel="preload" as="image" href="/assets/portfolio-mukdori.jpg">
+<link rel="stylesheet" href="/momentum-home.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://momentum-goldeye24-hubs-projects.vercel.app/#organization","name":"모멘텀마케팅","url":"https://momentum-goldeye24-hubs-projects.vercel.app/","description":"부산 기반 광고대행사. 온라인마케팅, 바이럴·블로그마케팅, 플레이스, 음식점 등 업종별 마케팅과 홈페이지 제작 서비스.","telephone":"+82-507-1313-5668","address":{"@type":"PostalAddress","streetAddress":"충렬대로 318 한양상가A동 204호","addressLocality":"동래구","addressRegion":"부산광역시","addressCountry":"KR"}},{"@type":"WebSite","name":"모멘텀마케팅","url":"https://momentum-goldeye24-hubs-projects.vercel.app/","publisher":{"@id":"https://momentum-goldeye24-hubs-projects.vercel.app/#organization"}}]}</script>
+</head>
 <body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <a class="agency-brand" href="/" aria-label="모멘텀마케팅 홈">
-        <span class="agency-brand-symbol" aria-hidden="true">M<span class="brand-spark">↗</span></span>
-        <span class="agency-brand-copy"><strong>모멘텀마케팅</strong><small>INTEGRATED DIGITAL AGENCY</small></span>
-      </a>
-      <nav id="agencyNav" class="agency-nav" aria-label="주 메뉴">
-        <a href="#work">포트폴리오</a>
-        <a href="#services">서비스</a>
-        <a href="#open-packages">오픈패키지</a>
-        <a href="/industries/">업종별 솔루션</a>
-        <a href="/lab/">무료 마케팅 도구</a>
-        <a href="/portfolio/">디자인 포트폴리오</a>
-        <a href="/insights/">마케팅 정보</a>
-        <a href="/platform/">회원 서비스·로그인 ↗</a>
-      </nav>
-      <a class="btn btn-brand topbar-cta" href="#contact">상담 문의 <span aria-hidden="true">↗</span></a>
-      <button type="button" class="agency-menu-toggle" aria-label="메뉴 열기" aria-controls="agencyNav" aria-expanded="false"><span></span><span></span><span></span></button>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero agency-hero" aria-labelledby="agencyHeroTitle">
-      <div class="container hero-grid agency-hero-grid">
-        <div class="hero-copy">
-          <div class="agency-eyebrow"><span class="agency-signal" aria-hidden="true"></span> SEARCH · CONTENT · LOCAL · CREATIVE</div>
-          <h1 id="agencyHeroTitle">고객의 선택을 만드는<span class="accent">마케팅의 연결.</span></h1>
-          <p class="lead">검색광고, 바이럴·체험단, 플레이스 SEO, 사진촬영과 웹 제작을 하나의 흐름으로. 브랜드가 발견되는 순간부터 실제 문의까지, 필요한 전략과 실행을 연결합니다.</p>
-          <div class="hero-actions btn-row">
-            <a class="btn btn-brand" href="#contact">마케팅 상담 신청 <span aria-hidden="true">↗</span></a>
-            <a class="btn btn-outline-dark" href="#services">전체 서비스 보기 <span aria-hidden="true">↓</span></a>
-          </div>
-          <p class="hero-subnote">부산에 기반을 두고 음식점·고깃집·횟집·카페·뷰티 매장부터 기업까지, 업종과 예산에 맞춰 제안합니다.</p>
-          <div class="award-hero-overline" aria-hidden="true">MAKE THE NEXT MOVE / MOMENTUM®</div>
-        </div>
-        <div class="agency-visual" aria-label="모멘텀마케팅 통합 서비스 구성">
-          <div class="visual-head"><span>YOUR GROWTH PARTNER</span><span class="visual-head-mark">M / 01</span></div>
-          <div class="visual-title">Built for<br><em>Your Next Move.</em></div>
-          <div class="visual-center">
-            <div class="visual-grid" aria-hidden="true"></div>
-            <div class="visual-core"><span>MOMENTUM</span><strong>GROWTH</strong><small>STRATEGY → EXECUTION</small></div>
-            <div class="visual-line visual-line-a" aria-hidden="true"></div>
-            <div class="visual-line visual-line-b" aria-hidden="true"></div>
-          </div>
-          <div class="visual-modules">
-            <div><small>01 / PERFORMANCE</small><strong>검색광고 운영</strong><span>네이버 · 카카오 · 구글</span></div>
-            <div><small>02 / CONTENT</small><strong>바이럴 & 체험단</strong><span>블로그 · 카페</span></div>
-            <div><small>03 / LOCAL</small><strong>플레이스 SEO</strong><span>진단 · 등록 · 최적화</span></div>
-            <div><small>04 / CREATIVE</small><strong>디자인 & 웹</strong><span>촬영 · 상세페이지 · 홈페이지</span></div>
-          </div>
-          <div class="visual-foot"><span>STRATEGY</span><span>·</span><span>EXECUTION</span><span>·</span><span>OPTIMIZATION</span></div>
-        </div>
-      </div>
-      <div class="container hero-bottom"><span>FULL-SERVICE MARKETING</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
-    </section>
-
-    <section class="agency-trust-strip" aria-label="제공 서비스">
-      <div class="container agency-strip-items">
-        <span>SEARCH ADVERTISING</span><span>VIRAL & EXPERIENCES</span><span>PLACE SEO / GEO</span><span>BRAND & WEB DESIGN</span>
-      </div>
-    </section>
-
-    <section class="award-manifesto" aria-label="모멘텀마케팅의 철학">
-      <div class="container award-manifesto-inner">
-        <h2 class="award-line">LESS NOISE.<br><em>MORE IMPACT.</em></h2>
-        <p class="award-note">노출을 위한 노출보다, 고객이 발견하고 비교하고 선택하는 경험을 만듭니다.</p>
-      </div>
-    </section>
-
-    <section class="section agency-intro">
-      <div class="container">
-        <div class="agency-intro-head">
-          <div class="section-head"><div class="eyebrow">WHAT WE CONNECT</div><h2>광고만이 아니라,<br>고객이 선택하는 과정까지.</h2></div>
-          <p>광고의 목적은 노출 자체가 아닙니다. 검색한 고객이 브랜드를 발견하고, 내용을 신뢰하고, 문의하거나 구매하기까지의 흐름을 설계합니다.</p>
-        </div>
-        <div class="agency-value-grid">
-          <article class="agency-value-card"><span class="value-no">01 / DISCOVER</span><strong>찾게 만들고</strong><p>검색광고와 키워드 전략으로 목표 고객의 탐색 과정에 진입합니다.</p><span aria-hidden="true">↗</span></article>
-          <article class="agency-value-card"><span class="value-no">02 / CONVINCE</span><strong>선택하게 만들고</strong><p>블로그·체험단·플레이스 정보와 콘텐츠로 고객의 의문을 줄입니다.</p><span aria-hidden="true">↗</span></article>
-          <article class="agency-value-card"><span class="value-no">03 / CONVERT</span><strong>행동으로 연결합니다</strong><p>촬영·상세페이지·홈페이지·예약과 상담 동선을 함께 점검합니다.</p><span aria-hidden="true">↗</span></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft agency-philosophy">
-      <div class="container agency-philosophy-inner">
-        <div><span class="eyebrow">THE MOMENTUM APPROACH</span><h2>필요한 서비스부터,<br>하나의 기준으로.</h2></div>
-        <div><p>업종과 사업 단계, 광고 예산에 맞춰 우선순위를 정합니다. 검색광고·콘텐츠·플레이스·제작을 한 번에 진행할 수도, 필요한 상품 하나만 의뢰할 수도 있습니다.</p>
-          <div class="agency-method-list"><span>01 사업 현황 이해</span><span>02 채널 및 콘텐츠 선정</span><span>03 실행과 결과 점검</span></div>
-        </div>
-      </div>
-    </section>
-
-    
-<section id="work" class="section agency-work agency-sample-work" aria-labelledby="workTitle">
+<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="site-header">
+ <div class="container header-main">
+ <a class="brand" href="/" aria-label="모멘텀마케팅 홈"><span class="brand-symbol">M<b>↗</b></span><span class="brand-text"><strong>MOMENTUM MARKETING</strong><small>모멘텀마케팅 · INTEGRATED DIGITAL AGENCY</small></span></a>
+ <div class="header-actions"><a class="phone" href="tel:050713135668">0507-1313-5668</a><a class="btn btn-primary" href="#contact">상담 신청하기 ↗</a><button class="menu-toggle agency-menu-toggle" type="button" aria-controls="agencyNav" aria-expanded="false" aria-label="메뉴 열기">☰</button></div>
+ </div>
+ <nav class="main-nav" id="agencyNav" aria-label="전체 서비스"><div class="container nav-inner"><a href="/services/search-ads/">키워드광고</a>
+<a href="/services/place-seo/">플레이스</a>
+<a href="/services/reviews/">리뷰관리</a>
+<a href="/services/viral/">바이럴마케팅</a>
+<a href="/services/sns/">SNS마케팅</a>
+<a href="/services/press/">언론홍보</a>
+<a href="/services/creative/">디자인</a>
+<a href="/services/photography/">촬영대행</a>
+<a href="/services/education/">광고교육</a>
+<a href="/lab/">광고무료도구</a>
+<a href="/insights/">마케팅자료</a></div></nav>
+</header>
+<main id="main">
+<section class="hero" aria-labelledby="hero-title">
+ <div class="container hero-core">
+ <div>
+ <div class="kicker">LOCAL TO DIGITAL · RESULTS WITH CLARITY</div>
+ <h1 id="hero-title">검색부터 방문까지,<br>고객의 선택으로 이어지는<br><em>성장을 만드는 마케팅.</em></h1>
+ <p class="hero-lead">부산 온라인마케팅·광고대행사 모멘텀마케팅. 블로그마케팅과 바이럴·체험단, 플레이스, 검색광고, SNS부터 상세페이지·홈페이지 제작까지. 업종과 목표에 맞춰 실행할 방법을 제안합니다.</p>
+ <div class="hero-buttons"><a class="btn btn-primary" href="#contact">무료 상담 신청하기 ↗</a><a class="btn btn-glass" href="#services">서비스 살펴보기 ↓</a></div>
+ <p class="hero-notice">부산 · 양산 · 김해 · 창원(마산·진해) · 울산 등 지역 사업자 상담</p>
+ </div>
+ <div class="phone-stage" aria-label="업체 검색에서 문의까지 이어지는 고객 여정 예시">
+   <div class="float-note float-1">⌖ <strong>검색</strong> → 매장 발견</div>
+   <div class="phone-frame"><div class="phone-screen">
+    <div class="phone-top"><span>LOCAL SEARCH</span><span class="mini-pill">업체정보 예시</span></div>
+    <div class="phone-search">⌕ 지역 · 업종 · 메뉴 검색</div><div class="phone-spot"></div>
+    <div class="place-name">가게의 첫인상은 검색에서 시작됩니다</div><div class="place-sub">사진 · 메뉴 · 영업시간 · 예약 · 길찾기</div>
+    <div class="place-lines"><span></span><span></span><span></span></div>
+   </div></div>
+   <div class="float-note float-2"><strong>문의 · 방문</strong>까지 연결 ↗</div>
+ </div>
+ </div>
+ <div class="container hero-advantages">
+ <div class="hero-adv"><span class="adv-icon">◎</span>업종 맞춤 전략</div>
+ <div class="hero-adv"><span class="adv-icon">▣</span>원스톱 통합 운영</div>
+ <div class="hero-adv"><span class="adv-icon">⌖</span>실행 범위 투명하게</div>
+ <div class="hero-adv"><span class="adv-icon">↗</span>성과 점검과 개선</div>
+ </div>
+</section>
+<section class="section section-white" id="services" aria-labelledby="service-title">
  <div class="container">
-  <div class="agency-work-header" data-reveal>
-   <div><div class="eyebrow">WEBSITE DESIGN LIBRARY / 2026</div><h2 id="workTitle">업종별 디자인부터,<br><span class="agency-heading-accent">내 브랜드에 맞는 홈페이지까지.</span></h2></div>
-   <div class="agency-work-intro"><p>디자인 어워즈에서 영감을 받은 타이포그래피와 레이아웃을 모멘텀 방식으로 새롭게 설계했습니다. <strong>실제 고객 제작 실적이 아닌 편집 가능한 디자인 샘플</strong>입니다.</p><span>INDEPENDENT DESIGN EXPERIENCES · 18 INDUSTRIES</span></div>
-  </div>
-  <div class="momentum-portfolio-links" role="group" aria-label="포트폴리오 종류">
-   <a href="/portfolio/conversion/" class="active"><span>01</span><strong>독립 홈페이지 디자인</strong><small>18개 업종의 실제 열리는 웹사이트 ↗</small></a>
-   <a href="/portfolio/product-pages/"><span>02</span><strong>상세페이지 디자인</strong><small>식품·뷰티·라이프스타일 ↗</small></a>
-   <a href="/portfolio/brand-blogs/"><span>03</span><strong>브랜드블로그 디자인</strong><small>버튼·타이틀·커버 제작 도구 ↗</small></a>
-  </div>
-  <div class="momentum-price-banner"><div><strong>지금 보는 홈페이지 30만원으로 제작 가능합니다.</strong><small>호스팅비는 별도</small></div><a href="/?service=홈페이지%20제작#contact">제작 상담하기 ↗</a></div>
-  <div class="agency-sample-grid"><article class="agency-sample-card agency-sample-restaurant" data-reveal><div class="agency-sample-label"><span>01 / 음식점 · 다이닝 매거진</span><span>ORIGINAL WEB EXPERIENCE</span></div><div class="agency-sample-viewport"><iframe title="다이닝 에디토리얼 독립형 홈페이지 미리보기" src="/portfolio/conversion/restaurant/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div><div class="agency-sample-info"><h3>다이닝 에디토리얼</h3><p>전면 이미지·스토리·메뉴북 중심</p><div class="agency-sample-actions"><a href="/portfolio/conversion/restaurant/" target="_blank" rel="noopener">전체 홈페이지 보기 ↗</a><a href="/?service=홈페이지%20제작&design=restaurant#contact">이 디자인 선택 ↗</a></div></div></article>
-<article class="agency-sample-card agency-sample-beauty" data-reveal><div class="agency-sample-label"><span>02 / 뷰티 · 패션 매거진</span><span>ORIGINAL WEB EXPERIENCE</span></div><div class="agency-sample-viewport"><iframe title="헤어 매거진 독립형 홈페이지 미리보기" src="/portfolio/conversion/beauty/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div><div class="agency-sample-info"><h3>헤어 매거진</h3><p>비대칭 커버·룩북·디자이너 소개</p><div class="agency-sample-actions"><a href="/portfolio/conversion/beauty/" target="_blank" rel="noopener">전체 홈페이지 보기 ↗</a><a href="/?service=홈페이지%20제작&design=beauty#contact">이 디자인 선택 ↗</a></div></div></article>
-<article class="agency-sample-card agency-sample-corporate" data-reveal><div class="agency-sample-label"><span>03 / 기업 · 솔루션 플랫폼</span><span>ORIGINAL WEB EXPERIENCE</span></div><div class="agency-sample-viewport"><iframe title="기업 솔루션 플랫폼 독립형 홈페이지 미리보기" src="/portfolio/conversion/b2b/" loading="lazy" sandbox="allow-scripts allow-same-origin" tabindex="-1" aria-hidden="true"></iframe></div><div class="agency-sample-info"><h3>기업 솔루션 플랫폼</h3><p>좌측 메뉴·기술 구조·프로젝트 상담</p><div class="agency-sample-actions"><a href="/portfolio/conversion/b2b/" target="_blank" rel="noopener">전체 홈페이지 보기 ↗</a><a href="/?service=홈페이지%20제작&design=corporate#contact">이 디자인 선택 ↗</a></div></div></article></div>
-  <div class="agency-sample-bottom"><p>실제 클릭해 살펴볼 수 있는 18개 독립형 홈페이지 시안. 업종마다 내비게이션, 레이아웃과 서비스 이용 흐름을 별도로 설계했습니다. 가상 브랜드 샘플과 실제 고객 제작 사례를 구분합니다.</p>
-   <div><a class="btn btn-brand" href="/portfolio/conversion/">18개 독립 홈페이지 모두 보기 ↗</a><a class="btn agency-sample-alt" href="/?service=홈페이지%20제작#contact">제작 상담하기 ↗</a></div>
-  </div>
-  <p class="agency-work-disclosure">위 사이트는 업체와 고객 실적을 표시하는 포트폴리오가 아니라 실제 접속 가능한 디자인 샘플입니다. 광고 성과·방문 증가·매출 실적은 포함하지 않습니다.</p>
+ <div class="section-header"><span class="eyebrow">OUR SERVICES / 01—11</span><h2 id="service-title">모멘텀마케팅 주요 서비스</h2><p>검색과 콘텐츠, 매장 홍보와 디자인까지. 지금 필요한 서비스부터 선택하세요.</p></div>
+ <div class="service-grid"><a class="service-card" href="/services/search-ads/" aria-label="키워드광고 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">01 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>키워드광고</h3><p>네이버·구글 검색광고를 목표와 예산에 맞게 설계</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">↗</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/place-seo/" aria-label="플레이스 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">02 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>플레이스</h3><p>업체정보·검색 노출·예약 동선부터 점검</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">⌖</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/reviews/" aria-label="리뷰관리 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">03 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>리뷰관리</h3><p>리뷰 응대·신고 기준·고객 신뢰 관리</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">☆</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/viral/" aria-label="바이럴마케팅 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">04 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>바이럴마케팅</h3><p>블로그·체험단·카페 콘텐츠의 실무 운영</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">✎</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/sns/" aria-label="SNS마케팅 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">05 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>SNS마케팅</h3><p>인스타그램·릴스·채널별 콘텐츠 운영</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">◎</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/press/" aria-label="언론홍보 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">06 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>언론홍보</h3><p>보도자료 기획과 매체·표시 기준 검토</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">▤</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/creative/" aria-label="디자인 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">07 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>디자인</h3><p>상세페이지·홈페이지·브랜드 콘텐츠 제작</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">▣</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/photography/" aria-label="촬영대행 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">08 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>촬영대행</h3><p>메뉴·제품·매장과 서비스 사진 촬영</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">◉</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/services/education/" aria-label="광고교육 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">09 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>광고교육</h3><p>사업자가 직접 운영하는 광고 실무 교육</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">✦</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/lab/" aria-label="광고무료도구 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">10 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>광고무료도구</h3><p>키워드·플레이스 진단 등 업무 보조 도구</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">◫</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a>
+<a class="service-card" href="/insights/" aria-label="마케팅자료 자세히 보기">
+<div class="service-body"><div class="service-top"><span class="service-num">11 / SERVICE</span><span class="service-arrow" aria-hidden="true">↗</span></div>
+<h3>마케팅자료</h3><p>광고 뉴스·지역 업종별 실무 가이드·Q&A</p></div><div class="service-visual"><span class="visual-icon" aria-hidden="true">▥</span><span class="visual-mock" aria-hidden="true"><b></b><b></b><b></b></span></div></a></div>
  </div>
 </section>
-
-<section class="lab-promo" aria-label="무료 마케팅 작업실 소개">
-      <div class="container"><div class="box">
-        <div>
-          <div class="eyebrow">FREE MARKETING TOOLS</div>
-          <h2>비즈니스에 필요한<br>무료 마케팅 도구</h2>
-          <p>키워드 후보·검색량과 플레이스 순위를 확인하고, SEO·GEO 직접확인 진단과 홍보 이미지 제작도 이용하세요. 상권정보와 시즌별 검색어 추이는 데이터 연결을 준비 중입니다.</p>
-          <a class="btn btn-brand" href="/lab/">무료 도구 사용하기 <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="agency-tools-preview" aria-label="무료 마케팅 도구와 준비 중인 기능">
-          <div class="tool-header"><span>MARKETING TOOLKIT</span><span class="tool-status">FREE / BETA</span></div>
-          <div class="tool-line"><span class="tool-num">01</span><strong>키워드 검색량 조회</strong><span>조건부 ↗</span></div>
-          <div class="tool-line"><span class="tool-num">02</span><strong>플레이스 순위 체크</strong><span>베타 ↗</span></div>
-          <div class="tool-line"><span class="tool-num">03</span><strong>상권정보</strong><span>준비 중</span></div>
-          <div class="tool-line"><span class="tool-num">04</span><strong>시즌별 검색어 추이</strong><span>준비 중</span></div>
-          <small>※ 실제 월간 검색량 등 공식 API 미연동 · 실측 순위는 요청 제한·연동 상태에 영향을 받으며, 미측정 수치는 표시하지 않습니다. 무료 플레이스 하루 2회 정책은 구현 전입니다.</small>
-        </div>
-      </div></div>
-    </section>
-    
-<section class="section momentum-insights-preview" aria-labelledby="insightPreviewTitle">
- <div class="container"><div class="section-head"><div class="eyebrow">MARKETING INSIGHTS</div><h2 id="insightPreviewTitle">마케팅 정보를 알고,<br>더 정확한 선택을.</h2><p>제작 비용과 검색 노출, 업종별 홈페이지 구성까지. 실제 운영에 필요한 정보를 먼저 확인하세요.</p></div>
- <div class="momentum-info-cards">
-  <a href="/guides/homepage-cost.html"><small>01 / 제작 가이드</small><strong>홈페이지 제작비에는<br>무엇이 포함될까?</strong><span>가이드 읽기 ↗</span></a>
-  <a href="/guides/place-vs-homepage.html"><small>02 / 로컬 마케팅</small><strong>플레이스와 홈페이지,<br>어떻게 다를까?</strong><span>가이드 읽기 ↗</span></a>
-  <a href="/guides/industry-homepage-features.html"><small>03 / 업종별 전략</small><strong>우리 업종에 필요한<br>웹사이트 기능은?</strong><span>가이드 읽기 ↗</span></a>
- </div><p class="momentum-insights-more"><a href="/insights/">마케팅 정보 더 보기 ↗</a></p>
+<section class="section case-section" id="work" aria-labelledby="work-title">
+ <div class="container">
+ <div class="section-header"><span class="eyebrow">PROJECT &amp; APPLICATIONS</span><h2 id="work-title">업종이 다르면, 고객을 만나는 방법도 다릅니다.</h2><p>실제 작업 자료와 업종별 화면 설계 예시로 제작 방향을 살펴보세요. 매출·노출 수치나 성과를 보장하는 사례가 아닙니다.</p></div>
+ <div class="cases-grid">
+ <a class="case-card" href="/portfolio/"><div class="case-art"><img src="/assets/portfolio-mukdori.jpg" alt="묵돌이 해산물 음식점 관련 포트폴리오 사진" loading="lazy" width="400" height="220"></div><div class="case-body"><span class="case-tag">RESTAURANT / FOOD</span><strong>음식점 · 횟집 마케팅</strong><p>메뉴·매장 사진과 검색·예약 정보 구성</p><span class="case-link">포트폴리오 살펴보기 ↗</span></div></a>
+ <a class="case-card" href="/portfolio/"><div class="case-art"><img src="/assets/portfolio-balmonghair.jpg" alt="헤어 분야 포트폴리오 이미지" loading="lazy" width="400" height="220"></div><div class="case-body"><span class="case-tag">BEAUTY / HAIR</span><strong>뷰티 · 가발 · 미용실</strong><p>시각 자료와 상담·예약 동선 설계</p><span class="case-link">포트폴리오 살펴보기 ↗</span></div></a>
+ <a class="case-card" href="/portfolio/conversion/cleaning/"><div class="case-art case-art--clean" aria-label="청소서비스 콘텐츠 디자인 예시"></div><div class="case-body"><span class="case-tag">HOME SERVICE / EXAMPLE</span><strong>청소 · 생활서비스</strong><p>작업 범위·견적 문의를 위한 화면 예시</p><span class="case-link">제작 디자인 예시 ↗</span></div></a>
+ <a class="case-card" href="/portfolio/conversion/academy/"><div class="case-art case-art--design"><div class="case-device" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div><div class="case-body"><span class="case-tag">EDUCATION / EXAMPLE</span><strong>교육 · 학원 홈페이지</strong><p>프로그램·수강 안내와 상담 화면 예시</p><span class="case-link">제작 디자인 예시 ↗</span></div></a>
+ </div>
+ <div class="case-more"><a class="btn btn-glass" href="/portfolio/">제작 사례 더 보기 ↗</a></div>
  </div>
 </section>
-<section id="services" class="section agency-service-section">
-  <div class="container">
-    <div class="section-head agency-services-intro" data-reveal>
-      <div class="eyebrow">WHAT WE DO / 01—04</div>
-      <h2>전략은 하나로.<br><span class="agency-heading-accent">실행은 각 분야의 전문성으로.</span></h2>
-      <p>사업 상황에 따라 필요한 서비스를 개별로 선택하거나, 여러 분야를 함께 운영할 수 있습니다. 상품을 둘러보고 상담할 분야를 선택해 보세요.</p>
-    </div>
-    <nav class="agency-service-index" aria-label="서비스 분야 바로가기" data-reveal>
-      <a href="#service-performance"><span>01</span><strong>PERFORMANCE MARKETING</strong><b aria-hidden="true">↗</b></a>
-<a href="#service-content"><span>02</span><strong>CONTENT & INFLUENCE</strong><b aria-hidden="true">↗</b></a>
-<a href="#service-local"><span>03</span><strong>LOCAL DISCOVERY</strong><b aria-hidden="true">↗</b></a>
-<a href="#service-creative"><span>04</span><strong>CREATIVE & EXPERIENCE</strong><b aria-hidden="true">↗</b></a>
-    </nav>
-    
-    <div id="service-performance" class="agency-service-family" data-reveal>
-      <div class="agency-family-head">
-        <div class="agency-family-index"><span>01</span><small>PERFORMANCE MARKETING</small></div>
-        <div class="agency-family-title"><h3>고객이 찾는 순간에 등장하는 광고</h3><p>네이버·다음·카카오·구글 검색광고를 키워드와 예산에 맞춰 설계합니다.</p></div>
-        <a class="agency-family-link" href="/services/search-ads/">서비스 자세히 보기 <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="agency-family-cards"><article class="card service-card"><div class="card-body"><div class="icon-chip">⌕</div><div class="item-title" style="margin-top:18px">키워드 검색광고</div><p class="muted" style="margin-top:10px">네이버 · 다음 · 카카오 · 구글에서 고객의 검색 의도와 예산에 맞는 키워드 광고를 설정하고 운영합니다.</p><div class="service-channels"><span>네이버</span><span>다음</span><span>카카오</span><span>구글</span></div><ul class="check-list"><li><span class="check">✓</span><span>네이버 파워링크 · 플레이스 광고 상담</span></li><li><span class="check">✓</span><span>다음·카카오 검색광고와 구글 검색광고</span></li><li><span class="check">✓</span><span>키워드 선정 · 광고계정 설정 · 성과관리</span></li></ul><a class="service-inquiry" href="#contact" data-product="키워드 검색광고">광고 상담하기 →</a></div></article></div>
-    </div>
-
-    <div id="service-content" class="agency-service-family" data-reveal>
-      <div class="agency-family-head">
-        <div class="agency-family-index"><span>02</span><small>CONTENT & INFLUENCE</small></div>
-        <div class="agency-family-title"><h3>선택의 이유를 만드는 콘텐츠</h3><p>블로그·카페 바이럴과 방문형 체험단을 통해 신뢰할 수 있는 정보를 전달합니다.</p></div>
-        <a class="agency-family-link" href="/services/viral/">서비스 자세히 보기 <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="agency-family-cards"><article class="card service-card"><div class="card-body"><div class="icon-chip">✎</div><div class="item-title" style="margin-top:18px">바이럴마케팅</div><p class="muted" style="margin-top:10px">블로그·카페 등 고객이 정보를 찾는 채널에 맞춰 콘텐츠를 기획하고 운영합니다.</p><ul class="check-list"><li><span class="check">✓</span><span>네이버 블로그·카페 중심 바이럴</span></li><li><span class="check">✓</span><span>지역·업종별 콘텐츠 기획·운영</span></li><li><span class="check">✓</span><span>광고·협찬 표시 기준을 준수한 홍보</span></li></ul><a class="service-inquiry" href="#contact" data-product="바이럴마케팅">이 서비스 문의하기 →</a></div></article>
-<article class="card service-card"><div class="card-body"><div class="icon-chip">★</div><div class="item-title" style="margin-top:18px">블로그 체험단</div><p class="muted" style="margin-top:10px">실제 방문·이용 경험을 기반으로 체험단을 모집하고 체험 일정부터 결과물까지 관리합니다.</p><ul class="check-list"><li><span class="check">✓</span><span>지역·업종 맞춤 블로그 체험단</span></li><li><span class="check">✓</span><span>참여자 모집·진행·콘텐츠 확인</span></li><li><span class="check">✓</span><span>경제적 이해관계 표시·자율적 후기</span></li></ul><a class="service-inquiry" href="#contact" data-product="블로그 체험단">이 서비스 문의하기 →</a></div></article></div>
-    </div>
-
-    <div id="service-local" class="agency-service-family" data-reveal>
-      <div class="agency-family-head">
-        <div class="agency-family-index"><span>03</span><small>LOCAL DISCOVERY</small></div>
-        <div class="agency-family-title"><h3>매장 정보가 경쟁력이 되도록</h3><p>플레이스 등록·수정, SEO 진단, 리뷰 대응을 운영 사실과 공식 절차를 기준으로 관리합니다.</p></div>
-        <a class="agency-family-link" href="/services/place-seo/">서비스 자세히 보기 <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="agency-family-cards"><article class="card service-card"><div class="card-body"><div class="icon-chip">↗</div><div class="item-title" style="margin-top:18px">플레이스 진단 및 SEO 최적화</div><p class="muted" style="margin-top:10px">네이버 플레이스의 등록정보와 키워드·사진·메뉴·예약·리뷰 운영 상태를 확인하고 개선 방향을 제시합니다.</p><ul class="check-list"><li><span class="check">✓</span><span>상호·업종·소개글·대표키워드 진단</span></li><li><span class="check">✓</span><span>메뉴·사진·예약·검색 의도별 정보 점검</span></li><li><span class="check">✓</span><span>확인된 문제에 따른 SEO 개선 계획</span></li></ul><a class="service-inquiry" href="#contact" data-product="플레이스 진단 및 SEO 최적화">이 서비스 문의하기 →</a></div></article>
-<article class="card service-card"><div class="card-body"><div class="icon-chip">⚙</div><div class="item-title" style="margin-top:18px">플레이스 등록 및 수정대행</div><p class="muted" style="margin-top:10px">직접 관리하기 어려운 사업주를 대신해 기본정보·메뉴판·업체사진 등 플레이스 등록과 수정을 지원합니다.</p><ul class="check-list"><li><span class="check">✓</span><span>상호·영업시간·편의정보 등록·정비</span></li><li><span class="check">✓</span><span>메뉴판·메뉴 가격·대표 및 업체사진 등록</span></li><li><span class="check">✓</span><span>사업주 권한 확인과 승인 후 진행</span></li></ul><a class="service-inquiry" href="#contact" data-product="플레이스 등록 및 수정대행">이 서비스 문의하기 →</a></div></article>
-<article class="card service-card"><div class="card-body"><div class="icon-chip">☷</div><div class="item-title" style="margin-top:18px">플레이스 리뷰 신고 및 삭제 요청 지원</div><p class="muted" style="margin-top:10px">권리침해·허위사실 등 신고 사유가 있는 리뷰를 검토하고 네이버 공식 절차에 따른 신고·삭제 요청을 지원합니다.</p><ul class="check-list"><li><span class="check">✓</span><span>신고 사유 및 증빙자료 검토</span></li><li><span class="check">✓</span><span>권리보호센터 신고·이의신청 지원</span></li><li><span class="check">✓</span><span>삭제 여부는 네이버 판단에 따르며 보장하지 않음</span></li></ul><a class="service-inquiry" href="#contact" data-product="플레이스 리뷰 신고 및 삭제 요청 지원">이 서비스 문의하기 →</a></div></article></div>
-    </div>
-
-    <div id="service-creative" class="agency-service-family" data-reveal>
-      <div class="agency-family-head">
-        <div class="agency-family-index"><span>04</span><small>CREATIVE & EXPERIENCE</small></div>
-        <div class="agency-family-title"><h3>보는 순간부터 문의까지</h3><p>사진촬영과 상품 상세페이지, 반응형 홈페이지로 브랜드의 가치를 전달합니다.</p></div>
-        <a class="agency-family-link" href="/services/creative/">서비스 자세히 보기 <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="agency-family-cards"><article class="card service-card design-service"><div class="card-body"><div class="icon-chip">▤</div><div class="item-title" style="margin-top:18px">오픈마켓 상세페이지 제작</div><p class="muted" style="margin-top:10px">상품의 핵심 구매 포인트가 잘 전달되도록 스토리와 디자인을 구성하는 상세페이지 제작</p><a class="service-inquiry" href="#contact" data-product="오픈마켓 상세페이지 제작">제작 견적 문의 →</a></div></article>
-<article class="card service-card design-service"><div class="card-body"><div class="icon-chip">▣</div><div class="item-title" style="margin-top:18px">홈페이지 제작</div><p class="muted" style="margin-top:10px">브랜드·업체 소개부터 서비스 안내와 상담 전환까지 고려한 반응형 홈페이지 제작</p><a class="service-inquiry" href="#contact" data-product="홈페이지 제작">제작 견적 문의 →</a></div></article>
-<article class="card service-card design-service"><div class="card-body"><div class="icon-chip">◉</div><div class="item-title" style="margin-top:18px">사진촬영</div><p class="muted" style="margin-top:10px">메뉴·상품·공간·외관 등 플레이스와 홈페이지에 활용할 사진 촬영</p><a class="service-inquiry" href="#contact" data-product="사진촬영">제작 견적 문의 →</a></div></article></div>
-    </div>
-    <aside class="owner-notice" role="note"><strong>플레이스 등록·수정 안내</strong><p>네이버 스마트플레이스 등록 및 기본정보 수정은 사업주가 직접 할 수 있는 무료 서비스입니다. 직접 수정하기 어렵거나 시간이 부족할 때 모멘텀마케팅의 대행 서비스를 이용해 주세요.</p></aside>
-  </div>
+<section class="section section-soft" aria-labelledby="insight-title">
+ <div class="container">
+ <div class="section-header"><span class="eyebrow">MARKETING INSIGHTS / FAQ</span><h2 id="insight-title">광고를 시작하기 전에, 먼저 알아야 할 것.</h2><p>부산·경남 지역 사업자의 실제 고민을 바탕으로 실무 가이드와 마케팅 정보를 제공합니다.</p></div>
+ <div class="insight-grid">
+ <article class="insight-card"><span class="topic">01 · 바이럴마케팅</span><h3>부산 바이럴마케팅 업체, 어떻게 비교해야 할까?</h3><p>블로그·체험단·카페 콘텐츠의 역할과 계약 전 확인 항목을 비교합니다.</p><a href="/services/viral/">바이럴마케팅 안내 ↗</a></article>
+ <article class="insight-card"><span class="topic">02 · 음식점마케팅</span><h3>고깃집·횟집·카페, 플레이스에서 무엇을 먼저 고칠까?</h3><p>메뉴·주차·가격·예약 정보 등 고객이 방문 전에 확인하는 내용을 점검합니다.</p><a href="/industries/restaurant/">음식점 마케팅 안내 ↗</a></article>
+ <article class="insight-card"><span class="topic">03 · 홈페이지 제작</span><h3>홈페이지 제작비, 견적에 무엇이 포함될까?</h3><p>제작 범위·수정 횟수·호스팅·유지보수 조건을 비교하는 실무 가이드입니다.</p><a href="/guides/homepage-cost.html">홈페이지 제작 가이드 ↗</a></article>
+ </div>
+ <div class="local-note"><strong>상담 지역 및 업종</strong> · 부산(서면·전포·해운대·광안리·동래·사상·명지 등), 양산, 김해, 창원(마산·진해), 울산을 중심으로 음식점·고깃집·횟집·피부관리실·가발·네일샵·청소업체 등 다양한 업종의 온라인 홍보와 홈페이지 제작을 검토합니다. 지역별 검색 수요와 운영 방식은 개별 확인이 필요합니다. <a href="/insights/" style="font-weight:900;color:#215bce">마케팅자료 전체 보기 ↗</a></div>
+ </div>
 </section>
-<section id="open-packages" class="section section-dark">
-      <div class="container"><div class="section-head"><div class="eyebrow">OPEN PACKAGES</div><h2>브랜드의 시작을 위한<br>오픈패키지.</h2><p>촬영·플레이스 등록·SEO·네이버 예약·체험단을 기본으로, 필요한 경우 검색광고 세팅까지 함께 진행합니다.</p></div>
-        <div class="packages packages-two">
-<article class="package-card card featured"><div class="card-body">
-<div class="featured-badge">신규 매장 기본 구성</div>
-<div class="item-title">오픈패키지 1</div><div class="package-sub">촬영 + 플레이스 등록 + SEO + 예약 + 체험단</div><p class="muted" style="margin-top:18px">처음 매장을 오픈할 때 필요한 기본 세팅과 초기 체험단 홍보를 함께 준비합니다.</p>
-<ul class="check-list"><li><span class="check">✓</span><span><strong>사진촬영</strong> — 메뉴·상품·매장·외관 등 협의한 컷</span></li><li><span class="check">✓</span><span><strong>플레이스 등록대행</strong> — 기본정보·메뉴판·업체사진 등록</span></li><li><span class="check">✓</span><span><strong>SEO 최적화</strong> — 소개글·업종·대표키워드·운영정보 점검</span></li><li><span class="check">✓</span><span><strong>네이버 예약 세팅</strong> — 해당 사업장·업종의 예약 서비스 이용 가능 시</span></li><li><span class="check">✓</span><span><strong>블로그 체험단</strong> — 모집·체험 진행·콘텐츠 관리</span></li></ul>
-<a class="btn btn-dark" href="#contact" data-product="오픈패키지 1">오픈패키지 1 견적 문의하기 →</a></div></article>
-<article class="package-card card"><div class="card-body">
-<div class="featured-badge package-badge-outline">검색광고까지 확장</div>
-<div class="item-title">오픈패키지 2</div><div class="package-sub">오픈패키지 1 전체 + 네이버 검색광고 세팅</div><p class="muted" style="margin-top:18px">오픈 준비를 마친 뒤 플레이스 광고와 파워링크 광고 세팅까지 연결하는 확장 구성입니다.</p>
-<ul class="check-list"><li><span class="check">✓</span><span><strong>오픈패키지 1 구성 전체 포함</strong></span></li><li><span class="check">✓</span><span><strong>플레이스 광고 세팅</strong> — 이용 가능 조건·광고계정 확인 후</span></li><li><span class="check">✓</span><span><strong>파워링크 광고 세팅</strong> — 계정 설정·키워드·초기 광고소재</span></li><li><span class="check">✓</span><span>매체 광고비 별도 · 지속 운영대행 별도 협의</span></li></ul>
-<a class="btn btn-outline" href="#contact" data-product="오픈패키지 2">오픈패키지 2 견적 문의하기 →</a></div></article>
-        </div>
-        <p class="package-notes">※ 촬영 범위, 메뉴 등록 수, 체험단 인원·제공 혜택, 광고비 및 계정 조건은 상담 후 확정합니다. 순위 상승·노출·광고 성과를 보장하는 상품이 아닙니다.</p>
-      </div>
-    </section>
-<section id="industries" class="section">
-      <div class="container">
-        <div class="section-head">
-          <div class="eyebrow">INDUSTRY SOLUTIONS</div>
-          <h2>업종을 이해하는 전문 서비스.</h2>
-          <p>음식점, 미용실, 병원, 학원 등 업종마다 고객이 찾는 정보와 문의 경로가 다릅니다. 각 분야의 고객 행동과 정보를 고려한 솔루션을 살펴보세요.</p>
-        </div>
-        <div class="grid-4 industry-grid" style="margin-top:32px">
-          <a class="card industry-card" href="/industries/restaurant/"><div class="card-body"><div class="icon-chip">🍽</div><div class="item-title" style="margin-top:14px">음식점 마케팅</div><p class="muted" style="margin:10px 0 0">플레이스 SEO · 체험단 · 오픈패키지</p><span class="industry-more">자세히 보기 →</span></div></a>
-          <a class="card industry-card" href="/industries/hairshop/"><div class="card-body"><div class="icon-chip">✂</div><div class="item-title" style="margin-top:14px">미용실 플레이스 관리</div><p class="muted" style="margin:10px 0 0">플레이스 · 예약 · 사진 · 지역광고</p><span class="industry-more">자세히 보기 →</span></div></a>
-          <a class="card industry-card" href="/industries/hospital/"><div class="card-body"><div class="icon-chip">＋</div><div class="item-title" style="margin-top:14px">병원 홈페이지 제작</div><p class="muted" style="margin:10px 0 0">진료정보 · 모바일 · 기술 SEO</p><span class="industry-more">자세히 보기 →</span></div></a>
-          <a class="card industry-card" href="/industries/academy/"><div class="card-body"><div class="icon-chip">▤</div><div class="item-title" style="margin-top:14px">학원 블로그 마케팅</div><p class="muted" style="margin:10px 0 0">콘텐츠 · 플레이스 · 홈페이지</p><span class="industry-more">자세히 보기 →</span></div></a>
-        </div>
-        <div class="industry-all"><a class="btn btn-outline-dark" href="/industries/">전체 28개 업종군 살펴보기 →</a><p class="muted" style="margin:0">제조업 · 도소매 · 전문직 · IT · B2B · 공공기관 등 다양한 업종 상담</p></div>
-      </div>
-    </section>
-<section class="section">
-      <div class="container process-grid">
-        <div class="section-head">
-          <div class="eyebrow">process</div>
-          <h2>전략부터 실행까지,<br>흐름을 만들겠습니다.</h2>
-          <p>사업 진단, 전략 제안, 매체 세팅과 콘텐츠 제작, 운영 후 개선까지 각 단계를 연결합니다.</p>
-        </div>
-        <div style="display:grid;gap:16px">
-          <div class="card process-card"><div class="card-body"><div class="step"><div class="step-no">1</div><div><strong>상담 접수</strong></div></div></div></div>
-          <div class="card process-card"><div class="card-body"><div class="step"><div class="step-no">2</div><div><strong>업종 및 상권 분석</strong></div></div></div></div>
-          <div class="card process-card"><div class="card-body"><div class="step"><div class="step-no">3</div><div><strong>예산/목표 기반 전략 제안</strong></div></div></div></div>
-          <div class="card process-card"><div class="card-body"><div class="step"><div class="step-no">4</div><div><strong>세팅 및 광고 실행</strong></div></div></div></div>
-          <div class="card process-card"><div class="card-body"><div class="step"><div class="step-no">5</div><div><strong>운영 및 개선 관리</strong></div></div></div></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft">
-      <div class="container">
-        <div class="cta-box">
-          <div class="section-head">
-            <div class="eyebrow">cta</div>
-            <h2 style="color:#fff">비즈니스의 다음 단계,<br>함께 설계해 볼까요?</h2>
-          </div>
-          <p>업종, 지역, 예산에 따라 효율적인 마케팅 방법은 달라집니다. 상담 내용을 바탕으로 현재 상황에 맞는 방향을 제안드립니다.</p>
-          <div class="btn-row" style="margin-top:24px">
-            <a class="btn btn-brand" href="#contact">무료 상담 신청하기</a>
-            <a class="btn btn-outline-dark" href="tel:050713135668">빠른 전화 문의</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section">
-      <div class="container contact-grid">
-        <div>
-          <div class="section-head">
-            <div class="eyebrow">contact</div>
-            <h2>프로젝트 상담 신청</h2>
-            <p>광고·콘텐츠·플레이스·디자인 중 필요한 업무를 알려주세요. 사업 상황과 목표에 맞춰 진행 범위를 제안합니다.</p>
-          </div>
-          <ul class="meta-list">
-            <li><span class="check">✓</span><span>상호</span></li>
-            <li><span class="check">✓</span><span>담당자명</span></li>
-            <li><span class="check">✓</span><span>연락처</span></li>
-            <li><span class="check">✓</span><span>지역(선택)</span></li>
-            <li><span class="check">✓</span><span>업종</span></li>
-            <li><span class="check">✓</span><span>문의내용</span></li>
-          </ul>
-          <div class="info-box">
-            <div class="item-title">고객센터 안내</div>
-            <div class="muted" style="margin-top:14px"><strong style="color:#0f172a">소재지</strong><br>부산 동래구 충렬대로 318 한양상가A동 204호</div>
-            <div class="muted" style="margin-top:12px"><strong style="color:#0f172a">고객센터</strong><br>0507-1313-5668</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <form id="contactForm">
+<section class="section contact-section" id="contact" aria-labelledby="contact-title">
+ <div class="container contact-layout">
+ <div class="contact-intro"><span class="eyebrow">LET'S GROW TOGETHER</span><h2 id="contact-title">지금, 가장 답답한 부분을<br><em>편하게 남겨주세요.</em></h2>
+ <p>광고 예산을 어디에 써야 할지, 블로그마케팅과 체험단 중 무엇이 맞는지, 검색 노출과 예약이 왜 이어지지 않는지. 업종·지역·목표를 알려주시면 필요한 실행 범위를 구분해 제안합니다.</p>
+ <div class="contact-info"><b>고객센터 · 0507-1313-5668</b><span>부산 동래구 충렬대로 318 한양상가A동 204호</span><div class="contact-photo" role="img" aria-label="뷰티 분야 포트폴리오 관련 이미지"></div></div></div>
+ <div class="contact-form-card"><h3>맞춤 상담 신청</h3><p class="form-desc">상호·담당자·연락처와 필요한 업무를 남겨주세요.</p><form id="contactForm">
               <input type="hidden" name="access_key" value="d5ea52a6-a775-4ebb-b614-35f8ee8edc83" />
               <input type="hidden" name="subject" value="[모멘텀마케팅] 홈페이지 상담 문의" />
               <input type="hidden" name="from_name" value="모멘텀마케팅 홈페이지" />
@@ -565,50 +153,24 @@
                 <button class="btn btn-dark" type="submit">맞춤 상담 신청하기</button>
               </div>
               <div id="contactNotice" class="notice"></div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft">
-      <div class="container">
-        <div class="section-head">
-          <div class="eyebrow">faq</div>
-          <h2>자주 묻는 질문</h2>
-        </div>
-        <div style="display:grid;gap:16px;margin-top:32px">
-          <div class="card faq-card"><div class="card-body"><div class="item-title">어떤 업종이 상담 가능한가요?</div><div class="muted" style="margin-top:10px">음식점·카페·외식업, 병원·의료, 미용·뷰티, 교육·학원, 스포츠·헬스, 숙박·관광, 자동차, 부동산·건축, 생활서비스, 웨딩·행사, 반려동물, 쇼핑몰·유통, 제조업, 전문직, IT·B2B 기업, 프랜차이즈 등 다양한 업종의 마케팅을 지원합니다. 업종 특성과 사업 규모·지역·광고 예산을 고려해 검색광고, 바이럴마케팅, 블로그 체험단, 플레이스 SEO, 홈페이지·상세페이지 제작 등 적합한 서비스를 안내합니다. 개인사업자부터 법인·기업까지 상담 가능합니다. <a href="/industries/" class="industry-faq-link">상담 가능 업종 전체 보기 →</a></div></div></div>
-          <div class="card faq-card"><div class="card-body"><div class="item-title">광고 예산이 크지 않아도 가능한가요?</div><div class="muted" style="margin-top:10px">가능합니다. 예산 규모에 맞춰 우선순위를 정하고 가장 효율적인 채널부터 제안하는 방식으로 진행합니다.</div></div></div>
-          <div class="card faq-card"><div class="card-body"><div class="item-title">오픈패키지 1과 2의 차이는 무엇인가요?</div><div class="muted" style="margin-top:10px">오픈패키지 1은 촬영·플레이스 등록·SEO·네이버 예약·블로그 체험단을 포함합니다. 오픈패키지 2는 여기에 플레이스 광고와 파워링크 광고 초기 세팅이 추가됩니다. 광고비는 별도입니다.</div></div></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-inner">
-      <div>
-        <div class="brand-title">모멘텀마케팅</div>
-        <div class="brand-sub" style="font-size:14px">당신의 사업에 성장동력을 달아 드리겠습니다.</div>
-      </div>
-      <div class="footer-right">
-        <div>소재지: 부산 동래구 충렬대로 318 한양상가A동 204호</div>
-        <div>고객센터: 0507-1313-5668</div>
-        <div>검색광고 · 바이럴 · 체험단 · 플레이스 SEO · 디자인 · 웹사이트 · 사진촬영 · 오픈패키지</div>
-        <div>등록·수정은 사업주도 직접 할 수 있습니다. 대행이 필요할 때 문의해 주세요.</div>
-      </div>
-    </div>
-  </footer>
-
-  <div class="mobile-bar">
-    <div class="mobile-bar-inner">
-      <a class="btn btn-outline" href="tel:050713135668">전화상담</a>
-      <a class="btn btn-dark" href="#contact">문의신청</a>
-    </div>
-  </div>
-
-  <script>
+            </form></div>
+ </div>
+</section>
+<section class="section section-white" id="faq" aria-labelledby="faq-title">
+ <div class="container"><div class="section-header"><span class="eyebrow">FREQUENTLY ASKED QUESTIONS</span><h2 id="faq-title">자주 묻는 질문</h2><p>업종과 예산에 따른 우선순위를 함께 검토합니다.</p></div>
+ <div class="faq-grid">
+  <details><summary>부산 블로그마케팅과 바이럴마케팅은 무엇이 다른가요?</summary><p>블로그마케팅은 블로그 콘텐츠 중심의 운영을 가리키며, 바이럴마케팅은 체험단·카페·SNS 등 여러 채널의 정보 확산을 포함할 수 있습니다. 채널마다 계약 범위와 실제 수행 업무를 확인해야 합니다.</p></details>
+  <details><summary>음식점마케팅은 플레이스와 체험단 중 무엇부터 해야 하나요?</summary><p>우선 업종·메뉴·영업시간·사진·예약 정보를 정확하게 정비한 다음 목표에 따라 체험단과 광고 집행을 검토합니다. 모든 음식점에 같은 광고가 필요한 것은 아닙니다.</p></details>
+  <details><summary>양산·김해·창원·울산의 매장도 상담할 수 있나요?</summary><p>매장 위치·업종·광고 목표에 따라 진행 범위를 검토합니다. 마산·진해 등 창원 생활권도 포함해 상담할 수 있습니다.</p></details>
+  <details><summary>광고비가 적어도 온라인마케팅을 시작할 수 있나요?</summary><p>가능한 실행 범위는 업종·목표에 따라 달라집니다. 무료로 정비할 수 있는 기본 정보부터 확인하고, 비용이 필요한 광고와 제작 업무를 분리해 판단합니다.</p></details>
+  <details><summary>홈페이지 제작 시 검색엔진 SEO·GEO도 고려하나요?</summary><p>페이지별 고유 제목, 관련성 있는 본문, 모바일 사용성, 내부 링크, 기술적 색인 설정과 근거 있는 FAQ를 설계합니다. 특정 검색 순위나 AI 검색 인용은 보장하지 않습니다.</p></details>
+  <details><summary>블로그 체험단의 검색 상위노출이나 리뷰 평점을 보장하나요?</summary><p>하지 않습니다. 방문 후기와 평가 내용은 실제 경험에 근거해야 하며, 경제적 이해관계는 관련 규정에 맞춰 표시해야 합니다.</p></details>
+ </div></div>
+</section>
+</main>
+<footer class="footer"><div class="container"><div class="footer-layout"><a class="brand" href="/"><span class="brand-symbol">M<b>↗</b></span><span class="brand-text"><strong>MOMENTUM MARKETING</strong><small>INTEGRATED DIGITAL AGENCY</small></span></a><nav class="footer-nav" aria-label="하단 메뉴"><a href="/services/viral/">바이럴마케팅</a><a href="/industries/restaurant/">음식점마케팅</a><a href="/portfolio/">포트폴리오</a><a href="/lab/">광고무료도구</a><a href="/insights/">마케팅자료</a><a href="/platform/">회원 서비스</a><a href="#contact">상담 문의</a></nav></div><div class="footer-note">모멘텀마케팅 · 부산 동래구 충렬대로 318 한양상가A동 204호 · 고객센터 <a href="tel:050713135668">0507-1313-5668</a><br>실제 계약 범위·수행 방식·비용은 상담 후 확정합니다. 검색 노출이나 매출 상승을 보장하지 않습니다.</div></div></footer>
+<div class="mobile-cta"><a class="btn btn-outline" href="tel:050713135668">전화상담</a><a class="btn btn-primary" href="#contact">상담 신청하기 ↗</a></div>
+<script>
     function bindWeb3Form(formId, noticeId) {
       const form = document.getElementById(formId);
       const notice = document.getElementById(noticeId);
@@ -687,6 +249,6 @@
     })();
     bindWeb3Form('contactForm', 'contactNotice');
   </script>
-  <script defer src="/agency-experience.js"></script>
+<script defer src="/agency-experience.js"></script>
 </body>
 </html>
