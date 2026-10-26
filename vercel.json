@@ -13,6 +13,11 @@
       "permanent": true
     },
     {
+      "source": "/platform/:path*",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
       "source": "/platform",
       "destination": "/lab/",
       "permanent": false
