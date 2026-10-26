@@ -30,6 +30,7 @@ jobs:
       - name: Validate collector scripts
         run: |
           python -m py_compile scripts/update_marketing_news.py scripts/prepare_editorial_candidates.py
+          python -m unittest discover -s tests -p test_insights_editorial.py -v
           python - <<'PY'
           from scripts.prepare_editorial_candidates import planned_rows, briefs, PLAN
           rows = planned_rows(PLAN.read_text("utf-8"))
