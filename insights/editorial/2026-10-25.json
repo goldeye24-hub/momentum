@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-25",
+  "scope": "feature/marketing-platform-20261023 only; no main merge; no production publication",
+  "status": "draft-preview-noindex",
+  "selectionBasis": "검색 의도·실제 상담/예약 구매 가능성·실무 차별성·지역/상권 적합성·기존 및 전일 콘텐츠 중복을 정성 비교. 검색량·경쟁 강도·광고단가 API 실측치 없음; 모든 검색어는 검증 전 후보.",
+  "editorialMix": "오늘 지역/업종별 가이드 2편, 공식 변경 뉴스 0편. 2026-10-24~25 누적 3개 가이드/1개 공식 해설(75/25). 중요하고 날짜 검증된 신규 공식 변경이 없어 뉴스 작성하지 않음.",
+  "existingArticlesChecked": [
+    "/insights/guides/haeundae-skin-care-place/",
+    "/insights/guides/changwon-masan-wig-search/",
+    "/insights/guides/pohang-yeongildae-restaurant-tourist-local/",
+    "/insights/guides/busan-viral-marketing-agency/",
+    "/insights/guides/jeju-tour-experience-booking-conversion/",
+    "/insights/updates/naver-lodging-permit-booking-2026/"
+  ],
+  "selected": [
+    {
+      "path": "/insights/guides/gimhae-move-in-cleaning-search-ads-lead-quality/",
+      "region": "김해·장유·율하(실제 영업권 검증 전)",
+      "industry": "입주·이사청소",
+      "intent": "검색광고 견적·유효 문의·계약 전환",
+      "reason": "기존 청소업 가이드 부재. 지역명 나열보다 출장반경·견적 입력·계약당 광고비·개인정보 실무에 초점."
+    },
+    {
+      "path": "/insights/guides/busan-seomyeon-nail-salon-new-customer-booking-ad-budget/",
+      "region": "부산 서면·부산진구",
+      "industry": "네일샵",
+      "intent": "신규 고객 광고비와 예약·노쇼·재방문 측정",
+      "reason": "기존 해운대 피부관리의 플레이스 사진/예약 소개와 달리 시술별 가격·예약금·방문당 비용·신규/기존 구분에 초점."
+    }
+  ],
+  "candidates": [
+    {
+      "topic": "김해 입주청소 검색광고 유효 문의·견적",
+      "type": "local",
+      "intent": "견적·계약 획득",
+      "purchase": "높음(정성 가설)",
+      "value": "출장권역, 서비스 의도, 전환 단계, 광고비 손익 계산",
+      "fit": "실제 김해 영업권과 장유·율하 등 이동비 기준으로만 설명; 수요 통계 미확인",
+      "duplicate": "기존 입주청소 전용 글 없음",
+      "decision": "선정"
+    },
+    {
+      "topic": "부산 서면 네일샵 신규 예약 광고비",
+      "type": "local",
+      "intent": "예약·실제 방문·재방문",
+      "purchase": "높음(정성 가설)",
+      "value": "시술별 예약·취소·노쇼, 실제 방문당 광고비",
+      "fit": "매장 주소·서면/전포 실제 동선 확인 필요; 유동인구 수치 주장 없음",
+      "duplicate": "해운대 피부관리 가이드와 업종 인접하나 광고비·방문 전환 중심으로 차별화",
+      "decision": "선정"
+    },
+    {
+      "topic": "창원 학원 상담 전환과 수강료 정보",
+      "type": "local",
+      "intent": "학부모 상담·학원 비교",
+      "purchase": "높음(정성 가설)",
+      "value": "학년·과목·상담 경로, 광고/학원법 표시 점검",
+      "fit": "학교권역·교육청 등록 정보 확인 필요",
+      "duplicate": "기존 학원 업종 가이드 없음",
+      "decision": "차기 후보"
+    },
+    {
+      "topic": "부산 사상 자동차 정비 검색광고",
+      "type": "local",
+      "intent": "정비항목별 전화·예약",
+      "purchase": "중상(정성 가설)",
+      "value": "긴급/정기 정비 검색 의도 분리와 견적 동선",
+      "fit": "실제 정비 서비스와 사상권역 확인 필요",
+      "duplicate": "기존 자동차 업종 가이드 없음; 오늘 청소와 문의 측정 일부 겹침",
+      "decision": "보류"
+    },
+    {
+      "topic": "거제 펜션 예약사진·후기 개선",
+      "type": "local",
+      "intent": "객실 예약 비교",
+      "purchase": "높음(정성 가설)",
+      "value": "객실·취소·후기 신뢰와 예약 화면",
+      "fit": "실제 거제 관광권과 숙소 위치 확인 필요",
+      "duplicate": "전일 제주 관광체험 예약·숙박 인허가 공지와 주제 중첩",
+      "decision": "보류"
+    },
+    {
+      "topic": "양산·김해 음식점 블로그 체험단 계약",
+      "type": "local",
+      "intent": "체험단 비용·광고 표시",
+      "purchase": "중상(정성 가설)",
+      "value": "제공 비용·발행권한·광고표시·운영 평가",
+      "fit": "개별 상권 특성 미검증",
+      "duplicate": "기존 부산 바이럴 업체선정·포항 음식점 가이드와 일부 중복",
+      "decision": "보류"
+    },
+    {
+      "topic": "광안리 바버샵 인스타그램 예약 동선",
+      "type": "local",
+      "intent": "스타일 비교·예약",
+      "purchase": "중상(정성 가설)",
+      "value": "포트폴리오·예약 가능한 시간·재방문 관리",
+      "fit": "광안리 매장 실제 위치와 고객 분포 확인 필요",
+      "duplicate": "오늘 서면 네일샵과 예약·SNS 유사",
+      "decision": "보류"
+    },
+    {
+      "topic": "포항 영일대 맛집 관광객·지역주민 검색",
+      "type": "local",
+      "intent": "메뉴·방문·예약",
+      "purchase": "중상(정성 가설)",
+      "value": "여행 동선과 생활권 고객 구분",
+      "fit": "영일대 위치는 알려져 있으나 수요 비중 미확인",
+      "duplicate": "기존 /insights/guides/pohang-yeongildae-restaurant-tourist-local/ 동일 주제",
+      "decision": "중복 제외"
+    },
+    {
+      "topic": "제주 관광지 주변 카페 SNS/플레이스",
+      "type": "local",
+      "intent": "여행 중 방문",
+      "purchase": "중간(정성 가설)",
+      "value": "위치·영업시간·사진·주차·대기 정보",
+      "fit": "제주시/서귀포 세부 권역 검증 필요",
+      "duplicate": "전일 제주 관광체험과 지역 중복",
+      "decision": "보류"
+    },
+    {
+      "topic": "네이버 ADVoost 플레이스 운영 가이드/변경 뉴스",
+      "type": "official",
+      "intent": "플레이스 광고 신규 운영 검토",
+      "purchase": "중상(정성 가설)",
+      "value": "기능별 실무 설정·공식 변경일·적용일 검증 후 해설",
+      "fit": "전국 소상공인 공통",
+      "duplicate": "기존 공식 변경 해설은 숙박 예약 인허가증으로 주제 다름",
+      "decision": "공식 공지 게시·적용일/기능 검증 전 뉴스 보류"
+    }
+  ],
+  "verifiedSources": [
+    {
+      "url": "https://new.smartplace.naver.com/introduction/smartplace",
+      "checked": "2026-10-25",
+      "supports": "업체정보·리뷰·통계 관리"
+    },
+    {
+      "url": "https://new.smartplace.naver.com/introduction/booking/beauty",
+      "checked": "2026-10-25",
+      "supports": "네일샵 뷰티 예약·시술사진·예약가능 시간"
+    },
+    {
+      "url": "https://new.smartplace.naver.com/introduction/booking/npaystorepayment",
+      "checked": "2026-10-25",
+      "supports": "예약금/취소·노쇼 안내와 미수금 가능성"
+    },
+    {
+      "url": "https://support.google.com/google-ads/answer/10995103?hl=ko",
+      "checked": "2026-10-25",
+      "supports": "Google Ads 전환 액션과 기본·보조 구분"
+    },
+    {
+      "url": "https://support.google.com/google-ads/answer/3123169?hl=ko",
+      "checked": "2026-10-25",
+      "supports": "Google Ads 전환 추적 기간"
+    },
+    {
+      "url": "https://www.ftc.go.kr/www/selectBbsNttView.do?bordCd=3&key=12&nttSn=43669&pageIndex=2&pageUnit=10&rltnNttSn=38274&searchCnd=all&searchCtgry=01%2C02&searchKrwd=%EA%B4%91%EA%B3%A0&searchViolt=0609",
+      "checked": "2026-10-25",
+      "supports": "2024-11-15 공정위 발표; 2024-12-01 시행"
+    }
+  ],
+  "unverified": [
+    "지역별 검색량·경쟁강도·클릭단가·계약률",
+    "김해 세부 권역별 입주 물량·청소 수요",
+    "서면 네일샵 방문객 구성·광고 성과",
+    "각 매장의 네이버 예약/매장결제 사용 자격 및 현행 약관"
+  ],
+  "publication": "GitHub feature branch draft only; /insights/ list linked; noindex,follow; main unmerged; not production-published; awaiting explicit user approval"
+}

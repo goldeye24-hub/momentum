@@ -135,60 +135,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     console.log('PASS: checklist and evidence-based report still operate with all APIs offline');
 
 
-    await page.locator('[data-view="creative"]').click();
-    await page.waitForSelector('.studio-template',{state:'visible'});
-    assert.equal(await page.locator('.studio-template').count(),8);
-    assert.equal(await page.locator('#studioBusiness').inputValue(),'포항 묵돌이');
-    await page.screenshot({path:path.join(root,'artifacts/studio-desktop.png'),fullPage:true});
-    console.log('PASS: 8 visible templates and business name from single input');
-
-    // Different templates must actively update headings and the Canvas, not just CSS.
-    let prevData=await page.locator('#poster').evaluate(el=>el.toDataURL());
-    for(const name of ['menu','sale','opening','notice','booking','beauty','premium','review']){
-      await page.locator('[data-studio-template="'+name+'"]').click();
-      await page.waitForTimeout(50);
-      assert.equal(await page.locator('[data-studio-template="'+name+'"]').getAttribute('aria-pressed'),'true');
-      assert.ok((await page.locator('#studioHeadline').inputValue()).length>5);
-      const url=await page.locator('#poster').evaluate(el=>el.toDataURL());
-      assert.ok(url.length>10000,'Canvas output unexpectedly small for '+name);
-      if(name!=='menu')assert.notEqual(url,prevData,'Template did not alter rendered Canvas');
-      prevData=url;
-    }
-    console.log('PASS: all templates render distinct full-sized Canvas artwork');
-
-    // Upload actual image bytes and verify an image object reaches Canvas, not just a filename.
-    await page.locator('#studioPhoto').setInputFiles({name:'test-photo.png',mimeType:'image/png',buffer:png});
-    await page.waitForFunction(()=>document.querySelector('#studioPhotoName').textContent.includes('test-photo.png'));
-    await page.locator('#studioLogo').setInputFiles({name:'test-logo.png',mimeType:'image/png',buffer:png});
-    await page.waitForFunction(()=>document.querySelector('#studioLogoName').textContent.includes('test-logo.png'));
-    await page.fill('#studioHeadline','신선함을 담은 특별한 한상');
-    await page.fill('#studioPrice','30,000원');
-    await page.locator('#studioZoom').evaluate(el=>{el.value='160';el.dispatchEvent(new Event('input',{bubbles:true}))});
-    await page.locator('#studioPanX').evaluate(el=>{el.value='25';el.dispatchEvent(new Event('input',{bubbles:true}))});
-    await page.locator('#studioBrightness').evaluate(el=>{el.value='120';el.dispatchEvent(new Event('input',{bubbles:true}))});
-    await page.waitForTimeout(120);
-    assert.equal(await page.locator('#studioZoomValue').textContent(),'160%');
-    assert.equal(await page.locator('#studioBrightnessValue').textContent(),'120%');
-    console.log('PASS: image/logo uploads, live text and image controls');
-
-    for(const [size,w,h] of [['square',1080,1080],['portrait',1080,1350],['story',1080,1920],['banner',1200,628]]){
-      await page.selectOption('#studioFormat',size);
-      await page.waitForFunction(([width,height])=>{
-        const x=document.getElementById('poster');
-        return x.width===width&&x.height===height;
-      },[w,h]);
-      const [download]=await Promise.all([
-        page.waitForEvent('download',{timeout:25000}),
-        page.locator('#studioDownload').click()
-      ]);
-      const file=path.join(os.tmpdir(),'momentum-'+size+'-'+Date.now()+'.png');
-      await download.saveAs(file);
-      const buf=fs.readFileSync(file);
-      assert.deepEqual(pngDims(buf),{width:w,height:h});
-      assert.ok(buf.length>10000,'PNG is too small; possible blank canvas '+size);
-      fs.unlinkSync(file);
-      console.log('PASS: '+size+' downloaded '+w+'x'+h+' PNG');
-    }
+    // Promotion studio intentionally retired; analytics workflows remain available.
+    assert.equal(await page.locator('[data-view="creative"]').count(),0);
+    assert.equal(await page.locator('#creative').count(),0);
+    assert.equal(await page.locator('[data-view="calculator"]').count(),1);
+    assert.equal(await page.locator('[data-view="reviews"]').count(),1);
+    console.log('PASS: promotion studio absent; reviews and profit calculator preserved');
 
     // Full-service agency redesign: layout, honest tool statements and responsive navigation.
     const agencyHome=await ctx.newPage();
@@ -196,13 +148,22 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     agencyHome.on('pageerror',e=>agencyErrors.push(String(e)));
     const agencyResponse=await agencyHome.goto('http://127.0.0.1:'+port+'/',{waitUntil:'load'});
     assert.equal(agencyResponse.status(),200);
-    assert.match(await agencyHome.locator('h1').innerText(),/고객의 선택을 만드는/);
-    assert.equal(await agencyHome.locator('.agency-visual .visual-modules>div').count(),4);
-    assert.match(await agencyHome.locator('.agency-tools-preview').innerText(),/API 미연동/);
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#services"]').isVisible());
+    assert.match(await agencyHome.locator('h1').innerText(),/성장의 흐름을/);
+    assert.equal(await agencyHome.locator('.v4-hero-visual').count(),1);
+    assert.match(await agencyHome.locator('#free-tools').innerText(),/무료 마케팅 도구/);
+    assert.ok(await agencyHome.locator('.agency-nav a[href="/services/keyword-ads/"]').isVisible());
     assert.ok(await agencyHome.locator('#contactForm').count()===1);
+    assert.equal(await agencyHome.locator('#selectedDesignWrap').count(),0);
+    assert.equal(await agencyHome.locator('#selectedDesign[type="hidden"]').count(),1);
+    assert.equal(await agencyHome.locator('#contact .marketing-consult-intro').count(),1);
+    assert.match(await agencyHome.locator('#contact .marketing-consult-intro').innerText(),/우리 사업에 맞는 광고 전략/);
+    assert.equal(await agencyHome.locator('#contact').getByText('소재지',{exact:true}).count(),0);
     const cssAvailable=await agencyHome.evaluate(async()=>{const r=await fetch('/agency.css');return r.status===200&&(await r.text()).includes('.agency-hero-grid')});
     assert.ok(cssAvailable,'Integrated agency stylesheet missing');
+    const v4Ready=await agencyHome.evaluate(async()=>{const r=await fetch('/marketing-v4-enterprise-2026.css');return r.status===200&&(await r.text()).includes('.v4-hero-visual')});
+    assert.ok(v4Ready,'New enterprise stylesheet must load');
+    const menuCss=await agencyHome.evaluate(async()=>{const r=await fetch('/marketing-navigation-2026.css');return r.ok&&(await r.text()).includes('.momentum-service-nav')});
+    assert.ok(menuCss,'Ten-category marketing navigation stylesheet missing');
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-desktop.png'),fullPage:true});
     for(const width of [390,768,1280]){
       await agencyHome.setViewportSize({width,height:850});
@@ -212,12 +173,22 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await agencyHome.setViewportSize({width:390,height:844});
     assert.ok(await agencyHome.locator('.topbar-cta').isVisible());
     await agencyHome.screenshot({path:path.join(root,'artifacts/momentum-agency-mobile.png'),fullPage:true});
-    assert.equal(await agencyHome.locator('#work .agency-sample-card').count(),3);
-    assert.match(await agencyHome.locator('#work').innerText(),/디자인 샘플/);
-    assert.equal(await agencyHome.locator('#work a[href="/site-builder/"]').count(),0);
-    assert.ok(await agencyHome.locator('#work a[href*="design=restaurant"]').count()>=1);
-    assert.equal(await agencyHome.locator('#services .agency-service-family').count(),4);
-    assert.equal(await agencyHome.locator('#services .service-card').count(),9);
+    assert.equal(await agencyHome.locator('#work').count(),0);
+    assert.equal(await agencyHome.locator('#free-tools .mk-tool').count(),4);
+    assert.equal(await agencyHome.locator('#services .mk-service-card').count(),9);
+    assert.equal(await agencyHome.locator('.mb-sector-images img').count(),0);
+    assert.equal(await agencyHome.locator('.mb-package-cover img').count(),0);
+    assert.equal(await agencyHome.locator('.mb-industry-cover img').count(),0);
+    assert.equal(await agencyHome.locator('.v4-navigation-ribbon a').count(),3);
+    assert.equal(await agencyHome.locator('#services .mk-photo-service').count(),0);
+    assert.equal(await agencyHome.locator('#services #photo-service').count(),1);
+    assert.ok(await agencyHome.locator('#services #photo-service a[data-product="플레이스 사진촬영"]').count()===1);
+    assert.ok(await agencyHome.locator('#requestedProduct option[value="플레이스 사진촬영"]').count()===1);
+    assert.ok(await agencyHome.locator('a[href="/agency/"]').count()>=1);
+    assert.equal(await agencyHome.locator('.momentum-service-nav > a').count(),10);
+    assert.equal(await agencyHome.locator('.mk-design-previews .mk-preview').count(),3);
+    assert.ok(await agencyHome.locator('#paid-service').count()===1);
+    assert.equal(await agencyHome.locator('#open-packages .package-card').count(),2);
     const customCss=await agencyHome.evaluate(async()=>{
       const response=await fetch('/agency-showcase.css');
       return response.status===200&&(await response.text()).includes('.agency-work-card');
@@ -228,13 +199,47 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.ok(await toggle.isVisible());
     await toggle.click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-    assert.ok(await agencyHome.locator('.agency-nav a[href="#work"]').isVisible());
-    await agencyHome.locator('.agency-nav a[href="#work"]').click();
+    assert.ok(await agencyHome.locator('.agency-nav a[href="/services/keyword-ads/"]').isVisible());
+    await agencyHome.locator('.agency-nav a[href="#free-tools"]').click();
     assert.equal(await toggle.getAttribute('aria-expanded'),'false');
     assert.equal(await agencyHome.locator('.agency-nav').isVisible(),false);
         assert.equal(agencyErrors.length,0,'Agency home errors: '+agencyErrors.join(' | '));
     await agencyHome.close();
     console.log('PASS: agency landing, CSS, original inquiry form, and responsive desktop/tablet/mobile views');
+    const productPage=await ctx.newPage();
+    for(const slug of ['keyword-ads','place-seo','review-care','viral','sns','press','photography','education']){
+      const res=await productPage.goto('http://127.0.0.1:'+port+'/services/'+slug+'/',{waitUntil:'load'});
+      assert.equal(res.status(),200,'Missing detailed product page: '+slug);
+      assert.equal(await productPage.locator('#detailTitle').count(),1);
+      assert.equal(await productPage.locator('.svc-visual--'+slug).count(),1,'Diagram missing for '+slug);
+      if(slug==='keyword-ads'){
+        const logos=productPage.locator('.vis-source .vis-brand-logo img');
+        assert.equal(await logos.count(),3);
+        for(let i=0;i<3;i++){
+          await logos.nth(i).scrollIntoViewIfNeeded();
+          const ok=await logos.nth(i).evaluate(async img=>{
+            await img.decode();
+            return img.complete&&img.naturalWidth>0;
+          });
+          assert.ok(ok,'Paid-search logo image failed to decode: '+i);
+        }
+      }
+      assert.equal(await productPage.locator('.svc-visual figcaption h3').count(),1);
+      assert.ok(await productPage.locator('.vis-body').isVisible());
+      if(slug==='photography'){
+        assert.equal(await productPage.locator('.vis-photo-image').count(),4,'Four reference photos should be present');
+        assert.equal(await productPage.locator('.vis-frame-art').count(),0,'Abstract placeholders should be removed');
+        assert.match(await productPage.locator('.svc-visual--photography').innerText(),/스톡 사진 예시/);
+      }
+      for(const id of ['about','who','scope','compare','process','faq'])assert.equal(await productPage.locator('#'+id).count(),1,slug+': '+id);
+      assert.ok(await productPage.locator('.final-cta a[href*="?service="]').count()>=1);
+      await productPage.setViewportSize({width:390,height:844});
+      const sz=await productPage.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,width:window.innerWidth}));
+      assert.ok(sz.scrollWidth<=sz.width+3,'Product detail horizontal overflow '+slug+' '+JSON.stringify(sz));
+    }
+    await productPage.close();
+    console.log('PASS: eight unique marketing detail pages, consultation CTAs and mobile widths');
+
 
     // Service and project case pages must load as standalone public content.
     const landing=await ctx.newPage();
@@ -243,7 +248,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       const response=await landing.goto(url,{waitUntil:'load'});
       assert.equal(response.status(),200,'Service landing unavailable: '+slug);
       assert.match(await landing.locator('h1').innerText(),/고객|선택|검색|좋은 제품/);
-      assert.equal(await landing.locator('.services .service').count(),4);
+      if(['place-seo','viral'].includes(slug)){
+        assert.equal(await landing.locator('#scope .scope-panel').count(),2);
+        assert.equal(await landing.locator('#faq details').count(),3);
+      }else{
+        assert.equal(await landing.locator('.services .service').count(),4);
+      }
       assert.ok(await landing.locator('a[href^="/?service="]').count()>=1);
       await landing.setViewportSize({width:390,height:840});
       const dims=await landing.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
@@ -654,7 +664,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     const dimensions=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth}));
     assert.ok(dimensions.scrollWidth<=dimensions.viewport+3,'Mobile horizontal overflow '+JSON.stringify(dimensions));
     await page.screenshot({path:path.join(root,'artifacts/studio-mobile.png'),fullPage:true});
-    assert.ok(await page.locator('#studioDownload').isVisible());
+    assert.equal(await page.locator('[data-view="creative"]').count(),0);
+    assert.ok(await page.locator('[data-view="calculator"]').isVisible());
     assert.equal(errors.length,0,'Browser runtime errors: '+errors.join(' | '));
     console.log('PASS: mobile layout and zero page errors');
     await ctx.close();

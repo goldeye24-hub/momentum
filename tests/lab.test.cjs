@@ -12,7 +12,7 @@ test('single two-field customer diagnostic form',()=>{
  assert.doesNotMatch(form,/API.?키|지역|업종|키워드|CSV/);
 });
 test('all diagnostic tabs share a single store input',()=>{
- for(const id of ['overview','places','ranking','keywords','competition','geo','reviews','creative','calculator','calendar']){
+ for(const id of ['overview','places','ranking','keywords','competition','geo','reviews','calculator','calendar']){
   assert.match(html,new RegExp('id="'+id+'"'));
   assert.match(html,new RegExp('data-view="'+id+'"'));
  }
@@ -23,6 +23,15 @@ test('customer UI and application javascript parse',()=>{
  assert.match(html,/\/lab\/customer\.css/);
  assert.match(html,/\/lab\/customer\.js/);
  assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/customer.js','utf8')));
+});
+test('analytics page header omits Free Workspace menu but retains diagnostics',()=>{
+ const html=fs.readFileSync('lab/index.html','utf8');
+ const nav=html.match(/<nav class="mainnav">([\s\S]*?)<\/nav>/)?.[1];
+ assert.ok(nav);
+ assert.doesNotMatch(nav,/무료 작업실|무료작업실/);
+ assert.match(nav,/전문 서비스/);
+ assert.match(html,/무료 매장 통합진단/);
+ assert.match(html,/id="auditForm"/);
 });
 test('homepage still retains services and inquiry form',()=>{
  const root=fs.readFileSync('index.html','utf8');
@@ -62,58 +71,10 @@ test('site SEO rejects private addresses and map URLs',()=>{
  assert.equal(validateUrl('https://example.com/'),'https://example.com/');
 });
 
-test('creative studio replaces single generic poster and supports premium editing',()=>{
- const block=html.slice(html.indexOf('<section id="creative"'),html.indexOf('<section id="calculator"'));
- assert.ok(block.length>3500);
- for(const id of ['studioTemplateGrid','studioBusiness','studioFormat','studioHeadline','studioSubline','studioPhoto','studioLogo','studioZoom','studioPanX','studioPanY','studioBrightness','studioAccent','studioOverlay','studioDownload','studioCaption','poster']){
-  assert.match(block,new RegExp('id="'+id+'"'));
- }
- assert.doesNotMatch(block,/id="posterTitle"|id="posterDesc"|id="posterImage"/);
- assert.match(html,/\/lab\/studio\.css/);
- assert.match(html,/\/lab\/studio\.js/);
- assert.doesNotThrow(()=>new vm.Script(fs.readFileSync('lab/studio.js','utf8')));
- assert.doesNotMatch(fs.readFileSync('lab/customer.js','utf8'),/function drawPoster\(/);
+test('promotion studio no longer appears in public analytics',()=>{
+ assert.doesNotMatch(html,/홍보물 제작실|홍보 디자인 스튜디오|id="creative"|data-view="creative"|\/lab\/studio\.(?:css|js)/);
+ for(const id of ['overview','places','ranking','keywords','competition','geo','reviews','calculator','calendar'])assert.ok(html.includes('id="'+id+'"'));
 });
-test('studio Canvas draws every preset in every export format',()=>{
- const js=fs.readFileSync('lab/studio.js','utf8');
- const ids=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
- const inputs={};
- for(const id of ids)inputs[id]={value:'',innerHTML:'',textContent:'',files:[],addEventListener(name,cb){this._events??={};this._events[name]=cb;},querySelectorAll(selector){
-   if(selector==='button'){
-     const ids=[...this.innerHTML.matchAll(/data-studio-template="([^"]+)"/g)].map(m=>m[1]);
-     return ids.map(id=>({dataset:{studioTemplate:id},onclick:null}));
-   }
-   return [];
- }};
- const sent=[];
- const ctx=new Proxy({}, {get(target,key){
-   if(key==='measureText')return text=>({width:String(text).length*25});
-   if(key==='createLinearGradient')return()=>({addColorStop(){}});
-   if(key==='fillText')return txt=>{sent.push(String(txt))};
-   if(key in target)return target[key];
-   return()=>{};
- },set(target,key,value){target[key]=value;return true}});
- const canvas=inputs.poster;
- canvas.getContext=()=>ctx;
- inputs.studioFormat.value='square';
- inputs.studioAccent.value='#eb8f4a';
- for(const id of ['studioHeadline','studioSubline','studioEyebrow','studioPrice','studioCTA','studioFootnote','studioBusiness'])inputs[id].value='';
- const handlers={};
- const document={readyState:'complete',getElementById(id){return inputs[id]||null},querySelector(){return null}};
- const ctxVm={document,localStorage:{getItem(){return null},setItem(){}},requestAnimationFrame(cb){cb();return 1},cancelAnimationFrame(){},URL,alert(){},confirm(){return true},navigator:{clipboard:{writeText:async()=>{}}},Image:function(){}};
- vm.runInNewContext(js,ctxVm,{timeout:5000});
- assert.ok(sent.length>4);
- assert.equal(canvas.width,1080);
- for(const format of [['portrait',1350],['story',1920],['banner',628],['square',1080]]){
-  inputs.studioFormat.value=format[0];
-  inputs.studioFormat._events.change();
-  assert.equal(canvas.height,format[1]);
- }
- assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="beauty"/);
- assert.match(inputs.studioTemplateGrid.innerHTML,/data-studio-template="premium"/);
- assert.equal((inputs.studioTemplateGrid.innerHTML.match(/class="studio-template"/g)||[]).length,8);
-});
-
 
 test('Naver-first diagnostics use NAVER API HUB and protect public display rights',()=>{
  const hub=require('../api/_naver-hub.js');
@@ -198,34 +159,31 @@ test('server endpoint has no keys, requires only merchant inputs and returns evi
 });
 
 
-test('homepage offers the approved Momentum marketing products and two open packages',()=>{
+test('marketing homepage offers approved paid agency products and two open packages',()=>{
  const h=fs.readFileSync('index.html','utf8');
- const products=[
-  '키워드 검색광고','바이럴마케팅','블로그 체험단',
-  '플레이스 진단 및 SEO 최적화','플레이스 등록 및 수정대행',
-  '플레이스 리뷰 신고 및 삭제 요청 지원',
-  '오픈마켓 상세페이지 제작','홈페이지 제작','사진촬영',
-  '오픈패키지 1','오픈패키지 2'
- ];
- for(const name of products){
-  assert.ok(h.includes('data-product="'+name+'"'),'Missing product CTA: '+name);
-  assert.ok(h.includes('<option value="'+name+'">'),'Missing product in inquiry form: '+name);
+ const keyProducts=['키워드 검색광고','바이럴마케팅','플레이스 진단 및 SEO 최적화',
+ '플레이스 리뷰 신고 및 삭제 요청 지원','SNS 광고 및 인플루언서 섭외','언론기사 송출 대행','마케팅 운영 교육',
+ '오픈패키지 1','오픈패키지 2'];
+ for(const name of keyProducts){
+  assert.ok(h.includes('data-product="'+name+'"'),'Missing marketing CTA: '+name);
+  assert.ok(h.includes('<option value="'+name+'">'),'Missing marketing inquiry option: '+name);
  }
- for(const portal of ['네이버','다음','카카오','구글'])assert.match(h,new RegExp(portal));
- assert.equal((h.match(/class="card service-card/g)||[]).length,9);
+ for(const channel of ['네이버','카카오','구글'])assert.match(h,new RegExp(channel));
+ assert.equal((h.match(/class="mk-service-card(?:\s|")/g)||[]).length,9);
+ assert.doesNotMatch(h,/class="mk-photo-service"/);
+ assert.match(h,/id="photo-service"/);
+ assert.match(h,/블로그·네이버 플레이스용/);
+ assert.match(h,/data-product="플레이스 사진촬영"/);
+ assert.match(h,/<option value="플레이스 사진촬영">/);
  assert.equal((h.match(/class="package-card card/g)||[]).length,2);
  const package1=h.slice(h.indexOf('>오픈패키지 1</div>'),h.indexOf('>오픈패키지 2</div>'));
  for(const service of ['사진촬영','플레이스 등록대행','SEO 최적화','네이버 예약 세팅','블로그 체험단'])assert.ok(package1.includes(service),'Package 1 missing '+service);
  const package2=h.slice(h.indexOf('>오픈패키지 2</div>'),h.indexOf('id="open-packages"')+12000);
- assert.match(package2,/오픈패키지 1 구성 전체 포함/);
- assert.match(package2,/플레이스 광고 세팅/);
- assert.match(package2,/파워링크 광고 세팅/);
- assert.match(h,/등록 및 기본정보 수정은 사업주가 직접 할 수 있는 무료 서비스/);
- assert.match(h,/삭제 여부는 네이버 판단에 따르며 보장하지 않음/);
- assert.match(h,/매체 광고비 별도/);
- assert.doesNotMatch(h,/파워패키지|신규고객 패키지|샤오홍슈/);
+ for(const term of ['오픈패키지 1 구성 전체 포함','플레이스 광고 세팅','파워링크 광고 세팅','매체 광고비 별도'])assert.match(package2,new RegExp(term));
+ assert.match(h,/권리침해 등 공식 신고 사유/);
+ assert.match(h,/삭제를 보장하지 않습니다/);
+ assert.doesNotMatch(h,/파워패키지|신규고객 패키지/);
 });
-
 test('industry FAQ, 28 industry category directory, and four useful dedicated sector pages',()=>{
  const home=fs.readFileSync('index.html','utf8');
  const directory=fs.readFileSync('industries/index.html','utf8');
@@ -269,51 +227,148 @@ test('local SEO GEO check works honestly without NAVER credentials',()=>{
  assert.match(customer,/content-type/);
 });
 
-test('integrated agency visual redesign retains accurate products and live inquiry paths',()=>{
+test('Place SEO card describes an SEO audit without registration or editing claims',()=>{
  const home=fs.readFileSync('index.html','utf8');
- const agency=fs.readFileSync('agency.css','utf8');
- assert.match(home,/INTEGRATED DIGITAL AGENCY/);
- assert.match(home,/고객의 선택을 만드는/);
- assert.match(home,/Built for[\s\S]*Your Next Move/);
- assert.match(home,/agency-visual/);
- assert.match(home,/SEARCH ADVERTISING/);
- assert.match(home,/VIRAL & EXPERIENCES/);
- assert.match(home,/BRAND & WEB DESIGN/);
- assert.match(home,/SEO·GEO 직접확인 진단/);
- assert.match(home,/href="\/agency\.css"/);
- assert.match(home,/id="contactForm"/);
- assert.match(home,/id="requestedProduct"/);
- assert.match(home,/href="\/lab\/"/);
- assert.match(home,/id="open-packages"/);
- assert.match(home,/id="industries"/);
- assert.match(home,/실측 순위는 요청 제한·연동 상태에 영향을 받으며, 미측정 수치는 표시하지 않습니다/);
- assert.doesNotMatch(home,/class="hero-form"/);
- for(const product of ['키워드 검색광고','바이럴마케팅','블로그 체험단','플레이스 진단 및 SEO 최적화','플레이스 등록 및 수정대행','플레이스 리뷰 신고 및 삭제 요청 지원','오픈마켓 상세페이지 제작','홈페이지 제작','사진촬영','오픈패키지 1','오픈패키지 2']){
-  assert.ok(home.includes('data-product="'+product+'"'),product);
- }
- assert.equal((home.match(/class="card service-card/g)||[]).length,9);
- assert.equal((home.match(/class="package-card card/g)||[]).length,2);
- assert.match(agency,/\.agency-hero-grid/);
- assert.match(agency,/\.agency-service-grid/);
- assert.match(agency,/@media\(max-width:760px\)/);
- const lab=fs.readFileSync('lab/customer.css','utf8');
- const industry=fs.readFileSync('industries/site.css','utf8');
- assert.match(lab,/integrated agency identity/);
- assert.match(industry,/Cross-site agency brand/);
+ const start=home.indexOf('02 / PLACE SEO');
+ const end=home.indexOf('03 / REVIEW CARE',start);
+ assert.ok(start>=0&&end>start,'Place SEO service card exists');
+ const card=home.slice(start,end);
+ assert.match(card,/<h3>플레이스<\/h3>/);
+ assert.doesNotMatch(card,/등록|수정/);
+ assert.match(card,/SEO와 예약 기능을 점검/);
 });
-
-
-test('agency homepage showcases active independent designs and preserves real client case studies',()=>{
- const home=fs.readFileSync('index.html','utf8'),css=fs.readFileSync('website-samples/home-showcase.css','utf8');
- assert.match(home,/id="work"/);
- assert.match(home,/href="\/portfolio\/conversion\/"/);
- assert.doesNotMatch(home,/href="\/website-samples\/"/);
- assert.doesNotMatch(home,/src="\/website-samples\/(restaurant|beauty|corporate)\//);
- assert.equal((home.match(/class="agency-sample-card agency-sample-/g)||[]).length,3);
- assert.match(home,/지금 보는 홈페이지 30만원으로 제작 가능합니다/);
- assert.match(home,/호스팅비는 별도/);
- assert.match(css,/agency-sample-viewport/);
- assert.equal((home.match(/class="card service-card/g)||[]).length,9);
+test('marketing consultation removes street address and emphasizes advertising strategy',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ assert.doesNotMatch(h,/부산 동래구 충렬대로|소재지:|>소재지<|선택한 홈페이지 디자인|selectedDesignWrap/);
+ assert.match(h,/맞춤 광고 전략 상담/);
+ assert.match(h,/우리 사업에 맞는 광고 전략을 제안받아 보세요/);
+ assert.match(h,/광고 전략 상담 신청하기/);
+ assert.match(h,/<input type="hidden" id="selectedDesign"/);
+ assert.match(h,/id="contactForm"/);
+ assert.match(h,/id="requestedProduct"/);
+ assert.match(h,/고객센터: 0507-1313-5668/);
+});
+test('marketing service navigation connects product pages, agency and free tools',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const mapping=[['keyword-ads','keyword-ads'],['place-seo','place-seo'],['review-care','review-care'],['viral-marketing','viral'],['sns-marketing','sns'],['press-pr','press'],['photo-service','photography'],['ad-education','education']];
+ const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
+ assert.ok(start>=0&&end>start);
+ const nav=h.slice(start,end);
+ assert.equal((nav.match(/<a href=/g)||[]).length,11);
+  assert.ok(nav.includes('href="/insights/" class="momentum-insights-nav"'));
+ for(const [card,slug] of mapping){
+  const page='services/'+slug+'/index.html';
+  assert.ok(fs.statSync(page).isFile(),page);
+  assert.match(nav,new RegExp('href="/services/'+slug+'/"'));
+  const detail=fs.readFileSync(page,'utf8');
+  assert.match(detail,/<h1 id="detailTitle">/);
+  for(const section of ['about','who','scope','compare','process','faq'])assert.ok(detail.includes('id="'+section+'"'),page+': '+section);
+  assert.match(detail,/\/services\/service-pages\.css/);
+  assert.match(detail,/\?service=/);
+  assert.match(detail,/noindex,follow/);
+ }
+ assert.match(nav,/href="\/agency\/"><strong>디자인/);
+ assert.match(nav,/href="#free-tools"/);
+ assert.equal((h.match(/class="mk-detail-link"/g)||[]).length,8);
+ assert.match(h,/모멘텀에이전시 · 포트폴리오 보러가기/);
+ assert.match(h,/샤오홍슈/);
+ assert.match(h,/삭제를 보장하지 않습니다/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.hero-art/);
+ assert.match(css,/@media\(max-width:560px\)/);
+});
+test('keyword advertising diagram uses local brand logos instead of letter placeholders',()=>{
+ const h=fs.readFileSync('services/keyword-ads/index.html','utf8');
+ for(const brand of ['naver','google','kakao']){
+  const file='assets/logos/'+brand+'.svg';
+  assert.ok(fs.statSync(file).isFile(),file);
+  const svg=fs.readFileSync(file,'utf8');
+  assert.match(svg,/<svg/);
+  assert.match(svg,/<path /);
+  assert.match(h,new RegExp('src="/assets/logos/'+brand+'\\.svg"'));
+ }
+ assert.doesNotMatch(h,/class="vis-source-icon"/);
+ assert.match(h,/공식 제휴·인증을 의미하지 않습니다/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.vis-brand-logo--kakao/);
+ assert.match(css,/@media\(max-width:560px\)/);
+});
+test('all eight service detail pages include unique semantic infographics without fabricated growth metrics',()=>{
+ const variants=['keyword-ads','place-seo','review-care','viral','sns','press','photography','education'];
+ for(const slug of variants){
+  const h=fs.readFileSync('services/'+slug+'/index.html','utf8');
+  assert.match(h,new RegExp('class="svc-visual svc-visual--'+slug+'"'));
+  assert.match(h,new RegExp('aria-labelledby="visual-'+slug+'"'));
+  assert.match(h,/class="vis-heading"/);
+  assert.match(h,/class="vis-body"/);
+  assert.match(h,/class="timeline"/);
+  assert.match(h,/noindex,follow/);
+  assert.doesNotMatch(h,/(?:portfolio-mukdori|portfolio-balmonghair)\.jpg/);
+ }
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ for(const selector of ['.vis-inputs','.vis-check-grid','.vis-branches','.vis-two-path','.vis-social','.vis-press-layout','.vis-photo-board','.vis-curriculum']) assert.ok(css.includes(selector),selector);
+ assert.match(css,/max-width:560px/);
+ const review=fs.readFileSync('services/review-care/index.html','utf8');
+ assert.match(review,/삭제를 보장하지 않습니다/);
+ const media=fs.readFileSync('services/press/index.html','utf8');
+ assert.match(media,/매체 심사/);
+});
+test('photography guide displays four real reference photos with disclosure',()=>{
+ const h=fs.readFileSync('services/photography/index.html','utf8');
+ const photos=[...h.matchAll(/<img class="vis-photo-image" src="([^"]+)" alt="([^"]+)"/g)];
+ assert.equal(photos.length,4);
+ for(const [,src,alt] of photos){assert.match(src,/^https:\/\/images\.unsplash\.com\/photo-/);assert.ok(alt.length>=6)}
+ assert.doesNotMatch(h,/class="vis-frame-art/);
+ assert.match(h,/실제 고객사 촬영 실적이나 포트폴리오가 아닙니다/);
+ const css=fs.readFileSync('services/service-pages.css','utf8');
+ assert.match(css,/\.svc-visual--photography \.vis-photo-image/);
+ assert.match(css,/object-fit:cover/);
+});
+test('marketing homepage does not reuse Mukdori or Balmonghair photos',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ assert.doesNotMatch(h,/portfolio-(?:mukdori|balmonghair)\.jpg/);
+ assert.match(h,/class="mm-intelligence-board v4-hero-visual"/);
+ assert.match(h,/class="v4-navigation-ribbon"/);
+ assert.match(h,/marketing-v4-enterprise-2026\.css/);
+ assert.equal((h.match(/class="mb-package-cover/g)||[]).length,2);
+ assert.equal((h.match(/class="mb-industry-cover/g)||[]).length,4);
+ const css=fs.readFileSync('marketing-v4-enterprise-2026.css','utf8');
+ assert.match(css,/\.v4-hero-visual/);
+ assert.match(css,/\.mb-industry-cover/);
+});
+test('marketing-first homepage separates paid advertising, free tools, and premium membership',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ assert.match(h,/DIGITAL MARKETING COMPANY/);
+ assert.match(h,/우리 가게를 위한/);
+ assert.match(h,/진짜 마케팅 전략/);
+ assert.match(h,/mm-intelligence-board/);
+ assert.ok(h.includes('10<span>+</span>'));
+ assert.ok(h.includes('marketing-home-2026.css'));
+ assert.match(h,/id="services"/);
+ assert.match(h,/id="free-tools"/);
+ assert.match(h,/id="paid-service"/);
+ assert.match(h,/id="open-packages"/);
+ assert.match(h,/id="contactForm"/);
+ assert.match(h,/id="requestedProduct"/);
+ assert.ok(h.includes('href="/agency/"'));
+ assert.ok(h.includes('href="/platform/"'));
+ assert.ok(h.includes('href="/lab/trends/"'));
+ assert.match(h,/유료 회원 서비스/);
+ assert.match(h,/현재 결제·유료 자동 권한 배정은 미연결/);
+ assert.doesNotMatch(h,/id="work"|id="full-catalog"|class="agency-sample-card/);
+ assert.doesNotMatch(h,/class="hero-form"/);
+ assert.equal((h.match(/class="mk-service-card(?:\s|")/g)||[]).length,9);
+ assert.equal((h.match(/class="package-card card/g)||[]).length,2);
+ assert.ok(fs.readFileSync('marketing-home-2026.css','utf8').includes('.mk-free-grid'));
+});
+test('design catalog is no longer on marketing homepage and is accessible via agency entrypoint',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const agency=fs.readFileSync('agency/index.html','utf8');
+ assert.ok(home.includes('href="/agency/"'));
+ assert.doesNotMatch(home,/id="work"|agency-sample-grid|지금 보는 홈페이지 30만원으로 제작 가능합니다/);
+ assert.match(agency,/모멘텀에이전시/);
+ assert.match(agency,/독립 도메인·독립 호스팅 배포는 아직 진행하지 않았습니다/);
+ for(const p of ['conversion','product-pages','brand-blogs'])assert.match(agency,new RegExp('href="/portfolio/'+p+'/'));
  for(const slug of ['mukdori','balmonghair']){
   const page=fs.readFileSync('work/'+slug+'/index.html','utf8');
   assert.match(page,/PROJECT OVERVIEW/);
@@ -808,4 +863,223 @@ test('rank-watch UI never treats a failed database request as confirmed zero row
  assert.match(source,/실제 등록 건수가 0건이라는 뜻은 아닙니다/);
  assert.match(source,/\$\('add'\)\.disabled=true/);
  assert.doesNotMatch(source,/catch\(err\)\{targets=\[\];observations=\[\];render\(\)/);
+});
+
+require('./agency-trends.test.cjs');
+require('./finance-operations.test.cjs');
+
+test('editorial marketing homepage redesign is isolated, honest and navigable',()=>{
+ const h=fs.readFileSync('redesign-preview/index.html','utf8');
+ assert.match(h,/<meta name="robots" content="noindex,follow">/);
+ for(const anchor of ['problems','approach','cases','services','resources','contact'])assert.match(h,new RegExp('id="'+anchor+'"'));
+ for(const url of ['/services/keyword-ads/','/services/place-seo/','/services/viral/','/services/sns/','/services/review-care/','/services/press/','/services/photography/','/services/education/','/lab/','/#contact'])assert.ok(h.includes('href="'+url+'"'),url);
+ assert.match(h,/가상 시뮬레이션/);
+ assert.match(h,/실제 고객사 실적 아님/);
+ assert.match(h,/실제 실적을 나타내지 않습니다/);
+ assert.doesNotMatch(h,/\+320%|\+280%|\+250%/);
+ assert.match(h,/@media\(max-width:760px\)/);
+ assert.match(h,/aria-expanded/);
+});
+
+test('keyword-led marketing insight guide has substance and working index route',()=>{
+ const fs=require('node:fs');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const path='insights/guides/busan-viral-marketing-agency/index.html';
+ const h=fs.readFileSync(path,'utf8');
+ assert.match(list,/href="\/insights\/guides\/busan-viral-marketing-agency\/"/);
+ assert.match(list,/부산바이럴마케팅 업체/);
+ assert.match(h,/부산바이럴마케팅 업체/);
+ assert.match(h,/블로그·체험단·인스타그램/);
+ assert.match(h,/견적서를 비교할 때/);
+ assert.match(h,/광고 표시/);
+ assert.match(h,/검색량 수치는 확인되지 않았습니다/);
+ assert.match(h,/추천ㆍ보증 등에 관한 표시ㆍ광고 심사지침/);
+ assert.match(h,/<meta name="description"/);
+ assert.match(h,/application\/ld\+json/);
+ assert.match(h,/noindex,follow/);
+ assert.equal((h.match(/<h3>[1-8]\./g)||[]).length,8);
+ assert.doesNotMatch(h,/매출\s*\+\d+%|상위노출\s*100%/);
+});
+
+test('simulated proof illustrations never impersonate customer evidence',()=>{
+ const h=fs.readFileSync('redesign-preview/index.html','utf8');
+ assert.match(h,/가상 시뮬레이션 · 실제 고객사 실적 아님/);
+ for(const name of ['marketing-before-after-simulation.svg','marketing-performance-simulation.svg']){
+   const path='assets/demo/'+name;
+   assert.ok(fs.existsSync(path),name);
+   const svg=fs.readFileSync(path,'utf8');
+   assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+   assert.match(svg,/실제 고객사 실적 아님|실제 고객사·성과와 무관/);
+   assert.match(h,new RegExp('src="/assets/demo/'+name.replace(/\./g,'\\.')+'"'));
+ }
+ assert.doesNotMatch(h,/실제 고객 성과 320%|실제 성공 사례/);
+});
+test('three-hour ad education includes the full agenda and 60-day follow-up',()=>{
+ const h=fs.readFileSync('services/education/index.html','utf8');
+ for(const term of ['180분','20분','55분','10분','25분','15분','네이버 플레이스 설정 및 수정법','파워링크·플레이스광고 설정법','체험단','인스타그램','인플루언서','60일 카카오톡 AS'])
+   assert.ok(h.includes(term),term);
+ assert.doesNotMatch(h,/100% 스스로 운영 가능|모든 수강생.*보장/);
+});
+
+test('homepage design portfolio shows actual rendered website examples instead of abstract SVGs',()=>{
+  const home=fs.readFileSync('index.html','utf8');
+  const start=home.indexOf('<div class="mk-design-previews mk-live-portfolio"');
+  const end=home.indexOf('<a class="mk-design-link"',start);
+  assert.ok(start>0&&end>start,'design section');
+  const design=home.slice(start,end);
+  const slugs=['restaurant','beauty','stay'];
+  assert.equal((design.match(/<iframe /g)||[]).length,3);
+  assert.equal((design.match(/class="mk-preview mk-preview-site"/g)||[]).length,3);
+  for(const slug of slugs){
+    const route='/portfolio/conversion/'+slug+'/';
+    assert.ok(fs.existsSync('portfolio/conversion/'+slug+'/index.html'),slug);
+    assert.ok(design.includes('src="'+route+'"'),slug+' iframe');
+    assert.ok(design.includes('href="'+route+'"'),slug+' link');
+  }
+  for(const stub of ['momentum-preview-web.svg','momentum-preview-detail.svg','momentum-preview-brand.svg'])assert.ok(!design.includes(stub),stub);
+  assert.match(design,/가상 브랜드 홈페이지 제작 시안/);
+  assert.match(design,/실제 고객사 납품 사례로 표시하지 않습니다/);
+  const css=fs.readFileSync('marketing-navigation-2026.css','utf8');
+  assert.match(css,/\.mk-preview-viewport iframe/);
+  assert.match(css,/max-width:680px/);
+  assert.match(css,/pointer-events:none/);
+});
+
+test('main homepage shows two simulated evidence layouts without changing the service catalogue',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const services=h.indexOf('<section id="services"');
+ const results=h.indexOf('<section id="results"');
+ const tools=h.indexOf('<section id="free-tools"');
+ assert.ok(services<results&&results<tools,'results sit after services and before free tools');
+ const sec=h.slice(results,tools);
+ for(const name of ['marketing-before-after-simulation.svg','marketing-performance-simulation.svg']){
+   const path='assets/demo/'+name;
+   assert.ok(fs.existsSync(path),path);
+   assert.ok(sec.includes('src="/'+path+'"'),name+' image');
+   assert.ok(sec.includes('href="/'+path+'"'),name+' full-size link');
+   const svg=fs.readFileSync(path,'utf8');
+   assert.match(svg,/가상 성과 시뮬레이션|가상 시뮬레이션/);
+ }
+ assert.match(sec,/가상 시뮬레이션 이미지/);
+ assert.match(sec,/실제 고객 실적을 나타내지 않습니다/);
+ assert.match(sec,/id="resultsTitle"/);
+ assert.match(sec,/href="#contact"/);
+ const style=fs.readFileSync('marketing-navigation-2026.css','utf8');
+ assert.match(style,/#results\.mm-results/);
+ assert.match(style,/@media\(max-width:650px\)/);
+ assert.match(h,/id="design-service"/);
+});
+
+test('2026-10-24 editorial drafts stay on the feature branch and link from insights',()=>{
+ const fs=require('node:fs');
+ const index=fs.readFileSync('insights/index.html','utf8');
+ const drafts=[
+  ['insights/guides/jeju-tour-experience-booking-conversion/index.html','제주 관광체험','www.visitjeju.net'],
+  ['insights/updates/naver-lodging-permit-booking-2026/index.html','11월 12일','new.smartplace.naver.com/notices/1122']
+ ];
+ for(const [path,subject,source] of drafts){
+   const html=fs.readFileSync(path,'utf8');
+   assert.match(html,/<meta name="robots" content="noindex,follow">/);
+   assert.match(html,/<title>[^<]+<\/title>/);
+   assert.match(html,/<h1>[^<]+<\/h1>/);
+   assert.ok(html.includes(subject),subject);
+   assert.ok(html.includes(source),source);
+   assert.ok(html.includes('2026.10.24'));
+   assert.ok(html.includes('href="/services/'));
+   assert.ok(html.includes('체크리스트'));
+   assert.ok(index.includes('/'+path.replace(/index.html$/,'')),path);
+ }
+ assert.match(index,/<meta name="robots" content="noindex,follow">/);
+ assert.match(fs.readFileSync('insights/updates/naver-lodging-permit-booking-2026/index.html','utf8'),/구체적인 조치 방식.*가이드라인/);
+});
+
+test('editorial mobile hero has light theme, compact journey and retains service navigation',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const css=fs.readFileSync('marketing-editorial-refresh-2026.css','utf8');
+ assert.match(h,/<meta name="color-scheme" content="only light"/);
+ assert.match(h,/href="\/marketing-editorial-refresh-2026\.css"/);
+ assert.match(h,/class="mm-hero-mobile-flow"/);
+ for(const step of ['검색·발견','정보·비교','문의·선택'])assert.ok(h.includes(step),step);
+ assert.match(css,/\.v4-hero-visual\.mm-intelligence-board\{display:none!important\}/);
+ assert.match(css,/\.v4-ribbon-inner\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important/);
+ assert.match(css,/\.agency-trust-strip\{display:none!important\}/);
+ assert.match(css,/color-scheme:only light/);
+ assert.match(css,/@media\(max-width:390px\)/);
+ assert.match(h,/href="#contact"/);
+ assert.match(h,/href="#services"/);
+ assert.match(h,/id="results"/);
+ const start=h.indexOf('<nav id="agencyNav"'),end=h.indexOf('<div class="momentum-mobile-nav-more">',start);
+ assert.equal((h.slice(start,end).match(/<a href=/g)||[]).length,11);
+});
+
+test('mobile editorial refresh keeps performance demo visible before services',()=>{
+ const h=fs.readFileSync('index.html','utf8');
+ const style=fs.readFileSync('marketing-editorial-refresh-2026.css','utf8');
+ const teaser=h.indexOf('class="mm-mobile-case-teaser"');
+ const services=h.indexOf('<section id="services"');
+ const results=h.indexOf('<section id="results"');
+ assert.ok(teaser>0&&teaser<services&&services<results);
+ assert.match(h.slice(teaser,teaser+1000),/가상 데이터 디자인 예시/);
+ assert.match(h.slice(teaser,teaser+1000),/href="#results"/);
+ assert.match(style,/\.v4-hero-visual\.mm-intelligence-board\{display:none!important\}/);
+ assert.match(style,/\.mm-mobile-case-teaser\{display:none\}/);
+ assert.match(style,/#services \.mk-service-card:nth-child\(n\+3\)/);
+ assert.match(style,/@media\(max-width:760px\)/);
+});
+
+test('2026-10-25 editorial guides are substantive, disclosed and linked',()=>{
+ const fs=require('node:fs');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const selected=[
+  ['gimhae-move-in-cleaning-search-ads-lead-quality','김해 입주청소','Google Ads'],
+  ['busan-seomyeon-nail-salon-new-customer-booking-ad-budget','서면 네일샵','네이버']
+ ];
+ const titles=new Set();
+ const descriptions=new Set();
+ for(const [slug,topic,platform] of selected){
+  const path='insights/guides/'+slug+'/index.html';
+  assert.ok(fs.existsSync(path),path);
+  const h=fs.readFileSync(path,'utf8');
+  assert.ok(h.length>12000,'substantive content '+slug);
+  assert.match(h,/<meta name="robots" content="noindex,follow">/);
+  const title=h.match(/<title>([^<]+)<\/title>/)?.[1];
+  const desc=h.match(/<meta name="description" content="([^"]+)"/)?.[1];
+  assert.ok(title&&desc&&desc.length>65);
+  assert.ok(!titles.has(title)&&!descriptions.has(desc),'unique metadata');
+  titles.add(title);descriptions.add(desc);
+  assert.equal((h.match(/<h1>/g)||[]).length,1);
+  assert.ok((h.match(/<h2/g)||[]).length>=9);
+  assert.ok(h.includes(topic)&&h.includes(platform));
+  assert.match(h,/2026\.10\.25/);
+  assert.match(h,/가상의 계산 예시/);
+  assert.match(h,/체크리스트/);
+  assert.match(h,/미검증|검색 수요 미검증/);
+  assert.match(h,/광고·협찬|협찬/);
+  assert.match(h,/href="\/services\//);
+  assert.match(h,/href="https:\/\//);
+  assert.ok(list.includes('/insights/guides/'+slug+'/'),'index link '+slug);
+ }
+ const ed=JSON.parse(fs.readFileSync('insights/editorial/2026-10-25.json','utf8'));
+ assert.equal(ed.candidates.length,10);
+ assert.equal(ed.selected.length,2);
+ assert.match(ed.publication,/noindex/);
+ assert.match(ed.publication,/main unmerged/);
+});
+
+test('local geographic SEO/GEO is a standalone resources article, not homepage',()=>{
+ const home=fs.readFileSync('index.html','utf8');
+ const list=fs.readFileSync('insights/index.html','utf8');
+ const path='insights/guides/busan-gyeongnam-ulsan-local-seo-geo-strategy/index.html';
+ assert.ok(fs.existsSync(path),'long-form article exists');
+ const article=fs.readFileSync(path,'utf8');
+ assert.doesNotMatch(home,/부산·경남·울산 로컬 SEO|부산·경남·울산 로컬마케팅/);
+ assert.ok(list.includes('/insights/guides/busan-gyeongnam-ulsan-local-seo-geo-strategy/'));
+ assert.match(article,/meta name="robots" content="noindex,follow"/);
+ assert.match(article,/시·구·동 키워드/);
+ assert.match(article,/검색량.*검증하지/);
+ assert.match(article,/지역명[^<]{0,500}반복|지역명을 늘리기|지역명 추가/);
+ assert.match(article,/https:\/\/searchadvisor\.naver\.com/);
+ assert.match(article,/https:\/\/developers\.google\.com/);
+ assert.match(article,/<h1>/);
+ assert.ok((article.match(/<h2>/g)||[]).length>=7);
 });
