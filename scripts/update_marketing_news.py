@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Update the static Momentum Insights official-news section from official RSS.
 Uses stdlib only; source article titles and dates are preserved; never fabricates news
-or client performance. Github Action writes to the preview branch only until merged.
+or client performance. GitHub Actions may feature at most ONE fresh official item per Korea-local day.
 """
 from __future__ import annotations
 
@@ -32,7 +32,8 @@ TOPICS = ("ads", "advertising", "campaign", "business", "commerce", "marketing",
 BAD_TOPICS = ("ai glasses", "eyewear", "headset", "data center", "ray-ban", "meta quest", "ray ban")
 START = "<!-- NEWS_ITEMS_START -->"
 END = "<!-- NEWS_ITEMS_END -->"
-MAX_AGE = timedelta(days=120)
+MAX_AGE = timedelta(days=45)
+MAX_VISIBLE = 12  # Source-link cards only; not indexable scraped article pages.
 ATOM = "{http://www.w3.org/2005/Atom}"
 DATE_FMT = "%Y-%m-%d"
 
@@ -116,51 +117,74 @@ def card(item):
             f'원문 확인하기 <span aria-hidden="true">↗</span></a></article>')
 
 def main():
+    """Feature at most one NEW, relevant official announcement on any KST date.
+
+    The RSS headline links directly to the original source. This is not an
+    automated republication of the original article or an SEO landing page.
+    On feed failure / no new trustworthy source, leave the page unchanged.
+    """
     page = PAGE.read_text("utf-8")
-    if START not in page or END not in page:
-        raise RuntimeError("Missing news update markers")
-    now = datetime.now(timezone.utc)
+    if page.count(START) != 1 or page.count(END) != 1:
+        raise RuntimeError("Expected exactly one official news update region")
+    kst_today = datetime.now(timezone(timedelta(hours=9))).date().isoformat()
+    previous = {}
+    if DATA.exists():
+        try:
+            previous = json.loads(DATA.read_text("utf-8"))
+        except (ValueError, OSError):
+            print("News state unavailable; retain existing live headlines.", file=sys.stderr)
+            return 0
+    if previous.get("lastAddedKST") == kst_today:
+        print("Daily news limit reached for " + kst_today)
+        return 0
+
+    history = previous.get("items", [])
+    if not isinstance(history, list):
+        print("Invalid existing news archive; do not overwrite.", file=sys.stderr)
+        return 0
+    seen_urls = {
+        row.get("url", "").split("?")[0].rstrip("/").casefold()
+        for row in history if isinstance(row, dict)
+    }
+    # Also guard against a curated news story already linked on the page.
+    static_news = page.split(START, 1)[0]
     collected = []
     for source in SOURCES:
         try:
-            collected.extend(pull(source, now))
+            collected.extend(pull(source, datetime.now(timezone.utc)))
         except Exception as exc:
             print(f"SKIP {source[0]}: {exc.__class__.__name__}: {exc}", file=sys.stderr)
-    if not collected:
-        print("No verified feed items. Existing news unchanged.")
-        return 0
-    seen = set()
-    items = []
-    for entry in sorted(collected, key=lambda e:(e["date"], e["source"], e["url"]), reverse=True):
-        canonical = (entry["url"].split("?")[0].rstrip("/"), entry["title"].casefold())
-        if canonical in seen:
+
+    candidates = sorted(collected, key=lambda item: (item["date"], item["source"]), reverse=True)
+    chosen = None
+    for item in candidates:
+        normalized = item["url"].split("?")[0].rstrip("/").casefold()
+        if normalized in seen_urls:
             continue
-        seen.add(canonical)
-        items.append(entry)
-        if len(items) >= 18:
-            break
-    if len(items) < 1:
+        if escape(item["url"], quote=True) in static_news:
+            continue
+        chosen = dict(item, addedOnKST=kst_today)
+        break
+    if chosen is None:
+        print("No new verified official announcements; do not publish a placeholder.")
         return 0
-    news = "\n".join(card(item) for item in items)
-    before, rest = page.split(START, 1)
-    old, after = rest.split(END, 1)
-    updated = before + START + "\n" + news + "\n" + END + after
+
+    items = [chosen] + [row for row in history if isinstance(row, dict)]
+    items = items[:MAX_VISIBLE]
+    before, remainder = page.split(START, 1)
+    _, after = remainder.split(END, 1)
+    updated = before + START + "\n" + "\n".join(card(item) for item in items) + "\n" + END + after
+    DATA.parent.mkdir(parents=True, exist_ok=True)
+    DATA.write_text(json.dumps({
+        "lastAddedKST": kst_today,
+        "items": items,
+        "notes": "One official headline link per day maximum. Original analysis requires editorial approval.",
+    }, ensure_ascii=False, indent=2) + "\n", "utf-8")
     if updated != page:
         PAGE.write_text(updated, "utf-8")
-    serialized = json.dumps({"verifiedAtUTC":now.isoformat(timespec="seconds"),
-                             "sourceCount":len({i["source"] for i in items}),"items":items},
-                            ensure_ascii=False, indent=2) + "\n"
-    # Avoid redeploying daily without a new headline: recorded verification time is not published.
-    existing = None
-    if DATA.exists():
-        try:
-            existing = json.loads(DATA.read_text("utf-8"))
-        except (ValueError, OSError):
-            pass
-    if not existing or existing.get("items") != items:
-        DATA.write_text(serialized,"utf-8")
-    print(f"Rendered {len(items)} official items. No auto-generated article summaries.")
+    print(f"Featured one new verified official announcement; {len(items)} source cards retained.")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
