@@ -109,3 +109,8 @@
 @media(max-width:930px){.dv-layout{grid-template-columns:.82fr 1.18fr}.dv-board{padding:17px}.dv-ring{width:138px;height:138px}.dv-ring:after{width:96px;height:96px}.dv-review-layout{gap:7px}}
 @media(max-width:700px){.distinct-visual{padding:55px 0}.dv-head{display:block}.dv-chip{display:inline-flex;margin-top:12px}.dv-layout{grid-template-columns:1fr}.dv-photo{min-height:270px}.dv-photo-content strong{font-size:23px}.dv-three{grid-template-columns:1fr}.dv-board{padding:17px}.dv-flow-node{padding:11px 6px}.dv-flow-node b{font-size:10px}.dv-arrow{font-size:15px}.dv-review-layout{grid-template-columns:.8fr 1fr}.dv-ring{width:148px;height:148px}.dv-ring:after{width:101px;height:101px}.dv-budget{grid-template-columns:1fr 1fr}.dv-calendar{grid-template-columns:repeat(5,1fr);gap:4px}.dv-calendar>div{padding:5px;font-size:10px}.dv-timeline{grid-template-columns:repeat(2,1fr)}.dv-roadmap{grid-template-columns:1fr}.dv-course{min-height:0}.dv-contact-photo{height:95px}}
 @media(max-width:400px){.dv-review-layout{grid-template-columns:1fr}.dv-ring{margin:0 auto}.dv-review-labels{flex-direction:row;flex-wrap:wrap}.dv-hub{gap:8px}.dv-hub-center{height:96px;width:96px;font-size:12px}.dv-hub-channel>div{font-size:10px;padding:7px}}
+
+.dv-hub-topic{display:block;background:#fff;border:1px solid #d8e6fa;border-radius:10px;padding:13px;color:#1d508e;font-size:12px;font-weight:850}
+.dv-hub-topic:hover{border-color:#69a7f1;background:#f9fcff}
+.dv-hub-topic small{display:block;font-size:10px;color:#637f9b;font-weight:500}
+@media(max-width:650px){#tool-visual-dashboard .dv-board>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}#tool-visual-dashboard .dv-three{grid-template-columns:1fr}}
