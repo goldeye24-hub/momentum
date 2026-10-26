@@ -6,11 +6,11 @@
       "has": [
         {
           "type": "host",
-          "value": "momentum-orcin-delta.vercel.app"
+          "value": "momentum-goldeye24-hubs-projects.vercel.app"
         }
       ],
-      "destination": "https://momentum-goldeye24-hubs-projects.vercel.app/:path*",
-      "permanent": false
+      "destination": "https://momentum-orcin-delta.vercel.app/:path*",
+      "permanent": true
     },
     {
       "source": "/website-samples",
