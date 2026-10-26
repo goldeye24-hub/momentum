@@ -26,7 +26,7 @@ $('entryForm').addEventListener('submit',e=>{e.preventDefault();const f=e.curren
 );
 $('ledgerBody').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){const x=state.records.find(r=>r.id===edit.dataset.edit);if(x)editRecord(x)}if(del){const x=state.records.find(r=>r.id===del.dataset.delete);if(!x)return;if(!confirm(x.description+' / '+won(x.amount)+' 거래를 삭제할까요?'))return;const before=state.records;state.records=before.filter(r=>r.id!==x.id);if(!save()){state.records=before;return}render();notice('삭제했습니다.')}})
 $('recordType').addEventListener('change',()=>{const t=$('recordType').value;setParties();$('recordPayment').options[1].textContent=t==='sale'?'미수':'미지급'})
-$('entryForm').addEventListener('reset',()=>setTimeout(reset,0));
+$('resetForm').addEventListener('click',e=>{e.preventDefault();reset();});
 $('month').addEventListener('change',()=>{selectedYear=+$('month').value.slice(0,4);render()});$('search').addEventListener('input',render);$('year').addEventListener('change',()=>{selectedYear=+$('year').value;renderYear(selectedYear)});
 $('currentMonth').addEventListener('click',()=>{$('month').value=new Date().toISOString().slice(0,7);selectedYear=+$('month').value.slice(0,4);render()});
 $('yearBody').addEventListener('click',e=>{const btn=e.target.closest('[data-month]');if(!btn)return;$('month').value=btn.dataset.month;render();document.querySelector('.totals').scrollIntoView({block:'start',behavior:'smooth'})});
