@@ -64,3 +64,73 @@
 .is-mobile .cover-facts b{font-size:7px}.is-mobile .cover-facts small{font-size:7px}.is-mobile .cover-actions a{font-size:8px;padding:5px}
 .is-mobile .posts-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}.is-mobile .gallery-poster .poster-photo{height:93px}
 .is-mobile .posts-compact{grid-template-columns:1fr}.is-mobile .blog-content .blog-profile{display:block}.is-mobile .blog-profile-row{margin-top:48px}.is-mobile .blog-profile>img{width:110px;height:105px}
+
+
+/* 2026 home-type Naver blog visual: one photographic canvas and subtle glass menus */
+.blog-preview{--hero-image:none}
+.blog-cover{position:relative;height:520px;background:#101c2b;overflow:hidden}
+.blog-cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 48%;filter:saturate(1.06) contrast(1.02)}
+.cover-shade{position:absolute;inset:0;width:100%;background:linear-gradient(90deg,#090e1bdc 0%,#09111c9c 31%,#0b173645 66%,#06162949 100%)}
+.cover-text{position:absolute;top:82px;left:6.6%;right:39%;color:#fff;text-shadow:0 2px 9px #050b1b80;z-index:3}
+.cover-text small{font-size:12px;color:#e0efff;letter-spacing:.19em}
+.cover-text h3{color:#fff;font-size:clamp(31px,3vw,46px);line-height:1.26;letter-spacing:-.075em;margin:22px 0 18px;max-width:490px}
+.cover-text p{color:#f2f3f5;font-size:14px;line-height:1.7;text-shadow:0 2px 5px #0007}
+.cover-brand{position:absolute;top:29px;right:37px;font-size:18px;color:#fff;text-shadow:0 3px 13px #080e1aba;letter-spacing:.035em;z-index:3}
+.cover-facts{display:none!important}
+.cover-actions{display:flex;gap:9px;margin-top:22px}
+.cover-actions a,.cover-actions a+a{border:1px solid #ffffff78;background:#ffffff25;color:#fff;border-radius:6px;padding:9px 14px;font-size:11px;backdrop-filter:blur(12px);box-shadow:none;transition:background .18s}
+.cover-actions a:hover{background:#ffffff45}
+.widget-band{position:relative;z-index:5;margin-top:-125px;background:transparent;padding:6px 23px 10px;border:0}
+.widget-grid{display:grid;grid-template-columns:repeat(5,minmax(0,170px));gap:10px;justify-content:center;align-items:stretch}
+.widget-grid a{background:#ffffff25!important;border:1px solid #ffffffa6!important;color:#fff!important;border-radius:7px!important;min-height:81px;padding:11px 7px;box-shadow:0 5px 25px #01071244;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px);text-shadow:0 1px 5px #0006;font-size:12px;transition:background .2s,transform .2s}
+.widget-grid a:hover{background:#ffffff45!important;transform:translateY(-2px)}
+.widget-icon{font-size:24px;color:#fff;font-weight:400}
+.social-icons{height:70px;position:relative;z-index:4;background:linear-gradient(180deg,#132038f0,#172c45fa);border:0;gap:18px}
+.social-icons span{box-shadow:0 4px 13px #0002}
+.native-blog-menu{border-top:1px solid #e9eef6;background:#fff}
+.posts-heading h4{font-size:19px;letter-spacing:-.045em}
+.gallery-poster .poster-photo{height:112px}
+.blog-profile-row{margin-top:85px;padding-top:37px;min-height:315px}
+.blog-profile-row .blog-profile{width:240px}
+@media(max-width:820px){
+.blog-cover{height:460px}
+.cover-text{left:6%;right:26%;top:73px}
+.cover-text h3{font-size:34px}
+.widget-band{margin-top:-118px;padding:6px 11px 9px}
+.widget-grid{gap:6px}
+.widget-grid a{font-size:10px;min-height:79px}
+}
+@media(max-width:650px){
+.blog-cover{height:415px}
+.cover-text{top:62px;right:13px;left:18px}
+.cover-text h3{font-size:31px;max-width:330px}
+.cover-text small{font-size:10px}
+.cover-text p{font-size:12px}
+.cover-brand{top:14px;right:15px;font-size:12px}
+.widget-band{margin-top:-108px;padding:6px 7px 8px}
+.widget-grid{gap:4px}
+.widget-grid a{font-size:9px;min-height:72px;padding:5px 3px}
+.widget-icon{font-size:20px}
+.social-icons{height:59px}
+}
+@media(max-width:420px){
+.blog-cover{height:370px}
+.cover-text{top:53px}
+.cover-text h3{font-size:26px}
+.cover-text p{font-size:11px}
+.cover-actions{margin-top:14px}
+.cover-actions a{font-size:9px;padding:7px}
+.widget-band{margin-top:-99px}
+.widget-grid a{min-height:65px;font-size:9px}
+.widget-icon{font-size:17px}
+}
+.preview-container.is-mobile .blog-cover{height:395px}
+.is-mobile .blog-cover>img,.is-mobile .cover-shade{width:100%}
+.is-mobile .cover-text{top:52px;left:15px;right:13px}
+.is-mobile .cover-text h3{color:#fff;font-size:28px;margin:13px 0}
+.is-mobile .cover-text small{font-size:9px;color:#fff}
+.is-mobile .cover-text p{color:#fff;font-size:11px}
+.is-mobile .cover-brand{font-size:10px;color:#fff}
+.is-mobile .widget-band{margin-top:-99px;padding:7px 5px}
+.is-mobile .widget-grid a{min-height:64px;font-size:9px;color:#fff}
+.is-mobile .social-icons{height:59px;background:linear-gradient(180deg,#132038,#172c45)}
