@@ -32,7 +32,7 @@ TOPICS = ("ads", "advertising", "campaign", "business", "commerce", "marketing",
 BAD_TOPICS = ("ai glasses", "eyewear", "headset", "data center", "ray-ban", "meta quest", "ray ban")
 START = "<!-- NEWS_ITEMS_START -->"
 END = "<!-- NEWS_ITEMS_END -->"
-MAX_AGE = timedelta(days=45)
+MAX_AGE = timedelta(days=14)
 MAX_VISIBLE = 12  # Source-link cards only; not indexable scraped article pages.
 ATOM = "{http://www.w3.org/2005/Atom}"
 DATE_FMT = "%Y-%m-%d"
