@@ -26,3 +26,38 @@
 .agency-offer-grid .agency-main-offer small{color:#b8d8ff}.agency-offer-grid .agency-main-offer h3{color:#fff}.agency-offer-grid .agency-main-offer p{color:#d1e2f6}
 @media(max-width:900px){.agency-intro{grid-template-columns:1fr;gap:12px}.agency-method-grid{grid-template-columns:1fr}.agency-method-visual{min-height:310px}.agency-method-bar{display:block}.agency-method-bar span{display:block;margin-top:9px}}
 @media(max-width:560px){.agency-method{padding:54px 0}.agency-method-list{grid-template-columns:1fr}.agency-method-visual{padding:16px}.agency-paper{padding:17px}.agency-method-bar b{white-space:normal}}
+
+
+/* Five clearly grouped practical training modules with unambiguous support terms */
+.training-package{background:#fff}
+.training-head{display:grid;grid-template-columns:1.25fr .75fr;align-items:end;gap:45px;margin-bottom:27px}
+.training-head h2{font-size:clamp(30px,3vw,43px);line-height:1.22;letter-spacing:-.06em;margin:13px 0 0}
+.training-head>p{font-size:13px;color:#607790;line-height:1.85;margin:0}
+.training-curriculum{border:1px solid #dbe7f4;border-radius:14px;overflow:hidden;box-shadow:0 12px 28px #1746780d}
+.training-table-head,.training-row{display:grid;grid-template-columns:42% 58%;align-items:center}
+.training-table-head{background:#0d2d53;color:#ecf5ff;font-size:11px;font-weight:900;letter-spacing:.04em}
+.training-table-head>span{padding:14px 22px}.training-table-head>span+span{border-left:1px solid #ffffff28}
+.training-row{min-height:88px;border-bottom:1px solid #e6edf5;background:#fff}.training-row:last-child{border:0}
+.training-item{display:flex;align-items:center;gap:14px;padding:18px 22px}
+.training-number{font-size:13px;color:#2973cf;letter-spacing:.06em}
+.training-item strong{font-size:17px;line-height:1.4;color:#243e60;letter-spacing:-.035em}
+.training-row>p{margin:0;border-left:1px solid #e6edf5;height:100%;padding:21px 24px;display:flex;align-items:center;line-height:1.7;font-size:13px;color:#526b86}
+.training-spotlight{background:#edf5ff}
+.training-spotlight .training-item strong{color:#0c4f9a}
+.training-spotlight>p{color:#1b568f;font-weight:750}
+.training-spotlight small{display:inline-block;background:#126fe7;color:#fff;border-radius:20px;padding:5px 9px;font-size:10px;margin-left:8px;vertical-align:middle;white-space:nowrap}
+.training-conditions{display:grid;grid-template-columns:1fr 1fr 1.7fr;gap:13px;margin-top:20px}
+.training-conditions>div{background:#f1f6fd;border:1px solid #dce7f5;border-radius:13px;padding:23px}
+.training-stat>span,.training-purpose>span{display:block;font-size:10px;letter-spacing:.13em;color:#356da6;font-weight:950}
+.training-stat>strong{display:block;font-size:53px;letter-spacing:-.07em;color:#0e3f78;margin:11px 0 0;line-height:1.2}
+.training-stat>strong small{font-size:17px;letter-spacing:0;margin-left:5px}
+.training-stat>p{color:#597490;font-size:13px;margin:7px 0 0}
+.training-purpose{background:linear-gradient(120deg,#123969,#0a598e)!important;color:#fff}
+.training-purpose>span{color:#afd7fc}
+.training-purpose h3{font-size:21px;line-height:1.4;margin:13px 0 10px;letter-spacing:-.05em;color:#fff}
+.training-purpose p{font-size:12px;color:#d1e5f7;line-height:1.75;margin:0}
+.training-foot{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:19px}
+.training-foot p{font-size:12px;color:#627993;line-height:1.8;margin:0;max-width:850px}
+.training-foot a{display:inline-flex;align-items:center;justify-content:center;background:#0a68de;color:#fff;padding:11px 16px;border-radius:7px;font-size:12px;font-weight:900;white-space:nowrap}
+@media(max-width:900px){.training-head{grid-template-columns:1fr;gap:12px}.training-conditions{grid-template-columns:1fr 1fr}.training-purpose{grid-column:1/-1}}
+@media(max-width:620px){.training-table-head{display:none}.training-row{grid-template-columns:1fr;padding:12px 0}.training-item{padding:7px 16px}.training-row>p{padding:0 16px 13px 44px;border:0;font-size:12px}.training-conditions{gap:8px}.training-conditions>div{padding:17px}.training-stat>strong{font-size:42px}.training-spotlight small{display:block;width:max-content;margin:6px 0 0}.training-foot{align-items:start;flex-direction:column}}
