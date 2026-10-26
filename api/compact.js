@@ -9,9 +9,6 @@ const handlers=Object.freeze({
  'admin-competitor-compare':require('../server-handlers/admin-competitor-compare'),
  'admin-members':require('../server-handlers/admin-members'),
  'admin-place-keyword-insights':require('../server-handlers/admin-place-keyword-insights'),
- 'member-auth':require('../server-handlers/member-auth'),
- 'member-watches':require('../server-handlers/member-watches'),
- 'member-history':require('../server-handlers/member-history'),
  'admin-rank-watches':require('../server-handlers/admin-rank-watches'),
  'admin-connection':require('../server-handlers/admin-connection')
 });

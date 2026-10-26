@@ -13,6 +13,16 @@
       "permanent": true
     },
     {
+      "source": "/platform",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
+      "source": "/platform/",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
       "source": "/website-samples",
       "destination": "/portfolio/conversion/",
       "permanent": true
