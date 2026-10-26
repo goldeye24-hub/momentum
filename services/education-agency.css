@@ -1,0 +1,28 @@
+.agency-method{padding:78px 0;background:#f1f6fd;color:#152d4b}
+.agency-intro{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:end;margin-bottom:28px}
+.agency-intro h2{font-size:clamp(29px,3vw,41px);line-height:1.28;letter-spacing:-.06em;margin:14px 0 0}
+.agency-intro>p{font-size:14px;line-height:1.85;color:#627991}
+.agency-intro>p strong{color:#154f95}
+.agency-method-grid{display:grid;grid-template-columns:.83fr 1.17fr;gap:18px;align-items:stretch}
+.agency-method-visual{min-height:420px;background:linear-gradient(138deg,#0c274a,#145d9f);padding:27px;border-radius:16px;display:flex;flex-direction:column;justify-content:center}
+.agency-paper{background:#fff;border:1px solid #dce6f6;box-shadow:0 16px 31px #061d388a;border-radius:11px;padding:24px}
+.agency-paper>span{display:block;font-size:10px;letter-spacing:.12em;font-weight:900;color:#216ccd}
+.agency-paper>strong{display:block;color:#153963;font-size:23px;letter-spacing:-.05em;margin:14px 0}
+.agency-bars{display:flex;align-items:flex-end;gap:8px;height:66px;padding:12px 0;border-bottom:1px solid #dce5f0}
+.agency-bars i{display:block;width:33%;border-radius:4px 4px 0 0;background:#b9d6ef}
+.agency-bars i:nth-child(1){height:23px}.agency-bars i:nth-child(2){height:37px;background:#629fe2}.agency-bars i:nth-child(3){height:49px;background:#1f6cc9}
+.agency-sheet-list{display:grid;gap:6px;margin-top:14px}
+.agency-sheet-list span{display:flex;gap:13px;border:1px solid #e8eef6;border-radius:6px;padding:10px;color:#236dcc;font-size:11px;font-weight:900}
+.agency-sheet-list span b{color:#2f5075}
+.agency-paper-caption{color:#d9e8fc;font-size:11px;margin:22px 8px 0;line-height:1.6}
+.agency-method-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.agency-method-list article{background:#fff;border:1px solid #dce6f4;border-radius:12px;padding:21px;display:flex;flex-direction:column}
+.agency-method-list article span{color:#1b73d5;font-size:10px;font-weight:900;letter-spacing:.13em}
+.agency-method-list article h3{font-size:20px;color:#193f6c;letter-spacing:-.05em;margin:16px 0 9px}
+.agency-method-list article p{color:#647a90;font-size:12px;line-height:1.75;margin:0}
+.agency-method-bar{display:flex;align-items:center;justify-content:space-between;gap:25px;background:#0e2d51;color:#fff;padding:18px 21px;border-radius:9px;margin-top:15px}
+.agency-method-bar b{font-size:14px;white-space:nowrap}.agency-method-bar span{font-size:11px;color:#d3e4f9;line-height:1.65}
+.agency-offer-grid .agency-main-offer{background:linear-gradient(125deg,#092e60,#145aa9);color:#fff;border-color:#114f90}
+.agency-offer-grid .agency-main-offer small{color:#b8d8ff}.agency-offer-grid .agency-main-offer h3{color:#fff}.agency-offer-grid .agency-main-offer p{color:#d1e2f6}
+@media(max-width:900px){.agency-intro{grid-template-columns:1fr;gap:12px}.agency-method-grid{grid-template-columns:1fr}.agency-method-visual{min-height:310px}.agency-method-bar{display:block}.agency-method-bar span{display:block;margin-top:9px}}
+@media(max-width:560px){.agency-method{padding:54px 0}.agency-method-list{grid-template-columns:1fr}.agency-method-visual{padding:16px}.agency-paper{padding:17px}.agency-method-bar b{white-space:normal}}
