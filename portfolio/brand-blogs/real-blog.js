@@ -6,7 +6,7 @@ expert:['교육기관 소개','교육 과정','교육 현장','출강 문의'],
 interior:['업체 소개','시공 안내','공간 갤러리','견적 문의']
 };
 function setText(id,value){const n=document.getElementById(id);if(n)n.textContent=value}
-function render(key){const d=data.find(t=>t.key===key)||data[0];root.dataset.themeShell=d.key;setText('selected-name',d.name+' 홈페이지형 브랜드블로그');setText('hb-brand-top',d.brand);setText('hb-eyebrow',d.kicker);setText('hb-title',d.line);setText('hb-description',d.subtitle);setText('hb-intro-heading',d.brand+' 브랜드 소개');setText('hb-intro-copy',d.profile+' 고객에게 필요한 정보를 사진과 설명으로 전달합니다.');setText('hb-contact-label',d.brand+' | 브랜드·서비스 상담');setText('hb-services-heading',d.name+' 주요 서비스');
+function render(key){const d=data.find(t=>t.key===key)||data[0];root.dataset.themeShell=d.key;setText('selected-name',d.name+' 홈페이지형 브랜드블로그');document.getElementById('hb-brand-top').innerHTML=d.brand+'<small>NAVER BRAND BLOG</small>';setText('hb-eyebrow',d.kicker);setText('hb-title',d.line);setText('hb-description',d.subtitle);setText('hb-intro-heading',d.brand+' 브랜드 소개');setText('hb-intro-copy',d.profile+' 고객에게 필요한 정보를 사진과 설명으로 전달합니다.');setText('hb-contact-label',d.brand+' | 브랜드·서비스 상담');setText('hb-services-heading',d.name+' 주요 서비스');
 const cover=document.getElementById('hb-cover');cover.src=photo(d.cover,1350);cover.alt=d.name+' 홈페이지형 배너의 실제 촬영 참고 사진';
 document.getElementById('hb-side-one').src=photo(d.posts[0][0],600);document.getElementById('hb-side-two').src=photo(d.posts[1][0],600);document.getElementById('hb-intro-photo').src=photo(d.avatar,900);
 labelSets[d.key].forEach((name,i)=>setText('hb-widget-'+(i+1),name));
