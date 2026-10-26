@@ -1,10 +1,10 @@
-name: Daily official marketing insights
+name: Daily marketing insights — curated, not mass-published
 
-# GitHub scheduled workflows run only on the default branch.
-# Until approval and merge this is a preview-only configuration.
+# GitHub scheduled workflows run on the default branch. 00:00 UTC = 09:00 KST
+# Schedule is best-effort, not a strict guaranteed execution time.
 on:
   schedule:
-    - cron: "0 0 * * *"  # 09:00 Asia/Seoul
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,11 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-official-news:
+  collect-review-and-feature:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
-      - name: Checkout website source
+      - name: Checkout website and editorial plan
         uses: actions/checkout@v4
         with:
           persist-credentials: true
@@ -27,31 +27,53 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Update verified official marketing news
+      - name: Validate collector scripts
+        run: |
+          python -m py_compile scripts/update_marketing_news.py scripts/prepare_editorial_candidates.py
+          python - <<'PY'
+          from scripts.prepare_editorial_candidates import planned_rows, briefs, PLAN
+          rows = planned_rows(PLAN.read_text("utf-8"))
+          assert len(rows) >= 30, "Editorial calendar missing"
+          sample = briefs("2026-10-27")
+          assert 0 <= len(sample) <= 2
+          assert all(x["publicationAuthorized"] is False for x in sample)
+          assert all(x["status"] == "editorial_review_required" for x in sample)
+          print("Collector structure and publication gate validated.")
+          PY
+      - name: Prepare one or two editorial Q&A RESEARCH briefs (not public)
+        run: python scripts/prepare_editorial_candidates.py --max 2
+      - name: Save research briefs for editorial review
+        uses: actions/upload-artifact@v4
+        with:
+          name: momentum-insights-review-${{ github.run_id }}
+          path: artifacts/editorial-review/
+          if-no-files-found: error
+          retention-days: 21
+      - name: Consider at most one new official news source link today
         run: python scripts/update_marketing_news.py
-      - name: Validate updated marketing news markup
+      - name: Validate public marketing-news markup
         run: |
           python - <<'PY'
           from pathlib import Path
-          h=Path("insights/index.html").read_text("utf-8")
-          assert "<!-- NEWS_ITEMS_START -->" in h
-          assert "<!-- NEWS_ITEMS_END -->" in h
-          assert 'href="/insights/guides/seo-geo-local/"' in h
-          assert 'data-category' in h
-          print("Marketing news and category routes present.")
+          import re
+          html = Path("insights/index.html").read_text("utf-8")
+          assert html.count("<!-- NEWS_ITEMS_START -->") == 1
+          assert html.count("<!-- NEWS_ITEMS_END -->") == 1
+          assert 'href="/insights/guides/seo-geo-local/"' in html
+          assert re.search(r'<meta[^>]+name="robots"[^>]+content="index,follow"', html)
+          print("The original guides, navigation and news markers are intact.")
           PY
-      - name: Commit only when new official updates are found
+      - name: Commit only if actual new official announcement exists
         run: |
-          if git diff --quiet -- insights/index.html insights/official-news.json && [ ! -f insights/official-news.json ]; then
-            echo "No official news changes."
-            exit 0
+          git add -- insights/index.html
+          if [ -f insights/official-news.json ]; then
+            git add -- insights/official-news.json
           fi
-          git add insights/index.html insights/official-news.json 2>/dev/null || git add insights/index.html
           if git diff --cached --quiet; then
-            echo "No new verified items."
+            echo "No fresh trustworthy platform announcement — skipping publication and deployment."
             exit 0
           fi
           git config user.name "momentum-insights-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore(insights): refresh official marketing announcements"
+          git commit -m "chore(insights): feature one verified official announcement"
           git push
