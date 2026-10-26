@@ -33,25 +33,17 @@ const products=[
 {slug:'crab',name:'프리미엄 대게',desc:'바다의 신선함을 식탁으로',eyebrow:'SEAFOOD / PREMIUM',head:'바다의 풍미를<br>한 상에',src:'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&fit=crop&w=900&q=80',shade:'dark'},
 {slug:'brew',name:'굿빈스 커피',desc:'한 잔의 향과 취향',eyebrow:'GOOD BEANS / COFFEE',head:'한 잔의 향,<br>취향의 발견',src:'https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=900&q=80',shade:'dark'}
 ];
-const blogs=[
-{name:'미용실 블로그',desc:'감각적인 브랜드 스토리',kind:'salon',title:'TheSalon<br>Journal.',text:'일상이 아름다워지는 순간',img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/#salon'},
-{name:'맛집 블로그',desc:'방문을 부르는 콘텐츠',kind:'food',title:'오늘도 맛있는<br>하루',text:'우리 동네 식탁의 기록',img:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/#local'},
-{name:'인테리어 블로그',desc:'전문성과 감각이 담긴 디자인',kind:'interior',title:'공간이 주는<br>일상의 여유',text:'인테리어와 공간의 이야기',img:'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',url:'/portfolio/brand-blogs/interior/'}
-];
 const htmlEscape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const state={web:0,detail:0,blog:0};
+const state={web:0,detail:0};
 function webCard(item){
 return `<a class="work-card" href="/portfolio/conversion/${item.slug}/" aria-label="${htmlEscape(item.name)} 전체 홈페이지 시안 열기"><div class="work-preview"><iframe src="/portfolio/conversion/${item.slug}/" loading="lazy" tabindex="-1" title="${htmlEscape(item.name)} 홈페이지 미리보기" aria-hidden="true"></iframe></div><div class="work-info"><h3>${htmlEscape(item.name)}</h3><p>${htmlEscape(item.desc)}</p></div></a>`;
 }
 function productCard(item){
 return `<a class="work-card" href="/portfolio/product-pages/${item.slug}/" aria-label="${htmlEscape(item.name)} 상세페이지 전체 보기"><div class="work-preview"><img class="product-img" src="${item.src}" loading="lazy" alt="${htmlEscape(item.name)} 관련 제품 콘셉트 이미지"><span class="image-shade ${item.shade==='light'?'light':''}"></span><span class="product-copy ${item.shade==='light'?'light':''}"><span>${htmlEscape(item.eyebrow)}</span><strong>${item.head}</strong></span></div><div class="work-info"><h3>${htmlEscape(item.name)}</h3><p>${htmlEscape(item.desc)}</p></div></a>`;
 }
-function blogCard(item){
-return `<a class="work-card" href="${item.url}" aria-label="${htmlEscape(item.name)} 제작 시안 보기"><div class="work-preview"><div class="blog-browser"><div class="blog-browser-header"><b>${htmlEscape(item.name)}</b><span>BRAND JOURNAL / STORIES</span></div><div class="blog-cover"><div class="blog-text"><small>EDITOR'S NOTE / 2026</small><strong>${item.title}</strong><span>${htmlEscape(item.text)}</span></div><img src="${item.img}" loading="lazy" alt="${htmlEscape(item.name)} 연출 참고 사진"></div></div></div><div class="work-info"><h3>${htmlEscape(item.name)}</h3><p>${htmlEscape(item.desc)}</p></div></a>`;
-}
-const collection={web:domains,detail:products,blog:blogs};
-const render={web:webCard,detail:productCard,blog:blogCard};
-const onePage={web:3,detail:3,blog:3};
+const collection={web:domains,detail:products};
+const render={web:webCard,detail:productCard};
+const onePage={web:3,detail:3};
 function paint(key){
  const grid=document.getElementById(key+'-cards');
  const list=collection[key];
