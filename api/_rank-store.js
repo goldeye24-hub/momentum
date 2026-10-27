@@ -8,12 +8,12 @@ function config(){
  if(key.length<40)return null;
  return {base:url.origin,token:key};
 }
-async function request(table,{method='GET',query={},body,prefer=''}={}){
+async function request(table,{method='GET',query={},body,prefer='',timeoutMs=8000}={}){
  const cfg=config();
  if(!cfg)throw Object.assign(new Error('순위 기록 DB가 아직 연결되지 않았습니다.'),{code:'not_configured'});
  const u=new URL(cfg.base+'/rest/v1/'+table);
  for(const [key,value] of Object.entries(query))u.searchParams.set(key,String(value));
- const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
+ const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),Math.min(10000,Math.max(1000,Number(timeoutMs)||8000)));
  try{
   const rsp=await fetch(u,{
    method,signal:ctl.signal,
