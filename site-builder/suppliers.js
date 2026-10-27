@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const esc=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let suppliers=[],bundles=[],customers=[],selectedId='',lastFocus=null;
 function read(key){try{const obj=JSON.parse(localStorage.getItem(key)||'{}');return obj&&typeof obj==='object'?obj:{}}catch{return {}}}
-function ratesOf(s){return Array.isArray(s.rates)?s.rates.filter(r=>r&&r.productId).slice(0,150):[]}
+function ratesOf(s){return Array.isArray(s.rates)?s.rates.filter(r=>r&&(r.productId||r.productName)).slice(0,150):[]}
 function linkedBundles(s){return bundles.filter(b=>Array.isArray(b.lines)&&b.lines.some(l=>l&&l.supplierId===s.id))}
 function activeLinked(s){return linkedBundles(s).filter(b=>!['종료','견적'].includes(b.status))}
 function updated(s){return typeof s.updatedAt==='string'?s.updatedAt:''}
