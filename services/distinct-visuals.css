@@ -140,3 +140,23 @@
 @media(max-width:900px){.place-shot-grid{gap:13px}.place-shot-card-header{padding:22px 19px 17px}.place-shot-frame{margin:0 14px;height:540px}.place-shot-card-footer{padding:19px 20px 24px}.place-shot-card-header h3{font-size:24px}}
 @media(max-width:780px){.place-shot-gallery{padding:56px 0 64px}.place-shot-grid{grid-template-columns:1fr;max-width:600px;margin:0 auto;gap:18px}.place-shot-heading h2{font-size:clamp(27px,6vw,36px)}.place-shot-card-header{padding:24px 21px 17px}.place-shot-card-footer{padding:18px 21px 25px}.place-shot-frame{height:auto;max-height:none;margin:0 16px;padding:8px 0}.place-shot-frame>a{height:auto}.place-shot-frame img,.place-shot-frame--search img,.place-shot-frame--detail img{height:auto;max-height:none;width:100%;max-width:100%}.place-shot-frame--detail img{max-width:420px}.place-shot-disclaimer{max-width:600px;margin:15px auto 0}}
 @media(max-width:400px){.place-shot-card-header{padding:21px 16px 15px}.place-shot-card-footer{padding:17px 16px 23px}.place-shot-frame{margin:0 10px}.place-shot-card-header h3{font-size:23px}.place-shot-card-footer>a{font-size:12px;padding:12px 14px}}
+
+
+/* Search ads: platform identities, not endorsement badges */
+.search-platforms{border:1px solid #e0e9f7;border-radius:17px;background:#f7faff;padding:23px 25px 17px;margin:0 0 25px}
+.search-platforms-heading{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:14px;row-gap:3px;margin-bottom:15px}
+.search-platforms-heading strong{font-weight:900;font-size:17px;color:#173354;letter-spacing:-.035em}
+.search-platforms-heading>span{font-size:12px;line-height:1.6;color:#637a99}
+.search-platforms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.search-platform{display:flex;align-items:center;gap:13px;min-width:0;border:1px solid #e5eefa;border-radius:12px;padding:15px 17px;background:#fff}
+.search-platform-logo{height:48px;width:48px;display:grid;place-items:center;flex:none;border-radius:11px}
+.search-platform-logo img{display:block;max-width:100%;object-fit:contain}
+.search-platform-logo--naver{background:#e7f9ef}
+.search-platform-logo--google{background:#ebf3ff}
+.search-platform-logo--kakao{background:#fee500;width:77px}
+.search-platform-name{display:block;min-width:0}
+.search-platform-name strong{display:block;color:#132d4e;font-size:16px;font-weight:900;letter-spacing:-.025em;line-height:1.3}
+.search-platform-name small{display:block;color:#71849a;font-size:11px;margin-top:5px;line-height:1.4}
+.search-platforms-note{font-size:10px;color:#7c8ca0;margin:13px 2px 0;line-height:1.5}
+@media(max-width:800px){.search-platforms{padding:18px 16px 14px}.search-platforms-grid{gap:8px}.search-platform{padding:12px 10px;gap:9px}.search-platform-logo{height:42px;width:42px}.search-platform-logo--kakao{width:61px}.search-platform-logo--kakao img{width:49px}.search-platform-name strong{font-size:13px}.search-platform-name small{font-size:10px}}
+@media(max-width:590px){.search-platforms-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.search-platform{display:flex;flex-direction:column;gap:8px;padding:12px 4px;text-align:center}.search-platform-name strong{font-size:12px}.search-platform-name small{font-size:9px;min-height:24px}.search-platforms-heading strong{font-size:15px}.search-platforms-heading>span{font-size:11px}.search-platform-logo--kakao{width:70px}.search-platform-logo--kakao img{width:55px}}
