@@ -1,5 +1,6 @@
 'use strict';
 const crypto=require('node:crypto');
+const adminEmail=require('./_admin-email-login');
 const fs=require('node:fs');
 const path=require('node:path');
 
@@ -118,7 +119,7 @@ function originValid(req){
   return o.protocol==='https:'&&o.host===req.headers.host;
  }catch{return false}
 }
-module.exports=function(req,res){
+module.exports=async function(req,res){
  for(const [key,value] of Object.entries(HEADERS))res.setHeader(key,value);
  const config=ready();
  if(!config){return setupPage(res);}
@@ -132,6 +133,25 @@ module.exports=function(req,res){
    res.statusCode=303;res.setHeader('Set-Cookie',COOKIE+'=; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
    res.setHeader('Location','/admin/');return res.end();
   }
+  if(action==='login'&&adminEmail.enabled()){
+    const input=formData(req),intent=String(input.get('intent')||'');
+    if(intent==='email-send'||intent==='email-verify'){
+      const email=String(input.get('email')||'').trim().toLowerCase();
+      if(email.length>254)return pageError(res,400,'이메일을 확인해주세요');
+      if(intent==='email-send'){
+        await adminEmail.send(email);
+        res.setHeader('Content-Type','text/html; charset=utf-8');
+        return res.end(adminEmail.page({step:'verify',email}));
+      }
+      const code=String(input.get('code')||'').trim();
+      if(await adminEmail.verify(email,code)){
+        res.statusCode=303;res.setHeader('Set-Cookie',makeCookie(config.secret));
+        res.setHeader('Location','/admin/');return res.end();
+      }
+      res.statusCode=401;res.setHeader('Content-Type','text/html; charset=utf-8');
+      return res.end(adminEmail.page({step:'verify',email,error:'인증번호가 올바르지 않거나 만료되었습니다.'}));
+    }
+  }
   if(action!=='login')return pageError(res,405,'지원하지 않는 요청입니다');
   const password=formData(req).get('password')||'';
   if(password.length>512||!safeCompare(crypto.createHash('sha256').update(password).digest('hex'),crypto.createHash('sha256').update(config.pass).digest('hex'))){
@@ -143,7 +163,9 @@ module.exports=function(req,res){
  if(method!=='GET')return pageError(res,405,'지원하지 않는 요청입니다');
  if(!loggedIn(req,config.secret)){
   if(asset)return pageError(res,401,'로그인이 필요합니다');
-  res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(LOGIN);
+  res.setHeader('Content-Type','text/html; charset=utf-8');
+  if(adminEmail.enabled()&&req.query?.mode!=='password')return res.end(adminEmail.page());
+  return res.end(LOGIN);
  }
  const file=asset||(view==='crm'?'crm-index.html':view==='finance'?'finance-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':view==='keywords'?'keyword-matrix-index.html':view==='competitors'?'competitor-compare-index.html':view==='insights'?'place-keyword-insights-index.html':view==='members'?'member-admin-index.html':view==='connection'?'connection-index.html':view==='studio'?'index.html':'operations-index.html');
  if(!ASSETS.has(file))return pageError(res,404,'페이지를 찾을 수 없습니다');
