@@ -71,8 +71,10 @@ function reduceMap(items,requestedId){
  if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'네이버지도에서 업체 목록을 읽지 못했습니다. 검색 결과가 없다는 뜻은 아닙니다.'};
  const seen=new Set(),ordered=[];
  for(const item of items){
-  const id=String(item.id||''),originalRank=Number(item.rank);
-  if(!/^\d{6,20}$/.test(id)||!Number.isInteger(originalRank)||originalRank<1||originalRank>500||seen.has(id))continue;
+  const id=String(item.id||''),n=Number(item.rank);
+  if(!/^\d{6,20}$/.test(id)||seen.has(id))continue;
+  // A missing analytics rank is NOT proof that this visible card is absent.
+  const originalRank=item.rank==null||!Number.isInteger(n)||n<1||n>500?null:n;
   seen.add(id);ordered.push({id,originalRank,name:String(item.name||'').slice(0,70)});
  }
  if(!ordered.length)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'지도 업체 목록에서 순위 정보를 읽지 못했습니다.'};
@@ -137,8 +139,8 @@ async function runMap(keyword,id){
      const el=li.querySelector('[data-nlog-area="mpl_vsl.result"][data-nlog-params]');
      if(!el)continue;
      let meta;try{meta=JSON.parse(el.getAttribute('data-nlog-params'))}catch{continue}
-     const id=String(meta?.place_id||''),rank=Number(meta?.rank);
-     if(!/^\d{6,20}$/.test(id)||!Number.isInteger(rank)||rank<1)continue;
+     const id=String(meta?.place_id||''),rank=meta?.rank==null?null:Number(meta.rank);
+     if(!/^\d{6,20}$/.test(id))continue;
      const name=String(el.querySelector('span')?.textContent||el.textContent||'').trim().slice(0,70);
      rows.push({id,rank,name});
     }
