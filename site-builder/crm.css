@@ -33,3 +33,17 @@ body{background:#f4f6f5}
  .bundle-financials{gap:9px}
  .bundle-head-grid>label,.supplier-grid>label{min-width:0}
 }
+
+
+/* Flexible product lifecycle: direct addition while writing each contract */
+.product-quick-add{display:flex;align-items:end;gap:10px;padding:12px 13px;border:1px dashed #b9d1eb;border-radius:10px;background:#f6faff}
+.product-quick-add label{flex:1;display:grid;gap:6px;font-size:12px;font-weight:780;color:#27507f;min-width:160px}
+.product-quick-add input{min-width:0;width:100%;border:1px solid #d1dfef;border-radius:7px;padding:11px 12px;background:#fff}
+.product-quick-add button{align-self:end;white-space:nowrap;min-height:42px}
+.product-bundle-add{margin:12px 0 17px}
+.catalog-guidance{margin:0 0 13px;font-size:12px;line-height:1.7;color:#68809c}
+.product .product-lifecycle{font-size:11px;font-weight:750;color:#386591;white-space:nowrap;background:#fff;border:1px solid #cddff1;border-radius:7px;padding:7px 9px;cursor:pointer}
+.product .product-lifecycle:hover{border-color:#4279cb;color:#185bb6}
+.product.product-archived{opacity:.83;background:#f4f7fa}
+.product.product-archived .product-lifecycle{color:#176e50;border-color:#b2dccc}
+@media(max-width:670px){.product-quick-add{flex-direction:column;align-items:stretch}.product-quick-add label{min-width:0}.product-quick-add button{width:100%}}
