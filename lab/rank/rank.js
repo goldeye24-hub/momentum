@@ -6,11 +6,22 @@ const val=id=>$(id).value.trim(),norm=s=>String(s||'').normalize('NFKC').replace
 const s=id=>$(id).textContent;
 function safeKind(){return val('kind')==='blog'?'blog':'place'}
 function currentMethod(){return document.querySelector('input[name="method"]:checked')?.value||'observed'}
-function searchLink(){return (safeKind()==='place'&&document.getElementById('rankScope')?.value==='map'?'https://map.naver.com/p/search/':document.getElementById('rankScope')?.value==='mobile'?'https://m.search.naver.com/search.naver?query=':'https://search.naver.com/search.naver?query=')+encodeURIComponent(val('keyword'))}
+function searchLink(){
+ if(safeKind()==='place'&&val('rankScope')==='map')return 'https://map.naver.com/p/search/'+encodeURIComponent(val('keyword'));
+ if(safeKind()==='place'&&val('rankScope')==='mobile')return 'https://m.place.naver.com/place/list?query='+encodeURIComponent(val('keyword'));
+ return 'https://search.naver.com/search.naver?query='+encodeURIComponent(val('keyword'));
+}
+function safeObservedSource(url){
+ try{const u=new URL(url);return u.protocol==='https:'&&
+  ['m.place.naver.com','pcmap.place.naver.com','map.naver.com','search.naver.com'].includes(u.hostname)?u.toString():null}catch{return null}
+}
 function store(){
  try{localStorage.setItem(key,JSON.stringify(history.slice(0,300)));return true}catch{return false}
 }
-function updateSearch(){$('openNaver').href=searchLink()}
+function updateSearch(){
+ $('openNaver').href=searchLink();
+ const link=$('openObservedSource');if(link){link.hidden=true;link.removeAttribute('href')}
+}
 function switchMode(){
  const type=safeKind(),method=currentMethod();if(type==='place'&&method==='api'){document.querySelector('input[value="live"][name="method"]').checked=true}if(type==='blog'&&method==='live'){document.querySelector('input[value="observed"][name="method"]').checked=true}
  document.querySelector('input[value="api"][name="method"]').disabled=type==='place';
@@ -28,7 +39,11 @@ function fromPaste(raw,target){
  if(exact.length>1)throw Error('동일 이름이 두 곳 이상 발견됐습니다. 실제 매장을 구분해 순위를 직접 입력하세요.');
  return {rank:exact.length?exact[0].index:null,depth:names.length,message:exact.length?'붙여넣은 목록의 '+exact[0].index+'번째입니다.':'붙여넣은 '+names.length+'개 목록 안에서 동일 상호를 찾지 못했습니다.'};
 }
-function format(r){return r.rank==null?'미확인':(r.approximate?'약 ':'')+r.rank+'위'}
+function format(r){
+ if(r.rank==null)return '미확인';
+ const isLive=['mobile','map','integrated'].includes(r.scope);
+ return isLive?(r.approximate?'약 ':'')+r.rank+'번째':r.rank+'위';
+}
 function currentScope(){return safeKind()==='place'?(currentMethod()==='live'?val('rankScope'):'manual_place'):(currentMethod()==='api'?'blog_api':'manual_blog')}
 function match(r){return r.kind===safeKind()&&r.keyword===val('keyword')&&r.target===val('target')&&(r.scope||'manual_place')===currentScope()}
 function paintTrend(all){
@@ -53,21 +68,26 @@ function paintTrend(all){
 function paint(){
  const all=history.filter(match),recent=all[0],prior=all[1];
  paintTrend(all);
- $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?recent.methodLabel:'측정되지 않음';
+ $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?(recent.approximate?'추정 · ':'')+recent.methodLabel:'측정되지 않음';
  $('samples').textContent=all.length+'회';
- $('delta').textContent=recent?.rank!=null&&prior?.rank!=null?(prior.rank-recent.rank>0?'▲ '+(prior.rank-recent.rank):prior.rank-recent.rank<0?'▼ '+(recent.rank-prior.rank):'변동 없음'):'—';
+ $('delta').textContent=recent?.rank!=null&&prior?.rank!=null?
+ ((recent.approximate||prior.approximate)?'추정치 비교 불가':
+ (prior.rank-recent.rank>0?'▲ '+(prior.rank-recent.rank):prior.rank-recent.rank<0?'▼ '+(recent.rank-prior.rank):'변동 없음')):'—';
  $('measuredAt').textContent=recent?new Date(recent.at).toLocaleString('ko-KR'):'아직 측정 전';
  const names={place:'플레이스',blog:'블로그'};
  $('history').innerHTML=history.length?history.slice(0,100).map(r=>'<tr><td>'+e(new Date(r.at).toLocaleString('ko-KR'))+'</td><td>'+e(names[r.kind]||r.kind)+'</td><td>'+e(r.keyword)+'</td><td>'+e(r.target)+'</td><td><strong>'+e(format(r))+'</strong></td><td>'+e(r.methodLabel)+'</td><td>'+e(r.depth)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">저장된 측정 기록이 없습니다.</td></tr>';
 }
 function add(data){
  const observedAt=typeof data.observedAt==='string'&&!Number.isNaN(Date.parse(data.observedAt))?new Date(data.observedAt).toISOString():new Date().toISOString();
- const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt};
+ const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt,
+  sourceUrl:safeObservedSource(data.sourceUrl),matchedName:String(data.matchedName||'').slice(0,70),cached:data.cached===true};
  const existing=history.some(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
  if(existing){paint();$('message').textContent=(data.message||'')+' · 기존 측정 기록을 재사용했습니다. 새로운 측정으로 중복 기록하지 않았습니다.';return}
  history.unshift(item);history.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));history=history.slice(0,300);
  const saved=store();paint();
- $('message').textContent=(data.message||'')+(data.stale?' · 새 조회가 제한되어 과거 결과만 표시했습니다.':'')+' · '+(saved?'관측 시각 기준으로 현재 브라우저에 기록했습니다.':'브라우저 저장에 실패했습니다. CSV로 내보내세요.');
+ const observedSource=$('openObservedSource');
+ if(observedSource&&item.sourceUrl){observedSource.href=item.sourceUrl;observedSource.hidden=false}
+ $('message').textContent=(data.message||'')+(item.matchedName?' · 확인된 업체: '+item.matchedName:'')+(data.cached?' · 30분 이내 기존 관측값 재사용(새 측정 아님)':'')+(data.stale?' · 새 조회가 제한되어 과거 결과만 표시했습니다.':'')+' · '+(saved?'관측 시각 기준으로 현재 브라우저에 기록했습니다.':'브라우저 저장에 실패했습니다. CSV로 내보내세요.');
 }
 $('rankForm').addEventListener('submit',async ev=>{
  ev.preventDefault();const keyword=val('keyword'),target=val('target'),kind=safeKind(),method=currentMethod();
@@ -94,7 +114,9 @@ $('rankForm').addEventListener('submit',async ev=>{
     $('message').textContent=result.message||'자동 측정이 완료되지 않았습니다. 네이버 검색 화면에서 직접 확인할 수 있습니다.';
     return;
    }
-   add({rank:result.rank,approximate:result.rankApproximate===true,observedAt:result.observedAt,cached:result.cached===true,stale:result.stale===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
+   const sourceLink=$('openObservedSource'),observed=safeObservedSource(result.sourceUrl);
+   if(sourceLink&&observed){sourceLink.href=observed;sourceLink.hidden=false}
+   add({rank:result.rank,approximate:result.rankApproximate===true,observedAt:result.observedAt,cached:result.cached===true,stale:result.stale===true,sourceUrl:result.sourceUrl,matchedName:result.matchedName,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
    if(safeMode||result.cacheWriteFailed===true){
     $('message').textContent+=' · 서버 DB가 정상화되기 전까지 CSV로 기록을 백업하세요.';
    }
@@ -114,7 +136,7 @@ $('rankForm').addEventListener('submit',async ev=>{
    add({rank:result.rank,depth:result.depth,methodLabel:'네이버 블로그 검색 API',message:result.message});
   }
  }catch(err){$('message').textContent=err.message}
- finally{btn.disabled=false;btn.textContent='순위 측정·기록하기 →'}
+ finally{btn.disabled=false;btn.textContent='목록 위치 측정·기록하기 →'}
 });
 $('clearHistory').addEventListener('click',()=>{if(!confirm('이 브라우저의 순위 기록을 모두 삭제할까요?'))return;history=[];store();paint();$('message').textContent='기록을 비웠습니다.'});
 $('exportCsv').addEventListener('click',()=>{const head=['관측일시','채널','키워드','대상','측정 범위','순위','근사 여부','측정 방법','확인 범위'];const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const rows=[head.map(quote).join(',')];for(const r of history)rows.push([r.at,r.kind,r.keyword,r.target,r.scope||'legacy',r.rank,r.approximate?'근사':'관측',r.methodLabel,r.depth].map(quote).join(','));const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='momentum-search-ranking-history.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)});
