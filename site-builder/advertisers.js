@@ -49,11 +49,11 @@ function daysFromToday(date){
  return Number.isNaN(end.valueOf())?null:Math.round((end-today)/86400000);
 }
 function contractEndDate(x){
- const all=[x.endDate,...x.items.map(z=>z.endDate)].filter(z=>/^\\d{4}-\\d{2}-\\d{2}$/.test(String(z||''))).sort();
+ const all=[x.endDate,...x.items.map(z=>z.endDate)].filter(z=>/^\d{4}-\d{2}-\d{2}$/.test(String(z||''))).sort();
  return all[0]||'';
 }
 function checkDate(x){
- if(/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.renewalCheckDate||'')))return x.renewalCheckDate;
+ if(/^\d{4}-\d{2}-\d{2}$/.test(String(x.renewalCheckDate||'')))return x.renewalCheckDate;
  const end=contractEndDate(x);if(!end)return '';
  const date=new Date(end+'T12:00:00');date.setDate(date.getDate()-7);
  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
