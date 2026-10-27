@@ -116,7 +116,7 @@ def markdown_report(day, candidates):
         f"# 모멘텀마케팅 실무 자료 검토 대기 — {day}",
         "",
         "> 비공개 조사 후보입니다. 사이트 게시 및 검색 색인은 자동 실행되지 않습니다.",
-        f"> 오늘 후보 {len(candidates)}개 (최대 2개). 중복되면 기존 페이지 보강으로 대체합니다.",
+        f"> 오늘 후보 {len(candidates)}개 (최대 3개). 중복되면 기존 페이지 보강으로 대체합니다.",
         "",
     ]
     if not candidates:
