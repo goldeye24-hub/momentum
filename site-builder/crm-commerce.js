@@ -49,7 +49,7 @@ function normalizeLine(x){
 }
 function normalizeBundle(x){
  return {id:clean(x.id,110)||uniq(),customerId:clean(x.customerId,110),title:clean(x.title,110),signedDate:validDate(x.signedDate),
- startDate:validDate(x.startDate),endDate:validDate(x.endDate),status:['견적','계약','진행중','완료','종료'].includes(x.status)?x.status:'견적',
+ startDate:validDate(x.startDate),endDate:validDate(x.endDate),renewalCheckDate:validDate(x.renewalCheckDate),renewalCheckedAt:validDate(x.renewalCheckedAt),status:['견적','계약','진행중','완료','종료'].includes(x.status)?x.status:'견적',
  discount:numeric(x.discount),paid:numeric(x.paid),notes:clean(x.notes,2000),createdAt:clean(x.createdAt,42)||new Date().toISOString(),
  updatedAt:clean(x.updatedAt,42)||new Date().toISOString(),lines:(Array.isArray(x.lines)?x.lines:[]).slice(0,100).map(normalizeLine).filter(t=>t.productId),
  history:(Array.isArray(x.history)?x.history:[]).slice(-60).map(h=>({
@@ -148,7 +148,7 @@ function getLine(row){
 function draft(){
  const f=$('bundleForm'),d=Object.fromEntries(new FormData(f));
  return {id:clean(d.id,110),customerId:clean(d.customerId,110),title:clean(d.title,110),signedDate:validDate(d.signedDate),
-  startDate:validDate(d.startDate),endDate:validDate(d.endDate),status:clean(d.status,20),
+  startDate:validDate(d.startDate),endDate:validDate(d.endDate),renewalCheckDate:validDate(d.renewalCheckDate),status:clean(d.status,20),
   discount:numeric(d.discount),paid:numeric(d.paid),notes:clean(d.notes,2000),
   lines:[...$('bundleLines').querySelectorAll('.bundle-line')].map(getLine)};
 }
@@ -226,6 +226,7 @@ function saveBundle(ev){
  }
  const now=new Date().toISOString();
  const next=normalizeBundle({...draftBundle,id:old?.id||uniq(),createdAt:old?.createdAt||now,updatedAt:now,
+  renewalCheckedAt:old&&old.endDate===draftBundle.endDate&&old.renewalCheckDate===draftBundle.renewalCheckDate&&JSON.stringify(old.lines.map(l=>l.endDate))===JSON.stringify(draftBundle.lines.map(l=>l.endDate))?old.renewalCheckedAt||'':'',
   history:old?[...old.history,snapshot(old)].slice(-60):[],lines:draftBundle.lines});
  if(old)db.bundles[db.bundles.indexOf(old)]=next;else db.bundles.push(next);
  if(!persist())return;
