@@ -3,19 +3,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../services/place-seo/index.html'), 'utf8');
-const css = fs.readFileSync(path.join(__dirname, '../services/distinct-visuals.css'), 'utf8');
 
-test('place page shows an actual Google Maps iframe with native attribution retained', () => {
-  assert.match(html, /<iframe[^>]+src="https:\/\/maps\.google\.com\/maps\?[^"]+output=embed"/);
-  assert.match(html, /class="dv-live-map"/);
-  assert.match(css, /\.dv-live-map iframe\s*\{/);
-  assert.doesNotMatch(css, /\.dv-live-map iframe\s*\{[^}]*display\s*:\s*none/);
-});
-test('place guide links to real services, never invented search rankings or fake maps', () => {
-  assert.match(html, /https:\/\/map\.naver\.com\/p\/search\//);
-  assert.match(html, /https:\/\/www\.google\.com\/maps\/search\//);
+test('place illustrations are original screenshots rather than fake HTML portal replicas', () => {
+  assert.match(html, /\/assets\/place\/place-search-reference\.webp/);
+  assert.match(html, /\/assets\/place\/place-detail-reference\.webp/);
+  assert.doesNotMatch(html, /class="dv-live-map"/);
   assert.doesNotMatch(html, /class="dv-map"/);
-  assert.doesNotMatch(html, /class="dv-searchbar"/);
-  assert.doesNotMatch(html, /class="visual-navmark"/);
-  assert.match(html, /검색결과는 지역·시점·이용자에 따라 달라집니다/);
+  assert.doesNotMatch(html, /class="place-map-pin"/);
+  assert.doesNotMatch(html, /class="place-audit-mobile"/);
+  assert.match(html, /가상 예시/);
 });
