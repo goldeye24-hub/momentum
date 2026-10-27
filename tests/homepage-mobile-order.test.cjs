@@ -3,14 +3,25 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-test('marketing hero precedes website-production teaser on the homepage', () => {
+test('marketing service descriptions and showcase precede website production on mobile and desktop', () => {
   const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const hero = html.indexOf('<section class="top-grid"');
-  const site = html.indexOf('<section class="web-home-teaser');
-  assert.ok(hero > 0, 'marketing hero must exist');
-  assert.ok(site > hero, 'website-production teaser must follow marketing hero');
-  assert.equal((html.match(/<section class="top-grid"/g) || []).length, 1);
-  assert.equal((html.match(/<section class="web-home-teaser/g) || []).length, 1);
+  const sections = [
+    'top-grid',
+    'service-strip',
+    'analytics-row',
+    'preview-section',
+    'web-home-teaser',
+    'bottom-content',
+  ];
+  const positions = sections.map(name => html.indexOf('<section class="' + name));
+  for (let i = 0; i < sections.length; i++) {
+    assert.ok(positions[i] >= 0, sections[i] + ' section must exist');
+    if (i > 0) {
+      assert.ok(positions[i] > positions[i - 1], sections[i] + ' must follow ' + sections[i - 1]);
+    }
+    assert.equal(html.split('<section class="' + sections[i]).length - 1, 1,
+      sections[i] + ' must appear exactly once');
+  }
 });
 
 test('the user-rejected local marketing footnote is not displayed', () => {
