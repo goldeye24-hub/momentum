@@ -20,6 +20,11 @@ function normalizeDate(value){
  const date=new Date(v+'T12:00:00');
  return Number.isNaN(date.valueOf())||date.getFullYear()!==Number(v.slice(0,4))||date.getMonth()+1!==Number(v.slice(5,7))||date.getDate()!==Number(v.slice(8))?'':v;
 }
+function qtyValue(raw){
+ if(raw===null||raw===undefined||String(raw).trim()==='')return null;
+ const n=Number(raw);
+ return Number.isFinite(n)&&n>=0&&n<=1000000?Math.round(n*1000)/1000:null;
+}
 function normalizeData(raw){
  if(!raw||!Array.isArray(raw.customers)||!Array.isArray(raw.contracts)||!Array.isArray(raw.customProducts))throw Error('구조 오류');
  if(raw.customers.length>10000||raw.contracts.length>40000||raw.customProducts.length>1000)throw Error('데이터가 너무 많습니다');
@@ -37,6 +42,7 @@ function normalizeData(raw){
   id:clean(x.id,100),customerId:clean(x.customerId,100),productId:clean(x.productId,100),
   signedDate:normalizeDate(x.signedDate),startDate:normalizeDate(x.startDate),endDate:normalizeDate(x.endDate),domainEnd:normalizeDate(x.domainEnd),
   renewalCheckDate:normalizeDate(x.renewalCheckDate),renewalCheckedAt:normalizeDate(x.renewalCheckedAt),
+  quantity:qtyValue(x.quantity),usedQuantity:qtyValue(x.usedQuantity),unit:clean(x.unit,16),
   amount:amount(x.amount),cost:amount(x.cost),paid:amount(x.paid===undefined?(x.payment==='완납'?x.amount:0):x.paid),
   supplier:clean(x.supplier,90),owner:clean(x.owner,60),
   status:allowedStatus.has(x.status)?x.status:'문의',
@@ -133,7 +139,8 @@ function renderRecords(){
   const contracts=db.contracts.filter(x=>x.customerId===c.id);
   const rows=contracts.length?contracts.map(x=>{
    const remain=Math.max(0,x.includedEdits-x.usedEdits);
-   return '<div class="contract-line"><div><strong>'+escapeHtml(product(x.productId).name)+'</strong> <span class="contract-meta">'+escapeHtml(x.status)+' · '+escapeHtml(x.payment)+' · '+money(x.amount)+'</span><div class="contract-meta">'+(x.endDate?'계약 만료 '+escapeHtml(x.endDate)+'　':'')+(x.domainEnd?'도메인 만료 '+escapeHtml(x.domainEnd)+'　':'')+'무료수정 '+x.usedEdits+'/'+x.includedEdits+'회 · 잔여 '+remain+'회</div><div class="contract-meta">매입 '+money(x.cost)+' · 수금 '+money(x.paid)+' · 미수 '+money(Math.max(0,x.amount-x.paid))+' · 예상이익 '+money(x.amount-x.cost)+'</div></div><div class="contract-ops"><button type="button" data-edit-contract="'+escapeHtml(x.id)+'">계약 수정</button><button type="button" data-delete-contract="'+escapeHtml(x.id)+'">삭제</button></div></div>';
+   const usage=x.quantity==null?'수량 미등록':'계약수량 '+x.quantity.toLocaleString('ko-KR')+(x.unit||'건')+' · 사용 '+(x.usedQuantity||0).toLocaleString('ko-KR')+(x.unit||'건')+' · 잔여 '+Math.max(0,x.quantity-(x.usedQuantity||0)).toLocaleString('ko-KR')+(x.unit||'건');
+   return '<div class="contract-line"><div><strong>'+escapeHtml(product(x.productId).name)+'</strong> <span class="contract-meta">'+escapeHtml(x.status)+' · '+escapeHtml(x.payment)+' · '+money(x.amount)+'</span><div class="contract-meta">'+(x.endDate?'계약 만료 '+escapeHtml(x.endDate)+'　':'')+(x.domainEnd?'도메인 만료 '+escapeHtml(x.domainEnd)+'　':'')+'무료수정 '+x.usedEdits+'/'+x.includedEdits+'회 · 잔여 '+remain+'회</div><div class="contract-meta">'+escapeHtml(usage)+'</div><div class="contract-meta">매입 '+money(x.cost)+' · 수금 '+money(x.paid)+' · 미수 '+money(Math.max(0,x.amount-x.paid))+' · 예상이익 '+money(x.amount-x.cost)+'</div></div><div class="contract-ops"><button type="button" data-edit-contract="'+escapeHtml(x.id)+'">계약 수정</button><button type="button" data-delete-contract="'+escapeHtml(x.id)+'">삭제</button></div></div>';
   }).join(''):'<p class="empty">등록된 계약 상품이 없습니다.</p>';
   return '<article class="record"><div class="record-head"><div><div class="record-title">'+escapeHtml(c.name)+'</div><div class="record-sub">'+escapeHtml([c.industry,c.region,c.manager,c.phone,c.stage].filter(Boolean).join(' · '))+(c.referredBy?'<br>소개 업체: '+escapeHtml(c.referredBy):'')+(c.feedback?' · 반응 '+escapeHtml(c.feedback):'')+(c.nextContact?' · 다음 연락 '+escapeHtml(c.nextContact):'')+'</div></div><div class="record-actions"><button type="button" data-add-contract="'+escapeHtml(c.id)+'">+ 상품 계약</button><button type="button" data-edit-customer="'+escapeHtml(c.id)+'">업체 수정</button><button type="button" data-delete-customer="'+escapeHtml(c.id)+'">삭제</button></div></div><div class="contracts">'+rows+'</div></article>';
  }).join(''):'<p class="empty">'+(q?'검색 결과가 없습니다.':'아직 거래처가 없습니다. 위에서 첫 거래처를 등록하세요.')+'</p>';
@@ -162,11 +169,16 @@ function saveContract(ev){
  if(d.endDate&&!normalizeDate(d.endDate)){message('계약 만료일이 잘못되었습니다.');return;}
  if(d.signedDate&&!normalizeDate(d.signedDate)){message('계약 체결일이 잘못되었습니다.');return;}
  if(d.renewalCheckDate&&!normalizeDate(d.renewalCheckDate)){message('재연장 확인일을 확인하세요.');return;}
+ const quantity=qtyValue(d.quantity),usedQuantity=qtyValue(d.usedQuantity);
+ if(String(d.quantity||'').trim()&&(quantity===null||quantity<=0)){message('계약수량은 0보다 크고 100만 이하여야 합니다.');return;}
+ if(String(d.usedQuantity||'').trim()&&usedQuantity===null){message('사용수량은 0 이상 100만 이하여야 합니다.');return;}
+ if(usedQuantity!==null&&(quantity===null||usedQuantity>quantity)){message('사용수량은 계약수량을 초과할 수 없습니다. 계약수량을 먼저 입력하세요.');return;}
  const old=db.contracts.find(x=>x.id===d.id);
  const row={
  id:old?old.id:id(),customerId:d.customerId,productId:d.productId,signedDate:normalizeDate(d.signedDate),startDate:normalizeDate(d.startDate),
  endDate:normalizeDate(d.endDate),domainEnd:normalizeDate(d.domainEnd),
  renewalCheckDate:normalizeDate(d.renewalCheckDate),renewalCheckedAt:old&&old.endDate===normalizeDate(d.endDate)&&old.renewalCheckDate===normalizeDate(d.renewalCheckDate)?old.renewalCheckedAt||'':'',
+ quantity,usedQuantity:quantity===null?null:(usedQuantity??0),unit:quantity===null?'':clean(d.unit,16)||'건',
  amount:amount(d.amount),cost:amount(d.cost),paid:amount(d.paid),
  supplier:clean(d.supplier,90),owner:clean(d.owner,60),
  status:allowedStatus.has(d.status)?d.status:'문의',payment:allowedPayments.has(d.payment)?d.payment:'미입금',
