@@ -24,6 +24,7 @@ test('screens are labeled as illustrative, links lead to existing consultation f
 
 test('service visuals stack responsively and source text remains legible', () => {
   assert.match(css, /\.place-pair\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css, /@media\(max-width:780px\)\{[^}]*\.place-pair\{grid-template-columns:1fr/);
+  const mobileCss = css.split('@media(max-width:780px)')[1] || '';
+  assert.match(mobileCss, /\.place-pair\{grid-template-columns:1fr/);
   assert.match(css, /@media\(max-width:450px\)/);
 });
