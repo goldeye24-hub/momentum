@@ -14,17 +14,12 @@ function reduceMobileList(raw,max=100){
   if(items.length>=cap)break;
   items.push({id,name:clean(item.name)||'이름 미확인',providerRank:item.rank});
  }
- let last=0,reliable=true;
- for(const row of items){
-  const rank=Number(row.providerRank);
-  if(row.providerRank==null||!Number.isInteger(rank)||rank<1||rank>500||rank<=last){reliable=false;break}
-  last=rank;
- }
- // Do not mix provider positions and visual estimates in the same snapshot.
- // Any restart, duplication or missing metadata downgrades the entire list.
+ // Telemetry rank may be monotone but skip positions, ads, or count another
+ // result type. For cross-page trend consistency use only visible DOM positions.
+ const reliable=items.every((row,i)=>row.providerRank!=null&&Number.isInteger(Number(row.providerRank))&&Number(row.providerRank)===i+1);
  const entries=items.map((row,i)=>({placeId:row.id,name:row.name,
-  rank:reliable?Number(row.providerRank):i+1,approximate:!reliable,
-  rankBasis:reliable?'provider_list_position':'visible_list_position_estimate'}));
+  rank:i+1,approximate:!reliable,
+  rankBasis:reliable?'visible_list_position':'visible_list_position_estimate'}));
  return {status:entries.length?'observed':'no_place_block',entries,observedCount:entries.length,
   maxObservedRank:entries.length?Math.max(...entries.map(x=>x.rank)):null,
   scope:'mobile',precision:'observed_mobile_list_not_organic_rank',
