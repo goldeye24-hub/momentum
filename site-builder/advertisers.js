@@ -27,13 +27,13 @@ function contractNotes(c){
  const own=relatedContracts(c.id).map(x=>({
   id:x.id,kind:'single',name:productName(x.productId),status:x.status||'미등록',
   signedDate:x.signedDate||'',startDate:x.startDate||'',endDate:x.endDate||'',domainEnd:x.domainEnd||'',
-  amount:num(x.amount),paid:num(x.paid),items:[]
+  amount:num(x.amount),paid:num(x.paid),renewalCheckDate:x.renewalCheckDate||'',renewalCheckedAt:x.renewalCheckedAt||'',items:[]
  }));
  const multiple=relatedBundles(c.id).map(x=>({
   id:x.id,kind:'bundle',name:x.title||'묶음 상품 계약',status:x.status||'미등록',
   signedDate:x.signedDate||'',startDate:x.startDate||'',endDate:x.endDate||'',
   amount:Math.max(0,(Array.isArray(x.lines)?x.lines:[]).reduce((sum,line)=>sum+num(line.unitPrice)*num(line.quantity),0)-num(x.discount)),
-  paid:num(x.paid),items:(Array.isArray(x.lines)?x.lines:[]).map(line=>({
+  paid:num(x.paid),renewalCheckDate:x.renewalCheckDate||'',renewalCheckedAt:x.renewalCheckedAt||'',items:(Array.isArray(x.lines)?x.lines:[]).map(line=>({
    name:line.productName||productName(line.productId),
    startDate:line.startDate||x.startDate||'',endDate:line.endDate||x.endDate||'',
    quantity:num(line.quantity),unit:line.unit||'건'
@@ -48,6 +48,37 @@ function daysFromToday(date){
  const end=new Date(date+'T12:00:00'),today=new Date(localToday()+'T12:00:00');
  return Number.isNaN(end.valueOf())?null:Math.round((end-today)/86400000);
 }
+function contractEndDate(x){
+ const all=[x.endDate,...x.items.map(z=>z.endDate)].filter(z=>/^\\d{4}-\\d{2}-\\d{2}$/.test(String(z||''))).sort();
+ return all[0]||'';
+}
+function checkDate(x){
+ if(/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.renewalCheckDate||'')))return x.renewalCheckDate;
+ const end=contractEndDate(x);if(!end)return '';
+ const date=new Date(end+'T12:00:00');date.setDate(date.getDate()-30);
+ return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+function isTracked(x){return ['계약','진행중','완료','갱신완료'].includes(x.status)}
+function checked(x){const check=checkDate(x);return !!(check&&x.renewalCheckedAt&&x.renewalCheckedAt>=check)}
+function actionState(x){
+ if(!isTracked(x))return 'inactive';
+ const end=contractEndDate(x),confirm=checkDate(x),today=localToday();
+ if(end&&end<today)return 'expired';
+ if(confirm&&!checked(x)&&confirm<=today)return 'due';
+ if(checked(x))return 'checked';
+ if(confirm&&daysFromToday(confirm)<=30)return 'soon';
+ return 'normal';
+}
+function actionLabel(x){
+ const code=actionState(x);
+ if(code==='expired')return ['기간 만료','danger'];
+ if(code==='due')return ['재연장 확인 필요','danger'];
+ if(code==='soon')return ['곧 확인','warning'];
+ if(code==='checked')return ['확인 처리됨','complete'];
+ if(code==='inactive')return [x.status,'muted'];
+ return ['예정','muted'];
+}
+
 function contractEndLabel(x){
  const ends=x.kind==='bundle'&&x.items.length?x.items.map(z=>z.endDate).filter(Boolean):[x.endDate];
  const remaining=ends.map(daysFromToday).filter(z=>z!==null);
@@ -63,6 +94,7 @@ function contractCard(x){
   ['계약일',dateText(x.signedDate)],
   ['시작일',dateText(x.startDate)],
   ['종료일',dateText(x.endDate)],
+  ['재연장 확인',dateText(checkDate(x))+(x.renewalCheckDate?' (직접 지정)':' (자동)')],
   ['계약금액',WON.format(x.amount)]
  ].map(([label,value])=>'<div class="contract-cell"><span>'+label+'</span><strong>'+value+'</strong></div>').join('');
  const products=x.kind==='bundle'?
