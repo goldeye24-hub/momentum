@@ -3,7 +3,7 @@
 
 This program NEVER creates public HTML, sitemap entries, indexable URLs, or
 fictional marketing news. The output is a short-lived GitHub Actions artifact.
-A separate editorial review is required to publish an original article.
+The independently scheduled ChatGPT publication task is the only guide publisher.
 """
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "docs" / "insights-30day-editorial-plan-20261026.md"
+WHITELIST = ROOT / "docs" / "insights-approved-industries-20261028.json"
 PUBLISHED = ROOT / "insights" / "guides"
 KST = ZoneInfo("Asia/Seoul")
 MAX_DAILY = 3
@@ -27,6 +28,28 @@ HEADERS = (
     "date", "regionAndCategory", "keywordCandidate", "industry",
     "questionAndAngle", "originalReaderValue", "relatedServices",
 )
+
+
+# Historical label is permitted only when it unambiguously means an approved industry.
+INDUSTRY_ALIASES = {"국밥·해장국집": "국밥·해장국"}
+
+
+def approved_industries():
+    """Validate the explicit user-selected industry whitelist. Fail closed on corrupt data."""
+    cfg = json.loads(WHITELIST.read_text("utf-8"))
+    groups = cfg.get("groups", [])
+    names = [industry for group in groups for industry in group.get("industries", [])]
+    if (cfg.get("exclusive") is not True or len(groups) != 11
+            or cfg.get("industryCount") != 105 or len(names) != 105
+            or len(set(names)) != 105 or not all(isinstance(x, str) and x.strip() for x in names)):
+        raise ValueError("Expected exactly 105 user-approved industries in 11 groups")
+    if cfg.get("regionScope") != ["부산광역시", "양산시", "김해시"]:
+        raise ValueError("Only Busan, Yangsan and Gimhae are approved")
+    return set(names)
+
+
+def normalized_industry(name: str) -> str:
+    return INDUSTRY_ALIASES.get(name, name)
 
 
 def planned_rows(text: str):
@@ -86,7 +109,14 @@ def briefs(day: str, max_items: int = MAX_DAILY):
     if max_items < 1 or max_items > MAX_DAILY:
         raise ValueError("Daily limit must be between 1 and 3")
     schedule = planned_rows(PLAN.read_text("utf-8"))
-    selected = [row for row in schedule if row["date"] == day and any(city in row["regionAndCategory"] for city in TARGET_CITIES)][:max_items]
+    allowed = approved_industries()
+    selected = [
+        {**row, "industry": normalized_industry(row["industry"])}
+        for row in schedule
+        if row["date"] == day
+        and any(city in row["regionAndCategory"] for city in TARGET_CITIES)
+        and normalized_industry(row["industry"]) in allowed
+    ][:max_items]
     previous = published_headings()
     result = []
     for row in selected:
@@ -102,8 +132,16 @@ def briefs(day: str, max_items: int = MAX_DAILY):
                 "Verify local facts; NEVER change only a city name on a prior page",
                 "Do not fabricate statistics, client results, testimonials or expert credentials",
                 "Regulated industries require up-to-date legal/platform review",
-                "Publish only after approval, with a unique canonical, title, H1 and appropriate internal links",
+                "Only quality-reviewed article production task may publish, never this research-only workflow",
+                "Assess whether the sector really needs a website, or Place/SNS already meets the need",
+                "When search intent warrants it, review an original website build vs maintenance cost and features guide",
             ],
+            "websiteDecision": {
+                "status": "requires_search_intent_and_business_case_review",
+                "options": ["homepage_build_guide", "add_website_section_to_existing_guide", "not_needed"],
+                "siteBuildLink": "/services/websites/",
+                "noBlanketWebsiteRequirement": True,
+            },
             "publicationAuthorized": False,
             "sourcesVerified": False,
             "articleWritten": False,
