@@ -85,7 +85,7 @@ function add(data){
  const observedAt=typeof data.observedAt==='string'&&!Number.isNaN(Date.parse(data.observedAt))?new Date(data.observedAt).toISOString():new Date().toISOString();
  const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt,
   sourceUrl:safeObservedSource(data.sourceUrl),matchedName:String(data.matchedName||'').slice(0,70),cached:data.cached===true,
-  calculationVersion:data.methodLabel&&/자동 관측|목록 관측|목록 순서 추정|플레이스 목록/.test(data.methodLabel)?2:2};
+  calculationVersion:2};
  const existing=history.some(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
  if(existing){
   const savedItem=history.find(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
