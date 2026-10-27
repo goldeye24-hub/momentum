@@ -1,7 +1,9 @@
-name: Daily marketing insights — curated, not mass-published
+name: Daily marketing insights — researched candidates and official news
 
 # GitHub scheduled workflows run on the default branch. 00:00 UTC = 09:00 KST
 # Schedule is best-effort, not a strict guaranteed execution time.
+# This workflow only prepares research briefs and publishes verified official news.
+# The separate ChatGPT daily content automation can publish up to 3 original guides after quality checks.
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -36,13 +38,13 @@ jobs:
           rows = planned_rows(PLAN.read_text("utf-8"))
           assert len(rows) >= 30, "Editorial calendar missing"
           sample = briefs("2026-10-27")
-          assert 0 <= len(sample) <= 2
+          assert 0 <= len(sample) <= 3
           assert all(x["publicationAuthorized"] is False for x in sample)
           assert all(x["status"] == "editorial_review_required" for x in sample)
           print("Collector structure and publication gate validated.")
           PY
-      - name: Prepare one or two editorial Q&A RESEARCH briefs (not public)
-        run: python scripts/prepare_editorial_candidates.py --max 2
+      - name: Prepare up to three city-approved editorial RESEARCH briefs (not public)
+        run: python scripts/prepare_editorial_candidates.py --max 3
       - name: Save research briefs for editorial review
         uses: actions/upload-artifact@v4
         with:
