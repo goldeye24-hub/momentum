@@ -79,9 +79,25 @@ $('rankForm').addEventListener('submit',async ev=>{
    $('message').textContent='실제 네이버 검색 화면을 확인하고 있습니다…';
    const response=await fetch('/api/place-rank-live',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeUrl:target,scope:val('rankScope')})});
    const result=await response.json();
-   if(!response.ok)throw Error(result.message||'자동 측정 실패');
-   if(!['ranked','not_in_block'].includes(result.status)){$('message').textContent=result.message||'자동 측정이 완료되지 않았습니다.';return}
+   const safeMode=result.degradedMode===true;
+   const modeNotice=$('measureModeNotice');
+   const localNote=$('rankStorageNote');
+   if(modeNotice)modeNotice.textContent=safeMode?'공유 저장소 연결 장애로 자동 측정은 안전 모드에서 실행됩니다. 요청 횟수가 제한되고 새 기록은 이 브라우저에만 남습니다.':'공유 저장소를 통한 관측을 우선합니다. 자동 측정 결과는 실제 브라우저에서 관측된 경우만 기록합니다.';
+   if(localNote)localNote.hidden=!(safeMode||result.cacheWriteFailed===true);
+   if(!response.ok){
+    const retry=result.retryAfterSeconds?(' · 재확인 가능 시점: 약 '+Math.ceil(result.retryAfterSeconds/60)+'분 이후'):'';
+    const errMsg=(result.message||'자동 측정이 실패했습니다.')+retry;
+    $('message').textContent=errMsg;
+    return;
+   }
+   if(!['ranked','not_in_block'].includes(result.status)){
+    $('message').textContent=result.message||'자동 측정이 완료되지 않았습니다. 네이버 검색 화면에서 직접 확인할 수 있습니다.';
+    return;
+   }
    add({rank:result.rank,approximate:result.rankApproximate===true,observedAt:result.observedAt,cached:result.cached===true,stale:result.stale===true,depth:result.maxObservedRank||result.observedCount,methodLabel:val('rankScope')==='mobile'?(result.rankApproximate?'모바일 플레이스 목록 순서 추정':'모바일 플레이스 목록 관측'):val('rankScope')==='map'?(result.rankApproximate?'PC 네이버지도 목록 순서 추정':'PC 네이버지도 검색 목록 자동 관측'):'PC 통합검색 플레이스 블록 자동 관측',message:result.message});
+   if(safeMode||result.cacheWriteFailed===true){
+    $('message').textContent+=' · 서버 DB가 정상화되기 전까지 CSV로 기록을 백업하세요.';
+   }
   }else if(method==='observed'){
    const found=val('found')==='yes',rank=found?Number(val('rankNumber')):null,depth=Number(val('depth'));
    if(found&&(!Number.isInteger(rank)||rank<1||rank>depth))throw Error('확인한 순위가 1~'+depth+' 안에 있어야 합니다.');
