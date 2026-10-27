@@ -19,7 +19,7 @@ async function sharedMeasure({key,scope,ip,measure,now=()=>Date.now()}){
  try{
   const rows=await db.request('rank_live_snapshots',{query:{
    select:'payload,recorded_at,expires_at',cache_key:'eq.'+cacheKey,limit:'1'
-  }});
+  },timeoutMs:3000});
   const saved=rows[0];
   if(saved&&Date.parse(saved.expires_at)>now()&&saved.payload?.source==='browser_observed'&&
    ['ranked','not_in_block','observed'].includes(saved.payload?.status)){
