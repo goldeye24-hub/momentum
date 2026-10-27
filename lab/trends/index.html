@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081f40">
+<title>네이버 검색어 추이 비교 | 무료 마케팅 도구 | 모멘텀마케팅</title>
+<meta name="description" content="네이버 검색어 추이 비교 도구. 검색어 1~5개를 월별·주별로 조회하고, API 미연결 시 직접 확인한 상대 지수 CSV를 시각화해 비교할 수 있습니다.">
+<link rel="canonical" href="https://momentum-orcin-delta.vercel.app/lab/trends/">
+<meta name="robots" content="index,follow">
+<link rel="stylesheet" href="/lab/trends/trends.css">
+</head><body>
+<a class="skip" href="#form">본문 바로가기</a>
+<header class="top"><div class="wrap bar"><a class="brand" href="/">MOMENTUM <b>MARKETING</b></a><a class="header-cta" href="/#contact">마케팅 상담 신청 ↗</a></div>
+<nav class="links" aria-label="무료 도구 메뉴"><div class="wrap"><a href="/lab/">무료도구 3종</a><a href="/lab/keywords/">키워드 분석</a><a href="/lab/rank/">플레이스 순위조회</a><a href="/lab/trends/" aria-current="page">검색어 추이 비교</a></div></nav></header>
+<main>
+<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">NAVER DATA LAB / MARKETING TRENDS</span><h1>검색어의 변화,<br><strong>같은 기준으로 비교하세요.</strong></h1><p>부산·양산·김해 지역 업종 키워드부터 일반 검색어까지. 검색 관심도의 흐름을 상대 지수로 비교합니다. 조회되지 않은 데이터는 만들어내지 않습니다.</p></div><div class="hero-card" aria-hidden="true"><span>SEARCH INTEREST · RELATIVE INDEX</span><div class="chart-illustration"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><b>검색어 비교는 절대 검색량이 아닙니다.</b></div></div></section>
+<section class="wrap workspace" id="form">
+<div class="section-heading"><span class="eyebrow blue">01 / SEARCH COMPARISON</span><h2>검색어 추이 조회</h2><p>최대 5개 키워드를 쉼표 또는 줄바꿈으로 구분해 입력하세요. 네이버 API 사용 권한이 확인되면 같은 화면에서 실측 추이가 표시됩니다.</p></div>
+<form id="trendForm" autocomplete="off">
+<div class="field"><label for="terms">비교할 검색어 <span>최대 5개</span></label><textarea id="terms" required rows="2" maxlength="250" placeholder="예: 부산 입주청소, 부산 사다리차, 양산 입주청소">부산맛집, 부산횟집</textarea></div>
+<div class="options"><div><label for="period">조회 기간</label><select id="period"><option value="3">최근 3개월</option><option value="6" selected>최근 6개월</option><option value="12">최근 12개월</option><option value="24">최근 24개월</option></select></div>
+<div><label for="unit">표시 간격</label><select id="unit"><option value="week">주별</option><option value="month" selected>월별</option></select></div>
+<div><label for="device">검색 기기</label><select id="device"><option value="all">전체</option><option value="pc">PC</option><option value="mo">모바일</option></select></div></div>
+<div class="actions"><button id="runTrend" type="submit" class="primary">검색어 추이 조회하기 ↗</button><a class="secondary" id="officialLink" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 공식 데이터랩 열기 ↗</a><button type="button" id="copySearch" class="secondary">검색어 복사</button></div>
+</form>
+<div class="status" id="status" role="status" aria-live="polite">검색어를 입력하고 조회하면 공식 데이터 연결 상태를 확인합니다.</div>
+<section class="result" aria-labelledby="chartTitle">
+<div class="result-heading"><div><span class="eyebrow blue">02 / COMPARISON RESULT</span><h2 id="chartTitle">검색 관심도 추이</h2><p id="chartSubtitle">조회 또는 CSV 불러오기 전 · 데이터 없음</p></div><button type="button" id="export" disabled>결과 CSV 다운로드</button></div>
+<div id="source" class="source">데이터 출처 미확인 · 검색어 추이는 검색 횟수가 아닌 상대 지수입니다.</div>
+<div id="chart" class="chart empty" aria-live="polite"><p>아직 표시할 데이터가 없습니다.<br>실제 네이버 API 응답 또는 사용자가 제공한 CSV로만 그래프를 그립니다.</p></div>
+<div id="legend" class="legend"></div>
+<div class="table-wrap"><table><thead id="thead"><tr><th>기간</th><th>상대 지수</th></tr></thead><tbody id="tbody"><tr><td colspan="2" class="muted">조회 결과 없음</td></tr></tbody></table></div>
+</section></section>
+<section class="import-section"><div class="wrap import-grid"><div><span class="eyebrow blue">03 / USE WITHOUT API ACCESS</span><h2>네이버 API가 연결되지 않았나요?</h2><p>네이버 데이터랩의 공식 화면에서 확인한 결과를 **직접 CSV로 정리해 가져오면** 이 페이지에서 검색어 간 흐름을 비교할 수 있습니다. 이 데이터는 서버로 업로드되지 않으며 브라우저에서 처리됩니다.</p>
+<p class="small">표준 CSV/TSV 첫 줄: <code>날짜,부산맛집,부산횟집</code> · 다음 줄부터 <code>2026-08-01,34.2,62.1</code>처럼 같은 기간의 상대 지수(0~100)를 입력합니다. 예시는 파일 형식 안내일 뿐, 실제 측정 데이터가 아닙니다.</p></div>
+<div class="upload"><label for="csvFile">측정한 검색 추이 CSV / TSV 파일</label><input id="csvFile" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" aria-describedby="csvHint"><small id="csvHint">최대 200KB · 기간 열 + 검색어 열 1~5개 · 같은 기간·조건으로 수집한 데이터만 비교하세요.</small>
+<p id="uploadStatus" role="status" aria-live="polite"></p><a href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">공식 데이터랩에서 확인하기 ↗</a></div></div></section>
+<section class="wrap explanation"><h2>결과 해석 시 유의할 점</h2><div class="tips"><div><strong>상대 지수(0~100)</strong><p>선택한 검색어와 기간 안에서 가장 높은 수준을 100으로 환산한 지수입니다. 실제 월 검색량이나 매출량을 뜻하지 않습니다.</p></div><div><strong>비교 조건 통일</strong><p>서로 다른 기간·기기·출처에서 가져온 상대 지수는 직접적인 크기 비교가 어렵습니다. 동기간·동조건을 유지하세요.</p></div><div><strong>권한·정책 준수</strong><p>공식 API 조회는 NAVER API HUB 키와 데이터 표시 권한 설정이 필요합니다. 승인 전에는 불필요한 호출이나 임의의 그래프를 제공하지 않습니다.</p></div></div></section>
+</main><footer><div class="wrap"><span>© MOMENTUM MARKETING · 무료 마케팅 도구</span><span><a href="/lab/">무료도구 3종</a> · <a href="/">메인 홈페이지</a></span></div></footer>
+<script defer src="/lab/trends/trends.js"></script>
+</body></html>
