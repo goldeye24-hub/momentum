@@ -30,6 +30,30 @@ class EditorialCadenceTests(unittest.TestCase):
         self.assertGreaterEqual(len(editorial.briefs("2026-11-02")), 1)  # Gimhae
         self.assertEqual(editorial.MAX_DAILY, 3)
 
+    def test_approved_industries_are_exactly_105(self):
+        selected = editorial.approved_industries()
+        self.assertEqual(len(selected), 105)
+        for name in ["웨딩홀", "TV 설치·벽걸이 TV", "보청기·안경원",
+                     "홈페이지 제작", "온라인 쇼핑몰·스마트스토어"]:
+            self.assertIn(name, selected)
+        for unselected in ["치과", "피부과", "내과·건강검진센터",
+                           "자동차광택·디테일링", "웨딩플래너"]:
+            self.assertNotIn(unselected, selected)
+
+    def test_candidate_plans_exclude_unselected_industries(self):
+        # Legacy dated plan may mention unauthorized industries; no new publication candidate.
+        for date in ["2026-11-11", "2026-11-15", "2026-11-24"]:
+            self.assertEqual(editorial.briefs(date), [])
+        self.assertEqual(editorial.briefs("2026-11-07")[0]["industry"], "국밥·해장국")
+        self.assertEqual(editorial.briefs("2026-11-23")[0]["industry"], "세무사·회계사")
+
+    def test_homepage_necessity_review_is_explicit_and_not_a_presumption(self):
+        row = editorial.briefs("2026-10-29")[0]
+        self.assertEqual(row["industry"], "입주청소")
+        self.assertFalse(row["publicationAuthorized"])
+        self.assertTrue(row["websiteDecision"]["noBlanketWebsiteRequirement"])
+        self.assertIn("homepage_build_guide", row["websiteDecision"]["options"])
+
     def test_no_automatic_backfill_when_no_date_planned(self):
         self.assertEqual(editorial.briefs("2027-01-01"), [])
 
