@@ -30,7 +30,7 @@ function switchMode(){
  $('target').placeholder=type==='blog'?'https://blog.naver.com/아이디/글번호':'업체명, 플레이스 숫자 ID 또는 https://m.place.naver.com/restaurant/1234567890';
  updateSearch();paint()
 }
-document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',updateSearch);$('target').addEventListener('input',paint);$('rankScope').addEventListener('change',()=>{updateSearch();paint()});
+document.querySelectorAll('[name="method"]').forEach(x=>x.addEventListener('change',switchMode));$('kind').addEventListener('change',switchMode);$('keyword').addEventListener('input',()=>{updateSearch();paint()});$('target').addEventListener('input',paint);$('rankScope').addEventListener('change',()=>{updateSearch();paint()});
 function cleanLine(line){return String(line||'').replace(/^\s*(?:\d+\s*[.)\]:-]|[-•*])\s*/,'').trim()}
 function fromPaste(raw,target){
  const names=String(raw).split(/\r?\n/g).map(cleanLine).filter(Boolean).slice(0,200);
@@ -63,10 +63,12 @@ function paintTrend(all){
  const path=document.createElementNS(ns,'polyline');path.setAttribute('points',points.map(x=>x.join(',')).join(' '));path.setAttribute('fill','none');path.setAttribute('stroke','#286cdf');path.setAttribute('stroke-width','4');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path);
  points.forEach((pos,i)=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',pos[0]);c.setAttribute('cy',pos[1]);c.setAttribute('r','6');c.setAttribute('fill','#286cdf');const t=document.createElementNS(ns,'title');t.textContent=new Date(usable[i].at).toLocaleString('ko-KR')+' · '+usable[i].rank+'위';c.appendChild(t);svg.appendChild(c)});
  mount.replaceChildren(svg);
- const cap=document.createElement('p');cap.className='trend-caption';cap.textContent='관측 '+usable.length+'건 · '+ranks[0]+'위 → '+ranks[ranks.length-1]+'위 (실제 저장된 관측 기록)';mount.appendChild(cap);
+ const cap=document.createElement('p');cap.className='trend-caption';cap.textContent='관측 '+usable.length+'건 · '+ranks[0]+'번째 → '+ranks[ranks.length-1]+'번째 · '+(usable.some(x=>x.approximate)?'추정 위치 포함, 순위 상승·하락을 단정할 수 없습니다.':'동일 화면의 관측 위치 기준이며 공식 검색 순위는 아닙니다.');mount.appendChild(cap);
 }
 function paint(){
  const all=history.filter(match),recent=all[0],prior=all[1];
+ const sourceLink=$('openObservedSource'),source=recent?safeObservedSource(recent.sourceUrl):null;
+ if(sourceLink&&source){sourceLink.href=source;sourceLink.hidden=false}
  paintTrend(all);
  $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?(recent.approximate?'추정 · ':'')+recent.methodLabel:'측정되지 않음';
  $('samples').textContent=all.length+'회';
@@ -82,7 +84,11 @@ function add(data){
  const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt,
   sourceUrl:safeObservedSource(data.sourceUrl),matchedName:String(data.matchedName||'').slice(0,70),cached:data.cached===true};
  const existing=history.some(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
- if(existing){paint();$('message').textContent=(data.message||'')+' · 기존 측정 기록을 재사용했습니다. 새로운 측정으로 중복 기록하지 않았습니다.';return}
+ if(existing){
+  const savedItem=history.find(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
+  if(savedItem&&item.sourceUrl&&!savedItem.sourceUrl){savedItem.sourceUrl=item.sourceUrl;store()}
+  paint();$('message').textContent=(data.message||'')+' · 기존 측정 기록을 재사용했습니다. 새로운 측정으로 중복 기록하지 않았습니다.';return
+ }
  history.unshift(item);history.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));history=history.slice(0,300);
  const saved=store();paint();
  const observedSource=$('openObservedSource');
