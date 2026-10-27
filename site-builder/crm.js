@@ -289,6 +289,20 @@ function calendar(){
 }
 function applyPendingContract(){
  try{
+  const editId=sessionStorage.getItem('momentum.crm.editContract');
+  if(editId){
+   sessionStorage.removeItem('momentum.crm.editContract');
+   const match=db.contracts.find(x=>x.id===editId);
+   if(match){
+    resetContract();
+    toForm(el('contractForm'),match);
+    window.requestAnimationFrame(()=>goTo('contractSection'));
+    message('선택한 계약을 수정할 수 있습니다.');
+   }
+   return;
+  }
+ }catch{/* standard contract editing remains available. */}
+ try{
   const target=sessionStorage.getItem('momentum.crm.newContract');
   if(!target)return;
   sessionStorage.removeItem('momentum.crm.newContract');
