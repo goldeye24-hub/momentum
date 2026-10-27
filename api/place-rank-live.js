@@ -21,7 +21,7 @@ module.exports=async function(req,res){
  if(!keyword||(scope==='mobile'?!mobileTarget:!id))return res.status(400).json({status:'invalid',message:'검색어와 업체명 또는 플레이스 ID/주소를 확인하세요.'});
  const key=scope+'\n'+keyword+'\n'+(id||observer.normalizeBusinessName(mobileTarget?.name));
  const ip=String(req.headers?.['x-forwarded-for']||req.headers?.['x-real-ip']||'unknown').split(',')[0].slice(0,100);
- const outcome=await controller.handle({key,ip,measure:()=>sharedMeasure({key,scope,measure:()=>scope==='mobile'?
+ const outcome=await controller.handle({key,ip,measure:()=>sharedMeasure({key,scope,ip,measure:()=>scope==='mobile'?
   observer.runMobile(keyword,mobileTarget):scope==='map'?observer.runMap(keyword,id):observer.run(keyword,id)})});
  if(outcome.data?.retryAfterSeconds&&outcome.code!==200)res.setHeader('Retry-After',String(outcome.data.retryAfterSeconds));
  return res.status(outcome.code).json(outcome.data);
