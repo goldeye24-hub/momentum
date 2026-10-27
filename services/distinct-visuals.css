@@ -114,3 +114,19 @@
 .dv-hub-topic:hover{border-color:#69a7f1;background:#f9fcff}
 .dv-hub-topic small{display:block;font-size:10px;color:#637f9b;font-weight:500}
 @media(max-width:650px){#tool-visual-dashboard .dv-board>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}#tool-visual-dashboard .dv-three{grid-template-columns:1fr}}
+
+
+/* PLACE SERVICE / REAL MAP — informational map embed, not a replica of portal UI */
+.dv-board--live-map{background:#f6f9fd}
+.dv-board--live-map .dv-board-heading{margin-bottom:11px}
+.dv-live-intro{font-size:13px;line-height:1.7;color:#506987;margin:0 0 14px}
+.dv-live-map{width:100%;height:312px;position:relative;background:#e8eef5;border:1px solid #d3e0ec;border-radius:12px;overflow:hidden}
+.dv-live-map iframe{display:block;width:100%;height:100%;border:0;background:#e8eef5}
+.dv-live-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.dv-live-links a{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #cbdcf2;background:#fff;color:#1955a0;text-decoration:none;padding:13px 14px;border-radius:9px;font-size:12px;font-weight:850;line-height:1.5}
+.dv-live-links a:hover,.dv-live-links a:focus-visible{border-color:#1a69ce;background:#eff6ff}
+.dv-board--live-map .dv-checks{margin-top:14px}
+.dv-board--live-map .dv-checks span{font-size:11px}
+.dv-board--live-map .dv-subtext{margin-top:13px}
+@media(max-width:700px){.dv-live-map{height:260px}.dv-live-links{grid-template-columns:1fr}.dv-live-links a{min-height:48px}.dv-board--live-map .dv-board-heading{flex-wrap:wrap}}
+@media(max-width:380px){.dv-board--live-map .dv-checks{grid-template-columns:repeat(2,minmax(0,1fr))}}
