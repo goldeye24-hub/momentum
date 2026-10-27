@@ -28,6 +28,16 @@ on:
 permissions:
   contents: read
 jobs:
+  rank-regression:
+    name: Place ranking outage and browser-control regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020f # v4.4.0
+        with:
+          node-version: '22'
+      - run: node --test tests/rank-live-control.test.cjs tests/rank-outage-fallback.test.cjs
   test:
     runs-on: ubuntu-latest
     steps:
