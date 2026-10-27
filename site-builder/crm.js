@@ -292,6 +292,20 @@ function setup(){
   if(!data||!Array.isArray(data.products)||data.products.length!==18)throw Error('상품 기본 목록이 올바르지 않습니다.');
   catalog=data.products;render();
  }).catch(()=>{message('상품 카탈로그를 불러오지 못했습니다. 관리자 로그인을 확인하세요.');render();});
+ const pendingKey='momentum.crm.openCustomer';
+ try{
+   const selectedId=sessionStorage.getItem(pendingKey);
+   if(selectedId){
+     sessionStorage.removeItem(pendingKey);
+     const selected=customer(selectedId);
+     if(selected){
+       resetCustomer();
+       toForm(el('customerForm'),selected);
+       window.requestAnimationFrame(()=>goTo('customerSection'));
+       message('광고주 목록에서 선택한 업체를 편집할 수 있습니다.');
+     }
+   }
+ }catch{/* sessionStorage disabled: normal CRM functionality remains. */}
  el('customerForm').addEventListener('submit',saveCustomer);
  el('taskForm').addEventListener('submit',saveTask);
  el('taskReset').addEventListener('click',resetTask);
