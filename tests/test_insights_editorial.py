@@ -25,6 +25,11 @@ class EditorialCadenceTests(unittest.TestCase):
             self.assertFalse(item["articleWritten"])
             self.assertEqual(item["status"], "editorial_review_required")
 
+    def test_only_approved_three_cities_generate_research_briefs(self):
+        self.assertEqual(editorial.briefs("2026-11-01"), [])  # prior plan: Ulsan
+        self.assertGreaterEqual(len(editorial.briefs("2026-11-02")), 1)  # Gimhae
+        self.assertEqual(editorial.MAX_DAILY, 3)
+
     def test_no_automatic_backfill_when_no_date_planned(self):
         self.assertEqual(editorial.briefs("2027-01-01"), [])
 
