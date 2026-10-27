@@ -39,7 +39,9 @@ function fromPaste(raw,target){
  if(exact.length>1)throw Error('동일 이름이 두 곳 이상 발견됐습니다. 실제 매장을 구분해 순위를 직접 입력하세요.');
  return {rank:exact.length?exact[0].index:null,depth:names.length,message:exact.length?'붙여넣은 목록의 '+exact[0].index+'번째입니다.':'붙여넣은 '+names.length+'개 목록 안에서 동일 상호를 찾지 못했습니다.'};
 }
+function isLegacyAuto(r){return ['mobile','map','integrated'].includes(r.scope)&&r.calculationVersion!==2}
 function format(r){
+ if(isLegacyAuto(r))return '구버전 미검증';
  if(r.rank==null)return '미확인';
  const isLive=['mobile','map','integrated'].includes(r.scope);
  return isLive?(r.approximate?'약 ':'')+r.rank+'번째':r.rank+'위';
@@ -48,7 +50,7 @@ function currentScope(){return safeKind()==='place'?(currentMethod()==='live'?va
 function match(r){return r.kind===safeKind()&&r.keyword===val('keyword')&&r.target===val('target')&&(r.scope||'manual_place')===currentScope()}
 function paintTrend(all){
  const mount=$('rankTrend');if(!mount)return;
- const usable=all.filter(x=>typeof x.rank==='number'&&x.rank>0).slice(0,14).reverse();
+ const usable=all.filter(x=>!isLegacyAuto(x)&&typeof x.rank==='number'&&x.rank>0).slice(0,14).reverse();
  if(usable.length<2){mount.textContent='동일 키워드·대상에서 2회 이상 측정하면 순위 변화 그래프가 나타납니다.';return}
  const ranks=usable.map(x=>x.rank),lo=Math.min(...ranks),hi=Math.max(...ranks),span=Math.max(1,hi-lo);
  const w=800,h=225,p=32;
@@ -70,9 +72,9 @@ function paint(){
  const sourceLink=$('openObservedSource'),source=recent?safeObservedSource(recent.sourceUrl):null;
  if(sourceLink&&source){sourceLink.href=source;sourceLink.hidden=false}
  paintTrend(all);
- $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?(recent.approximate?'추정 · ':'')+recent.methodLabel:'측정되지 않음';
+ $('latest').textContent=recent?format(recent):'—';$('latestNote').textContent=recent?(isLegacyAuto(recent)?'과거 계산법 · 재측정 후 비교':(recent.approximate?'추정 · ':'')+recent.methodLabel):'측정되지 않음';
  $('samples').textContent=all.length+'회';
- $('delta').textContent=recent?.rank!=null&&prior?.rank!=null?
+ $('delta').textContent=recent&&!isLegacyAuto(recent)&&prior&&!isLegacyAuto(prior)&&recent?.rank!=null&&prior?.rank!=null?
  ((recent.approximate||prior.approximate)?'추정치 비교 불가':
  (prior.rank-recent.rank>0?'▲ '+(prior.rank-recent.rank):prior.rank-recent.rank<0?'▼ '+(recent.rank-prior.rank):'변동 없음')):'—';
  $('measuredAt').textContent=recent?new Date(recent.at).toLocaleString('ko-KR'):'아직 측정 전';
@@ -82,7 +84,8 @@ function paint(){
 function add(data){
  const observedAt=typeof data.observedAt==='string'&&!Number.isNaN(Date.parse(data.observedAt))?new Date(data.observedAt).toISOString():new Date().toISOString();
  const item={kind:safeKind(),keyword:val('keyword'),target:val('target'),scope:currentScope(),rank:data.rank,approximate:data.approximate===true,depth:data.depth,methodLabel:data.methodLabel,at:observedAt,
-  sourceUrl:safeObservedSource(data.sourceUrl),matchedName:String(data.matchedName||'').slice(0,70),cached:data.cached===true};
+  sourceUrl:safeObservedSource(data.sourceUrl),matchedName:String(data.matchedName||'').slice(0,70),cached:data.cached===true,
+  calculationVersion:data.methodLabel&&/자동 관측|목록 관측|목록 순서 추정|플레이스 목록/.test(data.methodLabel)?2:2};
  const existing=history.some(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
  if(existing){
   const savedItem=history.find(x=>x.kind===item.kind&&x.keyword===item.keyword&&x.target===item.target&&x.scope===item.scope&&x.at===item.at);
@@ -145,6 +148,6 @@ $('rankForm').addEventListener('submit',async ev=>{
  finally{btn.disabled=false;btn.textContent='목록 위치 측정·기록하기 →'}
 });
 $('clearHistory').addEventListener('click',()=>{if(!confirm('이 브라우저의 순위 기록을 모두 삭제할까요?'))return;history=[];store();paint();$('message').textContent='기록을 비웠습니다.'});
-$('exportCsv').addEventListener('click',()=>{const head=['관측일시','채널','키워드','대상','측정 범위','순위','근사 여부','측정 방법','확인 범위'];const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const rows=[head.map(quote).join(',')];for(const r of history)rows.push([r.at,r.kind,r.keyword,r.target,r.scope||'legacy',r.rank,r.approximate?'근사':'관측',r.methodLabel,r.depth].map(quote).join(','));const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='momentum-search-ranking-history.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)});
+$('exportCsv').addEventListener('click',()=>{const head=['관측일시','채널','키워드','대상','측정 범위','기존 기록 숫자','검증 상태','근사 여부','측정 방법','확인 범위'];const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const rows=[head.map(quote).join(',')];for(const r of history)rows.push([r.at,r.kind,r.keyword,r.target,r.scope||'legacy',r.rank,isLegacyAuto(r)?'구버전 미검증':'현재 표시 기준',r.approximate?'근사':'관측',r.methodLabel,r.depth].map(quote).join(','));const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='momentum-search-ranking-history.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000)});
 switchMode();
 })();
