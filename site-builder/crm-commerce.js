@@ -19,8 +19,9 @@ function notice(message){$('notice').textContent=message}
 function readBase(){try{return JSON.parse(localStorage.getItem(CRM_KEY)||'{}')}catch{return {}}}
 function customers(){return Array.isArray(readBase().customers)?readBase().customers.filter(x=>x.id&&x.name):[]}
 function catalogs(){
- const own=readBase().customProducts;
- return products.concat(Array.isArray(own)?own.filter(x=>x.id&&x.name):[]);
+ const base=readBase(),hidden=new Set(Array.isArray(base.archivedProductIds)?base.archivedProductIds:[]);
+ const own=base.customProducts;
+ return products.map(p=>({...p,archived:hidden.has(p.id)})).concat(Array.isArray(own)?own.filter(x=>x.id&&x.name):[]);
 }
 function productInfo(id){return catalogs().find(p=>p.id===id)}
 function supplierInfo(id){return db.suppliers.find(s=>s.id===id)}
@@ -70,7 +71,7 @@ function fillCustomerSelect(){
  const names=customers().slice().sort((a,b)=>a.name.localeCompare(b.name,'ko')),select=$('bundleCustomer'),before=select.value;
  select.innerHTML=options(names,before,'거래처 선택');if(before)select.value=before;
 }
-function productOptions(current){return options(catalogs(),current,'상품 선택')}
+function productOptions(current){return options(catalogs().filter(p=>!p.archived||p.id===current).map(p=>({...p,name:p.name+(p.archived?' (판매 종료 · 기존 계약)': '')})),current,'상품 선택')}
 function supplierOptions(current){return options(db.suppliers.filter(x=>!x.archived||x.id===current),current,'외주업체 선택 (선택사항)')}
 function rateRow(data={}){
  const row=document.createElement('div');row.className='supplier-rate';row.dataset.id=data.id||uniq();
@@ -211,7 +212,7 @@ function saveBundle(ev){
  ev.preventDefault();const draftBundle=draft(),old=db.bundles.find(x=>x.id===draftBundle.id);
  if(!customerInfo(draftBundle.customerId)){notice('먼저 거래처를 등록하고 선택하세요.');return}
  if(!draftBundle.title){notice('견적·계약명을 입력하세요.');return}
- if(!draftBundle.lines.length||draftBundle.lines.some(x=>!productInfo(x.productId)||x.quantity<=0)){notice('각 항목의 상품과 계약 수량을 확인하세요.');return}
+ if(!draftBundle.lines.length||draftBundle.lines.some(x=>{const product=productInfo(x.productId);return !product||product.archived&&!(old&&old.lines.some(l=>l.productId===x.productId))||x.quantity<=0})){notice('현재 판매 중인 상품과 계약 수량을 확인하세요.');return}
  if(draftBundle.lines.some(x=>x.endDate&&x.startDate&&x.endDate<x.startDate)){notice('상품 만료일이 시작일보다 빠릅니다.');return}
  if(draftBundle.endDate&&draftBundle.startDate&&draftBundle.endDate<draftBundle.startDate){notice('계약 만료일은 시작일 이후여야 합니다.');return}
  const totals=moneyTotals(draftBundle);
@@ -356,6 +357,15 @@ function init(){
  $('supplierList').addEventListener('click',supplierAction);
  $('bundleForm').addEventListener('submit',saveBundle);
  $('addBundleLine').addEventListener('click',()=>lineRow());
+ $('saveQuickBundleProduct').addEventListener('click',()=>{
+  const name=$('quickBundleProduct').value;
+  const id=window.MomentumCRM?.addCustomProduct(name);
+  if(!id)return;
+  // Product is already in shared CRM storage. Select it on a newly-added line.
+  lineRow({productId:id});
+  $('quickBundleProduct').value='';
+  notice('상품을 등록하고 묶음 계약에 추가했습니다.');
+ });
  $('newBundle').addEventListener('click',resetBundle);
  $('resetBundle').addEventListener('click',resetBundle);
  $('bundleForm').addEventListener('input',calculate);
