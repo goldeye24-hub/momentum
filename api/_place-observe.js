@@ -217,10 +217,12 @@ async function runMobile(keyword,target,options={}){
   });
   const page=await context.newPage();
   const query=new URLSearchParams({where:'m',query:keyword,entry:'pll'}).toString();
-  // Avoid measuring restaurant-only listings for unrelated sectors.
-  const primary='https://m.place.naver.com/place/list?'+query;
+  // Freeze the searchable surface by category: a general Place list and
+  // a restaurant-only list are different rankings. Avoid silently swapping.
+  const general='https://m.place.naver.com/place/list?'+query;
+  const restaurant='https://m.place.naver.com/restaurant/list?'+query;
   const foodRelated=/(맛집|음식점|식당|횟집|한식|일식|초밥|고깃집|대게|랍스터|카페|국밥|중식|마라탕|배달|베이커리|술집|삼겹살)/.test(keyword);
-  const candidates=foodRelated?[primary,'https://m.place.naver.com/restaurant/list?'+query]:[primary];
+  const candidates=foodRelated?[restaurant,general]:[general];
   let rows=[],usedUrl='',httpStatus=null;
   for(const url of candidates){
    try{
