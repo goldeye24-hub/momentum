@@ -25,6 +25,17 @@
 <div class="metric"><span>오늘·지난 연락 예정</span><strong id="metricFollowup">0</strong><small>연락 예정일 확인</small></div>
 <div class="metric"><span>30일 내 계약 만료</span><strong id="metricExpiring">0</strong><small>계약 만료일 기준</small></div>
 </section>
+<section class="work-board" aria-labelledby="workBoardTitle">
+<div class="work-head"><div><span class="eyebrow">TODAY'S CONTRACT ACTIONS</span><h2 id="workBoardTitle">오늘 확인할 재연장·만료 계약 <small id="actionCount">0건</small></h2><p>설정한 재연장 확인일이 도래했거나 계약 종료일이 지난 건을 자동으로 우선 표시합니다.</p></div><a class="subtle-button" href="#contractSchedule">전체 계약 일정 보기 ↓</a></div>
+<div class="work-queue" id="actionQueue"><p class="queue-empty">등록된 계약을 분석하고 있습니다.</p></div>
+<div class="work-hint">재연장 확인일이 비어 있으면 <b>종료 30일 전</b>을 기본 확인일로 계산합니다. ‘확인 처리’는 상담 여부를 기록하는 기능으로 계약 자동 연장은 아닙니다.</div>
+</section>
+<section class="schedule" id="contractSchedule" aria-labelledby="contractScheduleTitle">
+<div class="schedule-header"><div><span class="eyebrow">CONTRACT MANAGEMENT</span><h2 id="contractScheduleTitle">상품별 계약·금액·일정 <small id="scheduleCount">0건</small></h2><p>광고주별 계약을 모아 계약 체결일, 종료일, 재연장 확인일을 한 화면에서 확인합니다.</p></div></div>
+<div class="schedule-filters"><label>계약 검색<input id="contractSearch" type="search" placeholder="광고주, 계약 상품, 지역" autocomplete="off"></label><label>확인 상태<select id="contractActionFilter"><option value="all">전체 계약</option><option value="action">조치 필요</option><option value="soon">30일 이내 예정</option><option value="checked">확인 처리 완료</option></select></label></div>
+<div class="schedule-scroller"><div class="schedule-table" role="table" aria-label="광고주 계약 일정표"><div class="schedule-row schedule-table-head" role="row"><span role="columnheader">광고주 / 상품</span><span role="columnheader">계약금액</span><span role="columnheader">계약일</span><span role="columnheader">종료일</span><span role="columnheader">재연장 확인일</span><span role="columnheader">관리 상태</span><span role="columnheader">확인</span></div><div id="contractScheduleRows"></div></div></div>
+<div id="scheduleEmpty" class="schedule-empty" hidden>표시할 계약이 없습니다. 계약을 등록하면 일정이 자동으로 계산됩니다.</div>
+</section>
 <section class="directory" aria-labelledby="directoryHeading">
 <div class="section-title"><div><span class="eyebrow">ALL ADVERTISERS</span><h2 id="directoryHeading">등록 광고주 <small id="resultCount">0개 표시</small></h2></div><button class="subtle-button" id="refreshList" type="button">↻ 목록 새로고침</button></div>
 <div class="filters">
