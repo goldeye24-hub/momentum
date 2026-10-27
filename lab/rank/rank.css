@@ -7,3 +7,6 @@
 .measurement-note{font-size:12px;line-height:1.65;color:#245b48;background:#e7f5eb;border:1px solid #bedfc8;border-radius:7px;padding:11px 13px;margin-top:12px}
 .storage-note{font-size:12px;line-height:1.7;color:#724e20;background:#fff6e9;border:1px solid #f0dbad;border-radius:8px;padding:12px 15px;margin-top:12px}
 .storage-note[hidden]{display:none}
+
+/* Actual-source comparison link remains hidden until a matching observation exists */
+#openObservedSource[hidden]{display:none!important}
