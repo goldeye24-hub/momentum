@@ -27,7 +27,7 @@ function contractNotes(c){
  const own=relatedContracts(c.id).map(x=>({
   id:x.id,kind:'single',name:productName(x.productId),status:x.status||'미등록',
   signedDate:x.signedDate||'',startDate:x.startDate||'',endDate:x.endDate||'',domainEnd:x.domainEnd||'',
-  amount:num(x.amount),paid:num(x.paid),renewalCheckDate:x.renewalCheckDate||'',renewalCheckedAt:x.renewalCheckedAt||'',items:[]
+  amount:num(x.amount),paid:num(x.paid),quantity:x.quantity==null?null:num(x.quantity),usedQuantity:x.usedQuantity==null?0:num(x.usedQuantity),unit:x.unit||'건',renewalCheckDate:x.renewalCheckDate||'',renewalCheckedAt:x.renewalCheckedAt||'',items:[]
  }));
  const multiple=relatedBundles(c.id).map(x=>({
   id:x.id,kind:'bundle',name:x.title||'묶음 상품 계약',status:x.status||'미등록',
@@ -36,7 +36,8 @@ function contractNotes(c){
   paid:num(x.paid),renewalCheckDate:x.renewalCheckDate||'',renewalCheckedAt:x.renewalCheckedAt||'',items:(Array.isArray(x.lines)?x.lines:[]).map(line=>({
    name:line.productName||productName(line.productId),
    startDate:line.startDate||x.startDate||'',endDate:line.endDate||x.endDate||'',
-   quantity:num(line.quantity),unit:line.unit||'건'
+   quantity:num(line.quantity),unit:line.unit||'건',
+   usedQuantity:Math.round((Array.isArray(line.usageLog)?line.usageLog:[]).filter(log=>log&&!log.canceled).reduce((sum,log)=>sum+num(log.quantity),0)*1000)/1000
   }))
  }));
  return own.concat(multiple);
@@ -89,6 +90,22 @@ function contractEndLabel(x){
   nearest<=30?'<span class="term-chip term-urgent">D-'+nearest+'</span>':
   '<span class="term-chip term-normal">D-'+nearest+'</span>';
 }
+function fmtQuantity(q){return Number(q).toLocaleString('ko-KR',{maximumFractionDigits:3})}
+function usageParts(line){
+ if(line.quantity===null||line.quantity===undefined||!Number.isFinite(Number(line.quantity))||Number(line.quantity)<=0)return null;
+ const contracted=num(line.quantity),used=Math.max(0,num(line.usedQuantity)),remaining=Math.max(0,Math.round((contracted-used)*1000)/1000);
+ return {contracted:fmtQuantity(contracted),used:fmtQuantity(used),remaining:fmtQuantity(remaining),unit:line.unit||'건',empty:remaining===0};
+}
+function usageHtml(line){
+ const u=usageParts(line);
+ if(!u)return '<span class="quantity-unregistered">수량 미등록</span>';
+ return '<div class="usage-group"><span>계약 <b>'+u.contracted+escapeHtml(u.unit)+'</b></span><span>사용 <b>'+u.used+escapeHtml(u.unit)+'</b></span><span class="'+(u.empty?'usage-zero':'usage-left')+'">잔여 <b>'+u.remaining+escapeHtml(u.unit)+'</b></span></div>';
+}
+function contractUsageHtml(x){
+ return x.kind==='bundle'?'<div class="bundle-usage-list">'+
+ x.items.map(i=>'<div class="bundle-usage"><b>'+escapeHtml(i.name)+'</b>'+usageHtml(i)+'</div>').join('')+
+ '</div>':usageHtml(x);
+}
 function contractCard(x){
  const fields=[
   ['계약일',dateText(x.signedDate)],
@@ -99,11 +116,12 @@ function contractCard(x){
  ].map(([label,value])=>'<div class="contract-cell"><span>'+label+'</span><strong>'+value+'</strong></div>').join('');
  const products=x.kind==='bundle'?
   '<div class="bundle-detail"><strong class="bundle-heading">포함된 상품 '+x.items.length+'개</strong>'+
-  (x.items.length?x.items.map((line,index)=>'<div class="bundle-line"><span class="bundle-number">'+(index+1)+'</span><div><strong>'+escapeHtml(line.name)+'</strong><small>시작 '+dateText(line.startDate)+' · 종료 '+dateText(line.endDate)+' · '+line.quantity.toLocaleString('ko-KR')+escapeHtml(line.unit)+'</small></div></div>').join(''):'<p>등록된 세부 상품이 없습니다.</p>')+'</div>':'';
+  (x.items.length?x.items.map((line,index)=>'<div class="bundle-line"><span class="bundle-number">'+(index+1)+'</span><div><strong>'+escapeHtml(line.name)+'</strong><small>시작 '+dateText(line.startDate)+' · 종료 '+dateText(line.endDate)+'</small>'+usageHtml(line)</div></div>').join(''):'<p>등록된 세부 상품이 없습니다.</p>')+'</div>':'';
  return '<article class="detail-contract-card"><div class="detail-contract-title">'+
  '<div><span class="contract-kind">'+(x.kind==='bundle'?'묶음 계약':'단일 상품')+'</span><strong class="contract-product-name">'+escapeHtml(x.name)+'</strong></div>'+
  '<div class="contract-flags"><span class="contract-stage">'+escapeHtml(x.status)+'</span>'+contractEndLabel(x)+'</div></div>'+
- '<div class="contract-fields">'+fields+'</div>'+
+ '<div class="contract-fields">'+fields+'</div>'+ 
+ '<div class="contract-quantity-detail"><strong class="quantity-title">계약수량 · 사용수량 · 잔여수량</strong>'+contractUsageHtml(x)+'</div>'+
  '<div class="contract-footer"><span>수금 '+WON.format(x.paid)+'</span><span>미수 '+WON.format(Math.max(0,x.amount-x.paid))+'</span>'+
  (x.domainEnd?'<span>도메인 만료 '+dateText(x.domainEnd)+'</span>':'')+'</div>'+products+'</article>';
 }
@@ -163,7 +181,7 @@ function renderContractSchedule(){
  $('actionQueue').innerHTML=due.length?due.map(x=>
   '<article class="queue-item"><div><div class="queue-head">'+statusPill(x)+'<strong>'+escapeHtml(x.advertiserName)+'</strong></div>'+
   '<p class="queue-product">'+escapeHtml(x.name)+(x.kind==='bundle'?' · '+x.items.map(i=>escapeHtml(i.name)).join(' / '):'')+'</p>'+
-  '<small>계약금액 '+WON.format(x.amount)+' · 종료 '+dateText(contractEndDate(x))+' · 재연장 확인일 '+dateText(checkDate(x))+'</small></div>'+
+  '<small>계약금액 '+WON.format(x.amount)+' · 종료 '+dateText(contractEndDate(x))+' · 재연장 확인일 '+dateText(checkDate(x))+'</small>'+contractUsageHtml(x)+'</div>'+
   '<div class="queue-actions">'+contractControls(x)+'</div></article>').join(''):
   '<div class="queue-all-clear"><strong>지금 확인할 계약이 없습니다.</strong><p>확인 기한이 도래하거나 만료된 계약이 생기면 여기에 표시됩니다. 브라우저를 열었을 때만 자동 갱신됩니다.</p></div>';
  const q=$('contractSearch').value.trim().toLowerCase(),filter=$('contractActionFilter').value;
@@ -184,7 +202,8 @@ function renderContractSchedule(){
   '<div class="schedule-row" role="row"><div role="cell" class="schedule-customer"><strong>'+escapeHtml(x.advertiserName)+'</strong>'+
   '<span class="schedule-product">'+escapeHtml(x.name)+'</span>'+
   (x.items.length?'<small class="schedule-line-items">'+x.items.map(i=>escapeHtml(i.name)).join(' · ')+'</small>':'')+'</div>'+
-  '<div role="cell" class="schedule-money">'+WON.format(x.amount)+'</div>'+
+  '<div role="cell" class="schedule-money">'+WON.format(x.amount)+'</div>'+ 
+  '<div role="cell" class="schedule-usage">'+contractUsageHtml(x)+'</div>'+
   '<div role="cell">'+dateText(x.signedDate)+'</div>'+
   '<div role="cell" class="schedule-end">'+dateText(contractEndDate(x))+
   (contractEndDate(x)?'<small>'+((daysFromToday(contractEndDate(x))<0)?'만료 '+Math.abs(daysFromToday(contractEndDate(x)))+'일 경과':'종료 D-'+daysFromToday(contractEndDate(x)))+'</small>':'')+'</div>'+
