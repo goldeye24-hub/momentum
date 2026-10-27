@@ -171,7 +171,7 @@ module.exports=async function(req,res){
  if(!loggedIn(req,config.secret)){
   if(asset)return pageError(res,401,'로그인이 필요합니다');
   res.setHeader('Content-Type','text/html; charset=utf-8');
-  if(adminEmail.enabled()&&req.query?.mode!=='password')return res.end(adminEmail.page());
+  if(adminEmail.enabled()&&req.query?.mode==='email')return res.end(adminEmail.page());
   return res.end(LOGIN);
  }
  const file=asset||(view==='advertisers'?'advertisers-index.html':view==='crm'?'crm-index.html':view==='finance'?'finance-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':view==='keywords'?'keyword-matrix-index.html':view==='competitors'?'competitor-compare-index.html':view==='insights'?'place-keyword-insights-index.html':view==='members'?'member-admin-index.html':view==='connection'?'connection-index.html':view==='studio'?'index.html':'operations-index.html');
