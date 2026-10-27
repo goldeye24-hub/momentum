@@ -243,3 +243,17 @@
   .opening-cta{display:inline-block;margin-top:13px}
   .opening-intro h2 span{display:block;margin:2px 0 0}
 }
+
+
+/* Ad planning service teaser */
+.ad-planning-teaser{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:8px;padding:23px 25px;background:linear-gradient(108deg,#f5faff,#fff)}
+.ad-planning-teaser>div{max-width:900px}
+.ad-planning-label{font-size:10px;font-weight:900;letter-spacing:.11em;color:#1d6cc9}
+.ad-planning-teaser h2{font-size:clamp(20px,2vw,27px);line-height:1.4;margin:4px 0 8px;color:#16345b}
+.ad-planning-teaser h2 strong{color:#146adb}
+.ad-planning-teaser p{font-size:12px;line-height:1.8;color:#546f8d;word-break:keep-all}
+.ad-planning-teaser p b{color:#234d7d}
+.ad-planning-cta{display:inline-flex;justify-content:center;align-items:center;flex-shrink:0;padding:13px 18px;background:#1569da;border-radius:9px;font-size:11px;color:white;font-weight:900;white-space:nowrap}
+.ad-planning-cta:hover{color:white;background:#0a53af}
+@media(max-width:800px){.ad-planning-teaser{display:block;padding:22px}.ad-planning-cta{margin-top:13px}}
+@media(max-width:530px){.ad-planning-teaser{padding:19px}.ad-planning-cta{width:100%}}
