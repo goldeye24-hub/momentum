@@ -11,7 +11,7 @@ const allowedPayments=new Set(['미입금','일부입금','완납']);
 const allowedStages=new Set(['잠재고객','상담중','견적중','계약고객','보류']);
 const MAX_AMOUNT=10000000000;
 const amount=v=>Math.max(0,Math.min(MAX_AMOUNT,Math.floor(Number(v)||0)));
-const empty=()=>({version:2,customers:[],contracts:[],tasks:[],customProducts:[]});
+const empty=()=>({version:2,customers:[],contracts:[],tasks:[],customProducts:[],archivedProductIds:[]});
 let db=empty(),catalog=[],category='전체',filterText='',taskFilter='open';
 function message(str){el('notice').textContent=str}
 function normalizeDate(value){
@@ -36,7 +36,7 @@ function normalizeData(raw){
  })).filter(x=>x.id&&x.name);
  const ids=new Set(cs.map(x=>x.id));
  const custom=raw.customProducts.map(x=>({
-  id:clean(x.id,100),name:clean(x.name,70),category:'추가 상품',cycle:'campaign',requiresPolicyReview:false
+  id:clean(x.id,100),name:clean(x.name,70),category:'추가 상품',cycle:'campaign',requiresPolicyReview:false,archived:!!x.archived
  })).filter(x=>x.id.startsWith('custom-')&&x.name);
  const contracts=raw.contracts.map(x=>({
   id:clean(x.id,100),customerId:clean(x.customerId,100),productId:clean(x.productId,100),
@@ -57,13 +57,14 @@ function normalizeData(raw){
   dueDate:normalizeDate(x.dueDate),priority:x.priority==='높음'?'높음':'보통',
   done:!!x.done,notes:clean(x.notes,800),createdAt:clean(x.createdAt,40)
  })).filter(x=>x.id&&x.title);
- return {version:2,customers:cs,contracts,tasks,customProducts:custom};
+ return {version:2,customers:cs,contracts,tasks,customProducts:custom,archivedProductIds:(Array.isArray(raw.archivedProductIds)?raw.archivedProductIds:[]).slice(0,150).map(x=>clean(x,100)).filter((x,i,a)=>x&&a.indexOf(x)===i)};
 }
 function persist(){
  try{localStorage.setItem(DB_KEY,JSON.stringify(db));window.dispatchEvent(new CustomEvent('momentum-crm-updated'));return true}
  catch(e){message('저장 실패: 브라우저 저장 공간 문제입니다. 데이터를 백업하세요.');return false}
 }
-function getProducts(){return catalog.concat(db.customProducts)}
+function getProducts(){return catalog.map(p=>({...p,archived:(db.archivedProductIds||[]).includes(p.id)})).concat(db.customProducts)}
+function activeProducts(){return getProducts().filter(p=>!p.archived)}
 function product(id){return getProducts().find(x=>x.id===id)||{name:'미등록 상품',id,category:'기타',cycle:'campaign'};}
 function customer(id){return db.customers.find(x=>x.id===id);}
 function fromForm(form){return Object.fromEntries(new FormData(form).entries())}
@@ -90,16 +91,55 @@ function reminderEvents(){
  return output.sort((a,b)=>a.days-b.days||a.business.localeCompare(b.business,'ko'));
 }
 function selectedProducts(){
- return getProducts().filter(x=>category==='전체'||x.category===category);
+ return getProducts().filter(x=>category==='판매 종료'?x.archived:!x.archived&&(category==='전체'||x.category===category));
 }
 function renderCatalog(){
- const products=getProducts(),cats=['전체',...new Set(products.map(x=>x.category))];
- el('productCount').textContent='('+products.length+'종)';
+ const products=getProducts(),active=products.filter(x=>!x.archived),archived=products.filter(x=>x.archived);
+ const cats=['전체',...new Set(active.map(x=>x.category)),'판매 종료'];
+ el('productCount').textContent='(판매중 '+active.length+'종 · 종료 '+archived.length+'종)';
  el('catalogFilters').innerHTML=cats.map(name=>'<button type="button" data-category="'+escapeHtml(name)+'" class="'+(name===category?'active':'')+'">'+escapeHtml(name)+'</button>').join('');
- el('productGrid').innerHTML=selectedProducts().map(x=>'<div class="product"><div><strong>'+escapeHtml(x.name)+'</strong><small>'+escapeHtml(x.category)+' · '+(x.cycle==='annual'?'연간 재연장':x.cycle==='recurring'?'월정액·기간 계약':x.cycle==='oneoff'?'단발 제작':'캠페인별 계약')+'</small></div>'+(x.requiresPolicyReview?'<mark>정책 검토</mark>':'')+'</div>').join('');
+ el('productGrid').innerHTML=selectedProducts().map(x=>
+  '<div class="product '+(x.archived?'product-archived':'')+'"><div><strong>'+escapeHtml(x.name)+'</strong><small>'+escapeHtml(x.category)+' · '+
+  (x.archived?'판매 종료':x.cycle==='annual'?'연간 재연장':x.cycle==='recurring'?'월정액·기간 계약':x.cycle==='oneoff'?'단발 제작':'캠페인별 계약')+'</small></div>'+
+  (x.requiresPolicyReview?'<mark>정책 검토</mark>':'')+
+  '<button type="button" class="product-lifecycle" data-toggle-product="'+escapeHtml(x.id)+'" aria-label="'+escapeHtml(x.name)+(x.archived?' 판매 재개':' 판매 종료')+'">'+(x.archived?'다시 판매':'판매 종료')+'</button></div>').join('')||
+  '<p class="empty">표시할 상품이 없습니다.</p>';
  const selected=el('contractProduct').value;
- el('contractProduct').innerHTML='<option value="">상품 선택</option>'+products.map(p=>'<option value="'+escapeHtml(p.id)+'">'+escapeHtml(p.category+' · '+p.name)+'</option>').join('');
- if(products.some(x=>x.id===selected))el('contractProduct').value=selected;
+ const options=active.slice();
+ const archivedSelected=products.find(x=>x.id===selected&&x.archived);
+ if(archivedSelected)options.push(archivedSelected);
+ el('contractProduct').innerHTML='<option value="">상품 선택</option>'+options.map(p=>
+  '<option value="'+escapeHtml(p.id)+'">'+escapeHtml(p.category+' · '+p.name+(p.archived?' (판매 종료 · 기존 계약 수정 전용)':''))+'</option>').join('');
+ if(options.some(p=>p.id===selected))el('contractProduct').value=selected;
+}
+function addCustomProduct(value){
+ const name=clean(value,70);
+ if(name.length<2){message('상품명을 2자 이상 입력하세요.');return '';}
+ const existing=getProducts().find(p=>p.name.toLocaleLowerCase('ko')===name.toLocaleLowerCase('ko'));
+ if(existing){
+  if(existing.archived){message('판매 종료된 동일 상품이 있습니다. 하단 상품 목록의 판매 종료 탭에서 다시 판매로 변경하세요.');category='판매 종료';renderCatalog();return '';}
+  return existing.id;
+ }
+ if(db.customProducts.length>=1000){message('상품 등록 한도에 도달했습니다.');return '';}
+ const productId='custom-'+id();
+ db.customProducts.push({id:productId,name,category:'추가 상품',cycle:'campaign',requiresPolicyReview:false,archived:false});
+ if(!persist()){db.customProducts.pop();return '';}
+ render();
+ message('새 상품 '+name+'을(를) 추가했습니다. 앞으로 다른 계약에서도 선택할 수 있습니다.');
+ return productId;
+}
+function toggleProduct(id){
+ const current=getProducts().find(p=>p.id===id);
+ if(!current)return;
+ if(!current.archived&&!confirm(current.name+' 상품을 판매 종료 처리할까요? 과거 계약과 수량 기록은 그대로 유지됩니다.'))return;
+ const custom=db.customProducts.find(p=>p.id===id);
+ if(custom)custom.archived=!custom.archived;
+ else{
+  db.archivedProductIds=db.archivedProductIds||[];
+  db.archivedProductIds=current.archived?db.archivedProductIds.filter(x=>x!==id):[...db.archivedProductIds.filter(x=>x!==id),id];
+ }
+ persist();render();
+ message(current.archived?'판매를 다시 시작했습니다.':'판매 종료 처리했습니다. 기존 계약 기록은 보존됩니다.');
 }
 function renderClientDropdown(){
  const val=el('contractCustomer').value;
@@ -165,7 +205,11 @@ function saveCustomer(ev){
 function saveContract(ev){
  ev.preventDefault();
  const form=el('contractForm'),d=fromForm(form);
- if(!customer(d.customerId)||!getProducts().some(x=>x.id===d.productId)){message('거래처와 계약 상품을 확인하세요.');return;}
+ const previous=db.contracts.find(x=>x.id===d.id);
+ const chosen=product(d.productId);
+ if(!customer(d.customerId)||!getProducts().some(x=>x.id===d.productId)||chosen.archived&&!(previous&&previous.productId===d.productId)){
+  message('거래처와 현재 판매 중인 계약 상품을 확인하세요.');return;
+ }
  if(d.endDate&&!normalizeDate(d.endDate)){message('계약 만료일이 잘못되었습니다.');return;}
  if(d.signedDate&&!normalizeDate(d.signedDate)){message('계약 체결일이 잘못되었습니다.');return;}
  if(d.renewalCheckDate&&!normalizeDate(d.renewalCheckDate)){message('재연장 확인일을 확인하세요.');return;}
@@ -368,12 +412,20 @@ function setup(){
   if(p.id==='website-renewal'&&!el('contractForm').includedEdits.value)el('contractForm').includedEdits.value='2';
  });
  el('addProduct').addEventListener('click',()=>{
-  const name=clean(el('newProductName').value,70);
-  if(name.length<2){message('상품명을 2자 이상 입력하세요.');return;}
-  if(getProducts().some(x=>x.name===name)){message('이미 있는 상품입니다.');return;}
-  db.customProducts.push({id:'custom-'+id(),name,category:'추가 상품',cycle:'campaign',requiresPolicyReview:false});
-  el('newProductName').value='';persist();render();message('추가 상품이 저장되었습니다.');
+  const added=addCustomProduct(el('newProductName').value);
+  if(added)el('newProductName').value='';
  });
+ el('saveQuickSingleProduct').addEventListener('click',()=>{
+  const added=addCustomProduct(el('quickSingleProduct').value);
+  if(!added)return;
+  el('contractProduct').value=added;
+  el('quickSingleProduct').value='';
+ });
+ el('productGrid').addEventListener('click',event=>{
+  const btn=event.target.closest('button[data-toggle-product]');if(!btn)return;
+  toggleProduct(btn.dataset.toggleProduct);
+ });
+ window.MomentumCRM={addCustomProduct};
  el('searchRecords').addEventListener('input',e=>{filterText=e.target.value;renderRecords();});
  el('exportData').addEventListener('click',backup);
  el('importData').addEventListener('click',()=>el('importFile').click());
