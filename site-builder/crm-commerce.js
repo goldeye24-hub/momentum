@@ -34,7 +34,7 @@ function normalizeSupplier(o){
  const rates=(Array.isArray(o.rates)?o.rates:[]).slice(0,150).map(r=>({
   id:clean(r.id,110)||uniq(),productId:clean(r.productId,100),productName:clean(r.productName,110),
   unit:clean(r.unit,18)||'건',cost:numeric(r.cost)
- })).filter(r=>r.productId);
+ })).filter(r=>r.productId||r.productName);
  return {id:clean(o.id,110)||uniq(),name:clean(o.name,90),manager:clean(o.manager,70),phone:clean(o.phone,45),
  orderMethod:clean(o.orderMethod,40)||'카카오톡',orderUrl:safeUrl(o.orderUrl),bank:clean(o.bank,50),
  notes:clean(o.notes,1200),archived:!!o.archived,rates,updatedAt:clean(o.updatedAt,42)};
@@ -75,7 +75,8 @@ function productOptions(current){return options(catalogs().filter(p=>!p.archived
 function supplierOptions(current){return options(db.suppliers.filter(x=>!x.archived||x.id===current),current,'외주업체 선택 (선택사항)')}
 function rateRow(data={}){
  const row=document.createElement('div');row.className='supplier-rate';row.dataset.id=data.id||uniq();
- row.innerHTML='<label>상품<select data-rate="productId">'+productOptions(data.productId)+'</select></label>'+
+ row.innerHTML='<label>기존 공통 상품<select data-rate="productId">'+productOptions(data.productId)+'</select></label>'+
+  '<label>외주업체 전용 상품 직접 입력<input data-rate="productName" maxlength="110" placeholder="예: 클립 편집, 사진 촬영" value="'+(data.productId?'':esc(data.productName||''))+'"></label>'+
   '<label>단위<select data-rate="unit">'+['건','회','개','명','월','일','건수','세트'].map(v=>'<option'+(v===(data.unit||'건')?' selected':'')+'>'+v+'</option>').join('')+'</select></label>'+
   '<label>공급단가 (원)<input data-rate="cost" type="number" min="0" step="1" value="'+numeric(data.cost)+'"></label>'+
   '<button type="button" class="rate-delete" data-rate-remove aria-label="공급단가 행 삭제">삭제</button>';
@@ -89,7 +90,9 @@ function saveSupplier(e){
  e.preventDefault();const f=$('supplierForm'),d=Object.fromEntries(new FormData(f)),old=supplierInfo(d.id);
  const rates=[...$('supplierRates').querySelectorAll('.supplier-rate')].map(row=>{
   const get=key=>row.querySelector('[data-rate="'+key+'"]').value;
-  const p=productInfo(get('productId'));return p?{id:row.dataset.id,productId:p.id,productName:p.name,unit:get('unit'),cost:numeric(get('cost'))}:null;
+  const typed=clean(get('productName'),110),p=productInfo(get('productId'));
+  if(typed)return {id:row.dataset.id,productId:'',productName:typed,unit:get('unit'),cost:numeric(get('cost'))};
+  return p?{id:row.dataset.id,productId:p.id,productName:p.name,unit:get('unit'),cost:numeric(get('cost'))}:null;
  }).filter(Boolean);
  if(!clean(d.name,90)){notice('외주업체명을 입력하세요.');return}
  const next=normalizeSupplier({...old,...d,id:old?.id||uniq(),rates,updatedAt:new Date().toISOString()});
@@ -108,15 +111,32 @@ function renderSuppliers(){
    '<p>'+esc(rates||'등록된 공급단가 없음')+'</p><div class="supplier-actions"><button type="button" data-supplier-edit="'+esc(s.id)+'">수정</button><button type="button" data-supplier-archive="'+esc(s.id)+'">'+(s.archived?'복구':'보관')+'</button></div></article>';
  }).join(''):'<p class="empty">등록된 외주업체가 없습니다.</p>';
 }
+function openSupplierEditor(data){
+ const form=$('supplierForm');form.reset();
+ Object.entries(data).forEach(([key,value])=>{
+  if(key==='rates')return;
+  const input=form.elements.namedItem(key);
+  if(input&&'value'in input)input.value=value??'';
+ });
+ $('supplierRates').innerHTML='';
+ data.rates.forEach(rateRow);
+ if(!data.rates.length)rateRow();
+ $('supplierSection').scrollIntoView({behavior:'smooth'});
+}
+function openPendingSupplier(){
+ try{
+  const target=sessionStorage.getItem('momentum.crm.editSupplier');
+  if(!target)return;
+  sessionStorage.removeItem('momentum.crm.editSupplier');
+  const supplier=supplierInfo(target);
+  if(supplier){openSupplierEditor(supplier);notice('외주업체 목록에서 선택한 업체를 편집할 수 있습니다.');}
+ }catch{/* Normal supplier editing remains available. */}
+}
 function supplierAction(e){
  const btn=e.target.closest('button');if(!btn)return;
  const edit=btn.dataset.supplierEdit,archive=btn.dataset.supplierArchive;
  const data=supplierInfo(edit||archive);if(!data)return;
- if(edit){
-  const f=$('supplierForm');f.reset();Object.entries(data).forEach(([k,v])=>{if(k==='rates')return;const item=f.elements.namedItem(k);if(item&&'value'in item)item.value=v||''});
-  $('supplierRates').innerHTML='';data.rates.forEach(rateRow);if(!data.rates.length)rateRow();
-  $('supplierSection').scrollIntoView({behavior:'smooth'});return;
- }
+ if(edit){openSupplierEditor(data);return;}
  if(archive){
   data.archived=!data.archived;persist();renderSuppliers();renderBundleSelects();notice(data.archived?'외주업체를 보관 처리했습니다. 기존 계약은 유지됩니다.':'외주업체가 복구되었습니다.');
  }
@@ -346,8 +366,8 @@ function init(){
   db=validate(input);if(!persist())throw Error('저장 실패');renderSuppliers();renderBundles();renderBundleSelects();notify();
  }};
  fetch('/admin/assets/products.json',{credentials:'same-origin',cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{
-  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();openPendingBundle();notify();
- }).catch(()=>{rateRow();resetBundle();renderSuppliers();notice('상품 목록 로딩에 실패했습니다. 관리자 로그인을 다시 확인하세요.')});
+  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();openPendingBundle();openPendingSupplier();notify();
+ }).catch(()=>{rateRow();resetBundle();renderSuppliers();openPendingSupplier();notice('상품 목록 로딩에 실패했습니다. 관리자 로그인을 다시 확인하세요.')});
  $('supplierForm').addEventListener('submit',saveSupplier);
  $('clearSupplier').addEventListener('click',resetSupplier);$('resetSupplier').addEventListener('click',resetSupplier);
  $('addSupplierRate').addEventListener('click',()=>rateRow());
