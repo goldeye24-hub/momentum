@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Select 0-2 fact-check/research briefs per KST day from the approved topic plan.
+"""Select 0-3 fact-check/research briefs per KST day from the approved topic plan.
 
 This program NEVER creates public HTML, sitemap entries, indexable URLs, or
 fictional marketing news. The output is a short-lived GitHub Actions artifact.
@@ -20,7 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "docs" / "insights-30day-editorial-plan-20261026.md"
 PUBLISHED = ROOT / "insights" / "guides"
 KST = ZoneInfo("Asia/Seoul")
-MAX_DAILY = 2
+MAX_DAILY = 3
+# Research-brief filter only. Auto-publication is separately performed by the ChatGPT task.
+TARGET_CITIES = ("부산", "양산", "김해")
 HEADERS = (
     "date", "regionAndCategory", "keywordCandidate", "industry",
     "questionAndAngle", "originalReaderValue", "relatedServices",
@@ -82,9 +84,9 @@ def potential_overlaps(keyword: str, published: list):
 
 def briefs(day: str, max_items: int = MAX_DAILY):
     if max_items < 1 or max_items > MAX_DAILY:
-        raise ValueError("Daily limit must be 1 or 2")
+        raise ValueError("Daily limit must be between 1 and 3")
     schedule = planned_rows(PLAN.read_text("utf-8"))
-    selected = [row for row in schedule if row["date"] == day][:max_items]
+    selected = [row for row in schedule if row["date"] == day and any(city in row["regionAndCategory"] for city in TARGET_CITIES)][:max_items]
     previous = published_headings()
     result = []
     for row in selected:
@@ -139,7 +141,7 @@ def markdown_report(day, candidates):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=datetime.now(KST).date().isoformat())
-    parser.add_argument("--max", type=int, default=MAX_DAILY, choices=[1, 2])
+    parser.add_argument("--max", type=int, default=MAX_DAILY, choices=[1, 2, 3])
     parser.add_argument("--out", default="artifacts/editorial-review")
     args = parser.parse_args()
     datetime.strptime(args.date, "%Y-%m-%d")
