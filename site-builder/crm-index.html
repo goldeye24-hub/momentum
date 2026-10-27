@@ -57,6 +57,7 @@
 <label>계약 체결일<input name="signedDate" type="date"></label>
 <label>계약 시작일<input name="startDate" type="date"></label>
 <label>계약 만료일<input name="endDate" type="date"></label>
+<label>재연장 확인일 (비우면 만료 30일 전)<input name="renewalCheckDate" type="date"></label>
 <label>도메인 만료일<input name="domainEnd" type="date"></label>
 <label>계약 금액 (원)<input name="amount" type="number" min="0" max="10000000000" step="1000" placeholder="예: 330000"></label>
 <label>매입 원가 (원)<input name="cost" type="number" min="0" max="10000000000" step="1000" placeholder="실제 외주·실행 비용"></label>
@@ -83,6 +84,7 @@
       <label>진행 상태<select name="status"><option>견적</option><option>계약</option><option>진행중</option><option>완료</option><option>종료</option></select></label>
       <label>공통 시작일<input name="startDate" type="date"></label>
       <label>공통 만료일<input name="endDate" type="date"></label>
+<label>재연장 확인일 (비우면 만료 30일 전)<input name="renewalCheckDate" type="date"></label>
     </div>
     <div class="bundle-line-heading"><div><h3>계약 상품 구성</h3><p>상품마다 공급업체·판매단가·원가·기간을 다르게 설정할 수 있습니다.</p></div><button id="addBundleLine" type="button" class="outline">+ 상품 한 줄 추가</button></div>
     <div class="bundle-lines" id="bundleLines"></div>
