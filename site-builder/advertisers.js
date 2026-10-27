@@ -86,7 +86,7 @@ function summary(){
  $('metricTotal').textContent=records.length.toLocaleString('ko-KR');
  $('metricContracted').textContent=records.filter(c=>c.stage==='계약고객').length.toLocaleString('ko-KR');
  $('metricFollowup').textContent=records.filter(c=>isTodayOrPast(c.nextContact)).length.toLocaleString('ko-KR');
- $('metricExpiring').textContent=records.filter(c=>contractNotes(c).some(x=>x.status!=='종료'&&inNext30Days(x.endDate))).length.toLocaleString('ko-KR');
+ $('metricExpiring').textContent=records.filter(c=>contractNotes(c).some(x=>!['종료','보류','문의','견적','시안'].includes(x.status)&&[x.endDate,...x.items.map(item=>item.endDate)].some(inNext30Days))).length.toLocaleString('ko-KR');
 }
 function resultRows(){
  const q=$('advertiserSearch').value.trim().toLocaleLowerCase('ko');
@@ -94,7 +94,7 @@ function resultRows(){
  const sort=$('sortFilter').value;
  const found=records.filter(c=>{
   if(stage&&c.stage!==stage)return false;
-  const names=contractNotes(c).map(t=>t.name).join(' ');
+  const names=contractNotes(c).flatMap(t=>[t.name,...t.items.map(item=>item.name)]).join(' ');
   const hay=[c.name,c.region,c.industry,c.manager,c.source,c.stage,names].join(' ').toLocaleLowerCase('ko');
   return !q||hay.includes(q);
  });
