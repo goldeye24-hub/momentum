@@ -60,7 +60,8 @@ async function run(keyword,id){
    }
    return results;
   });
-  return {...reduceResult(items,id),scope:'naver_pc_integrated_search_place_block',
+  return {...reduceResult(items,id),scope:'naver_pc_integrated_search_place_block',sourceUrl:page.url(),
+   measurementContext:'anonymous_pc_browser_1440px',
    observedAt:new Date().toISOString(),source:'browser_observed',query:keyword,
    disclaimer:'통합검색 플레이스 블록의 표시 위치이며 네이버지도 전체 순위가 아닙니다. 지역·개인화·기기에 따라 결과는 달라질 수 있습니다.'};
  }finally{await browser.close().catch(()=>{})}
@@ -75,20 +76,18 @@ function reduceMap(items,requestedId){
   seen.add(id);ordered.push({id,originalRank,name:String(item.name||'').slice(0,70)});
  }
  if(!ordered.length)return {status:'no_place_block',rank:null,observedCount:0,maxObservedRank:null,message:'지도 업체 목록에서 순위 정보를 읽지 못했습니다.'};
- // The telemetry rank field can restart from 1 on each newly loaded results page.
- // Keep the exact first-page value; later values are page-order derived estimates.
- let offset=0,previous=0;
- ordered.forEach((row,index)=>{
-  if(index>0&&row.originalRank<previous&&previous>=8&&row.originalRank<=3)offset+=10;
-  row.rank=offset?Math.max(index+1,offset+row.originalRank):row.originalRank;
-  row.rankBasis=offset?'estimated_from_loaded_page_order':'visible_provider_rank';
-  previous=row.originalRank;
+ // Provider telemetry rank may reset, skip cards, or use another index.
+ // Never assume a page is exactly ten items or invent a page offset.
+ const contiguous=ordered.every((row,i)=>row.originalRank===i+1);
+ ordered.forEach((row,i)=>{
+  row.rank=i+1;
+  row.rankBasis=contiguous?'visible_list_position':'visible_list_order_estimate';
  });
  const found=ordered.find(x=>x.id===requestedId);
- const high=Math.max(...ordered.map(x=>x.rank)),approx=found?.rankBasis==='estimated_from_loaded_page_order';
+ const high=ordered.length,approx=!contiguous;
  return {status:found?'ranked':'not_in_block',rank:found?.rank??null,observedCount:ordered.length,maxObservedRank:high,matchedName:found?.name||null,
   rankBasis:found?.rankBasis||null,rankApproximate:!!approx,
-  message:found?(approx?'네이버지도에서 순서상 약 '+found.rank+'번째 항목으로 관측했습니다. 10위 이후는 결과 페이지 순서를 이용한 추정치입니다.':'네이버지도에 표시된 업체 '+found.rank+'위를 확인했습니다. 지역·기기·검색 설정에 따라 달라집니다.'):
+  message:found?(approx?'네이버 PC 지도 목록에서 약 '+found.rank+'번째 보이는 항목입니다. 내부 순서값과 화면 순서가 달라 추정치로 표시합니다.':'네이버 PC 지도 목록에서 '+found.rank+'번째 보이는 항목입니다. 광고 제외 자연검색 순위와 다를 수 있습니다.'):
    '네이버지도에서 현재 확인한 '+ordered.length+'개 업체(약 '+high+'위 범위) 중에 대상 ID가 없습니다. 하위 순위나 검색 미노출을 뜻하지 않습니다.'};
 }
 async function runMap(keyword,id){
@@ -161,7 +160,9 @@ async function runMap(keyword,id){
     await page.waitForTimeout(850);
    }catch{break}
   }
-  return {...reduceMap(items,id),scope:'naver_map_pc_search_list_observed',source:'browser_observed',query:keyword,observedAt:new Date().toISOString(),disclaimer:'네이버지도 검색 화면에 실제 표시된 업체 순위이며 위치·기기·개인화·정렬조건의 영향을 받습니다. 확인하지 못한 하위 순위는 추측하지 않습니다.'};
+  return {...reduceMap(items,id),scope:'naver_map_pc_search_list_observed',source:'browser_observed',query:keyword,observedAt:new Date().toISOString(),
+   sourceUrl:frame===page.mainFrame()?page.url():'https://map.naver.com/p/search/'+encodeURIComponent(keyword),
+   measurementContext:'anonymous_pc_browser_1440px',disclaimer:'네이버지도 검색 화면에 실제 표시된 업체 순위이며 위치·기기·개인화·정렬조건의 영향을 받습니다. 확인하지 못한 하위 순위는 추측하지 않습니다.'};
  }finally{await browser.close().catch(()=>{})}
 }
 
@@ -184,31 +185,24 @@ function mobileTarget(input){
 function reduceMobile(items,target){
  if(!Array.isArray(items)||items.length===0)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 목록을 읽지 못했습니다. 순위 밖이라는 뜻은 아닙니다.'};
  const seen=new Set(),list=[];
- let lastProviderRank=0,fallbackOrder=false;
  for(const raw of items){
   const id=String(raw.id||'');
   if(!/^\d{6,20}$/.test(id)||seen.has(id))continue;
   seen.add(id);
   const providerRank=Number(raw.rank);
-  const hasRank=raw.rank!=null&&Number.isInteger(providerRank)&&providerRank>=1&&providerRank<=500;
-  if(hasRank&&providerRank<=lastProviderRank)fallbackOrder=true;
-  if(hasRank)lastProviderRank=providerRank;
-  const validPosition=hasRank&&!fallbackOrder;
-  list.push({
-   id,name:String(raw.name||'').trim().slice(0,70),
-   rank:validPosition?providerRank:list.length+1,
-   approximate:!validPosition
-  });
+  list.push({id,name:String(raw.name||'').trim().slice(0,70),
+    providerRank:raw.rank==null?null:Number.isInteger(providerRank)?providerRank:null});
  }
  if(!list.length)return {status:'no_place_block',rank:null,observedCount:0,message:'모바일 플레이스 업체 ID가 확인되지 않았습니다.'};
  const matches=target.id?list.filter(x=>x.id===target.id):list.filter(x=>normalizeBusinessName(x.name)===normalizeBusinessName(target.name));
  if(matches.length>1)return {status:'ambiguous',rank:null,observedCount:list.length,message:'같은 업체명이 여러 곳에서 확인되었습니다. 플레이스 ID로 다시 측정해 주세요.'};
- const item=matches[0],approximate=!!item&&(item.approximate||!target.id);
- return {status:item?'ranked':'not_in_block',rank:item?.rank??null,rankApproximate:approximate,
-  rankBasis:item?(item.approximate?'visible_mobile_list_order_estimate':!target.id?'mobile_name_match_requires_id':'mobile_list_provider_rank'):null,
+ const item=matches[0],contiguous=list.every((row,i)=>row.providerRank===i+1);
+ const approximate=!!item&&(!contiguous||!target.id),shownIndex=item?list.indexOf(item)+1:null;
+ return {status:item?'ranked':'not_in_block',rank:shownIndex,rankApproximate:approximate,
+  rankBasis:item?(approximate?'visible_mobile_list_order_estimate':'visible_mobile_list_position'):null,
   matchedName:item?.name||null,matchedId:item?.id||null,observedCount:list.length,
-  maxObservedRank:Math.max(...list.map(x=>x.rank)),
-  message:item?(approximate?'네이버 모바일 플레이스 목록에서 약 '+item.rank+'번째로 관측했습니다. 업체 ID 미확인, 광고 또는 동적 로딩 때문에 정확한 자연검색 순위와 다를 수 있습니다.':'네이버 모바일 플레이스 목록에 표시된 '+item.rank+'번째 항목으로 확인했습니다. 광고 제외 자연검색 순위를 의미하지 않습니다.'):
+  maxObservedRank:list.length,
+  message:item?(approximate?'네이버 모바일 플레이스 목록에서 약 '+shownIndex+'번째 보이는 업체입니다. 내부 순서값이 다르거나 업체 ID 확인이 부족해 추정치입니다. 광고 제외 자연검색 순위는 아닙니다.':'네이버 모바일 플레이스 목록에서 '+shownIndex+'번째 보이는 업체입니다. 광고 제외 자연검색 순위는 아닙니다.'):
   '관측된 모바일 플레이스 업체 '+list.length+'곳에서 대상을 찾지 못했습니다. 더 아래 순위 또는 검색 미노출이라는 뜻은 아닙니다.'};
 }
 async function runMobile(keyword,target,options={}){
@@ -223,7 +217,10 @@ async function runMobile(keyword,target,options={}){
   });
   const page=await context.newPage();
   const query=new URLSearchParams({where:'m',query:keyword,entry:'pll'}).toString();
-  const candidates=['https://m.place.naver.com/restaurant/list?'+query,'https://m.place.naver.com/place/list?'+query];
+  // Avoid measuring restaurant-only listings for unrelated sectors.
+  const primary='https://m.place.naver.com/place/list?'+query;
+  const foodRelated=/(맛집|음식점|식당|횟집|한식|일식|초밥|고깃집|대게|랍스터|카페|국밥|중식|마라탕|배달|베이커리|술집|삼겹살)/.test(keyword);
+  const candidates=foodRelated?[primary,'https://m.place.naver.com/restaurant/list?'+query]:[primary];
   let rows=[],usedUrl='',httpStatus=null;
   for(const url of candidates){
    try{
@@ -274,6 +271,7 @@ async function runMobile(keyword,target,options={}){
     source:'browser_observed'};
   }
   return {...reduceMobile(rows,target),scope:'naver_mobile_place_list',query:keyword,observedAt:new Date().toISOString(),source:'browser_observed',
+   sourceUrl:usedUrl,measurementContext:'anonymous_mobile_browser_390px',
    disclaimer:'모바일 화면 390px 기준 관측입니다. 위치·로그인·광고·동적 로딩에 따라 순위가 달라질 수 있으며, 확인 범위를 넘어선 순위는 추측하지 않습니다.'};
  }finally{await browser.close().catch(()=>{})}
 }
