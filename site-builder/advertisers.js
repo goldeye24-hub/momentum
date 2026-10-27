@@ -42,9 +42,9 @@ function contractNotes(c){
  return own.concat(multiple);
 }
 const WON=new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0});
-function dateText(date){return /^\\d{4}-\\d{2}-\\d{2}$/.test(String(date||''))?escapeHtml(date):'미등록'}
+function dateText(date){return /^\d{4}-\d{2}-\d{2}$/.test(String(date||''))?escapeHtml(date):'미등록'}
 function daysFromToday(date){
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(date||'')))return null;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return null;
  const end=new Date(date+'T12:00:00'),today=new Date(localToday()+'T12:00:00');
  return Number.isNaN(end.valueOf())?null:Math.round((end-today)/86400000);
 }
