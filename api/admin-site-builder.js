@@ -139,8 +139,15 @@ module.exports=async function(req,res){
       const email=String(input.get('email')||'').trim().toLowerCase();
       if(email.length>254)return pageError(res,400,'이메일을 확인해주세요');
       if(intent==='email-send'){
-        await adminEmail.send(email);
+        const sent=await adminEmail.send(email);
         res.setHeader('Content-Type','text/html; charset=utf-8');
+        if(!sent){
+          res.statusCode=503;
+          return res.end(adminEmail.page({
+            step:'send',
+            error:'인증번호를 발송하지 못했습니다. 메일 발송 설정(SMTP), 허용 수신자 및 발송 한도를 확인해야 합니다. 필요하면 아래 기존 비밀번호 로그인을 이용하세요.'
+          }));
+        }
         return res.end(adminEmail.page({step:'verify',email}));
       }
       const code=String(input.get('code')||'').trim();
