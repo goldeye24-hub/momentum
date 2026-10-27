@@ -55,7 +55,7 @@ function contractEndDate(x){
 function checkDate(x){
  if(/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.renewalCheckDate||'')))return x.renewalCheckDate;
  const end=contractEndDate(x);if(!end)return '';
- const date=new Date(end+'T12:00:00');date.setDate(date.getDate()-30);
+ const date=new Date(end+'T12:00:00');date.setDate(date.getDate()-7);
  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
 }
 function isTracked(x){return ['계약','진행중','완료','갱신완료'].includes(x.status)}
@@ -189,7 +189,7 @@ function renderContractSchedule(){
   '<div role="cell" class="schedule-end">'+dateText(contractEndDate(x))+
   (contractEndDate(x)?'<small>'+((daysFromToday(contractEndDate(x))<0)?'만료 '+Math.abs(daysFromToday(contractEndDate(x)))+'일 경과':'종료 D-'+daysFromToday(contractEndDate(x)))+'</small>':'')+'</div>'+
   '<div role="cell" class="schedule-check"><strong>'+dateText(checkDate(x))+'</strong><small>'+
-  (x.renewalCheckDate?'직접 지정':'종료 30일 전 자동')+
+  (x.renewalCheckDate?'직접 지정':'종료 7일 전 자동')+
   (x.renewalCheckedAt?' · 최근 확인 '+dateText(x.renewalCheckedAt):'')+'</small></div>'+
   '<div role="cell">'+statusPill(x)+'</div>'+
   '<div role="cell">'+contractControls(x)+'</div></div>').join('');
