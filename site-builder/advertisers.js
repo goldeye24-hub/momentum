@@ -138,8 +138,90 @@ function resultRows(){
  });
  return found;
 }
+
+function allContractRows(){
+ return records.flatMap(c=>contractNotes(c).map(x=>({...x,advertiserId:c.id,advertiserName:c.name,region:c.region||''})));
+}
+function statusPill(x){
+ const [label,kind]=actionLabel(x);
+ return '<span class="action-pill action-'+kind+'">'+escapeHtml(label)+'</span>';
+}
+function contractControls(x){
+ const kind=escapeHtml(x.kind),id=escapeHtml(x.id),customer=escapeHtml(x.advertiserId);
+ const mark=actionState(x)==='due'?
+  '<button type="button" class="small-button action-mark" data-mark-renewal="'+id+'" data-mark-kind="'+kind+'">확인 처리 ✓</button>':'';
+ return '<div class="schedule-buttons">'+mark+
+ '<button type="button" class="small-button" data-open-advertiser="'+customer+'">상세</button>'+
+ '<button type="button" class="small-button strong" data-edit-agreement="'+id+'" data-edit-kind="'+kind+'">계약 수정 ↗</button></div>';
+}
+function priorityOf(x){return {expired:0,due:1,soon:2,normal:3,checked:4,inactive:5}[actionState(x)]??9}
+function renderContractSchedule(){
+ const all=allContractRows();
+ const due=all.filter(x=>['expired','due'].includes(actionState(x)))
+  .sort((a,b)=>priorityOf(a)-priorityOf(b)||(checkDate(a)||'9999').localeCompare(checkDate(b)||'9999')||a.advertiserName.localeCompare(b.advertiserName,'ko'));
+ $('actionCount').textContent=due.length+'건';
+ $('actionQueue').innerHTML=due.length?due.map(x=>
+  '<article class="queue-item"><div><div class="queue-head">'+statusPill(x)+'<strong>'+escapeHtml(x.advertiserName)+'</strong></div>'+
+  '<p class="queue-product">'+escapeHtml(x.name)+(x.kind==='bundle'?' · '+x.items.map(i=>escapeHtml(i.name)).join(' / '):'')+'</p>'+
+  '<small>계약금액 '+WON.format(x.amount)+' · 종료 '+dateText(contractEndDate(x))+' · 재연장 확인일 '+dateText(checkDate(x))+'</small></div>'+
+  '<div class="queue-actions">'+contractControls(x)+'</div></article>').join(''):
+  '<div class="queue-all-clear"><strong>지금 확인할 계약이 없습니다.</strong><p>확인 기한이 도래하거나 만료된 계약이 생기면 여기에 표시됩니다. 브라우저를 열었을 때만 자동 갱신됩니다.</p></div>';
+ const q=$('contractSearch').value.trim().toLowerCase(),filter=$('contractActionFilter').value;
+ const listed=all.filter(x=>{
+  const text=[x.advertiserName,x.region,x.name,...x.items.map(i=>i.name)].join(' ').toLowerCase();
+  if(q&&!text.includes(q))return false;
+  const code=actionState(x);
+  if(filter==='action')return code==='expired'||code==='due';
+  if(filter==='soon')return code==='soon';
+  if(filter==='checked')return code==='checked';
+  return true;
+ }).sort((a,b)=>priorityOf(a)-priorityOf(b)||
+  (checkDate(a)||'9999').localeCompare(checkDate(b)||'9999')||
+  a.advertiserName.localeCompare(b.advertiserName,'ko'));
+ $('scheduleCount').textContent=listed.length+'건';
+ $('scheduleEmpty').hidden=listed.length>0;
+ $('contractScheduleRows').innerHTML=listed.map(x=>
+  '<div class="schedule-row" role="row"><div role="cell" class="schedule-customer"><strong>'+escapeHtml(x.advertiserName)+'</strong>'+
+  '<span class="schedule-product">'+escapeHtml(x.name)+'</span>'+
+  (x.items.length?'<small class="schedule-line-items">'+x.items.map(i=>escapeHtml(i.name)).join(' · ')+'</small>':'')+'</div>'+
+  '<div role="cell" class="schedule-money">'+WON.format(x.amount)+'</div>'+
+  '<div role="cell">'+dateText(x.signedDate)+'</div>'+
+  '<div role="cell" class="schedule-end">'+dateText(contractEndDate(x))+
+  (contractEndDate(x)?'<small>'+((daysFromToday(contractEndDate(x))<0)?'만료 '+Math.abs(daysFromToday(contractEndDate(x)))+'일 경과':'종료 D-'+daysFromToday(contractEndDate(x)))+'</small>':'')+'</div>'+
+  '<div role="cell" class="schedule-check"><strong>'+dateText(checkDate(x))+'</strong><small>'+
+  (x.renewalCheckDate?'직접 지정':'종료 30일 전 자동')+
+  (x.renewalCheckedAt?' · 최근 확인 '+dateText(x.renewalCheckedAt):'')+'</small></div>'+
+  '<div role="cell">'+statusPill(x)+'</div>'+
+  '<div role="cell">'+contractControls(x)+'</div></div>').join('');
+}
+function markRenewal(kind,id){
+ const key=kind==='bundle'?COMMERCE_KEY:BASE_KEY;
+ const raw=read(key),group=kind==='bundle'?'bundles':'contracts';
+ if(!Array.isArray(raw[group]))return;
+ const row=raw[group].find(x=>x.id===id);if(!row)return;
+ row.renewalCheckedAt=localToday();
+ try{localStorage.setItem(key,JSON.stringify(raw));reload();}
+ catch{window.alert('확인 처리 내역을 저장하지 못했습니다. CRM 데이터 백업과 브라우저 저장 공간을 확인하세요.')}
+}
+function contractAction(ev){
+ const btn=ev.target.closest('button');if(!btn)return;
+ const data=btn.dataset;
+ if(data.openAdvertiser){details(data.openAdvertiser,btn);return}
+ if(data.markRenewal){
+  const kind=data.markKind;
+  if(!['single','bundle'].includes(kind))return;
+  if(!window.confirm('재연장 협의 또는 확인 작업을 실제로 완료했습니까? 기록만 저장하며 계약이 자동 연장되지는 않습니다.'))return;
+  markRenewal(kind,data.markRenewal);return;
+ }
+ if(data.editAgreement){
+  const key=data.editKind==='bundle'?'momentum.crm.editBundle':'momentum.crm.editContract';
+  try{sessionStorage.setItem(key,data.editAgreement)}catch{}
+  location.assign('/admin/crm/');
+ }
+}
+
 function render(){
- summary();
+ summary();renderContractSchedule();
  const found=resultRows();
  $('resultCount').textContent=found.length.toLocaleString('ko-KR')+'개 표시';
  $('emptyState').hidden=found.length>0;
@@ -178,7 +260,11 @@ function editCustomer(id){
  location.assign('/admin/crm/');
 }
 function setup(){
- $('advertiserSearch').addEventListener('input',render);
+ $('contractSearch').addEventListener('input',renderContractSchedule);
+ $('contractActionFilter').addEventListener('change',renderContractSchedule);
+ $('actionQueue').addEventListener('click',contractAction);
+ $('contractScheduleRows').addEventListener('click',contractAction);
+  $('advertiserSearch').addEventListener('input',render);
  $('stageFilter').addEventListener('change',render);
  $('sortFilter').addEventListener('change',render);
  $('refreshList').addEventListener('click',reload);
