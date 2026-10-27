@@ -126,6 +126,27 @@
       "category": "제작·유지관리",
       "cycle": "oneoff",
       "requiresPolicyReview": false
+    },
+    {
+      "id": "opening-package-1",
+      "name": "오픈패키지 1",
+      "category": "매장 오픈·맞춤설계",
+      "cycle": "oneoff",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "opening-package-2",
+      "name": "오픈패키지 2",
+      "category": "매장 오픈·맞춤설계",
+      "cycle": "oneoff",
+      "requiresPolicyReview": false
+    },
+    {
+      "id": "custom-ad-planning",
+      "name": "광고설계·맞춤 마케팅 전략",
+      "category": "매장 오픈·맞춤설계",
+      "cycle": "oneoff",
+      "requiresPolicyReview": false
     }
   ]
 }
