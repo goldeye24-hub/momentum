@@ -38,3 +38,46 @@
 .customer-details{border-top:1px solid #e4edf7;margin-top:24px;padding-top:14px}
 .customer-details .detail-grid{margin-bottom:0}
 @media(max-width:600px){#detailsDialog{width:calc(100% - 14px);max-height:92vh}#detailsDialog .detail-inner{padding:20px 15px;max-height:92vh}.contract-section-title{align-items:start;flex-direction:column}.contract-section-title button{align-self:flex-start}.detail-contract-card{padding:13px}.detail-contract-title{align-items:flex-start;flex-direction:column}.contract-product-name{font-size:15px}.contract-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.contract-cell:nth-child(3){border-left:0;border-top:1px solid #e5edf7}.contract-cell:nth-child(4){border-top:1px solid #e5edf7}.contract-footer{font-size:11px}.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* 2026-10-27 task board: prioritize actual renewal work */
+.work-board,.schedule{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 10px 30px #18355512;margin-bottom:22px;overflow:hidden}
+.work-head,.schedule-header{padding:23px 26px 18px;display:flex;align-items:start;justify-content:space-between;gap:15px}
+.work-head h2,.schedule-header h2{font-size:24px;letter-spacing:-.055em;margin:5px 0}
+.work-head h2 small,.schedule-header h2 small{font-size:12px;letter-spacing:0;color:#7c91a9}
+.work-head p,.schedule-header p{color:#71849e;font-size:12px;margin:6px 0 0;line-height:1.6}
+.work-queue{padding:0 24px 12px;display:grid;gap:9px}
+.queue-item{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:17px 18px;background:#fff9f7;border:1px solid #f5ddcf;border-radius:11px}
+.queue-item:nth-child(even){background:#fbfcff}
+.queue-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.queue-head strong{font-size:15px;color:#132e4f}
+.queue-product{margin:6px 0 4px;font-weight:750;font-size:13px;color:#314b6b}
+.queue-item small{font-size:11px;line-height:1.7;color:#6c829e}
+.queue-all-clear{background:#f4faf6;border:1px solid #d8ebdb;border-radius:10px;padding:20px 24px;margin-bottom:10px}
+.queue-all-clear strong{font-size:15px;color:#246448}
+.queue-all-clear p{color:#6d897c;font-size:12px;line-height:1.7;margin:6px 0 0}
+.work-hint{background:#f7faff;padding:15px 26px;border-top:1px solid #e7eef8;font-size:11px;color:#6a809b;line-height:1.7}
+.action-pill{display:inline-block;font-size:11px;font-weight:900;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.action-danger{background:#ffe9e3;color:#a83730}
+.action-warning{background:#fff3da;color:#98580a}
+.action-complete{background:#e7f8ed;color:#0e784c}
+.action-muted{background:#edf3f9;color:#56718c}
+.schedule-buttons{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+.queue-actions .schedule-buttons{min-width:220px}
+.schedule-filters{display:grid;grid-template-columns:minmax(220px,2fr) minmax(160px,.8fr);gap:12px;padding:0 26px 20px}
+.schedule-filters label{font-size:11px;font-weight:800;color:#6e829b;display:grid;gap:6px}
+.schedule-filters input,.schedule-filters select{padding:11px 12px;border-radius:8px;border:1px solid #d5e2f1;min-width:0;background:#fafdff;color:#16385d}
+.schedule-scroller{overflow-x:auto}
+.schedule-table{min-width:960px;width:100%}
+.schedule-row{display:grid;grid-template-columns:minmax(190px,1.45fr) minmax(100px,.9fr) minmax(93px,.8fr) minmax(105px,.85fr) minmax(130px,1fr) minmax(116px,.8fr) minmax(170px,1.4fr);gap:10px;align-items:center;border-top:1px solid #e8eef6;padding:16px 24px;color:#385270;font-size:12px;font-variant-numeric:tabular-nums}
+.schedule-row:nth-child(even){background:#fcfdff}
+.schedule-table-head{background:#f1f6fc!important;color:#687f99;font-weight:850;font-size:11px;padding-top:12px;padding-bottom:12px}
+.schedule-customer strong{display:block;font-size:13px;color:#163556}
+.schedule-product{display:block;font-weight:750;margin-top:5px;line-height:1.35}
+.schedule-line-items{display:block;font-size:10px;color:#8092a7;margin-top:4px;line-height:1.35}
+.schedule-money{font-weight:800;color:#123d70}
+.schedule-end small,.schedule-check small{display:block;font-size:10px;margin-top:5px;color:#8a9ab1;line-height:1.5}
+.schedule-check strong{font-size:12px;color:#174773}
+.schedule-empty{padding:38px;text-align:center;font-size:13px;color:#7286a0}
+@media(max-width:800px){.work-head,.schedule-header{padding:20px 17px;flex-direction:column;align-items:flex-start}.work-head h2,.schedule-header h2{font-size:21px}.work-queue{padding:0 14px 12px}.queue-item{flex-direction:column;align-items:stretch;padding:15px}.queue-actions .schedule-buttons{min-width:0;justify-content:flex-start}.work-hint{padding:13px 17px}.schedule-filters{padding:0 16px 17px}.schedule-row{padding:15px}}
+@media(max-width:500px){.schedule-filters{grid-template-columns:1fr}.schedule-buttons{justify-content:flex-start}.queue-head strong{font-size:13px}.queue-item .schedule-buttons .small-button{padding:9px 12px}.work-head h2{line-height:1.3}}
