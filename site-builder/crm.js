@@ -284,6 +284,18 @@ function calendar(){
  dl('momentum-contract-renewals.ics','BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Momentum Marketing//CRM//KO\r\nCALSCALE:GREGORIAN\r\n'+events.join('\r\n')+'\r\nEND:VCALENDAR\r\n','text/calendar');
  message('만료 일정을 캘린더 파일로 저장했습니다. 캘린더 앱에 가져오면 알림을 설정할 수 있습니다. 변경 시 새 파일을 다시 가져와야 합니다.');
 }
+function applyPendingContract(){
+ try{
+  const target=sessionStorage.getItem('momentum.crm.newContract');
+  if(!target)return;
+  sessionStorage.removeItem('momentum.crm.newContract');
+  if(!customer(target))return;
+  resetContract();
+  el('contractCustomer').value=target;
+  window.requestAnimationFrame(()=>goTo('contractSection'));
+  message('선택한 광고주의 새 상품 계약을 등록할 수 있습니다.');
+ }catch{/* sessionStorage disabled: standard contract form still works. */}
+}
 function setup(){
  try{
   const stored=localStorage.getItem(DB_KEY);
@@ -291,8 +303,8 @@ function setup(){
  }catch(e){db=empty();message('저장된 데이터를 읽지 못했습니다. 백업 파일을 확인하세요.');}
  fetch('/admin/assets/products.json',{credentials:'same-origin',cache:'no-store'}).then(r=>{if(!r.ok)throw Error('카탈로그 로딩 실패');return r.json();}).then(data=>{
   if(!data||!Array.isArray(data.products)||data.products.length!==18)throw Error('상품 기본 목록이 올바르지 않습니다.');
-  catalog=data.products;render();
- }).catch(()=>{message('상품 카탈로그를 불러오지 못했습니다. 관리자 로그인을 확인하세요.');render();});
+  catalog=data.products;render();applyPendingContract();
+ }).catch(()=>{message('상품 카탈로그를 불러오지 못했습니다. 관리자 로그인을 확인하세요.');render();applyPendingContract();});
  const pendingKey='momentum.crm.openCustomer';
  try{
    const selectedId=sessionStorage.getItem(pendingKey);
@@ -307,18 +319,6 @@ function setup(){
      }
    }
  }catch{/* sessionStorage disabled: normal CRM functionality remains. */}
- try{
-   const contractFor=sessionStorage.getItem('momentum.crm.newContract');
-   if(contractFor){
-     sessionStorage.removeItem('momentum.crm.newContract');
-     if(customer(contractFor)){
-       resetContract();
-       el('contractCustomer').value=contractFor;
-       window.requestAnimationFrame(()=>goTo('contractSection'));
-       message('선택한 광고주의 새 상품 계약을 등록할 수 있습니다.');
-     }
-   }
- }catch{/* sessionStorage disabled: normal CRM contract entry remains. */}
  el('customerForm').addEventListener('submit',saveCustomer);
  el('taskForm').addEventListener('submit',saveTask);
  el('taskReset').addEventListener('click',resetTask);
