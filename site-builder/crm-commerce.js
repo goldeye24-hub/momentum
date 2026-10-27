@@ -330,13 +330,22 @@ function bundleAction(ev){
   persist();renderBundles();notice('계약을 종료 상태로 보관했습니다.');
  }
 }
+function openPendingBundle(){
+ try{
+  const id=sessionStorage.getItem('momentum.crm.editBundle');
+  if(!id)return;
+  sessionStorage.removeItem('momentum.crm.editBundle');
+  const bundle=db.bundles.find(x=>x.id===id);
+  if(bundle){fillBundleForm(bundle);notice('선택한 묶음 계약을 수정할 수 있습니다.');}
+ }catch{/* Standard bundle editing remains available. */}
+}
 function init(){
  try{const raw=localStorage.getItem(KEY);if(raw)db=validate(JSON.parse(raw))}catch{db=fresh();notice('묶음계약 데이터를 읽지 못했습니다. 백업을 확인하세요.')}
  window.MomentumCommerce={validate,read:()=>clone(db),replace:input=>{
   db=validate(input);if(!persist())throw Error('저장 실패');renderSuppliers();renderBundles();renderBundleSelects();notify();
  }};
  fetch('/admin/assets/products.json',{credentials:'same-origin',cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{
-  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();notify();
+  products=data.products||[];rateRow();resetBundle();renderSuppliers();renderBundles();fillCustomerSelect();openPendingBundle();notify();
  }).catch(()=>{rateRow();resetBundle();renderSuppliers();notice('상품 목록 로딩에 실패했습니다. 관리자 로그인을 다시 확인하세요.')});
  $('supplierForm').addEventListener('submit',saveSupplier);
  $('clearSupplier').addEventListener('click',resetSupplier);$('resetSupplier').addEventListener('click',resetSupplier);
