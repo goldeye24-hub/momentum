@@ -59,6 +59,9 @@
 <label>계약 만료일<input name="endDate" type="date"></label>
 <label>재연장 확인일 (비우면 만료 7일 전)<input name="renewalCheckDate" type="date"></label>
 <label>도메인 만료일<input name="domainEnd" type="date"></label>
+<label>계약수량<input name="quantity" type="number" min="0.001" max="1000000" step="0.001" placeholder="예: 10 (기존 미등록 계약은 공란 유지)"></label>
+<label>사용수량<input name="usedQuantity" type="number" min="0" max="1000000" step="0.001" placeholder="예: 3 (사용 실적 입력)"></label>
+<label>수량 단위<input name="unit" type="text" maxlength="16" placeholder="건 · 회 · 팀 · 개 · 월"></label>
 <label>계약 금액 (원)<input name="amount" type="number" min="0" max="10000000000" step="1000" placeholder="예: 330000"></label>
 <label>매입 원가 (원)<input name="cost" type="number" min="0" max="10000000000" step="1000" placeholder="실제 외주·실행 비용"></label>
 <label>수금 완료 금액 (원)<input name="paid" type="number" min="0" max="10000000000" step="1000" placeholder="실제 입금된 금액"></label>
