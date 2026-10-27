@@ -116,7 +116,7 @@ function contractCard(x){
  ].map(([label,value])=>'<div class="contract-cell"><span>'+label+'</span><strong>'+value+'</strong></div>').join('');
  const products=x.kind==='bundle'?
   '<div class="bundle-detail"><strong class="bundle-heading">포함된 상품 '+x.items.length+'개</strong>'+
-  (x.items.length?x.items.map((line,index)=>'<div class="bundle-line"><span class="bundle-number">'+(index+1)+'</span><div><strong>'+escapeHtml(line.name)+'</strong><small>시작 '+dateText(line.startDate)+' · 종료 '+dateText(line.endDate)+'</small>'+usageHtml(line)</div></div>').join(''):'<p>등록된 세부 상품이 없습니다.</p>')+'</div>':'';
+  (x.items.length?x.items.map((line,index)=>'<div class="bundle-line"><span class="bundle-number">'+(index+1)+'</span><div><strong>'+escapeHtml(line.name)+'</strong><small>시작 '+dateText(line.startDate)+' · 종료 '+dateText(line.endDate)+'</small>'+usageHtml(line)+'</div></div>').join(''):'<p>등록된 세부 상품이 없습니다.</p>')+'</div>':'';
  return '<article class="detail-contract-card"><div class="detail-contract-title">'+
  '<div><span class="contract-kind">'+(x.kind==='bundle'?'묶음 계약':'단일 상품')+'</span><strong class="contract-product-name">'+escapeHtml(x.name)+'</strong></div>'+
  '<div class="contract-flags"><span class="contract-stage">'+escapeHtml(x.status)+'</span>'+contractEndLabel(x)+'</div></div>'+
