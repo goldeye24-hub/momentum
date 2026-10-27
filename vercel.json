@@ -269,6 +269,14 @@
       "destination": "/api/admin-site-builder?view=studio"
     },
     {
+      "source": "/admin/advertisers",
+      "destination": "/api/admin-site-builder?view=advertisers"
+    },
+    {
+      "source": "/admin/advertisers/",
+      "destination": "/api/admin-site-builder?view=advertisers"
+    },
+    {
       "source": "/admin/crm",
       "destination": "/api/admin-site-builder?view=crm"
     },
