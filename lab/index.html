@@ -82,17 +82,17 @@
         <article class="tool-card">
           <div class="card-meta"><span>03 / NAVER DATA LAB</span><span class="tool-symbol" aria-hidden="true">⌁</span></div>
           <h3>검색어 추이</h3>
-          <p>네이버 데이터랩 공식 서비스를 통해 검색어별 관심도 변화를 비교합니다. 검색어 추이는 절대 검색 횟수가 아닌 상대 지수입니다.</p>
+          <p>검색어 1~5개를 선택해 기간별 관심도를 비교합니다. 네이버 공식 API가 연결되면 실측 조회, 미연결 시 CSV 가져오기로 그래프를 표시합니다.</p>
           <div class="datalab-entry">
             <label for="trend-terms">비교할 검색어</label>
             <div class="trend-field"><input id="trend-terms" type="text" maxlength="180" value="부산맛집, 부산횟집" placeholder="검색어를 쉼표로 구분하여 입력" autocomplete="off"><button id="copy-terms" type="button" aria-describedby="trend-help">복사</button></div>
-            <small id="trend-help">검색어를 복사한 다음 네이버 데이터랩 검색어 트렌드 화면에 붙여넣으세요.</small>
+            <small id="trend-help">검색어를 복사하거나 아래 비교 도구에서 조회·CSV 시각화를 시작하세요.</small>
             <div id="copy-status" class="copy-status" aria-live="polite"></div>
           </div>
-          <a class="action" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 데이터랩 열기 <span aria-hidden="true">↗</span></a>
+          <a class="action" href="/lab/trends/">검색어 추이 비교 시작 <span aria-hidden="true">↗</span></a>
         </article>
       </div>
-      <p class="disclaimer">키워드 분석의 추천 우선순위는 기획용 추정치입니다. 플레이스 검색 순위는 측정 시점·기기·조건에 따라 달라질 수 있습니다. 네이버 데이터랩 조회는 네이버 공식 사이트에서 진행됩니다.</p>
+      <p class="disclaimer">키워드 분석의 추천 우선순위는 기획용 추정치입니다. 플레이스 검색 순위는 측정 시점·기기·조건에 따라 달라질 수 있습니다. 검색어 추이 실측 그래프는 인증·제공 권한이 연결된 공식 API 응답에 한하며, 인증이 없을 때는 직접 준비한 CSV 자료로 비교할 수 있습니다.</p>
     </div>
   </section>
 </main>
