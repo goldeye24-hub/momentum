@@ -1,1 +1,0 @@
-(function(){const slider=document.querySelector('[data-compare-range]'),view=document.querySelector('[data-beforeafter]');if(!slider||!view)return;slider.addEventListener('input',()=>{view.style.setProperty('--compare-right',(100-Number(slider.value))+'%')});})();
