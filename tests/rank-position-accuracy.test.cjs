@@ -43,6 +43,11 @@ test('map telemetry rank reset never implies that page is ten places long',()=>{
  assert.equal(result.rankBasis,'visible_list_order_estimate');
  assert.doesNotMatch(result.message,/13위|11위|10위 이후/);
 });
+test('PC map entries missing telemetry rank remain in visible order instead of disappearing',()=>{
+ const list=[{id:id(1),rank:1,name:'첫 매장'},{id:id(2),rank:null,name:'둘째 매장'},{id:id(3),rank:3,name:'셋째 매장'}];
+ const result=observer.reduceMap(list,id(3));
+ assert.equal(result.rank,3);assert.equal(result.observedCount,3);assert.equal(result.rankApproximate,true);
+});
 test('map observed rank may be definite only as visible list position, not organic search placement',()=>{
  const result=observer.reduceMap([{id:id(1),rank:1},{id:id(2),rank:2}],id(2));
  assert.equal(result.rank,2);
