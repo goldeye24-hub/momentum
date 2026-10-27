@@ -35,7 +35,7 @@ function normalizeData(raw){
  })).filter(x=>x.id.startsWith('custom-')&&x.name);
  const contracts=raw.contracts.map(x=>({
   id:clean(x.id,100),customerId:clean(x.customerId,100),productId:clean(x.productId,100),
-  startDate:normalizeDate(x.startDate),endDate:normalizeDate(x.endDate),domainEnd:normalizeDate(x.domainEnd),
+  signedDate:normalizeDate(x.signedDate),startDate:normalizeDate(x.startDate),endDate:normalizeDate(x.endDate),domainEnd:normalizeDate(x.domainEnd),
   amount:amount(x.amount),cost:amount(x.cost),paid:amount(x.paid===undefined?(x.payment==='완납'?x.amount:0):x.paid),
   supplier:clean(x.supplier,90),owner:clean(x.owner,60),
   status:allowedStatus.has(x.status)?x.status:'문의',
@@ -159,9 +159,10 @@ function saveContract(ev){
  const form=el('contractForm'),d=fromForm(form);
  if(!customer(d.customerId)||!getProducts().some(x=>x.id===d.productId)){message('거래처와 계약 상품을 확인하세요.');return;}
  if(d.endDate&&!normalizeDate(d.endDate)){message('계약 만료일이 잘못되었습니다.');return;}
+ if(d.signedDate&&!normalizeDate(d.signedDate)){message('계약 체결일이 잘못되었습니다.');return;}
  const old=db.contracts.find(x=>x.id===d.id);
  const row={
- id:old?old.id:id(),customerId:d.customerId,productId:d.productId,startDate:normalizeDate(d.startDate),
+ id:old?old.id:id(),customerId:d.customerId,productId:d.productId,signedDate:normalizeDate(d.signedDate),startDate:normalizeDate(d.startDate),
  endDate:normalizeDate(d.endDate),domainEnd:normalizeDate(d.domainEnd),
  amount:amount(d.amount),cost:amount(d.cost),paid:amount(d.paid),
  supplier:clean(d.supplier,90),owner:clean(d.owner,60),
@@ -306,6 +307,18 @@ function setup(){
      }
    }
  }catch{/* sessionStorage disabled: normal CRM functionality remains. */}
+ try{
+   const contractFor=sessionStorage.getItem('momentum.crm.newContract');
+   if(contractFor){
+     sessionStorage.removeItem('momentum.crm.newContract');
+     if(customer(contractFor)){
+       resetContract();
+       el('contractCustomer').value=contractFor;
+       window.requestAnimationFrame(()=>goTo('contractSection'));
+       message('선택한 광고주의 새 상품 계약을 등록할 수 있습니다.');
+     }
+   }
+ }catch{/* sessionStorage disabled: normal CRM contract entry remains. */}
  el('customerForm').addEventListener('submit',saveCustomer);
  el('taskForm').addEventListener('submit',saveTask);
  el('taskReset').addEventListener('click',resetTask);
