@@ -133,12 +133,17 @@ function toggleProduct(id){
  if(!current)return;
  if(!current.archived&&!confirm(current.name+' 상품을 판매 종료 처리할까요? 과거 계약과 수량 기록은 그대로 유지됩니다.'))return;
  const custom=db.customProducts.find(p=>p.id===id);
+ const oldArchived=custom?.archived,oldIds=(db.archivedProductIds||[]).slice();
  if(custom)custom.archived=!custom.archived;
  else{
-  db.archivedProductIds=db.archivedProductIds||[];
-  db.archivedProductIds=current.archived?db.archivedProductIds.filter(x=>x!==id):[...db.archivedProductIds.filter(x=>x!==id),id];
+  db.archivedProductIds=current.archived?oldIds.filter(x=>x!==id):[...oldIds.filter(x=>x!==id),id];
  }
- persist();render();
+ if(!persist()){
+  if(custom)custom.archived=oldArchived;
+  else db.archivedProductIds=oldIds;
+  return;
+ }
+ render();
  message(current.archived?'판매를 다시 시작했습니다.':'판매 종료 처리했습니다. 기존 계약 기록은 보존됩니다.');
 }
 function renderClientDropdown(){
