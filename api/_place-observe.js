@@ -225,7 +225,13 @@ async function runMobile(keyword,target,options={}){
   const restaurant='https://m.place.naver.com/restaurant/list?'+query;
   const foodRelated=/(맛집|음식점|식당|횟집|한식|일식|초밥|고깃집|대게|랍스터|카페|국밥|중식|마라탕|배달|베이커리|술집|삼겹살)/.test(keyword);
   const candidates=foodRelated?[restaurant,general]:[general];
-  let rows=[],usedUrl='',httpStatus=null;
+  // Deep collection is enabled only in the isolated research endpoint.
+  // The production observer keeps its original smaller limit.
+  const deepScan=options.deepScan===true;
+  const maxItems=deepScan?300:100;
+  const maxRounds=deepScan?22:5;
+  const deadline=Date.now()+(deepScan?19000:11500);
+  let rows=[],usedUrl='',httpStatus=null,stopReason='not_started',scanRounds=0;
   for(const url of candidates){
    try{
     const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:11000});
@@ -244,7 +250,11 @@ async function runMobile(keyword,target,options={}){
     usedUrl=page.url();
     await page.locator('li a[href*="/restaurant/"],li a[href*="/place/"],li [data-nlog-params]').first().waitFor({state:'attached',timeout:2800}).catch(()=>{});
     const ids=new Set();
-    for(let pageIndex=0;pageIndex<5;pageIndex++){
+    let stagnantRounds=0;
+    stopReason='scan_started';
+    for(let pageIndex=0;pageIndex<maxRounds;pageIndex++){
+     scanRounds++;
+     const beforeCount=rows.length;
      const items=await page.evaluate(()=>{
       const found=[];
       for(const li of document.querySelectorAll('li')){
@@ -260,12 +270,33 @@ async function runMobile(keyword,target,options={}){
       return found;
      });
      for(const x of items)if(!ids.has(x.id)){ids.add(x.id);rows.push(x)}
-     if((!options.captureList&&rows.some(x=>x.id===target?.id||(target?.name&&normalizeBusinessName(x.name)===normalizeBusinessName(target.name))))||rows.length>=100)break;
-     await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
-     await page.waitForTimeout(450);
+     if(!options.captureList&&rows.some(x=>x.id===target?.id||(target?.name&&normalizeBusinessName(x.name)===normalizeBusinessName(target.name)))){
+      stopReason='target_found';break;
+     }
+     if(rows.length>=maxItems){stopReason='collection_cap';break}
+     if(Date.now()>=deadline){stopReason='time_budget';break}
+     stagnantRounds=rows.length===beforeCount?stagnantRounds+1:0;
+     if(stagnantRounds>=3){stopReason='no_additional_items';break}
+     // Scroll the actual result list container if the page scroll is nested.
+     // Avoid clicking unrelated elements or bypassing access restrictions.
+     await page.evaluate(()=>{
+      const candidates=[...document.querySelectorAll('li')].filter(li=>li.querySelector('[data-nlog-params]'));
+      let el=candidates.length?candidates[candidates.length-1]:null;
+      while(el&&el!==document.documentElement){
+       const style=getComputedStyle(el);
+       if(el.scrollHeight>el.clientHeight+120&&/auto|scroll/.test(style.overflowY)){
+        el.scrollTop=el.scrollHeight;return;
+       }
+       el=el.parentElement;
+      }
+      const root=document.scrollingElement||document.documentElement;
+      window.scrollTo(0,Math.max(root.scrollHeight,document.body.scrollHeight));
+     });
+     await page.waitForTimeout(deepScan?600:450);
     }
+    if(stopReason==='scan_started')stopReason='round_limit';
     if(rows.length)break;
-   }catch{continue}
+   }catch{stopReason='navigation_or_parse_error';continue}
   }
   if(!rows.length)return {status:'no_place_block',rank:null,observedCount:0,scope:'naver_mobile_place_list',query:keyword,
    observedAt:new Date().toISOString(),source:'none',message:'모바일 플레이스 목록을 자동으로 읽지 못했습니다. 네이버 페이지 구조나 네트워크 차단 여부를 확인해야 합니다.',diagnostics:{httpStatus,host:usedUrl?new URL(usedUrl).hostname:null}};
@@ -274,9 +305,15 @@ async function runMobile(keyword,target,options={}){
    return {...summary,query:keyword,observedAt:new Date().toISOString(),
     source:'browser_observed'};
   }
-  return {...reduceMobile(rows,target),scope:'naver_mobile_place_list',query:keyword,observedAt:new Date().toISOString(),source:'browser_observed',
+  const reduced=reduceMobile(rows,target);
+  if(reduced.status==='not_in_block'){
+   reduced.status='not_in_observed_range';
+   reduced.message='이번에 수집된 '+rows.length+'개 모바일 플레이스 업체 목록에서는 대상이 발견되지 않았습니다. 수집 범위가 전체 검색 결과임을 확인하지 못했으므로 미노출 또는 실제 순위로 판단하지 않습니다.';
+  }
+  return {...reduced,scope:'naver_mobile_place_list',query:keyword,observedAt:new Date().toISOString(),source:'browser_observed',
    sourceUrl:usedUrl,measurementContext:'anonymous_mobile_browser_390px',
-   disclaimer:'모바일 화면 390px 기준 관측입니다. 위치·로그인·광고·동적 로딩에 따라 순위가 달라질 수 있으며, 확인 범위를 넘어선 순위는 추측하지 않습니다.'};
+   collection:{stopReason,scanRounds,limit:maxItems,complete:false},
+   disclaimer:'수집된 모바일 플레이스 화면의 항목 관측치이며 전체 순위가 아닙니다. 위치·로그인·광고·동적 로딩에 따라 순위가 달라질 수 있고 목록 일부가 누락될 수 있습니다.'};
  }finally{await browser.close().catch(()=>{})}
 }
 
