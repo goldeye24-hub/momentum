@@ -410,7 +410,10 @@
     },
     "api/rank-rebuild.js": {
       "maxDuration": 60,
-      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**",
+      "regions": [
+        "icn1"
+      ]
     }
   }
 }
