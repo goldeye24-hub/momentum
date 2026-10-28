@@ -33,7 +33,36 @@
 'use strict';
 var $=function(id){return document.getElementById(id);};
 var escape=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});};
-var account=null,targets=[],active=null,ranking=[],volumes=[],period=7,storageReady=false;
+var account=null,targets=[],active=null,ranking=[],volumes=[],period=7,storageReady=false,localMode=false;
+var LOCAL_KEY='momentum-admin-research-local-v1';
+function localRead(){
+ try{
+  var obj=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}');
+  return {targets:Array.isArray(obj.targets)?obj.targets.slice(0,50):[],
+   ranks:Array.isArray(obj.ranks)?obj.ranks.slice(-1200):[],
+   volumes:Array.isArray(obj.volumes)?obj.volumes.slice(-900):[]};
+ }catch(e){return {targets:[],ranks:[],volumes:[]}}
+}
+function localWrite(value){
+ try{
+  localStorage.setItem(LOCAL_KEY,JSON.stringify(value));
+  if(localStorage.getItem(LOCAL_KEY)!==JSON.stringify(value))throw new Error('저장 검증에 실패했습니다.');
+ }catch(e){throw new Error('이 브라우저의 저장소가 차단되었거나 가득 찼습니다. 저장할 수 없습니다.')}
+}
+function localId(){return 'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)}
+function localNotice(){return '임시 저장 모드 · 이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터를 삭제하면 기록도 사라집니다. CSV 백업을 이용하세요.'}
+async function activateLocal(reason){
+ // Only called after a verified administrator session.
+ localMode=true;storageReady=true;
+ var state=localRead();targets=state.targets;
+ $('addToggle').disabled=false;$('measureVolume').disabled=false;
+ message('slot','로컬 등록 '+targets.length+'개 · 서버 DB 연결 전');
+ message('sideInfo','관리자 인증 확인 · 브라우저 임시 저장 중 (다른 기기와 공유되지 않음)');
+ message('rankMsg',localNotice()+(reason?' · 서버 상태: '+reason:''));
+ renderList();
+ var id=active&&targets.find(function(t){return t.id===active.id})?active.id:targets[0]&&targets[0].id;
+ if(id)await choose(id);else {active=null;ranking=[];drawRank()}
+}
 var dateKst=function(d){return new Date(new Date(d).getTime()+9*3600000).toISOString().slice(0,10);};
 var when=function(d){return d?new Date(d).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';};
 var fmt=function(n){return typeof n==='number'?n.toLocaleString('ko-KR'):String(n==null?'—':n);};
@@ -62,14 +91,18 @@ async function init(){
  if(!result.authenticated){account=null;showAuth(false);message('authMsg','기존 관리자 비밀번호를 입력하면 이 화면에서 바로 접속합니다.');return}
  account=result;showAuth(true);
  try{
-  await fetchTargets();storageReady=true;
-  $('addToggle').disabled=false;$('measureVolume').disabled=false;
-  drawRank();
+  // Keep local records visible until manually migrated. Never silently replace them with an empty cloud list.
+  var saved=localRead();
+  if(saved.targets.length>0||saved.ranks.length>0||saved.volumes.length>0){
+   await activateLocal('기존 브라우저 기록 유지');
+  }else{
+   await fetchTargets();
+   storageReady=true;localMode=false;
+   $('addToggle').disabled=false;$('measureVolume').disabled=false;
+   drawRank();
+  }
  }catch(e){
-  storageReady=false;targets=[];active=null;ranking=[];renderList();drawRank();
-  $('addToggle').disabled=true;$('measureVolume').disabled=true;
-  message('slot','DB 연결 확인 필요');
-  message('rankMsg','관리자 로그인은 정상입니다. 다만 연구실 기록 DB에 접근할 수 없습니다. 관리자 기록 테이블 및 저장 권한을 확인해야 합니다. ('+e.message+')');
+  await activateLocal('연구실 DB 조회 실패');
  }
 }
 $('existingAdminForm').addEventListener('submit',async function(e){
@@ -104,9 +137,32 @@ $('navRank').onclick=function(){page('rank')};$('navVolume').onclick=function(){
 $('addToggle').onclick=function(){$('addBox').classList.toggle('hidden')};
 $('filter').oninput=renderList;$('sort').onchange=renderList;
 $('addForm').addEventListener('submit',async function(e){
- e.preventDefault();try{var v=await call('targets',{method:'POST',body:{action:'add',label:$('label').value.trim(),keyword:$('keyword').value.trim(),target:$('placeId').value.trim()}});
- $('addForm').reset();$('addBox').classList.add('hidden');await fetchTargets();if(v.target&&v.target.id)choose(v.target.id);
- }catch(err){message('rankMsg',err.message)}
+ e.preventDefault();
+ if(!account){message('rankMsg','관리자 로그인 후 등록할 수 있습니다.');return}
+ var name=$('label').value.trim(),keyword=$('keyword').value.trim(),id=$('placeId').value.trim();
+ if(name.length<1||name.length>70||keyword.length<2||keyword.length>60||!/^[0-9]{6,20}$/.test(id)){
+  message('rankMsg','업체 표시 이름·검색어·숫자 플레이스 ID를 확인하세요.');return;
+ }
+ try{
+  if(localMode){
+   var state=localRead();
+   if(state.targets.some(function(t){return t.keyword===keyword&&t.place_id===id})){
+    message('rankMsg','이미 등록한 검색어·매장 조합입니다.');return;
+   }
+   if(state.targets.length>=50){message('rankMsg','브라우저 임시 등록은 최대 50개까지 가능합니다.');return}
+   var t={id:localId(),label:name,keyword:keyword,place_id:id,scope:'mobile',created_at:new Date().toISOString()};
+   state.targets.unshift(t);
+   localWrite(state);
+   $('addForm').reset();$('addBox').classList.add('hidden');
+   targets=state.targets;message('slot','로컬 등록 '+targets.length+'개');
+   await choose(t.id);
+   message('rankMsg','매장 등록 완료. '+localNotice());
+  }else{
+   var v=await call('targets',{method:'POST',body:{action:'add',label:name,keyword:keyword,target:id}});
+   $('addForm').reset();$('addBox').classList.add('hidden');
+   await fetchTargets();if(v.target&&v.target.id)await choose(v.target.id);
+  }
+ }catch(err){message('rankMsg','매장 등록 실패: '+err.message)}
 });
 async function fetchTargets(){
  var data=await call('targets');targets=data.targets||[];
@@ -129,14 +185,33 @@ async function choose(id){
 }
 async function loadRank(){
  if(!active)return;
+ if(localMode){
+  var threshold=Date.now()-period*86400000,id=active.id;
+  ranking=localRead().ranks.filter(function(r){return r.target_id===id&&Date.parse(r.observed_at)>=threshold});
+  message('rankMsg',localNotice());drawRank();return;
+ }
  try{var r=await call('rank-history',{query:{targetId:active.id,days:period}});ranking=r.rows||[];message('rankMsg',r.note||'실측 결과만 표시됩니다.')}
  catch(e){ranking=[];message('rankMsg','순위 기록 조회 불가: '+e.message)}drawRank();
 }
 document.querySelectorAll('[data-period]').forEach(function(b){b.onclick=function(){period=Number(b.dataset.period);document.querySelectorAll('[data-period]').forEach(function(x){x.classList.toggle('selected',x===b)});loadRank()}});
 $('measureRank').onclick=async function(){
- if(!active)return;var b=this;b.disabled=true;message('rankMsg','실제 모바일 검색 목록 측정 중…');
- try{var r=await call('scan-rank',{method:'POST',body:{targetId:active.id}});await loadRank();message('rankMsg',r.message||'기록 저장 완료')}
- catch(e){message('rankMsg','측정 실패: '+e.message)}finally{b.disabled=false}
+ if(!account||!active)return;
+ var b=this;b.disabled=true;message('rankMsg','실제 모바일 플레이스 검색 목록 측정 중…');
+ try{
+  if(localMode){
+   var t=active;
+   var r=await call('scan-rank-direct',{method:'POST',body:{keyword:t.keyword,placeId:t.place_id}});
+   var state=localRead();
+   state.ranks.push({target_id:t.id,keyword:t.keyword,place_id:t.place_id,rank:r.rank,
+    status:r.status,observed_at:r.observedAt,observed_count:r.observedCount});
+   state.ranks=state.ranks.slice(-1200);localWrite(state);
+   await loadRank();message('rankMsg','실제 순위 관측 결과를 브라우저에 기록했습니다. '+localNotice());
+  }else{
+   var result=await call('scan-rank',{method:'POST',body:{targetId:active.id}});
+   await loadRank();message('rankMsg',result.message||'기록 저장 완료');
+  }
+ }catch(e){message('rankMsg','측정 또는 기록 실패: '+e.message)}
+ finally{b.disabled=!storageReady||!active}
 };
 function graph(id,series,inverse){
  var svg=$(id);
@@ -171,6 +246,11 @@ function drawRank(){
 }
 async function loadVolume(){
  var key=$('volumeKeyword').value.trim();if(key.length<2)return;
+ if(localMode){
+  var threshold=Date.now()-Number($('volumeDays').value)*86400000;
+  volumes=localRead().volumes.filter(function(v){return v.keyword===key&&Date.parse(v.observed_at)>=threshold});
+  message('volumeMsg',localNotice()+' 월간 검색량은 조회일에 확인한 최근 한 달 수치입니다.');drawVolume();return;
+ }
  try{var r=await call('volume-history',{query:{keyword:key,days:$('volumeDays').value}});volumes=r.rows||[];message('volumeMsg',r.note||'저장된 조회 이력입니다.')}
  catch(e){volumes=[];message('volumeMsg','검색량 기록 조회 불가: '+e.message)}drawVolume();
 }
@@ -207,9 +287,24 @@ function drawVolume(){
  $('volumeBody').innerHTML=ordered.length?ordered.reverse().map(function(r){return '<tr><td>'+escape(r.measured_date)+'</td><td>'+escape(r.keyword)+'</td><td>'+escape(r.pc_raw)+'</td><td>'+escape(r.mobile_raw)+'</td><td>'+fmt(r.total_count)+'</td><td>'+escape(when(r.observed_at))+'</td></tr>'}).join(''):'<tr><td colspan="6">조회 기록 없음</td></tr>';
 }
 $('volumeForm').addEventListener('submit',async function(e){
- e.preventDefault();var b=$('measureVolume');b.disabled=true;message('volumeMsg','네이버 검색광고 API 조회 및 날짜별 저장 중…');
- try{var r=await call('scan-volume',{method:'POST',body:{keyword:$('volumeKeyword').value.trim()}});await loadVolume();message('volumeMsg',r.note||'저장 완료')}
- catch(e){message('volumeMsg','검색량 조회·저장 실패: '+e.message)}finally{b.disabled=false}
+ e.preventDefault();if(!account)return;
+ var b=$('measureVolume'),keyword=$('volumeKeyword').value.trim();b.disabled=true;
+ message('volumeMsg','네이버 검색광고 API 조회 및 날짜별 기록 중…');
+ try{
+  if(localMode){
+   var state=localRead(),today=dateKst(new Date());
+   var existing=state.volumes.find(function(v){return v.keyword===keyword&&v.measured_date===today});
+   if(!existing){
+    var result=await call('scan-volume-direct',{method:'POST',body:{keyword:keyword}});
+    state.volumes.push(result.row);state.volumes=state.volumes.slice(-900);localWrite(state);
+   }
+   await loadVolume();message('volumeMsg',(existing?'오늘 저장한 검색량을 표시합니다. ':'오늘 조회한 실제 검색량을 기록했습니다. ')+localNotice());
+  }else{
+   var r=await call('scan-volume',{method:'POST',body:{keyword:keyword}});
+   await loadVolume();message('volumeMsg',r.note||'저장 완료');
+  }
+ }catch(e){message('volumeMsg','검색량 조회 또는 저장 실패: '+e.message)}
+ finally{b.disabled=!account}
 });
 $('loadVolume').onclick=loadVolume;$('volumeDays').onchange=loadVolume;
 function saveCsv(filename,head,rows){
