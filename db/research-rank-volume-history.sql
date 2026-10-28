@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS public.momentum_research_rank_checks(
   (status<>'found' AND rank IS NULL)
  )
 );
-DO $
+DO $research$
 BEGIN
  IF NOT EXISTS (
   SELECT 1 FROM pg_constraint WHERE conname='momentum_research_rank_owner_target_fk'
@@ -32,7 +32,7 @@ BEGIN
    FOREIGN KEY(owner_id,target_id)
    REFERENCES public.momentum_member_targets(owner_id,id) ON DELETE CASCADE;
  END IF;
-END $;
+END $research$;
 CREATE INDEX IF NOT EXISTS research_rank_owner_target_time
  ON public.momentum_research_rank_checks(owner_id,target_id,observed_at DESC);
 CREATE TABLE IF NOT EXISTS public.momentum_research_keyword_volumes(
