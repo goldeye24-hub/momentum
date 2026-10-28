@@ -268,3 +268,7 @@ async function handler(req,res){
 }
 module.exports=handler;
 module.exports._test={targetFrom,validQuery,listType,evaluate,sourceUrl,normalizeName};
+
+// Member-only research console can invoke the same real browser observer after
+// verifying ownership server-side. Never trust browser-supplied ranks.
+module.exports._scan=scan;
