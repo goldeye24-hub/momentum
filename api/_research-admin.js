@@ -133,6 +133,12 @@ module.exports=async function(req,res){
   if(action==='scan-rank'&&req.method==='POST'){
    const t=await targetFor(String(body.targetId||''));
    if(!t)return fail(res,404,'not_found','등록 매장이 아닙니다.');
+   if(t._legacy){
+    const previous=Date.parse(t.last_run_at||'');
+    if(Number.isFinite(previous)&&Date.now()-previous<10*60*1000){
+     return fail(res,429,'slow_down','기존 관리자 모니터링 대상은 10분 간격으로 조회할 수 있습니다.');
+    }
+   }
    if(Date.now()-(lastCall.get('rank')||0)<45000)return fail(res,429,'slow_down','새 순위 조회 간격은 최소 45초입니다.');
    lastCall.set('rank',Date.now());
    const result=await place._scan(t.keyword,{id:t.place_id});
@@ -142,10 +148,6 @@ module.exports=async function(req,res){
    const rank=result.status==='found'&&Number.isInteger(result.observedPosition)?result.observedPosition:null;
    const observedAt=result.observedAt||new Date().toISOString();
    if(t._legacy){
-    const last=Date.parse(t.last_run_at||'');
-    if(Number.isFinite(last)&&Date.now()-last<10*60*1000){
-     return fail(res,429,'slow_down','기존 관리자 모니터링 대상은 10분 간격으로 조회할 수 있습니다.');
-    }
     const legacyStatus=result.status==='found'?'ranked':
       result.status==='not_found_in_sample'?'not_in_block':'unavailable';
     await db.request('rank_watch_observations',{method:'POST',body:{
