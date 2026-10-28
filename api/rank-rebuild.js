@@ -67,36 +67,48 @@ async function scan(keyword,target){
   if(diagnostic.httpStatus!==200||new URL(page.url()).hostname!=='m.place.naver.com')
    return {status:'navigation_failed',observedCount:0,diagnostics:diagnostic};
   diagnostic.resolvedUrl=page.url();
-  await page.locator('li [data-nlog-params],li a[href*="/restaurant/"],li a[href*="/place/"]').first().waitFor({state:'attached',timeout:5000}).catch(()=>{});
+  // Business results only. Nested menu items and promotional links are not cards.
+  await page.locator('ul.eDFz9 > li.UEzoS, li.UEzoS > a.vEZDX[href*="/restaurant/"], li.UEzoS > a.vEZDX[href*="/place/"]').first().waitFor({state:'attached',timeout:5000}).catch(()=>{});
   let unchanged=0;
   for(let step=0;step<55;step++){
    diagnostic.scrolls=step;
    if(Date.now()-started>=MAX_WALL_MS){diagnostic.stopReason='time_budget';break}
    const visible=await page.evaluate(()=>{
+    // Do not iterate every <li>: nested Place+ menu lists are NOT businesses.
+    // Verified live mobile structure (2026-10-28): ul.eDFz9 > li.UEzoS,
+    // with the business-detail link a.vEZDX[href*="/restaurant/<id>"].
+    const cards=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS')];
+    if(!cards.length)cards.push(...document.querySelectorAll('li.UEzoS'));
     const list=[];
-    const lis=[...document.querySelectorAll('li')];
-    for(const li of lis){
-      const el=li.querySelector('[data-nlog-params]'),lnk=li.querySelector('a[href*="/restaurant/"],a[href*="/place/"],a[href*="/hairshop/"],a[href*="/accommodation/"]');
+    for(const card of cards){
+      const anchor=[...card.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"],a.vEZDX[href*="/hairshop/"],a.vEZDX[href*="/accommodation/"]')]
+        .find(a=>a.closest('li.UEzoS')===card);
+      if(!anchor)continue;
+      const href=anchor.getAttribute('href')||'';
+      const id=href.match(/\/(?:restaurant|place|hairshop|accommodation)\/(\d{6,20})(?:\/|[?#]|$)/)?.[1];
+      if(!id)continue;
+      // IDs come only from the card's actual business link; never nested telemetry.
+      const headline=anchor.querySelector('.YwYLL,.place_bluelink,h3,[class*="name"]');
+      let name=String(headline?.textContent||'').trim().replace(/\s+/g,' ');
+      if(!name){
+        const lines=String(anchor.innerText||'').split('\n').map(s=>s.trim()).filter(Boolean);
+        name=lines.find(x=>x.length>=2&&x.length<=50&&!/^(주간 인기|예약|톡톡|쿠폰|주문|광고|저장|메뉴)/.test(x))||'';
+      }
+      // Don't show card description or menu labels as invented business names.
+      if(!name||name.length>70||/^(주간 인기 많은 메뉴|이름 미확인)/.test(name))name='업체명 확인 필요';
+      const telemetry=card.querySelector('[data-nlog-area="mpl_vsl.result"][data-nlog-params]');
       let meta={};
-      if(el){try{meta=JSON.parse(el.getAttribute('data-nlog-params')||'{}')}catch{}}
-      const href=lnk?.getAttribute('href')||'';
-      const id=String(meta.place_id||meta.placeId||href.match(/\/(?:restaurant|place|hairshop|accommodation)\/(\d{6,20})(?:\/|[?#]|$)/)?.[1]||'');
-      if(!/^\d{6,20}$/.test(id))continue;
-      const card=el?.closest('li')||li;
-      const name=String(card.querySelector('h3,strong,[class*="name"]')?.textContent||lnk?.textContent||'').trim().replace(/\s+/g,' ').slice(0,90);
-      const rank=Number(meta.rank);
-      const badge=[...card.querySelectorAll('span,em,small')].some(n=>n.textContent?.trim()==='광고');
-      list.push({id,name,providerRank:meta.rank!=null&&Number.isInteger(rank)&&rank>0?rank:null,ad:badge});
+      if(telemetry){try{meta=JSON.parse(telemetry.getAttribute('data-nlog-params')||'{}')}catch{}}
+      const pr=Number(meta.rank);
+      const verifiedTelemetry=!meta.place_id||String(meta.place_id)===id;
+      const providerRank=verifiedTelemetry&&meta.rank!==undefined&&Number.isInteger(pr)&&pr>0?pr:null;
+      // Ad marker is only 'observed', never proof of organic status.
+      const ad=[...card.querySelectorAll('span,em,small')].some(n=>n.children.length===0&&n.textContent?.trim()==='광고');
+      list.push({id,name,providerRank,ad});
     }
-    const nextButtons=[...document.querySelectorAll('button,a')].filter(n=>(n.innerText||'').trim()==='더보기'&&(n.offsetWidth>0||n.offsetHeight>0)).slice(0,4);
-    let scrollable=null;
-    const last=list.length?[...lis].reverse().find(li=>li.querySelector('[data-nlog-params],a[href*="/restaurant/"],a[href*="/place/"]')):null;
-    for(let node=last;node&&node!==document.documentElement;node=node.parentElement){
-      const css=getComputedStyle(node);
-      if(node.scrollHeight>node.clientHeight+100&&/(scroll|auto)/.test(css.overflowY)){scrollable=node;break}
-    }
-    return {rows:list,hasMore:nextButtons.length>0,container:!!scrollable};
+    return {rows:list,validCardNodes:cards.length};
    });
+   diagnostic.validCardNodes=visible.validCardNodes;
    const before=seen.size;
    for(const r of visible.rows)if(!seen.has(r.id)){seen.set(r.id,r);if(seen.size>=MAX_RESULTS)break}
    diagnostic.itemsSeen=seen.size;
@@ -107,7 +119,7 @@ async function scan(keyword,target){
    // Never claim that a stable viewport means no more search results.
    if(unchanged>=6){diagnostic.stopReason='no_new_rows_after_scroll';break}
    const movement=await page.evaluate(()=>{
-    const cardNodes=[...document.querySelectorAll('li')].filter(x=>x.querySelector('[data-nlog-params],a[href*="/restaurant/"],a[href*="/place/"]'));
+    const cardNodes=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS')];
     const last=cardNodes.at(-1),scrollY=window.scrollY;
     for(let el=last;el&&el!==document.documentElement;el=el.parentElement){
      const css=getComputedStyle(el);
