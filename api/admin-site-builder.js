@@ -4,7 +4,7 @@ const adminEmail=require('./_admin-email-login');
 const fs=require('node:fs');
 const path=require('node:path');
 
-const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','advertisers-index.html','advertisers.css','advertisers.js','suppliers-index.html','suppliers.css','suppliers.js','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json','finance-index.html','finance.css','finance.js','design-editor.html','design-editor.css','design-editor.js','rank-watch-index.html','rank-watch.css','rank-watch.js','keyword-matrix-index.html','keyword-matrix.css','keyword-matrix.js','competitor-compare-index.html','competitor-compare.css','competitor-compare.js','place-keyword-insights-index.html','place-keyword-insights.css','place-keyword-insights.js','member-admin-index.html','member-admin.js','connection-index.html','operations-index.html']);
+const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','advertisers-index.html','advertisers.css','advertisers.js','suppliers-index.html','suppliers.css','suppliers.js','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json','finance-index.html','finance.css','finance.js','design-editor.html','design-editor.css','design-editor.js','rank-watch-index.html','rank-watch.css','rank-watch.js','keyword-matrix-index.html','keyword-matrix.css','keyword-matrix.js','competitor-compare-index.html','competitor-compare.css','competitor-compare.js','place-keyword-insights-index.html','place-keyword-insights.css','place-keyword-insights.js','member-admin-index.html','member-admin.js','connection-index.html','operations-index.html','research-index.html']);
 const COOKIE='momentum_admin_session';
 const SIX_HOURS=6*60*60;
 const MAX_FORM=4096;
@@ -174,7 +174,7 @@ module.exports=async function(req,res){
   if(adminEmail.enabled()&&req.query?.mode==='email')return res.end(adminEmail.page());
   return res.end(LOGIN);
  }
- const file=asset||(view==='suppliers'?'suppliers-index.html':view==='advertisers'?'advertisers-index.html':view==='crm'?'crm-index.html':view==='finance'?'finance-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':view==='keywords'?'keyword-matrix-index.html':view==='competitors'?'competitor-compare-index.html':view==='insights'?'place-keyword-insights-index.html':view==='members'?'member-admin-index.html':view==='connection'?'connection-index.html':view==='studio'?'index.html':'operations-index.html');
+ const file=asset||(view==='suppliers'?'suppliers-index.html':view==='advertisers'?'advertisers-index.html':view==='crm'?'crm-index.html':view==='finance'?'finance-index.html':view==='designs'?'design-editor.html':view==='watches'?'rank-watch-index.html':view==='keywords'?'keyword-matrix-index.html':view==='competitors'?'competitor-compare-index.html':view==='insights'?'place-keyword-insights-index.html':view==='members'?'member-admin-index.html':view==='connection'?'connection-index.html':view==='studio'?'index.html':view==='research'?'research-index.html':'operations-index.html');
  if(!ASSETS.has(file))return pageError(res,404,'페이지를 찾을 수 없습니다');
  let data;
  try{data=fs.readFileSync(path.join(__dirname,'..','site-builder',file),'utf8')}
