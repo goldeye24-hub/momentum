@@ -70,9 +70,8 @@ async function scan(keyword,target){
   // Allow the Naver client to finish hydration. A 200 HTML shell does not mean
   // business results have arrived; wait for visible card link evidence first.
   await page.waitForFunction(()=>{
-    const direct=document.querySelector('li.UEzoS a.vEZDX[href*="/restaurant/"],li.UEzoS a.vEZDX[href*="/place/"]');
-    const generic=document.querySelector('[data-nlog-area="mpl_vsl.result"]');
-    return !!(direct||generic);
+    const anchors=document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"]');
+    return [...anchors].some(a=>/\/(?:restaurant|place)\/\d{6,20}(?:[/?#]|$)/.test(a.getAttribute('href')||''));
   },undefined,{timeout:8500}).catch(()=>{});
   diagnostic.initialDOM=await page.evaluate(()=>({
    documentReady:document.readyState,
@@ -89,49 +88,57 @@ async function scan(keyword,target){
    diagnostic.scrolls=step;
    if(Date.now()-started>=MAX_WALL_MS){diagnostic.stopReason='time_budget';break}
    const visible=await page.evaluate(()=>{
-    // Do not iterate every <li>: nested Place+ menu lists are NOT businesses.
-    // Verified live mobile structure (2026-10-28): ul.eDFz9 > li.UEzoS,
-    // with the business-detail link a.vEZDX[href*="/restaurant/<id>"].
-    const cards=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS')];
-    if(!cards.length)cards.push(...document.querySelectorAll('li.UEzoS'));
-    // Defensive fallback for class-renamed top-level business cards. Require a
-    // direct primary anchor AND never treat nested menu/analytics links as a store.
-    if(!cards.length){
-     for(const anchor of document.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"]')){
-      const li=anchor.closest('li');
-      if(li&&!li.closest('li li')&&!cards.includes(li))cards.push(li);
-     }
-    }
-    const list=[];
-    for(const card of cards){
-      const anchor=[...card.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"],a.vEZDX[href*="/hairshop/"],a.vEZDX[href*="/accommodation/"]')]
-        .find(a=>a.closest('li')===card);
-      if(!anchor)continue;
+    // Selector-independent collection of real business detail links. Naver has
+    // put 'vEZDX' on <li>, not on <a>, in some render modes.
+    const links=[...document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"],a[href*="/hairshop/"],a[href*="/accommodation/"]')];
+    const items=new Map();
+    const excluded=/^(?:주간 인기 많은 메뉴|주간 인기|예약|톡톡|쿠폰|메뉴|메뉴판|사진|리뷰|주소|찾아가기|길찾기|저장|주문|공유|광고|더보기|전화|네이버페이|이름 미확인)$/;
+    const pickName=(anchor,card)=>{
+      const selectors=['strong.tit_place','strong.YwYLL','.YwYLL','.place_bluelink','[class*="tit_place"]','a.link_place strong','h3','a[href*="/restaurant/"] > strong'];
+      for(const root of [anchor,card]){
+       if(!root)continue;
+       for(const q of selectors){
+        const node=root.querySelector(q);
+        if(node){
+         const name=String(node.textContent||'').replace(/\s+/g,' ').trim().slice(0,100);
+         if(name.length>=2&&name.length<=70&&!excluded.test(name))return name;
+        }
+       }
+      }
+      const text=String(anchor.innerText||anchor.textContent||'');
+      const parts=text.split(/\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+      return parts.find(x=>x.length>=2&&x.length<=65&&!excluded.test(x)&&!/^(?:사진 \d+|리뷰 \d+|영업|영업중|영업 전)/.test(x))||'';
+    };
+    let validLinks=0,withName=0;
+    for(const anchor of links){
       const href=anchor.getAttribute('href')||'';
       const id=href.match(/\/(?:restaurant|place|hairshop|accommodation)\/(\d{6,20})(?:\/|[?#]|$)/)?.[1];
       if(!id)continue;
-      // IDs come only from the card's actual business link; never nested telemetry.
-      const headline=anchor.querySelector('.YwYLL,.place_bluelink,h3,[class*="name"]');
-      let name=String(headline?.textContent||'').trim().replace(/\s+/g,' ');
-      if(!name){
-        const lines=String(anchor.innerText||'').split('\n').map(s=>s.trim()).filter(Boolean);
-        name=lines.find(x=>x.length>=2&&x.length<=50&&!/^(주간 인기|예약|톡톡|쿠폰|주문|광고|저장|메뉴)/.test(x))||'';
-      }
-      // Don't show card description or menu labels as invented business names.
-      if(!name||name.length>70||/^(주간 인기 많은 메뉴|이름 미확인)/.test(name))name='업체명 확인 필요';
-      const telemetry=card.querySelector('[data-nlog-area="mpl_vsl.result"][data-nlog-params]');
-      let meta={};
-      if(telemetry){try{meta=JSON.parse(telemetry.getAttribute('data-nlog-params')||'{}')}catch{}}
+      validLinks++;
+      const li=anchor.closest('li');
+      // Prefer the actual business card, but don't require hash-like classes.
+      // Parent links in menu/related content with no store title are discarded.
+      const mainCard=anchor.closest('li.UEzoS,li.vEZDX,li[class*="place"],.CHC5F')||li||anchor;
+      const name=pickName(anchor,mainCard);
+      if(!name)continue;
+      withName++;
+      const preferred=anchor.matches('a.link_place,li.UEzoS > a,li.vEZDX > a')||
+        !!anchor.querySelector('strong.tit_place,.YwYLL,[class*="tit_place"]');
+      const existing=items.get(id);
+      const rankAttr=mainCard.querySelector?.('[data-nlog-area="mpl_vsl.result"][data-nlog-params]');
+      let meta={};try{if(rankAttr)meta=JSON.parse(rankAttr.getAttribute('data-nlog-params')||'{}')}catch{}
       const pr=Number(meta.rank);
-      const verifiedTelemetry=!meta.place_id||String(meta.place_id)===id;
-      const providerRank=verifiedTelemetry&&meta.rank!==undefined&&Number.isInteger(pr)&&pr>0?pr:null;
-      // Ad marker is only 'observed', never proof of organic status.
-      const ad=[...card.querySelectorAll('span,em,small')].some(n=>n.children.length===0&&n.textContent?.trim()==='광고');
-      list.push({id,name,providerRank,ad});
+      const providerRank=(!meta.place_id||String(meta.place_id)===id)&&meta.rank!==undefined&&Number.isInteger(pr)&&pr>0?pr:null;
+      const ad=[...(mainCard.querySelectorAll?.('span,em,small')||[])].some(n=>n.children.length===0&&n.textContent?.trim()==='광고');
+      if(!existing){items.set(id,{id,name,providerRank,ad,preferred});}
+      else if(preferred&&!existing.preferred){Object.assign(existing,{name,providerRank,ad,preferred})}
     }
-    return {rows:list,validCardNodes:cards.length};
+    return {rows:[...items.values()].map(({preferred,...rest})=>rest),
+      rawBusinessLinks:links.length,validBusinessLinks:validLinks,namedBusinessLinks:withName,
+      liClassMatches:document.querySelectorAll('li.UEzoS').length};
    });
-   diagnostic.validCardNodes=visible.validCardNodes;
+   diagnostic.validCardNodes=visible.rows.length;
+   diagnostic.parsedLinks={raw:visible.rawBusinessLinks,valid:visible.validBusinessLinks,named:visible.namedBusinessLinks,liClassMatches:visible.liClassMatches};
    const before=seen.size;
    for(const r of visible.rows)if(!seen.has(r.id)){seen.set(r.id,r);if(seen.size>=MAX_RESULTS)break}
    diagnostic.itemsSeen=seen.size;
@@ -142,7 +149,8 @@ async function scan(keyword,target){
    // Never claim that a stable viewport means no more search results.
    if(unchanged>=6){diagnostic.stopReason='no_new_rows_after_scroll';break}
    const movement=await page.evaluate(()=>{
-    const cardNodes=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS,li.UEzoS')];
+    const cardNodes=[...document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"]')]
+      .filter(a=>/\/(?:restaurant|place)\/\d{6,20}(?:[/?#]|$)/.test(a.getAttribute('href')||''));
     const last=cardNodes.at(-1),scrollY=window.scrollY;
     for(let el=last;el&&el!==document.documentElement;el=el.parentElement){
      const css=getComputedStyle(el);
@@ -170,6 +178,7 @@ async function scan(keyword,target){
     primaryAnchors:document.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"]').length,
     businessLinks:document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"]').length,
     resultMarkers:document.querySelectorAll('[data-nlog-area="mpl_vsl.result"]').length,
+   listPlaceAnchors:document.querySelectorAll('a.link_place[href*="/restaurant/"],a.link_place[href*="/place/"]').length,
     renderedTextLength:(document.body?.innerText||'').length,
     title:String(document.title||'').slice(0,100),
     visibleChallenge:/(비정상적인 접근|보안 문자|자동화된 접근|서비스 이용이 제한|captcha)/i.test((document.body?.innerText||'').slice(0,900))
