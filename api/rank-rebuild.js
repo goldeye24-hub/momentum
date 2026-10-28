@@ -151,9 +151,11 @@ async function scan(keyword,target){
       ...g,size:g.rows.size,
       score:g.rows.size*3+g.primary+( /(?:lst_place|eDFz9|place_list)/.test(g.cls)?30:0)
     })).sort((a,b)=>b.score-a.score);
-    // At least 5 distinct, titled business cards are required to identify
-    // a results list; a few 'recommended nearby' links are not sufficient.
-    const chosen=rankedGroups.find(g=>g.size>=5)||null;
+    // A broad repeated list (12+ stores) or explicitly named result container
+    // is needed. Short recommendation carousels must not become a ranking.
+    const chosen=rankedGroups.find(g=>
+      g.size>=12||(g.size>=3&&/(?:lst_place|eDFz9|place_list)/.test(g.cls))
+    )||null;
     return {rows:chosen?[...chosen.rows.values()]:[],
       rawEntries:[...items.values()].map(x=>({id:x.id,name:x.name})),
       rankListConfirmed:!!chosen,rankGroupSize:chosen?.size||0,
