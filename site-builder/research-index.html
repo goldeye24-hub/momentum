@@ -16,6 +16,20 @@
 <div id="rankMsg" class="hint">순위 측정이 없었던 날짜는 빈칸으로 표시합니다. 자동 측정은 별도 설정이 필요합니다.</div>
 <div class="metrics"><div class="metric"><small>최근 관측 순위</small><strong id="lastRank">—</strong></div><div class="metric"><small>관측 최고 순위</small><strong id="bestRank">—</strong></div><div class="metric"><small>직전 측정 대비</small><strong id="rankDiff">—</strong></div><div class="metric"><small>선택 기간 측정</small><strong id="rankCount">0건</strong></div></div>
 <div class="chart"><div class="muted">● 모바일 플레이스 목록 관측 순위 (숫자가 낮을수록 상위)</div><svg id="rankChart" viewBox="0 0 850 265" role="img" aria-label="순위 날짜별 그래프"></svg></div>
+<h3 style="margin-top:24px">블로그·방문자 리뷰 모니터링</h3>
+<div class="row" style="margin:10px 0 12px"><div class="muted">네이버 공개 플레이스의 노출 리뷰 수만 기록합니다. 방문자 리뷰는 영수증 인증만을 뜻하지 않습니다.</div>
+<div class="group"><button type="button" class="btn primary" id="scanReviewCounts" disabled>공개 리뷰 수 확인</button><button type="button" class="btn" id="toggleManualReviews">수량 직접 기록</button><a id="openReviewPlace" href="https://m.place.naver.com/" target="_blank" rel="noopener noreferrer" class="btn">네이버에서 확인 ↗</a></div></div>
+<div class="hint" id="reviewMsg">등록 매장을 선택하고 '공개 리뷰 수 확인'을 누르세요. 자동 확인 실패 시 숫자를 추정하지 않습니다.</div>
+<div class="panel hidden" id="manualReviewBox" style="margin:10px 0"><form id="manualReviewForm" class="group">
+<label>방문자 리뷰 수 <input type="number" id="reviewVisitorInput" min="0" max="99999999" step="1" placeholder="확인된 수치만 입력"></label>
+<label>블로그 리뷰 수 <input type="number" id="reviewBlogInput" min="0" max="99999999" step="1" placeholder="확인된 수치만 입력"></label>
+<button class="btn primary" type="submit">직접 확인한 수량 저장</button></form>
+<p class="muted">둘 중 하나만 입력해도 됩니다. 직접 입력한 기록은 자동 수집값과 구분됩니다. 빈 칸은 0건이 아닌 '미확인'입니다.</p></div>
+<div class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+<div class="metric"><small>방문자 리뷰 수</small><strong id="visitorReviewTotal">—</strong><span class="muted" id="visitorReviewDelta">측정 기록 없음</span></div>
+<div class="metric"><small>블로그 리뷰 수</small><strong id="blogReviewTotal">—</strong><span class="muted" id="blogReviewDelta">측정 기록 없음</span></div></div>
+<div class="scroll"><table><thead><tr><th>확인 시각</th><th>방문자 리뷰</th><th>블로그 리뷰</th><th>기록 방법</th></tr></thead>
+<tbody id="reviewHistoryBody"><tr><td colspan="4">저장된 리뷰 수량 기록이 없습니다.</td></tr></tbody></table></div>
 <h3>최근 7일</h3><div class="daily" id="daily"></div><h3>날짜별 순위 기록</h3>
 <div class="scroll"><table><thead><tr><th>측정 일시</th><th>키워드</th><th>플레이스 ID</th><th>순위</th><th>확인 업체 수</th><th>상태</th></tr></thead><tbody id="rankBody"></tbody></table></div>
 </div></div></section>
@@ -33,15 +47,16 @@
 'use strict';
 var $=function(id){return document.getElementById(id);};
 var escape=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});};
-var account=null,targets=[],active=null,ranking=[],volumes=[],period=7,storageReady=false,localMode=false;
+var account=null,targets=[],active=null,ranking=[],volumes=[],reviews=[],period=7,storageReady=false,localMode=false;
 var LOCAL_KEY='momentum-admin-research-local-v1';
 function localRead(){
  try{
   var obj=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}');
   return {targets:Array.isArray(obj.targets)?obj.targets.slice(0,50):[],
    ranks:Array.isArray(obj.ranks)?obj.ranks.slice(-1200):[],
-   volumes:Array.isArray(obj.volumes)?obj.volumes.slice(-900):[]};
- }catch(e){return {targets:[],ranks:[],volumes:[]}}
+   volumes:Array.isArray(obj.volumes)?obj.volumes.slice(-900):[],
+   reviews:Array.isArray(obj.reviews)?obj.reviews.slice(-900):[]};
+ }catch(e){return {targets:[],ranks:[],volumes:[],reviews:[]}}
 }
 function localWrite(value){
  try{
@@ -71,13 +86,14 @@ $('restoreLocal').addEventListener('change',async function(event){
   if(source.length>500000)throw new Error('백업 파일 용량이 큽니다.');
   var data=JSON.parse(source);
   if(!Array.isArray(data.targets)||!Array.isArray(data.ranks)||!Array.isArray(data.volumes))throw new Error('백업 파일 형식이 맞지 않습니다.');
-  if(data.targets.length>50||data.ranks.length>1200||data.volumes.length>900)throw new Error('지원 저장량을 초과했습니다.');
+  if(data.reviews!==undefined&&!Array.isArray(data.reviews))throw new Error('리뷰 기록 형식이 맞지 않습니다.');
+  if(data.targets.length>50||data.ranks.length>1200||data.volumes.length>900||(data.reviews||[]).length>900)throw new Error('지원 저장량을 초과했습니다.');
   if(data.targets.some(function(t){return !/^local-[a-z0-9-]+$/i.test(String(t.id||''))||
    String(t.label||'').length>70||String(t.keyword||'').length>60||
    !/^[0-9]{6,20}$/.test(String(t.place_id||''))}))throw new Error('백업 매장 ID를 확인하세요.');
   if(!confirm('현재 이 브라우저의 연구실 임시 기록을 백업 파일로 교체합니다. 계속하시겠습니까?'))return;
-  localWrite({targets:data.targets,ranks:data.ranks,volumes:data.volumes});
-  targets=data.targets;active=null;ranking=[];volumes=[];renderList();
+  localWrite({targets:data.targets,ranks:data.ranks,volumes:data.volumes,reviews:data.reviews||[]});
+  targets=data.targets;active=null;ranking=[];volumes=[];reviews=[];renderList();
   if(targets.length)await choose(targets[0].id);else drawRank();
   message('slot','로컬 등록 '+targets.length+'개');
   message('rankMsg','백업을 복원했습니다. '+localNotice());
@@ -216,7 +232,7 @@ function renderList(){
 }
 async function choose(id){
  active=targets.find(function(t){return t.id===id});if(!active)return;renderList();
- message('rankMsg','저장된 기록을 불러오고 있습니다.');ranking=[];drawRank();await loadRank();
+ message('rankMsg','저장된 기록을 불러오고 있습니다.');ranking=[];drawRank();await loadRank();loadReviews();
 }
 async function loadRank(){
  if(!active)return;
@@ -263,6 +279,77 @@ function graph(id,series,inverse){
  [0,Math.floor(last/2),last].filter(function(v,i,a){return a.indexOf(v)===i}).forEach(function(i){body+='<text x="'+xx(i)+'" y="250" font-size="11" text-anchor="middle" fill="#8190a0">'+escape(series[i].date)+'</text>'});
  svg.innerHTML=body;
 }
+function loadReviews(){
+ var id=active&&active.place_id;
+ reviews=id?localRead().reviews.filter(function(r){return r.place_id===id}):[];
+ reviews.sort(function(a,b){return a.observed_at.localeCompare(b.observed_at)});
+ drawReviews();
+}
+function formatDelta(kind){
+ var list=reviews.filter(function(x){return Number.isInteger(x[kind])&&x[kind]>=0});
+ if(list.length<2)return list.length===1?'첫 기록 · '+when(list[0].observed_at):'기록 없음';
+ var a=list[list.length-1][kind],b=list[list.length-2][kind],delta=a-b;
+ return (delta>0?'+':'')+fmt(delta)+'건 · 직전 측정 대비';
+}
+function drawReviews(){
+ var id=active&&active.place_id;
+ $('scanReviewCounts').disabled=!account||!id||!/^\d{6,20}$/.test(String(id));
+ $('toggleManualReviews').disabled=!account||!id;
+ $('openReviewPlace').href=id&&/^\d{6,20}$/.test(String(id))?
+  'https://m.place.naver.com/restaurant/'+encodeURIComponent(id)+'/home':'https://m.place.naver.com/';
+ var visitors=reviews.filter(function(x){return Number.isInteger(x.visitor_count)}).slice(-1)[0];
+ var blog=reviews.filter(function(x){return Number.isInteger(x.blog_count)}).slice(-1)[0];
+ message('visitorReviewTotal',visitors?fmt(visitors.visitor_count)+'건':'확인 불가');
+ message('blogReviewTotal',blog?fmt(blog.blog_count)+'건':'확인 불가');
+ message('visitorReviewDelta',formatDelta('visitor_count'));
+ message('blogReviewDelta',formatDelta('blog_count'));
+ $('reviewHistoryBody').innerHTML=reviews.length?[...reviews].reverse().slice(0,90).map(function(r){
+  return '<tr><td>'+escape(when(r.observed_at))+'</td><td>'+escape(r.visitor_count===null?'미확인':fmt(r.visitor_count)+'건')+
+   '</td><td>'+escape(r.blog_count===null?'미확인':fmt(r.blog_count)+'건')+
+   '</td><td>'+escape(r.source==='manual'?'직접 확인':'네이버 공개 표시 수')+'</td></tr>';
+ }).join(''):'<tr><td colspan="4">저장된 리뷰 수량 기록이 없습니다.</td></tr>';
+}
+function appendReviewRecord(row){
+ if(!active||!account)throw new Error('관리자 로그인과 매장 선택이 필요합니다.');
+ var state=localRead();
+ var id=active.place_id;
+ var v=row.visitor_count,b=row.blog_count;
+ if((v!==null&&(!Number.isInteger(v)||v<0||v>99999999))||
+    (b!==null&&(!Number.isInteger(b)||b<0||b>99999999))||
+    (v===null&&b===null))throw new Error('확인된 방문자 또는 블로그 리뷰 수량이 필요합니다.');
+ state.reviews.push({place_id:id,visitor_count:v,blog_count:b,source:row.source,
+  observed_at:row.observed_at||new Date().toISOString()});
+ state.reviews=state.reviews.slice(-900);localWrite(state);loadReviews();
+}
+$('scanReviewCounts').addEventListener('click',async function(){
+ if(!active||!account)return;
+ var t=active,btn=this;btn.disabled=true;
+ message('reviewMsg','네이버 공개 플레이스에서 방문자·블로그 리뷰 표시 수를 확인하고 있습니다…');
+ try{
+  var r=await call('scan-review-counts',{method:'POST',body:{placeId:t.place_id}});
+  if(r.placeId!==t.place_id)throw new Error('응답 플레이스 ID가 다릅니다.');
+  var visitor=Number.isInteger(r.visitorCount)?r.visitorCount:null;
+  var blog=Number.isInteger(r.blogCount)?r.blogCount:null;
+  if(visitor===null&&blog===null){
+   message('reviewMsg',r.message||'공개 화면에서 리뷰 수량을 확인하지 못했습니다. 임의 숫자는 기록하지 않습니다.');
+   return;
+  }
+  appendReviewRecord({visitor_count:visitor,blog_count:blog,source:'public_naver_place',observed_at:r.observedAt});
+  message('reviewMsg','확인된 리뷰 표시 수를 브라우저에 기록했습니다. 미확인 항목은 빈 값입니다. 방문자 리뷰는 영수증 인증 리뷰만을 의미하지 않습니다.');
+ }catch(e){message('reviewMsg','자동 수량 확인 실패: '+e.message+' 직접 확인한 수치만 수동으로 기록할 수 있습니다.')}
+ finally{btn.disabled=false}
+});
+$('toggleManualReviews').addEventListener('click',function(){$('manualReviewBox').classList.toggle('hidden')});
+$('manualReviewForm').addEventListener('submit',function(e){
+ e.preventDefault();if(!account||!active)return;
+ try{
+  var visitorRaw=$('reviewVisitorInput').value.trim(),blogRaw=$('reviewBlogInput').value.trim();
+  var visitor=visitorRaw===''?null:Number(visitorRaw),blog=blogRaw===''?null:Number(blogRaw);
+  appendReviewRecord({visitor_count:visitor,blog_count:blog,source:'manual'});
+  $('manualReviewForm').reset();$('manualReviewBox').classList.add('hidden');
+  message('reviewMsg','직접 확인한 수량을 저장했습니다. 자동 관측값과 구분해 표시합니다.');
+ }catch(e){message('reviewMsg','수량 기록 실패: '+e.message)}
+});
 function drawRank(){
  message('storeTitle',active?active.label:'매장을 선택하세요');
  message('storeSub',active?active.keyword+' · '+active.place_id:'등록 업체를 선택하세요.');
@@ -278,6 +365,7 @@ function drawRank(){
  html+='<div class="day"><small>'+escape(key.slice(5))+'</small><strong>'+(r?(r.rank?r.rank+'위':'미발견'):'미측정')+'</strong><span>'+(r?'기록 있음':'기록 없음')+'</span></div>'}
  $('daily').innerHTML=html;
  $('rankBody').innerHTML=ranking.length?ranking.slice().reverse().map(function(x){return '<tr><td>'+escape(when(x.observed_at))+'</td><td>'+escape(x.keyword)+'</td><td>'+escape(x.place_id)+'</td><td>'+(x.rank?x.rank+'위':'—')+'</td><td>'+fmt(x.observed_count)+'</td><td>'+escape(x.status)+'</td></tr>'}).join(''):'<tr><td colspan="6">측정 기록 없음</td></tr>';
+ loadReviews();
 }
 async function loadVolume(){
  var key=$('volumeKeyword').value.trim();if(key.length<2)return;
