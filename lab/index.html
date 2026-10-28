@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#091d39">
+<link rel="icon" href="/favicon.ico" sizes="any">
 <title>무료 마케팅 도구 3종 | 키워드 분석·플레이스 순위조회·네이버 검색어 추이 | 모멘텀마케팅</title>
 <meta name="description" content="모멘텀마케팅 무료 광고도구. 키워드 분석, 네이버 플레이스 순위조회, 네이버 데이터랩 검색어 추이 세 가지 기능만 간편하게 이용하세요.">
 <link rel="canonical" href="https://momentum-orcin-delta.vercel.app/lab/">
@@ -40,7 +41,7 @@
       <div class="intro-copy">
         <span class="eyebrow">MOMENTUM MARKETING / FREE TOOLS</span>
         <h1 id="tools-title">매장 마케팅에 필요한<br><em>3가지 무료 도구</em></h1>
-        <p>키워드를 찾고, 플레이스 검색 위치를 확인하고, 네이버 검색어 추이를 비교하세요. 필요한 기능만 남겼습니다.</p>
+        <p>키워드는 횟수 제한 없이 분석하고, 비회원은 플레이스 순위를 하루 한 번 확인할 수 있습니다. 네이버 검색어 추이는 공식 데이터랩에서 확인하세요.</p>
       </div>
       <div class="intro-illustration" aria-hidden="true">
         <div class="intro-visual-title">MARKETING RESEARCH</div>
@@ -60,8 +61,8 @@
       <div class="tools-grid">
         <article class="tool-card">
           <div class="card-meta"><span>01 / KEYWORD</span><span class="tool-symbol" aria-hidden="true">⌕</span></div>
-          <h3>키워드 분석</h3>
-          <p>지역·업종 키워드를 입력하고 연관 키워드 후보와 검색 의도를 확인합니다. 공식 API로 확인된 검색량만 별도 표시합니다.</p>
+          <h3>키워드 분석</h3><p class="free-policy">로그인 없이 · 횟수 제한 없음</p>
+          <p>로그인 없이 횟수 제한 없이 지역·업종 키워드와 고객 검색 의도를 분석합니다. 공식 검색량은 제공 권한이 있을 때만 표시합니다.</p>
           <div class="keyword-sample" aria-hidden="true">
             <div class="sample-search"><span>⌕</span> 부산 피부관리실 <b>↗</b></div>
             <div class="sample-tags"><span>지역 키워드</span><span>예약 의도</span><span>견적·비용</span></div>
@@ -70,8 +71,8 @@
         </article>
         <article class="tool-card">
           <div class="card-meta"><span>02 / NAVER PLACE</span><span class="tool-symbol" aria-hidden="true">⌖</span></div>
-          <h3>플레이스 순위조회</h3>
-          <p>네이버 검색어와 매장 플레이스 URL·ID를 입력해 검색 결과의 표시 위치를 확인하고 이전 측정값과 비교합니다.</p>
+          <h3>플레이스 순위조회</h3><p class="free-policy">비회원의 경우 1일 1회만 조회 가능합니다.</p>
+          <p>검색어와 매장 플레이스 ID·URL을 입력해 모바일 검색 목록의 현재 표시 위치를 확인합니다. 비회원 결과는 저장하거나 누적하지 않습니다.</p>
           <div class="rank-sample" aria-hidden="true">
             <div><span>지역·검색어</span><b>부산 맛집</b></div>
             <div><span>검색 채널</span><b>네이버 플레이스</b></div>
@@ -82,36 +83,19 @@
         <article class="tool-card">
           <div class="card-meta"><span>03 / NAVER DATA LAB</span><span class="tool-symbol" aria-hidden="true">⌁</span></div>
           <h3>검색어 추이</h3>
-          <p>검색어 1~5개를 선택해 기간별 관심도를 비교합니다. 네이버 공식 API가 연결되면 실측 조회, 미연결 시 CSV 가져오기로 그래프를 표시합니다.</p>
-          <div class="datalab-entry">
-            <label for="trend-terms">비교할 검색어</label>
-            <div class="trend-field"><input id="trend-terms" type="text" maxlength="180" value="부산맛집, 부산횟집" placeholder="검색어를 쉼표로 구분하여 입력" autocomplete="off"><button id="copy-terms" type="button" aria-describedby="trend-help">복사</button></div>
-            <small id="trend-help">검색어를 복사하거나 아래 비교 도구에서 조회·CSV 시각화를 시작하세요.</small>
-            <div id="copy-status" class="copy-status" aria-live="polite"></div>
+          <p>네이버 데이터랩 공식 사이트로 바로 이동하여 검색어 추이와 관심도를 확인합니다. 모멘텀 사이트에서는 별도의 추이 자료를 저장하지 않습니다.</p>
+          <div class="datalab-entry" aria-label="네이버 데이터랩 공식 사이트 안내">
+            <strong style="display:block;color:#104c8a;font-size:13px;margin-bottom:8px">네이버 데이터랩 공식 사이트</strong>
+            <span style="color:#647a96;font-size:12px;line-height:1.7">버튼을 누르면 네이버 데이터랩이 새 창에서 열립니다.</span>
           </div>
-          <a class="action" href="/lab/trends/">검색어 추이 비교 시작 <span aria-hidden="true">↗</span></a>
+          <a class="action" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 데이터랩 열기 <span aria-hidden="true">↗</span></a>
         </article>
       </div>
-      <p class="disclaimer">키워드 분석의 추천 우선순위는 기획용 추정치입니다. 플레이스 검색 순위는 측정 시점·기기·조건에 따라 달라질 수 있습니다. 검색어 추이 실측 그래프는 인증·제공 권한이 연결된 공식 API 응답에 한하며, 인증이 없을 때는 직접 준비한 CSV 자료로 비교할 수 있습니다.</p>
+      <p class="disclaimer">키워드 기획 우선순위는 자체 기준의 참고값이며 실제 검색량을 뜻하지 않습니다. 플레이스 순위는 측정 시점·기기·지역 조건에 따라 달라질 수 있으며 네이버의 공식 순위가 아닙니다. 비회원의 조회는 하루 한 번이고 조회 결과는 기록되지 않습니다. 검색어 추이는 네이버 데이터랩에서 직접 확인합니다.</p>
     </div>
   </section>
 </main>
 <footer><div class="container footer-content"><span>© MOMENTUM MARKETING</span><span>부산 기반 온라인마케팅 · <a href="/">메인 홈페이지</a></span></div></footer>
-<script>
-(function(){
-  const copyButton=document.getElementById('copy-terms');
-  const input=document.getElementById('trend-terms');
-  const status=document.getElementById('copy-status');
-  copyButton.addEventListener('click',async()=>{
-    const raw=input.value.trim();
-    if(!raw){status.textContent='검색어를 먼저 입력해 주세요.';input.focus();return}
-    const terms=raw.split(',').map(v=>v.trim()).filter(Boolean);
-    if(terms.length>5){status.textContent='검색어는 최대 5개까지만 준비할 수 있습니다.';return}
-    const value=terms.join(', ');
-    try{await navigator.clipboard.writeText(value);status.textContent='검색어를 복사했습니다. 데이터랩에서 붙여넣어 주세요.'}
-    catch(e){input.focus();input.select();status.textContent='자동 복사가 제한됐습니다. 선택된 검색어를 직접 복사해 주세요.'}
-  })
-})();
-</script>
+
 </body>
 </html>
