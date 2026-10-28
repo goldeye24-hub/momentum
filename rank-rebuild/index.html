@@ -11,7 +11,7 @@
 <div class="intro"><div><div class="eyebrow">NAVER PLACE · MOBILE SEARCH</div><h1>플레이스 순위,<br>실제 검색 결과로 확인.</h1><p>네이버 모바일 플레이스 업체 목록을 브라우저로 직접 관측합니다. 추측한 순위 대신 <strong>실제 발견한 위치와 수집 범위</strong>를 분리해 표시합니다.</p></div><div class="introaside"><b>측정 원칙</b><p>PC 지도 검색이 아닙니다. 네이버 모바일 플레이스 목록을 수집하며, 광고·지역·개인화에 따른 차이는 별도 안내합니다.</p></div></div>
 <div class="nav" role="tablist"><button type="button" class="active" data-tab="rank" aria-selected="true">플레이스 순위 조회</button><button type="button" data-tab="volume" aria-selected="false">네이버 키워드 검색량</button><button type="button" data-tab="trends" aria-selected="false">검색어 추이</button></div>
 <section id="rankTab">
-<div class="panel"><h2>실시간 모바일 플레이스 관측</h2><p class="hint">검색어와 플레이스 ID를 입력하면 네이버 모바일 플레이스 목록에서 해당 업체를 찾습니다. 별도 순위 API는 사용하지 않습니다.</p>
+<div class="panel"><h2>실시간 모바일 플레이스 관측</h2><p class="hint">검색어와 플레이스 ID를 입력하면 네이버 모바일 플레이스 목록의 업체 상세 링크를 추적해 해당 업체를 찾습니다. 별도 순위 API는 사용하지 않습니다.</p>
 <form id="searchForm"><div class="form"><label>검색 키워드<input name="keyword" id="keyword" value="포항맛집" placeholder="예: 포항맛집" maxlength="60" required></label><label>매장 플레이스 ID · URL · 상호명<input name="place" id="place" value="2085358113" placeholder="예: 2085358113" maxlength="450" required></label></div>
 <div class="controls"><button id="searchButton" class="primary" type="submit">플레이스 순위 자동 조회</button><a class="secondary" id="naverLink" target="_blank" rel="noopener noreferrer">네이버에서 직접 비교 ↗</a></div></form>
 <p class="helper">최대 300개 항목 수집을 시도합니다. 서버 실행 시간·네이버의 추가 로딩 구조에 따라 더 적게 수집할 수 있습니다.</p>
@@ -19,7 +19,7 @@
 <div id="result" class="results hidden">
  <div class="state"><div class="statuslabel">관측 결과</div><div class="big" id="rankValue">—</div><p id="resultDesc" class="statusdesc"></p></div>
  <div class="stats"><div class="stat"><small>실제 수집 업체</small><b id="observedCount">—</b></div><div class="stat"><small>검사한 화면</small><b id="scrollCount">—</b></div><div class="stat"><small>측정 소요</small><b id="elapsed">—</b></div></div>
- <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div><div class="detail"><span>네이버 페이지 응답</span><strong id="httpStatus">—</strong></div><div class="detail"><span>업체 카드 감지</span><strong id="cardsDetected">—</strong></div></div>
+ <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div><div class="detail"><span>네이버 페이지 응답</span><strong id="httpStatus">—</strong></div><div class="detail"><span>유효 업체 링크</span><strong id="cardsDetected">—</strong></div><div class="detail"><span>상호명 확인된 링크</span><strong id="namedLinks">—</strong></div></div>
 </div><div style="margin-top:17px"><button type="button" class="secondary" id="debugToggle">수집 진단 정보 보기</button></div></div>
 <div class="panel hidden" id="debugPanel"><div class="actions"><div><h2>수집 진단 내역</h2><p class="hint">최초 발견된 업체 15곳. 전체 순위나 자연검색 순위로 확정하지 않습니다.</p></div><span id="sampleLabel" class="pill">수집 전</span></div><div id="sampleEmpty" class="empty">조회 후 실제 업체 목록이 표시됩니다.</div><div class="table-wrap"><table id="sampleTable" class="hidden"><thead><tr><th>관측 순서</th><th>매장명</th><th>플레이스 ID</th><th>광고 표시</th></tr></thead><tbody id="sampleRows"></tbody></table></div></div>
 </section>
@@ -47,7 +47,8 @@ function display(data){
  $('observedAt').textContent=data.observedAt?new Date(data.observedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';
  $('matchedId').textContent=$('place').value.trim();
  $('httpStatus').textContent=data.diagnostics?.httpStatus||'—';
- $('cardsDetected').textContent=(data.diagnostics?.finalDOM?.resultLis??data.diagnostics?.validCardNodes??data.diagnostics?.initialDOM?.resultLis??'—')+'개';
+ $('cardsDetected').textContent=(data.diagnostics?.parsedLinks?.valid??data.diagnostics?.finalDOM?.businessLinks??'—')+'개';
+ $('namedLinks').textContent=(data.diagnostics?.parsedLinks?.named??'—')+'개';
  const items=data.topResults||[];
  $('sampleLabel').textContent=items.length?items.length+'개 항목 공개':'목록 없음';
  $('sampleEmpty').classList.toggle('hidden',items.length>0);
