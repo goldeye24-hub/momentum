@@ -9,7 +9,7 @@ const source=fs.readFileSync(path.join(__dirname,'../api/_public-rank-quota.js')
 function load(){
  const m={exports:{}};
  const factory=vm.runInNewContext('(function(require,module,exports){'+source+'})',{
-  Date,Math,JSON,String,Number,Buffer,URL
+  Date,Math,JSON,String,Number,Buffer,URL,process:{env:{MOMENTUM_SESSION_SECRET:'a'.repeat(48)}}
  });
  factory(id=>id==='node:crypto'?crypto:id==='./_member-session'?{
   check:req=>req?.headers?.member===true?{userId:'member'}:null
@@ -33,7 +33,7 @@ test('anonymous gets one completed query per Korean day, cookie is signed and Ht
  const pair=cookie.split(';')[0];
  assert.equal(quota.check({headers:{cookie:pair}},today).reason,'daily_limit_reached');
  assert.equal(quota.check({headers:{cookie:pair}},Date.parse('2026-10-28T15:00:00Z')).allowed,true);
- const altered=pair.replace(/[a-f0-9](?=[a-f0-9]{3};?$)/,'0');
+ const altered=pair.slice(0,-1)+(pair.endsWith('0')?'1':'0');
  assert.equal(quota.check({headers:{cookie:altered}},today).allowed,true);
 });
 test('authenticated member is exempt from anonymous quota',()=>{
