@@ -1,5 +1,6 @@
 'use strict';
 /** Private research console API, never accepts client-submitted rank/volume values. */
+const researchAdmin=require('./_research-admin');
 const member=require('./_member-session');
 const db=require('./_rank-store');
 const observer=require('./rank-rebuild');
@@ -21,6 +22,8 @@ async function owned(req,targetId){
  return rows?.[0]||null;
 }
 module.exports=async function(req,res){
+ // Admin mode always verifies the existing signed admin cookie server-side.
+ if(req.query?.mode==='admin')return researchAdmin(req,res);
  res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','private, no-store');
  res.setHeader('X-Robots-Tag','noindex,nofollow');
