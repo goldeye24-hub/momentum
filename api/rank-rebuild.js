@@ -73,7 +73,7 @@ async function scan(keyword,target){
     const direct=document.querySelector('li.UEzoS a.vEZDX[href*="/restaurant/"],li.UEzoS a.vEZDX[href*="/place/"]');
     const generic=document.querySelector('[data-nlog-area="mpl_vsl.result"]');
     return !!(direct||generic);
-  },{timeout:9500}).catch(()=>{});
+  },undefined,{timeout:8500}).catch(()=>{});
   diagnostic.initialDOM=await page.evaluate(()=>({
    documentReady:document.readyState,
    title:String(document.title||'').slice(0,100),
