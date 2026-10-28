@@ -21,11 +21,32 @@ const label=value=>{
 };
 const placeId=value=>/^\d{6,20}$/.test(String(value||''))?String(value):null;
 const kst=iso=>new Date(new Date(iso).getTime()+9*3600000).toISOString().slice(0,10);
+// When a new research table hasn't been applied yet, reuse the existing
+// private administrator rank-watch tables. Never swallow permission errors.
+function missingTable(error){
+ return error?.code==='database_error'&&error?.status===404&&
+   (!error.upstreamCode||['PGRST205','PGRST116'].includes(error.upstreamCode));
+}
+async function useExistingWatchStore(){
+ try{
+  await db.request('momentum_research_admin_targets',{query:{select:'id',limit:'1'}});
+  return false;
+ }catch(e){if(!missingTable(e))throw e;return true}
+}
 async function targetFor(id){
  if(!db.uuid(id))return null;
- const rows=await db.request('momentum_research_admin_targets',{
-  query:{select:'id,label,keyword,place_id,created_at',id:'eq.'+id,limit:'1'}});
- return rows?.[0]||null;
+ let legacy=false,rows;
+ try{
+  rows=await db.request('momentum_research_admin_targets',{
+   query:{select:'id,label,keyword,place_id,created_at',id:'eq.'+id,limit:'1'}});
+ }catch(e){
+  if(!missingTable(e))throw e;
+  legacy=true;
+  rows=await db.request('rank_watch_targets',{query:{
+    select:'id,label,keyword,place_id,created_at,scope,active,last_run_at',
+    id:'eq.'+id,scope:'eq.mobile',limit:'1'}});
+ }
+ return rows?.[0]?{...rows[0],_legacy:legacy}:null;
 }
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');
@@ -48,17 +69,35 @@ module.exports=async function(req,res){
  try{
   if(action==='targets'){
    if(req.method==='GET'){
-    const rows=await db.request('momentum_research_admin_targets',{query:{
-     select:'id,label,keyword,place_id,created_at',order:'created_at.desc',limit:'200'}});
+    let rows,legacy=false;
+    try{
+     rows=await db.request('momentum_research_admin_targets',{query:{
+      select:'id,label,keyword,place_id,created_at',order:'created_at.desc',limit:'200'}});
+    }catch(e){
+     if(!missingTable(e))throw e;
+     legacy=true;
+     rows=await db.request('rank_watch_targets',{query:{
+      select:'id,label,keyword,place_id,created_at,scope,active,last_run_at',
+      scope:'eq.mobile',order:'created_at.desc',limit:'20'}});
+    }
     const targets=rows.map(t=>({...t,scope:'mobile'}));
-    return res.status(200).json({status:'ok',plan:'admin',slotLimit:200,usedSlots:targets.length,targets});
+    return res.status(200).json({status:'ok',plan:'admin',store:legacy?'existing_admin_rank_watch':'research_admin',
+      slotLimit:legacy?20:200,usedSlots:targets.length,targets});
    }
    const mode=String(body.action||'');
    if(mode!=='add')return fail(res,400,'invalid_action','지원하지 않는 대상 관리 요청입니다.');
    const name=label(body.label),keyword=kw(body.keyword),id=placeId(body.target);
    if(!name||!keyword||!id)return fail(res,400,'invalid_target','업체명·키워드·플레이스 숫자 ID를 확인하세요.');
-   const rows=await db.request('momentum_research_admin_targets',{method:'POST',
-    body:{label:name,keyword,place_id:id},
+   const legacy=await useExistingWatchStore();
+   if(legacy){
+    const prior=await db.request('rank_watch_targets',{query:{
+      select:'id',keyword:'eq.'+keyword,place_id:'eq.'+id,scope:'eq.mobile',limit:'1'}});
+    if(prior.length)return fail(res,409,'duplicate','이미 등록한 키워드·매장 조합입니다.');
+    const count=await db.request('rank_watch_targets',{query:{select:'id',limit:'21'}});
+    if(count.length>=20)return fail(res,409,'limit_reached','기존 관리자 모니터링은 최대 20개 업체까지 지원합니다.');
+   }
+   const rows=await db.request(legacy?'rank_watch_targets':'momentum_research_admin_targets',{method:'POST',
+    body:legacy?{label:name,keyword,place_id:id,scope:'mobile',active:true}:{label:name,keyword,place_id:id},
     prefer:'return=representation'});
    return res.status(201).json({target:rows?.[0]||null});
   }
@@ -66,11 +105,18 @@ module.exports=async function(req,res){
    const t=await targetFor(String(req.query?.targetId||''));
    if(!t)return fail(res,404,'not_found','등록 매장이 아닙니다.');
    const days=[7,30,90,365].includes(Number(req.query?.days))?Number(req.query.days):30;
-   const rows=await db.request('momentum_research_admin_rank_checks',{query:{
-    select:'id,keyword,place_id,observed_at,rank,status,observed_count',
+   const table=t._legacy?'rank_watch_observations':'momentum_research_admin_rank_checks';
+   const rows=await db.request(table,{query:{
+    select:t._legacy?'id,rank,rank_approximate,status,observed_count,observed_at':
+      'id,keyword,place_id,observed_at,rank,status,observed_count',
     target_id:'eq.'+t.id,observed_at:'gte.'+new Date(Date.now()-days*86400000).toISOString(),
     order:'observed_at.asc',limit:'500'}});
-   return res.status(200).json({status:'ok',target:t,rows,
+   const transformed=t._legacy?rows.map(x=>({
+    ...x,keyword:t.keyword,place_id:t.place_id,
+    status:x.status==='ranked'?'found':x.status==='not_in_block'?'not_found_in_sample':'rank_list_unavailable',
+    rank:x.status==='ranked'?x.rank:null
+   })):rows;
+   return res.status(200).json({status:'ok',target:t,rows:transformed,
     note:'실측 기록만 표시합니다. 미발견 또는 수집 실패는 실제 검색 순위 0위를 뜻하지 않습니다.'});
   }
   if(action==='volume-history'&&req.method==='GET'){
@@ -95,10 +141,26 @@ module.exports=async function(req,res){
    }
    const rank=result.status==='found'&&Number.isInteger(result.observedPosition)?result.observedPosition:null;
    const observedAt=result.observedAt||new Date().toISOString();
-   await db.request('momentum_research_admin_rank_checks',{method:'POST',
-    body:{target_id:t.id,keyword:t.keyword,place_id:t.place_id,observed_at:observedAt,
-     rank,status:result.status,observed_count:Number(result.observedCount)||0},
-    prefer:'return=minimal'});
+   if(t._legacy){
+    const last=Date.parse(t.last_run_at||'');
+    if(Number.isFinite(last)&&Date.now()-last<10*60*1000){
+     return fail(res,429,'slow_down','기존 관리자 모니터링 대상은 10분 간격으로 조회할 수 있습니다.');
+    }
+    const legacyStatus=result.status==='found'?'ranked':
+      result.status==='not_found_in_sample'?'not_in_block':'unavailable';
+    await db.request('rank_watch_observations',{method:'POST',body:{
+      target_id:t.id,rank,status:legacyStatus,scope:'mobile',
+      source:'mobile_place_browser_research',rank_approximate:rank!==null,
+      observed_at:observedAt,observed_count:Number(result.observedCount)||0
+    },prefer:'return=minimal'});
+    await db.request('rank_watch_targets',{method:'PATCH',
+      query:{id:'eq.'+t.id},body:{last_run_at:observedAt},prefer:'return=minimal'});
+   }else{
+    await db.request('momentum_research_admin_rank_checks',{method:'POST',
+     body:{target_id:t.id,keyword:t.keyword,place_id:t.place_id,observed_at:observedAt,
+      rank,status:result.status,observed_count:Number(result.observedCount)||0},
+     prefer:'return=minimal'});
+   }
    return res.status(200).json({status:result.status,saved:true,rank,observedAt,
     observedCount:result.observedCount,message:result.explanation||result.message||'관측 기록 저장 완료'});
   }
