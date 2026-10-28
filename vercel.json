@@ -221,6 +221,18 @@
       "destination": "/api/compact?op=admin-place-keyword-insights"
     },
     {
+      "source": "/admin/research/api",
+      "destination": "/api/research-console?mode=admin"
+    },
+    {
+      "source": "/admin/research",
+      "destination": "/api/admin-site-builder?view=research"
+    },
+    {
+      "source": "/admin/research/",
+      "destination": "/api/admin-site-builder?view=research"
+    },
+    {
       "source": "/api/member-auth",
       "destination": "/api/compact?op=member-auth"
     },
