@@ -67,8 +67,23 @@ async function scan(keyword,target){
   if(diagnostic.httpStatus!==200||new URL(page.url()).hostname!=='m.place.naver.com')
    return {status:'navigation_failed',observedCount:0,diagnostics:diagnostic};
   diagnostic.resolvedUrl=page.url();
-  // Business results only. Nested menu items and promotional links are not cards.
-  await page.locator('ul.eDFz9 > li.UEzoS, li.UEzoS > a.vEZDX[href*="/restaurant/"], li.UEzoS > a.vEZDX[href*="/place/"]').first().waitFor({state:'attached',timeout:5000}).catch(()=>{});
+  // Allow the Naver client to finish hydration. A 200 HTML shell does not mean
+  // business results have arrived; wait for visible card link evidence first.
+  await page.waitForFunction(()=>{
+    const direct=document.querySelector('li.UEzoS a.vEZDX[href*="/restaurant/"],li.UEzoS a.vEZDX[href*="/place/"]');
+    const generic=document.querySelector('[data-nlog-area="mpl_vsl.result"]');
+    return !!(direct||generic);
+  },{timeout:9500}).catch(()=>{});
+  diagnostic.initialDOM=await page.evaluate(()=>({
+   documentReady:document.readyState,
+   title:String(document.title||'').slice(0,100),
+   resultLis:document.querySelectorAll('li.UEzoS').length,
+   cardAnchors:document.querySelectorAll('li.UEzoS a.vEZDX[href*="/restaurant/"],li.UEzoS a.vEZDX[href*="/place/"]').length,
+   businessLinks:document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"]').length,
+   resultMarkers:document.querySelectorAll('[data-nlog-area="mpl_vsl.result"]').length,
+   renderedTextLength:(document.body?.innerText||'').length,
+   iframeCount:document.querySelectorAll('iframe').length
+  }));
   let unchanged=0;
   for(let step=0;step<55;step++){
    diagnostic.scrolls=step;
@@ -79,10 +94,18 @@ async function scan(keyword,target){
     // with the business-detail link a.vEZDX[href*="/restaurant/<id>"].
     const cards=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS')];
     if(!cards.length)cards.push(...document.querySelectorAll('li.UEzoS'));
+    // Defensive fallback for class-renamed top-level business cards. Require a
+    // direct primary anchor AND never treat nested menu/analytics links as a store.
+    if(!cards.length){
+     for(const anchor of document.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"]')){
+      const li=anchor.closest('li');
+      if(li&&!li.closest('li li')&&!cards.includes(li))cards.push(li);
+     }
+    }
     const list=[];
     for(const card of cards){
       const anchor=[...card.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"],a.vEZDX[href*="/hairshop/"],a.vEZDX[href*="/accommodation/"]')]
-        .find(a=>a.closest('li.UEzoS')===card);
+        .find(a=>a.closest('li')===card);
       if(!anchor)continue;
       const href=anchor.getAttribute('href')||'';
       const id=href.match(/\/(?:restaurant|place|hairshop|accommodation)\/(\d{6,20})(?:\/|[?#]|$)/)?.[1];
@@ -119,7 +142,7 @@ async function scan(keyword,target){
    // Never claim that a stable viewport means no more search results.
    if(unchanged>=6){diagnostic.stopReason='no_new_rows_after_scroll';break}
    const movement=await page.evaluate(()=>{
-    const cardNodes=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS')];
+    const cardNodes=[...document.querySelectorAll('ul.eDFz9 > li.UEzoS,li.UEzoS')];
     const last=cardNodes.at(-1),scrollY=window.scrollY;
     for(let el=last;el&&el!==document.documentElement;el=el.parentElement){
      const css=getComputedStyle(el);
@@ -142,9 +165,18 @@ async function scan(keyword,target){
   diagnostic.elapsedMs=Date.now()-started;
   if(rows.length===0){
    diagnostic.stopReason='no_place_cards_detected';
-   return {status:'extraction_failed',observedCount:0,diagnostics:diagnostic,
-    sourceUrl:url,observedAt:new Date().toISOString(),
-    message:'네이버 모바일 목록의 업체 카드를 한 개도 읽지 못했습니다. 순위 미노출이 아니라 수집 실패입니다.'};
+   diagnostic.finalDOM=await page.evaluate(()=>({
+    resultLis:document.querySelectorAll('li.UEzoS').length,
+    primaryAnchors:document.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"]').length,
+    businessLinks:document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"]').length,
+    resultMarkers:document.querySelectorAll('[data-nlog-area="mpl_vsl.result"]').length,
+    renderedTextLength:(document.body?.innerText||'').length,
+    title:String(document.title||'').slice(0,100),
+    visibleChallenge:/(비정상적인 접근|보안 문자|자동화된 접근|서비스 이용이 제한|captcha)/i.test((document.body?.innerText||'').slice(0,900))
+   }));
+   return {status:diagnostic.finalDOM.visibleChallenge?'provider_blocked':'extraction_failed',
+    observedCount:0,diagnostics:diagnostic,sourceUrl:url,observedAt:new Date().toISOString(),
+    message:diagnostic.finalDOM.visibleChallenge?'네이버 화면에 접근 제한 안내가 표시되어 자동 검색을 중단했습니다.':'네이버 모바일 업체 카드가 서버 브라우저에서 확인되지 않았습니다. 0위나 미노출이 아닌 수집 실패입니다.'};
   }
   return {...evaluate(rows,target,diagnostic),sourceUrl:url,observedAt:new Date().toISOString(),mode:'anonymous_mobile_browser'};
  }catch(err){
