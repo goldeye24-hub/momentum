@@ -1,0 +1,167 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>모멘텀 · 순위·검색량 모니터링</title>
+<style>
+:root{font-family:"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:#1b2940;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}.hidden{display:none!important}.app{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}.side{padding:24px 13px;background:#fff;border-right:1px solid #e6eaf2}.brand{color:#673cd9;font-weight:900;font-size:21px;padding:6px 10px}.caption{font-size:12px;color:#8b94a5;margin:5px 10px 26px}.nav{display:block;width:100%;padding:13px;border:0;border-radius:9px;background:transparent;text-align:left;font-size:14px;font-weight:700;margin-bottom:7px;color:#5a6982}.nav.active{background:#efe9ff;color:#6336d6}.nav:hover{background:#f5f1ff}.side-info{font-size:12px;color:#8a96a9;line-height:1.7;margin:40px 10px}.content{padding:25px;max-width:1660px;width:100%;margin:auto}.top,.panel,.tools{background:#fff;border:1px solid #e3e9f2;border-radius:15px}.top{padding:21px 25px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.top h1{font-size:23px;letter-spacing:-.6px;margin:2px 0 8px}.top p{margin:0;color:#738198;font-size:13px}.tools{padding:15px;margin-bottom:14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.group{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn{border-radius:8px;padding:10px 13px;background:white;border:1px solid #dfe6f0;color:#41536e;font-size:13px;font-weight:800}.btn.primary{color:white;background:#6336d7;border-color:#6336d7}.btn:disabled{opacity:.5}.btn.selected{background:#efe9ff;border-color:#d8c4ff;color:#6336d7}input,select{border:1px solid #dbe3ed;border-radius:8px;padding:10px;min-width:0}input:focus{outline:2px solid #e0d3ff}label{font-size:12px;font-weight:750;color:#66758b}.layout{display:grid;grid-template-columns:258px minmax(0,1fr);gap:14px}.panel{padding:20px;min-width:0}.list{padding:12px;min-height:520px}.list-title{padding:9px 9px 15px;border-bottom:1px solid #e4e9f2;font-size:13px;font-weight:800}.item{width:100%;text-align:left;background:transparent;border:0;padding:13px 9px;border-radius:8px;margin:4px 0}.item.selected{background:#ece9ff;border-left:3px solid #6336d7}.item strong{display:block;font-size:13px}.item small{color:#8994a7;font-size:11px}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h2{font-size:18px;margin:0 0 6px}h3{font-size:14px;margin:20px 0 9px}.muted{font-size:12px;color:#8090a1}.hint{color:#6b7391;background:#f6f5fb;padding:13px 15px;border-radius:9px;font-size:12px;line-height:1.6;margin:13px 0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:18px 0}.metric{background:#f5f7fb;border:1px solid #ecf0f6;border-radius:10px;padding:16px}.metric small{display:block;font-size:12px;color:#8090a1}.metric strong{display:block;font-size:25px;margin:6px 0}.chart{border:1px solid #e6ebf2;padding:12px;border-radius:10px}.chart svg{width:100%;height:auto;display:block}.daily{display:flex;gap:8px;overflow-x:auto}.day{flex:1;min-width:105px;border:1px solid #e4e9f3;border-radius:9px;text-align:center;padding:13px 8px}.day small,.day span{font-size:11px;color:#7b8ca3}.day strong{display:block;margin:7px 0}table{border-collapse:collapse;width:100%;min-width:610px;font-size:12px}th,td{padding:11px;border-bottom:1px solid #e7ebf2;text-align:left}thead{background:#f5f7fb;color:#64748b}.scroll{overflow:auto;max-height:430px}.formbox{margin-bottom:13px}.auth{max-width:480px;margin:45px auto}.auth input{display:block;width:100%;margin:6px 0 14px}.foot{color:#909cae;font-size:11px;margin:20px 0;line-height:1.7}@media(max-width:850px){.app{grid-template-columns:1fr}.side{display:flex;align-items:center;flex-wrap:wrap;padding:8px}.brand{font-size:17px}.caption,.side-info{display:none}.nav{width:auto;font-size:12px}.content{padding:12px}.layout{grid-template-columns:1fr}.list{min-height:0}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="app">
+<aside class="side"><div class="brand">MOMENTUM LAB</div><div class="caption">계정별 검색 데이터 모니터링</div>
+<button class="nav active" id="navRank">▥ 플레이스 순위 모니터링</button><button class="nav" id="navVolume">▤ 월간 키워드 검색량</button>
+<a class="nav" href="/rank-rebuild/">⌕ 단건 순위 조회</a><a class="nav" target="_blank" rel="noopener noreferrer" href="https://datalab.naver.com/keyword/trendSearch.naver">↗ 네이버 데이터랩</a><div class="side-info" id="sideInfo">로그인 계정마다 매장과 조회 기록을 별도로 저장합니다.</div></aside>
+<main class="content"><div class="top"><div><h1 id="title">플레이스 순위 모니터링</h1><p>실제 조회 데이터만 기록 · 광고 제외 공식 순위가 아닌 모바일 목록 관측값</p></div><div class="group"><span class="muted" id="userLabel">로그인 확인 중</span><button class="btn hidden" id="logout">로그아웃</button></div></div>
+<div class="panel auth hidden" id="authBox"><h2>회원 로그인</h2><p class="muted" style="line-height:1.7">아이디별 매장·검색어·기록을 분리합니다. 회원 DB가 연결되지 않은 경우 저장 기능은 열리지 않습니다.</p><div class="hint" id="authMsg">인증 상태 확인 중</div><form id="authForm"><label>이메일<input type="email" id="email" autocomplete="username" required></label><label>비밀번호<input type="password" id="password" autocomplete="current-password" minlength="10" required></label><button class="btn primary" type="submit">로그인</button><button class="btn" type="button" id="signup">회원가입 요청</button></form></div>
+<div id="main" class="hidden">
+<section id="rankPage"><div class="tools"><div class="group"><input id="filter" placeholder="매장·키워드 검색" aria-label="매장 검색"><select id="sort"><option value="recent">최근 등록 순서</option><option value="name">이름순</option></select><span class="muted" id="slot"></span></div><button class="btn primary" id="addToggle">＋ 매장 등록</button></div>
+<div class="panel formbox hidden" id="addBox"><h2>추적 매장·키워드 등록</h2><form id="addForm" class="group"><label>표시 이름 <input id="label" placeholder="예: 퐝물회 · 포항맛집" maxlength="70" required></label><label>검색어 <input id="keyword" placeholder="포항맛집" maxlength="60" required></label><label>숫자 플레이스 ID <input id="placeId" pattern="[0-9]{6,20}" placeholder="2085358113" required></label><button class="btn primary" type="submit">등록</button></form><p class="muted">동일 업체를 다른 키워드로 추적하려면 별도로 등록합니다.</p></div>
+<div class="layout"><div class="panel list"><div class="list-title">등록 매장·키워드 <span id="totalTargets">0개</span></div><div id="targetList" class="muted" style="padding:13px">등록된 매장이 없습니다.</div></div>
+<div class="panel"><div class="row"><div><h2 id="storeTitle">매장을 선택하세요</h2><div class="muted" id="storeSub">좌측 등록 목록에서 선택하세요.</div></div><div class="group">
+<button class="btn selected" data-period="7">7일</button><button class="btn" data-period="30">30일</button><button class="btn" data-period="90">90일</button><button class="btn" data-period="365">1년</button><button class="btn primary" id="measureRank" disabled>지금 측정·저장</button><button class="btn" id="rankCsv" disabled>CSV</button></div></div>
+<div id="rankMsg" class="hint">순위 측정이 없었던 날짜는 빈칸으로 표시합니다. 자동 측정은 별도 설정이 필요합니다.</div>
+<div class="metrics"><div class="metric"><small>최근 관측 순위</small><strong id="lastRank">—</strong></div><div class="metric"><small>관측 최고 순위</small><strong id="bestRank">—</strong></div><div class="metric"><small>직전 측정 대비</small><strong id="rankDiff">—</strong></div><div class="metric"><small>선택 기간 측정</small><strong id="rankCount">0건</strong></div></div>
+<div class="chart"><div class="muted">● 모바일 플레이스 목록 관측 순위 (숫자가 낮을수록 상위)</div><svg id="rankChart" viewBox="0 0 850 265" role="img" aria-label="순위 날짜별 그래프"></svg></div>
+<h3>최근 7일</h3><div class="daily" id="daily"></div><h3>날짜별 순위 기록</h3>
+<div class="scroll"><table><thead><tr><th>측정 일시</th><th>키워드</th><th>플레이스 ID</th><th>순위</th><th>확인 업체 수</th><th>상태</th></tr></thead><tbody id="rankBody"></tbody></table></div>
+</div></div></section>
+<section id="volumePage" class="hidden"><div class="panel"><div class="row"><div><h2>키워드 월간 검색량 · 날짜별 기록</h2><p class="muted">기록 날짜 = 최근 한 달 검색량을 조회한 날짜입니다. 해당 날짜의 일별 검색 횟수가 아닙니다.</p></div></div>
+<form id="volumeForm" class="group" style="margin-top:24px"><label>검색어 <input id="volumeKeyword" value="포항맛집" required maxlength="40"></label><label>기간 <select id="volumeDays"><option value="7">7일</option><option value="30">30일</option><option value="90" selected>90일</option><option value="365">1년</option></select></label><button class="btn primary" type="submit" id="measureVolume">오늘 검색량 조회·저장</button><button class="btn" type="button" id="loadVolume">기록 보기</button><button class="btn" type="button" id="volumeCsv">CSV</button></form>
+<div id="volumeMsg" class="hint">네이버 검색광고 API에서 받은 값만 저장합니다. 같은 검색어는 하루 한 번 기록합니다.</div>
+<div class="metrics" style="grid-template-columns:repeat(3,1fr)"><div class="metric"><small>PC 최근 월간</small><strong id="lastPc">—</strong></div><div class="metric"><small>모바일 최근 월간</small><strong id="lastMobile">—</strong></div><div class="metric"><small>월간 합계</small><strong id="lastTotal">—</strong></div></div>
+<div class="chart"><div class="muted">● PC (파랑) &nbsp; ● 모바일 (초록) &nbsp; ● 합계 (보라)</div><svg id="volumeChart" viewBox="0 0 850 265" role="img" aria-label="월간 검색량 조회일별 추이"></svg></div>
+<h3>날짜별 키워드 검색량 기록</h3><div class="scroll"><table><thead><tr><th>측정 날짜</th><th>검색어</th><th>PC 최근 월간</th><th>모바일 최근 월간</th><th>월간 합계</th><th>측정 시각</th></tr></thead><tbody id="volumeBody"></tbody></table></div>
+</div></section>
+</div><p class="foot">모멘텀 내부 연구용 · 검색 데이터의 수집 제한과 개인화 영향이 있습니다. 검증되지 않은 공식 순위를 보장하지 않습니다.</p>
+</main></div>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var escape=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});};
+var account=null,targets=[],active=null,ranking=[],volumes=[],period=7;
+var dateKst=function(d){return new Date(new Date(d).getTime()+9*3600000).toISOString().slice(0,10);};
+var when=function(d){return d?new Date(d).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';};
+var fmt=function(n){return typeof n==='number'?n.toLocaleString('ko-KR'):String(n==null?'—':n);};
+function message(id,t){$(id).textContent=t;}
+async function call(action,options){
+ options=options||{};var q=new URLSearchParams({action:action});
+ Object.keys(options.query||{}).forEach(function(key){q.set(key,options.query[key])});
+ var conf={method:options.method||'GET',credentials:'same-origin',headers:{Accept:'application/json'}};
+ if(conf.method==='POST'){conf.headers['Content-Type']='application/json';conf.body=JSON.stringify(options.body||{})}
+ var r=await fetch('/api/research-console?'+q.toString(),conf),data={};
+ try{data=await r.json()}catch(e){}
+ if(!r.ok)throw new Error(data.message||data.error||'서버 응답 오류 ('+r.status+')');
+ return data;
+}
+function showAuth(logged){
+ $('authBox').classList.toggle('hidden',logged);$('main').classList.toggle('hidden',!logged);$('logout').classList.toggle('hidden',!logged);
+ message('userLabel',logged?account.email:'로그인 필요');
+ message('sideInfo',logged?account.email+' · 계정별 분리 저장':'로그인하면 매장·키워드 기록이 계정별로 분리됩니다.');
+}
+async function init(){
+ try{var s=await call('auth');if(!s.authenticated){showAuth(false);message('authMsg','로그인 후 매장별 기록을 사용할 수 있습니다.');return}
+ account=s;showAuth(true);await fetchTargets();}
+ catch(e){showAuth(false);message('authMsg','회원 인증 또는 DB 연결 상태 확인 필요: '+e.message)}
+}
+$('authForm').addEventListener('submit',async function(e){
+ e.preventDefault();try{account=await call('auth',{method:'POST',body:{action:'login',email:$('email').value.trim(),password:$('password').value}});$('password').value='';showAuth(true);await fetchTargets()}catch(err){message('authMsg',err.message)}
+});
+$('signup').onclick=async function(){try{var r=await call('auth',{method:'POST',body:{action:'signup',email:$('email').value.trim(),password:$('password').value}});message('authMsg',r.message||'인증 이메일을 확인하세요.')}catch(e){message('authMsg',e.message)}};
+$('logout').onclick=async function(){try{await call('auth',{method:'POST',body:{action:'logout'}})}catch(e){}account=null;showAuth(false);message('authMsg','로그아웃했습니다.')};
+function page(name){
+ $('rankPage').classList.toggle('hidden',name!=='rank');$('volumePage').classList.toggle('hidden',name!=='volume');
+ $('navRank').classList.toggle('active',name==='rank');$('navVolume').classList.toggle('active',name==='volume');
+ message('title',name==='rank'?'플레이스 순위 모니터링':'월간 키워드 검색량 이력');
+ if(name==='volume')loadVolume();
+}
+$('navRank').onclick=function(){page('rank')};$('navVolume').onclick=function(){page('volume')};
+$('addToggle').onclick=function(){$('addBox').classList.toggle('hidden')};
+$('filter').oninput=renderList;$('sort').onchange=renderList;
+$('addForm').addEventListener('submit',async function(e){
+ e.preventDefault();try{var v=await call('targets',{method:'POST',body:{action:'add',label:$('label').value.trim(),keyword:$('keyword').value.trim(),target:$('placeId').value.trim()}});
+ $('addForm').reset();$('addBox').classList.add('hidden');await fetchTargets();if(v.target&&v.target.id)choose(v.target.id);
+ }catch(err){message('rankMsg',err.message)}
+});
+async function fetchTargets(){
+ var data=await call('targets');targets=data.targets||[];
+ message('slot','등록 '+(data.usedSlots||0)+' / '+(data.slotLimit||0)+'개');renderList();
+ var found=active&&targets.find(function(t){return t.id===active.id});if(found)choose(found.id);else if(targets.length)choose(targets[0].id);else {active=null;ranking=[];drawRank()}
+}
+function renderList(){
+ var f=$('filter').value.toLowerCase();
+ var list=targets.filter(function(t){return (t.label+' '+t.keyword+' '+(t.place_id||'')).toLowerCase().includes(f)});
+ if($('sort').value==='name')list.sort(function(a,b){return a.label.localeCompare(b.label,'ko')});
+ message('totalTargets',list.length+'개');
+ $('targetList').innerHTML=list.length?list.map(function(t){
+  return '<button class="item '+(active&&active.id===t.id?'selected':'')+'" data-id="'+escape(t.id)+'"><strong>'+escape(t.label)+'</strong><small>'+escape(t.keyword)+' · '+escape(t.place_id||t.target_name||'')+'</small></button>';
+ }).join(''):'<div class="muted">등록된 업체가 없습니다.</div>';
+ $('targetList').querySelectorAll('[data-id]').forEach(function(el){el.onclick=function(){choose(el.dataset.id)}});
+}
+async function choose(id){
+ active=targets.find(function(t){return t.id===id});if(!active)return;renderList();
+ message('rankMsg','저장된 기록을 불러오고 있습니다.');ranking=[];drawRank();await loadRank();
+}
+async function loadRank(){
+ if(!active)return;
+ try{var r=await call('rank-history',{query:{targetId:active.id,days:period}});ranking=r.rows||[];message('rankMsg',r.note||'실측 결과만 표시됩니다.')}
+ catch(e){ranking=[];message('rankMsg','순위 기록 조회 불가: '+e.message)}drawRank();
+}
+document.querySelectorAll('[data-period]').forEach(function(b){b.onclick=function(){period=Number(b.dataset.period);document.querySelectorAll('[data-period]').forEach(function(x){x.classList.toggle('selected',x===b)});loadRank()}});
+$('measureRank').onclick=async function(){
+ if(!active)return;var b=this;b.disabled=true;message('rankMsg','실제 모바일 검색 목록 측정 중…');
+ try{var r=await call('scan-rank',{method:'POST',body:{targetId:active.id}});await loadRank();message('rankMsg',r.message||'기록 저장 완료')}
+ catch(e){message('rankMsg','측정 실패: '+e.message)}finally{b.disabled=false}
+};
+function graph(id,series,inverse){
+ var svg=$(id);
+ if(!series.length){svg.innerHTML='<text x="425" y="130" text-anchor="middle" font-size="15" fill="#8a98a9">저장된 실측 값이 없습니다</text>';return}
+ var all=series.map(function(p){return p.value}),min=Math.min.apply(null,all),max=Math.max.apply(null,all),lo=Math.max(0,min-(max-min||1)*.25),hi=max+(max-min||1)*.25;
+ var xx=function(i){return 60+(series.length===1?.5:i/(series.length-1))*760};
+ var yy=function(y){return inverse?30+(y-lo)/Math.max(1,hi-lo)*186:216-(y-lo)/Math.max(1,hi-lo)*186};
+ var body='';
+ for(var k=0;k<5;k++){var tick=lo+(hi-lo)*k/4,y=yy(tick);
+  body+='<line x1="60" x2="820" y1="'+y+'" y2="'+y+'" stroke="#e5eaf2"/><text x="53" y="'+(y+4)+'" font-size="11" text-anchor="end" fill="#7b8b9d">'+Math.round(tick)+'</text>'}
+ var path=series.map(function(p,i){return (i?'L':'M')+xx(i).toFixed(1)+' '+yy(p.value).toFixed(1)}).join(' ');
+ body+='<path d="'+path+'" fill="none" stroke="#305edc" stroke-width="3"/>';
+ var last=series.length-1;
+ [0,Math.floor(last/2),last].filter(function(v,i,a){return a.indexOf(v)===i}).forEach(function(i){body+='<text x="'+xx(i)+'" y="250" font-size="11" text-anchor="middle" fill="#8190a0">'+escape(series[i].date)+'</text>'});
+ svg.innerHTML=body;
+}
+function drawRank(){
+ message('storeTitle',active?active.label:'매장을 선택하세요');
+ message('storeSub',active?active.keyword+' · '+active.place_id:'등록 업체를 선택하세요.');
+ $('measureRank').disabled=!active||!active.place_id;
+ $('rankCsv').disabled=!ranking.length;
+ var valid=ranking.filter(function(x){return Number.isInteger(x.rank)&&x.rank>0}).sort(function(a,b){return a.observed_at.localeCompare(b.observed_at)});
+ var last=valid[valid.length-1],prev=valid[valid.length-2];
+ message('lastRank',last?last.rank+'위':'—');message('bestRank',valid.length?Math.min.apply(null,valid.map(function(x){return x.rank}))+'위':'—');
+ message('rankDiff',last&&prev?(prev.rank-last.rank>0?'↑ ':'↓ ')+Math.abs(prev.rank-last.rank)+'위':'—');message('rankCount',ranking.length+'건');
+ graph('rankChart',valid.map(function(x){return {date:dateKst(x.observed_at),value:x.rank}}),true);
+ var byDate=new Map();ranking.forEach(function(r){byDate.set(dateKst(r.observed_at),r)});
+ var html='';for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var key=dateKst(d),r=byDate.get(key);
+ html+='<div class="day"><small>'+escape(key.slice(5))+'</small><strong>'+(r?(r.rank?r.rank+'위':'미발견'):'미측정')+'</strong><span>'+(r?'기록 있음':'기록 없음')+'</span></div>'}
+ $('daily').innerHTML=html;
+ $('rankBody').innerHTML=ranking.length?ranking.slice().reverse().map(function(x){return '<tr><td>'+escape(when(x.observed_at))+'</td><td>'+escape(x.keyword)+'</td><td>'+escape(x.place_id)+'</td><td>'+(x.rank?x.rank+'위':'—')+'</td><td>'+fmt(x.observed_count)+'</td><td>'+escape(x.status)+'</td></tr>'}).join(''):'<tr><td colspan="6">측정 기록 없음</td></tr>';
+}
+async function loadVolume(){
+ var key=$('volumeKeyword').value.trim();if(key.length<2)return;
+ try{var r=await call('volume-history',{query:{keyword:key,days:$('volumeDays').value}});volumes=r.rows||[];message('volumeMsg',r.note||'저장된 조회 이력입니다.')}
+ catch(e){volumes=[];message('volumeMsg','검색량 기록 조회 불가: '+e.message)}drawVolume();
+}
+function drawVolume(){
+ var ordered=volumes.slice().sort(function(a,b){return a.measured_date.localeCompare(b.measured_date)}),last=ordered[ordered.length-1];
+ message('lastPc',last?last.pc_raw:'—');message('lastMobile',last?last.mobile_raw:'—');message('lastTotal',last&&last.total_count!=null?fmt(last.total_count):'—');
+ var graphItems=ordered.filter(function(r){return r.total_count!=null}).map(function(r){return {date:r.measured_date,value:Number(r.total_count)}});
+ graph('volumeChart',graphItems,false);
+ $('volumeBody').innerHTML=ordered.length?ordered.reverse().map(function(r){return '<tr><td>'+escape(r.measured_date)+'</td><td>'+escape(r.keyword)+'</td><td>'+escape(r.pc_raw)+'</td><td>'+escape(r.mobile_raw)+'</td><td>'+fmt(r.total_count)+'</td><td>'+escape(when(r.observed_at))+'</td></tr>'}).join(''):'<tr><td colspan="6">조회 기록 없음</td></tr>';
+}
+$('volumeForm').addEventListener('submit',async function(e){
+ e.preventDefault();var b=$('measureVolume');b.disabled=true;message('volumeMsg','네이버 검색광고 API 조회 및 날짜별 저장 중…');
+ try{var r=await call('scan-volume',{method:'POST',body:{keyword:$('volumeKeyword').value.trim()}});await loadVolume();message('volumeMsg',r.note||'저장 완료')}
+ catch(e){message('volumeMsg','검색량 조회·저장 실패: '+e.message)}finally{b.disabled=false}
+});
+$('loadVolume').onclick=loadVolume;$('volumeDays').onchange=loadVolume;
+function saveCsv(filename,head,rows){
+ var lines=[head].concat(rows).map(function(row){return row.map(function(value){var s=String(value==null?'':value).replace(/^[\s]*[=+\-@]/,"'");return '"'+s.replace(/"/g,'""')+'"'}).join(',')}).join('\r\n');
+ var blob=new Blob(['\ufeff'+lines],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+$('rankCsv').onclick=function(){if(!active)return;saveCsv('rank-'+active.id+'.csv',['측정 시각','검색어','플레이스ID','관측순위','상태','확인업체수'],ranking.map(function(r){return [r.observed_at,r.keyword,r.place_id,r.rank,r.status,r.observed_count]}))};
+$('volumeCsv').onclick=function(){saveCsv('keyword-volume.csv',['측정일','검색어','PC월간','모바일월간','월간합계','측정시각'],volumes.map(function(r){return [r.measured_date,r.keyword,r.pc_raw,r.mobile_raw,r.total_count,r.observed_at]}))};
+graph('rankChart',[],true);graph('volumeChart',[],false);init();
+})();
+</script></body></html>
