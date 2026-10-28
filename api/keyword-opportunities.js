@@ -5,7 +5,6 @@
  * Never equate heuristic opportunity with real demand/rank.
  */
 const crypto=require('node:crypto');
-const limits=new Map();
 const cut=(v,n=80)=>String(v??'').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/g,' ').slice(0,n);
 const regions=['서울','강남','서초','송파','홍대','마포','성수','종로','부산','해운대','광안리','수영','서면','사상','동래','연산동','기장','김해','양산','창원','마산','울산','대구','경주','포항','경산','구미','대전','청주','천안','세종','광주','여수','순천','전주','익산','제주','서귀포','수원','성남','분당','판교','동탄','용인','화성','안양','광명','부천','일산','파주','고양','김포','인천','부평','의정부','남양주','평택','안성','원주','강릉','속초','춘천','삼척','진주','거제','통영','목포','군산'];
 const kinds=[
@@ -89,19 +88,12 @@ function joinAds(data,ads){
  }
  return data;
 }
-function tooMany(ip){
- const now=Date.now();if(limits.size>1500){for(const [k,v] of limits)if(now-v.window>90000)limits.delete(k)}
- const record=limits.get(ip)||{window:now,count:0};
- if(now-record.window>60000){record.window=now;record.count=0}
- record.count++;limits.set(ip,record);return record.count>20;
-}
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','private, no-store');
  if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'POST 요청만 가능합니다.'})}
  const origin=req.headers?.origin;const host=req.headers?.host||'';
  if(origin){try{if(new URL(origin).host!==host)return res.status(403).json({error:'허용되지 않은 출처입니다.'})}catch{return res.status(403).json({error:'요청 출처 오류'})}}
- const ip=String(req.headers?.['x-forwarded-for']||'local').split(',')[0].slice(0,65);
- if(tooMany(ip))return res.status(429).json({error:'잠시 후 다시 검색해 주세요.'});
+ // Public first-party keyword planning is not gated by login or a per-user usage quota.
  let body=req.body;if(typeof body==='string'){if(body.length>3500)return res.status(413).json({error:'입력이 너무 깁니다.'});try{body=JSON.parse(body)}catch{return res.status(400).json({error:'JSON 오류'})}}
  if(!body||Array.isArray(body)||typeof body!=='object')return res.status(400).json({error:'키워드 입력이 필요합니다.'});
  try{
