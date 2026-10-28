@@ -17,7 +17,7 @@
 <p class="helper">최대 300개 항목 수집을 시도합니다. 서버 실행 시간·네이버의 추가 로딩 구조에 따라 더 적게 수집할 수 있습니다.</p>
 <div id="message" role="status" class="notice">입력값을 확인하고 자동 조회 버튼을 누르세요.</div>
 <div id="result" class="results hidden">
- <div class="state"><div class="statuslabel">관측 결과</div><div class="big" id="rankValue">—</div><p id="resultDesc" class="statusdesc"></p></div>
+ <div class="state"><div class="statuslabel" id="rankStatusLabel">관측 결과</div><div class="big" id="rankValue">—</div><p id="resultDesc" class="statusdesc"></p></div>
  <div class="stats"><div class="stat"><small>실제 수집 업체</small><b id="observedCount">—</b></div><div class="stat"><small>검사한 화면</small><b id="scrollCount">—</b></div><div class="stat"><small>측정 소요</small><b id="elapsed">—</b></div></div>
  <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div><div class="detail"><span>네이버 페이지 응답</span><strong id="httpStatus">—</strong></div><div class="detail"><span>유효 업체 링크</span><strong id="cardsDetected">—</strong></div><div class="detail"><span>상호명 확인된 링크</span><strong id="namedLinks">—</strong></div><div class="detail"><span>순위 목록 식별</span><strong id="rankListFound">—</strong></div></div>
 </div><div style="margin-top:17px"><button type="button" class="secondary" id="debugToggle">수집 진단 정보 보기</button></div></div>
@@ -39,7 +39,8 @@ function display(data){
  const found=data.status==='found'&&Number.isInteger(data.observedPosition);
  const linkOnly=data.status==='found_without_rank';
  const scanOk=['found','not_found_in_sample','ambiguous'].includes(data.status);
- $('rankValue').textContent=linkOnly?'업체 발견 · 순위 미확인':!scanOk?'자동 수집 실패':found?'약 '+data.observedPosition+'번째':'이번 수집 범위에서 미발견';
+ $('rankStatusLabel').textContent=found?'관측 순위 · 실제 순위 검증 전':'관측 결과';
+ $('rankValue').textContent=linkOnly?'업체 발견 · 순위 미확인':!scanOk?'자동 수집 실패':found?data.observedPosition.toLocaleString('ko-KR')+'위':'이번 수집 범위에서 미발견';
  $('resultDesc').textContent=data.explanation||data.message||'검색 목록의 관측 상태를 확인하세요.';
  $('observedCount').textContent=scanOk?Number(data.observedCount||0).toLocaleString('ko-KR')+'곳':'확인 실패';
  $('scrollCount').textContent=(data.diagnostics?.scrolls??0)+'회';
