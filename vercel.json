@@ -407,6 +407,10 @@
     "api/compact.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    },
+    "api/research-place-mobile.js": {
+      "maxDuration": 30,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     }
   }
 }
