@@ -337,6 +337,18 @@
       "destination": "/api/admin-site-builder?view=keywords"
     },
     {
+      "source": "/admin/research/api",
+      "destination": "/api/research-admin"
+    },
+    {
+      "source": "/admin/research",
+      "destination": "/api/admin-site-builder?view=research"
+    },
+    {
+      "source": "/admin/research/",
+      "destination": "/api/admin-site-builder?view=research"
+    },
+    {
       "source": "/admin/connection/api",
       "destination": "/api/compact?op=admin-connection"
     },
@@ -407,6 +419,13 @@
     "api/compact.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    },
+    "api/research-admin.js": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**",
+      "regions": [
+        "icn1"
+      ]
     }
   }
 }
