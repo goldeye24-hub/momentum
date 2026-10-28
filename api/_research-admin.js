@@ -9,6 +9,7 @@ const member=require('./_member-session');
 const db=require('./_rank-store');
 const place=require('./rank-rebuild');
 const searchVolume=require('./_research-volume-core');
+const reviewCounts=require('./_place-review-counts');
 const lastCall=new Map();
 const fail=(res,status,code,message)=>res.status(status).json({status:code,message});
 const kw=value=>{
@@ -101,6 +102,21 @@ module.exports=async function(req,res){
    pc_raw:result.pcRaw,mobile_raw:result.mobileRaw,pc_count:result.pc,
    mobile_count:result.mobile,total_count:result.total
   },note:'실제 검색광고 API 값입니다. 브라우저 임시 기록으로만 보관할 수 있습니다.'});
+ }
+ // Read only explicitly labelled public counts, never accept a number from the browser.
+ if(action==='scan-review-counts'&&req.method==='POST'){
+  const body=req.body&&typeof req.body==='object'?req.body:
+   typeof req.body==='string'?(()=>{try{return JSON.parse(req.body)}catch{return {}}})():{};
+  const id=placeId(body?.placeId);
+  if(!id)return fail(res,400,'invalid_place_id','숫자 플레이스 ID를 확인해 주세요.');
+  if(Date.now()-(lastCall.get('reviews')||0)<12000)return fail(res,429,'slow_down','리뷰 수량 조회는 최소 12초 간격으로 진행합니다.');
+  lastCall.set('reviews',Date.now());
+  const result=await reviewCounts.observe(id);
+  if(result.status==='blocked')return fail(res,503,'provider_blocked','네이버에서 자동 접근을 제한했습니다. 반복 조회하지 마세요.');
+  return res.status(200).json({...result,placeId:id,saved:false,
+   message:result.visitorCount===null&&result.blogCount===null?
+    '공개 페이지에서 명확하게 표시된 리뷰 수를 식별하지 못했습니다. 추정값은 저장하지 않습니다.':
+    '공개 화면에서 명시적으로 확인된 리뷰 수만 반환했습니다.'});
  }
  if(!db.config())return fail(res,503,'database_not_configured','관리자 기록 DB 연결이 필요합니다.');
  const body=req.method==='POST'?
