@@ -24,7 +24,38 @@
 <div class="panel hidden" id="debugPanel"><div class="actions"><div><h2>수집 진단 내역</h2><p class="hint">최초 발견된 업체 15곳. 전체 순위나 자연검색 순위로 확정하지 않습니다.</p></div><span id="sampleLabel" class="pill">수집 전</span></div><div id="sampleEmpty" class="empty">조회 후 실제 업체 목록이 표시됩니다.</div><div class="table-wrap"><table id="sampleTable" class="hidden"><thead><tr><th>관측 순서</th><th>매장명</th><th>플레이스 ID</th><th>광고 표시</th></tr></thead><tbody id="sampleRows"></tbody></table></div></div>
 </section>
 <section id="volumeTab" class="hidden"><div class="panel"><h2>네이버 키워드 월간 검색량</h2><p>PC·모바일 월간 검색량은 네이버 검색광고 키워드 도구의 인증된 자료를 사용해야 합니다. 현재 연구 환경에는 검색광고 인증 키가 연결되어 있지 않아 실제 조회 기능을 활성화하지 않았습니다.</p><div class="notice">연결 대기 · 인증된 검색량을 제공하기 전까지 수치를 생성하지 않습니다.</div></div></section>
-<section id="trendsTab" class="hidden"><div class="panel"><h2>키워드 검색 추이</h2><p>네이버 데이터랩의 검색 관심도 추이는 월간 검색 건수와 다른 지표입니다. 데이터랩 연동 전에는 그래프를 임의 생성하지 않습니다.</p><a class="secondary" style="display:inline-block;margin-top:20px" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 데이터랩에서 확인 ↗</a></div></section>
+<section id="trendsTab" class="hidden">
+<div class="panel">
+<h2>네이버 데이터랩 · 화면 안에서 보기</h2>
+<p class="hint">네이버 원본 검색어 트렌드 페이지를 아래 프레임에 표시합니다. 네이버가 다른 사이트의 프레임 표시를 차단하는 경우에는 원본 사이트로 이동해야 합니다.</p>
+<div class="controls" style="margin-top:18px">
+<button type="button" id="openTrendFrame" class="primary">데이터랩 원본 프레임 열기</button>
+<a class="secondary" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 원본 사이트 열기 ↗</a>
+</div>
+<p id="frameStatus" class="notice" role="status">프레임 표시 가능 여부는 아직 확인하지 않았습니다.</p>
+<div id="trendFrameWrap" class="hidden" style="margin-top:18px;border:1px solid #d5ddea;border-radius:12px;overflow:hidden">
+<iframe id="trendFrame" title="네이버 데이터랩 원본 검색어 트렌드" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:720px;border:0;display:block;background:white"></iframe>
+</div>
+<p id="frameCaveat" class="helper hidden">화면이 비거나 접속 거부 메시지가 나타나면 네이버의 프레임 표시 제한입니다. 위의 '네이버 원본 사이트 열기'를 이용하세요.</p>
+</div>
+<div class="panel">
+<h2>모멘텀 내부 검색어 추이 그래프</h2>
+<p class="hint">공식 네이버 데이터랩 API로 검색 관심도 지수(0~100)를 직접 그래프로 표시합니다. 절대 검색량과 다릅니다.</p>
+<form id="trendsForm">
+<div class="form"><label>첫 번째 검색어<input id="trendKeyword1" value="포항맛집" maxlength="40" required></label>
+<label>비교 검색어 (선택)<input id="trendKeyword2" value="포항대게" maxlength="40"></label></div>
+<div class="controls">
+<label style="min-width:140px">기간<select id="trendRange" style="width:100%;border:1px solid #d5ddea;border-radius:11px;padding:12px;margin-top:8px"><option value="m1">최근 1개월</option><option value="m3">최근 3개월</option><option value="y1" selected>최근 1년</option><option value="y3">최근 3년</option></select></label>
+<label style="min-width:140px">검색 환경<select id="trendDevice" style="width:100%;border:1px solid #d5ddea;border-radius:11px;padding:12px;margin-top:8px"><option value="all">전체</option><option value="mo">모바일</option><option value="pc">PC</option></select></label>
+<button type="submit" class="primary" id="trendsSubmit" style="align-self:end">검색 추이 조회</button>
+</div></form>
+<div id="trendApiStatus" class="notice" role="status">네이버 공식 API 인증정보가 연결되면 실제 검색 추이를 조회할 수 있습니다.</div>
+<div id="trendChartWrap" class="hidden" style="margin-top:18px;background:#f8fafc;border:1px solid #e4eaf2;border-radius:14px;padding:18px">
+<div id="trendLegend" style="display:flex;gap:15px;flex-wrap:wrap;font-size:13px;font-weight:750"></div>
+<svg id="trendChart" viewBox="0 0 760 290" role="img" aria-label="네이버 데이터랩 검색어 추이 그래프" style="width:100%;height:auto;display:block"></svg>
+<div id="trendChartNote" class="helper"></div></div>
+</div>
+</section>
 <footer>모멘텀마케팅 내부 연구 프로젝트. 운영 홈페이지 메뉴에는 연결하지 않았으며 공개 지표로 검증되지 않은 결과는 순위 보장 자료로 사용할 수 없습니다.</footer>
 </main>
 <script>
@@ -32,6 +63,72 @@
 function navLink(){const kw=clean($('keyword').value),kind=food.test(kw)?'restaurant':'place';$('naverLink').href='https://m.place.naver.com/'+kind+'/list?where=m&query='+encodeURIComponent(kw)+'&entry=pll'}
 $('keyword').addEventListener('input',navLink);navLink();
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>{const yes=x===btn;x.classList.toggle('active',yes);x.setAttribute('aria-selected',String(yes));$(x.dataset.tab+'Tab').classList.toggle('hidden',!yes)})}));
+const TREND_FRAME_URL='https://datalab.naver.com/keyword/trendSearch.naver';
+$('openTrendFrame').addEventListener('click',async()=>{
+ const button=$('openTrendFrame');button.disabled=true;
+ $('frameStatus').textContent='네이버 데이터랩 프레임 허용 여부를 확인 중입니다…';
+ try{
+  const response=await fetch('/api/research-frame-check',{cache:'no-store'});
+  const check=await response.json();
+  if(check.status==='blocked'){
+   $('frameStatus').textContent='네이버가 다른 사이트의 iframe 표시를 제한하고 있습니다. 아래 프레임 대신 위의 네이버 원본 링크를 이용하세요.';
+   $('trendFrameWrap').classList.add('hidden');$('frameCaveat').classList.add('hidden');
+   return;
+  }
+  $('frameStatus').textContent=check.message+' 프레임을 실제로 열어봅니다.';
+  $('trendFrame').src=TREND_FRAME_URL;
+  $('trendFrameWrap').classList.remove('hidden');
+  $('frameCaveat').classList.remove('hidden');
+ }catch(e){
+  $('frameStatus').textContent='프레임 허용 여부 검사 실패: '+String(e.message||e);
+ }finally{button.disabled=false}
+});
+const trendColors=['#1558e8','#e28a2d','#0f9f84','#9161d5','#c34265'];
+function renderTrendChart(payload){
+ const series=Array.isArray(payload.results)?payload.results:[];
+ const dates=[...new Set(series.flatMap(s=>(s.points||[]).map(p=>p.period)))].sort();
+ if(!dates.length){$('trendChartWrap').classList.add('hidden');$('trendApiStatus').textContent='해당 조건에서 반환된 검색 추이 데이터가 없습니다.';return}
+ const left=50,right=738,top=28,bottom=246,spanX=right-left,spanY=bottom-top;
+ const pos=d=>left+(dates.length<=1?0.5:dates.indexOf(d)/(dates.length-1))*spanX;
+ const y=n=>bottom-Math.max(0,Math.min(100,n))/100*spanY;
+ const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let markup='';
+ for(const tick of [0,25,50,75,100]){
+  const yp=y(tick);markup+='<line x1="'+left+'" y1="'+yp+'" x2="'+right+'" y2="'+yp+'" stroke="#dfe7f2" stroke-width="1"/>';
+  markup+='<text x="43" y="'+(yp+4)+'" font-size="12" fill="#66788d" text-anchor="end">'+tick+'</text>';
+ }
+ const labelIndices=[0,Math.floor((dates.length-1)/2),dates.length-1];
+ for(const i of [...new Set(labelIndices)]){
+  markup+='<text x="'+pos(dates[i])+'" y="270" text-anchor="middle" font-size="12" fill="#66788d">'+esc(dates[i].slice(0,7))+'</text>';
+ }
+ $('trendLegend').innerHTML=series.map((s,i)=>'<span style="color:'+trendColors[i%trendColors.length]+'">● '+esc(s.keyword)+'</span>').join('');
+ series.forEach((s,i)=>{
+  const pts=(s.points||[]).filter(p=>dates.includes(p.period)&&Number.isFinite(p.ratio));
+  if(!pts.length)return;
+  const path=pts.map((p,index)=>(index?'L':'M')+' '+pos(p.period).toFixed(1)+' '+y(p.ratio).toFixed(1)).join(' ');
+  markup+='<path d="'+path+'" fill="none" stroke="'+trendColors[i%trendColors.length]+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  if(pts.length===1)markup+='<circle cx="'+pos(pts[0].period)+'" cy="'+y(pts[0].ratio)+'" r="4" fill="'+trendColors[i%trendColors.length]+'"/>';
+ });
+ $('trendChart').innerHTML=markup;
+ $('trendChartNote').textContent=payload.startDate+' ~ '+payload.endDate+' · '+payload.timeUnit+' 단위 · 검색 상대 지수 0~100 (절대 검색량 아님)';
+ $('trendChartWrap').classList.remove('hidden');
+}
+$('trendsForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const one=$('trendKeyword1').value.trim(),two=$('trendKeyword2').value.trim();
+ const keywords=[one,two].filter(Boolean);if(one.length<2){$('trendApiStatus').textContent='첫 번째 검색어를 입력해 주세요.';return}
+ const btn=$('trendsSubmit');btn.disabled=true;$('trendApiStatus').textContent='네이버 데이터랩 공식 검색 추이 조회 중…';
+ $('trendChartWrap').classList.add('hidden');
+ try{
+  const response=await fetch('/api/research-search-trends',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({keywords,range:$('trendRange').value,device:$('trendDevice').value})});
+  const data=await response.json();
+  if(!response.ok||data.status!=='ok'){$('trendApiStatus').textContent=data.message||'검색 추이를 조회하지 못했습니다.';return}
+  $('trendApiStatus').textContent='네이버 데이터랩 공식 API 조회 완료. 그래프는 실제 수신 데이터로만 작성했습니다.';
+  renderTrendChart(data);
+ }catch(err){$('trendApiStatus').textContent='검색 추이 조회 실패: '+String(err.message||err)}
+ finally{btn.disabled=false}
+});
 $('debugToggle').addEventListener('click',()=>{const panel=$('debugPanel'),hidden=panel.classList.toggle('hidden');$('debugToggle').textContent=hidden?'수집 진단 정보 보기':'수집 진단 정보 숨기기'});
 const labels={target_found:'대상 업체 발견',sample_limit:'300개 수집 상한',time_budget:'서버 실행 시간 제한',no_new_rows_after_scroll:'스크롤 후 새 업체 없음',max_scroll_steps:'스크롤 횟수 상한',browser_error:'브라우저 오류',no_place_cards_detected:'검색 화면에서 업체 카드를 읽지 못함',not_started:'검색 시작 전'};
 function display(data){
