@@ -8,10 +8,10 @@ module.exports=async function(req,res){
  res.setHeader('Cache-Control','private, no-store');
  res.setHeader('X-Robots-Tag','noindex');
  const method=String(req.method||'GET').toUpperCase();
- if(!['GET','POST'].includes(method))return res.status(405).json({status:'error',message:'GET 또는 POST만 허용합니다.'});
+ if(method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({status:'method_not_allowed',message:'조회 요청은 POST만 허용합니다.'});}
  const origin=req.headers?.origin;
  if(origin){try{if(new URL(origin).host!==req.headers.host)return res.status(403).json({status:'error',message:'허용되지 않은 출처입니다.'})}catch{return res.status(403).json({status:'error',message:'요청 출처를 확인해 주세요.'})}}
- let body=method==='GET'?req.query:req.body;
+ let body=req.body;
  if(typeof body==='string'){if(body.length>1200)return res.status(413).json({status:'error',message:'요청이 너무 깁니다.'});try{body=JSON.parse(body)}catch{return res.status(400).json({status:'error',message:'JSON 요청을 확인해 주세요.'})}}
  if(!body||typeof body!=='object'||Array.isArray(body))body={};
  const anonymous=dailyQuota.check(req);
