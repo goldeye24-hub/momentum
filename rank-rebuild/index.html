@@ -19,9 +19,9 @@
 <div id="result" class="results hidden">
  <div class="state"><div class="statuslabel">관측 결과</div><div class="big" id="rankValue">—</div><p id="resultDesc" class="statusdesc"></p></div>
  <div class="stats"><div class="stat"><small>실제 수집 업체</small><b id="observedCount">—</b></div><div class="stat"><small>검사한 화면</small><b id="scrollCount">—</b></div><div class="stat"><small>측정 소요</small><b id="elapsed">—</b></div></div>
- <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>대상 플레이스 ID</span><strong id="matchedId">—</strong></div></div>
-</div></div>
-<div class="panel"><div class="actions"><div><h2>관측 목록 미리보기</h2><p class="hint">최초 발견된 업체 15곳. 전체 순위나 자연검색 순위로 확정하지 않습니다.</p></div><span id="sampleLabel" class="pill">수집 전</span></div><div id="sampleEmpty" class="empty">조회 후 실제 업체 목록이 표시됩니다.</div><div class="table-wrap"><table id="sampleTable" class="hidden"><thead><tr><th>관측 순서</th><th>매장명</th><th>플레이스 ID</th><th>광고 표시</th></tr></thead><tbody id="sampleRows"></tbody></table></div></div>
+ <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div></div>
+</div><div style="margin-top:17px"><button type="button" class="secondary" id="debugToggle">수집 진단 정보 보기</button></div></div>
+<div class="panel hidden" id="debugPanel"><div class="actions"><div><h2>수집 진단 내역</h2><p class="hint">최초 발견된 업체 15곳. 전체 순위나 자연검색 순위로 확정하지 않습니다.</p></div><span id="sampleLabel" class="pill">수집 전</span></div><div id="sampleEmpty" class="empty">조회 후 실제 업체 목록이 표시됩니다.</div><div class="table-wrap"><table id="sampleTable" class="hidden"><thead><tr><th>관측 순서</th><th>매장명</th><th>플레이스 ID</th><th>광고 표시</th></tr></thead><tbody id="sampleRows"></tbody></table></div></div>
 </section>
 <section id="volumeTab" class="hidden"><div class="panel"><h2>네이버 키워드 월간 검색량</h2><p>PC·모바일 월간 검색량은 네이버 검색광고 키워드 도구의 인증된 자료를 사용해야 합니다. 현재 연구 환경에는 검색광고 인증 키가 연결되어 있지 않아 실제 조회 기능을 활성화하지 않았습니다.</p><div class="notice">연결 대기 · 인증된 검색량을 제공하기 전까지 수치를 생성하지 않습니다.</div></div></section>
 <section id="trendsTab" class="hidden"><div class="panel"><h2>키워드 검색 추이</h2><p>네이버 데이터랩의 검색 관심도 추이는 월간 검색 건수와 다른 지표입니다. 데이터랩 연동 전에는 그래프를 임의 생성하지 않습니다.</p><a class="secondary" style="display:inline-block;margin-top:20px" href="https://datalab.naver.com/keyword/trendSearch.naver" target="_blank" rel="noopener noreferrer">네이버 데이터랩에서 확인 ↗</a></div></section>
@@ -32,6 +32,7 @@
 function navLink(){const kw=clean($('keyword').value),kind=food.test(kw)?'restaurant':'place';$('naverLink').href='https://m.place.naver.com/'+kind+'/list?where=m&query='+encodeURIComponent(kw)+'&entry=pll'}
 $('keyword').addEventListener('input',navLink);navLink();
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>{const yes=x===btn;x.classList.toggle('active',yes);x.setAttribute('aria-selected',String(yes));$(x.dataset.tab+'Tab').classList.toggle('hidden',!yes)})}));
+$('debugToggle').addEventListener('click',()=>{const panel=$('debugPanel'),hidden=panel.classList.toggle('hidden');$('debugToggle').textContent=hidden?'수집 진단 정보 보기':'수집 진단 정보 숨기기'});
 const labels={target_found:'대상 업체 발견',sample_limit:'300개 수집 상한',time_budget:'서버 실행 시간 제한',no_new_rows_after_scroll:'스크롤 후 새 업체 없음',max_scroll_steps:'스크롤 횟수 상한',browser_error:'브라우저 오류',not_started:'검색 시작 전'};
 function display(data){
  $('result').classList.remove('hidden');
@@ -43,7 +44,7 @@ function display(data){
  $('elapsed').textContent=data.diagnostics?.elapsedMs?Math.round(data.diagnostics.elapsedMs/1000)+'초':'—';
  $('stopReason').textContent=labels[data.diagnostics?.stopReason]||data.diagnostics?.stopReason||'미확인';
  $('observedAt').textContent=data.observedAt?new Date(data.observedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';
- $('matchedId').textContent=data.matched?.id||'미확인';
+ $('matchedId').textContent=$('place').value.trim();
  const items=data.topResults||[];
  $('sampleLabel').textContent=items.length?items.length+'개 항목 공개':'목록 없음';
  $('sampleEmpty').classList.toggle('hidden',items.length>0);
@@ -54,7 +55,7 @@ $('searchForm').addEventListener('submit',async e=>{
  e.preventDefault();const keyword=clean($('keyword').value),place=clean($('place').value),btn=$('searchButton');
  if(keyword.length<2||!place){$('message').textContent='검색어와 플레이스 ID를 입력해 주세요.';return}
  btn.disabled=true;btn.textContent='실제 모바일 검색 중…';$('message').textContent='네이버 모바일 플레이스 업체 목록을 실제 브라우저로 조회합니다. 완료된 응답에서만 숫자를 표시합니다.';
- $('result').classList.add('hidden');$('sampleTable').classList.add('hidden');$('sampleEmpty').classList.remove('hidden');
+ $('result').classList.add('hidden');$('debugPanel').classList.add('hidden');$('debugToggle').textContent='수집 진단 정보 보기';$('sampleTable').classList.add('hidden');$('sampleEmpty').classList.remove('hidden');
  try{
   const r=await fetch('/api/rank-rebuild',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeId:place})});
   const data=await r.json();
