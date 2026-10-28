@@ -62,6 +62,46 @@ module.exports=async function(req,res){
  if(!authorized)return fail(res,401,'admin_login_required','기존 모멘텀 관리자 인증이 필요합니다. /admin/에서 로그인하세요.');
  if(!['GET','POST'].includes(req.method))return fail(res,405,'method_not_allowed','GET 또는 POST만 허용됩니다.');
  if(req.method==='POST'&&!member.validOrigin(req))return fail(res,403,'invalid_origin','요청 출처가 올바르지 않습니다.');
+ // Direct verified observations for temporary browser-local records.
+ // Admin session and same-origin are mandatory. Never accept a client rank.
+ if(action==='scan-rank-direct'&&req.method==='POST'){
+  const body=req.body&&typeof req.body==='object'?req.body:
+   typeof req.body==='string'?(()=>{try{return JSON.parse(req.body)}catch{return {}}})():{};
+  const keyword=kw(body?.keyword),id=placeId(body?.placeId);
+  if(!keyword||!id)return fail(res,400,'invalid_target','검색어와 정확한 숫자 플레이스 ID를 입력하세요.');
+  if(Date.now()-(lastCall.get('rank')||0)<45000)return fail(res,429,'slow_down','새 순위 조회는 최소 45초 간격으로 진행합니다.');
+  lastCall.set('rank',Date.now());
+  try{
+   const result=await place._scan(keyword,{id});
+   if(!['found','not_found_in_sample','found_without_rank','rank_list_unavailable'].includes(result.status)){
+    return fail(res,502,result.status||'measurement_error',result.message||'네이버 검색 결과를 확인하지 못했습니다.');
+   }
+   const rank=result.status==='found'&&Number.isInteger(result.observedPosition)?result.observedPosition:null;
+   return res.status(200).json({
+    status:result.status,saved:false,rank,observedAt:result.observedAt||new Date().toISOString(),
+    observedCount:Number(result.observedCount)||0,
+    message:result.explanation||result.message||'관측 완료',
+    note:'실측 결과입니다. 서버에 저장하지 않았으며 브라우저에서 임시 보관할 수 있습니다.'
+   });
+  }catch{
+   return fail(res,502,'measurement_failed','네이버 목록 관측 중 오류가 발생했습니다.');
+  }
+ }
+ if(action==='scan-volume-direct'&&req.method==='POST'){
+  const body=req.body&&typeof req.body==='object'?req.body:
+   typeof req.body==='string'?(()=>{try{return JSON.parse(req.body)}catch{return {}}})():{};
+  const keyword=kw(body?.keyword);
+  if(!keyword)return fail(res,400,'invalid_keyword','검색어를 확인하세요.');
+  if(Date.now()-(lastCall.get('volume')||0)<5000)return fail(res,429,'slow_down','연속 조회 간격은 최소 5초입니다.');
+  lastCall.set('volume',Date.now());
+  const result=await searchVolume.lookup(keyword);
+  if(result.status!=='ok')return fail(res,result.status==='not_configured'?503:502,result.status,result.message||'검색광고 API 오류');
+  return res.status(200).json({status:'ok',saved:false,row:{
+   keyword,measured_date:kst(result.observedAt),observed_at:result.observedAt,
+   pc_raw:result.pcRaw,mobile_raw:result.mobileRaw,pc_count:result.pc,
+   mobile_count:result.mobile,total_count:result.total
+  },note:'실제 검색광고 API 값입니다. 브라우저 임시 기록으로만 보관할 수 있습니다.'});
+ }
  if(!db.config())return fail(res,503,'database_not_configured','관리자 기록 DB 연결이 필요합니다.');
  const body=req.method==='POST'?
    (typeof req.body==='string'?(()=>{try{return JSON.parse(req.body)}catch{return null}})():req.body||{}):{};
