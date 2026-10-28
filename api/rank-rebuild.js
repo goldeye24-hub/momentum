@@ -128,6 +128,12 @@ async function scan(keyword,target){
   if(diagnostic.stopReason==='not_started')diagnostic.stopReason='max_scroll_steps';
   const rows=[...seen.values()];
   diagnostic.elapsedMs=Date.now()-started;
+  if(rows.length===0){
+   diagnostic.stopReason='no_place_cards_detected';
+   return {status:'extraction_failed',observedCount:0,diagnostics:diagnostic,
+    sourceUrl:url,observedAt:new Date().toISOString(),
+    message:'네이버 모바일 목록의 업체 카드를 한 개도 읽지 못했습니다. 순위 미노출이 아니라 수집 실패입니다.'};
+  }
   return {...evaluate(rows,target,diagnostic),sourceUrl:url,observedAt:new Date().toISOString(),mode:'anonymous_mobile_browser'};
  }catch(err){
   diagnostic.elapsedMs=Date.now()-started;
@@ -165,7 +171,7 @@ async function handler(req,res){
   sourceBlockedUntil=Date.now()+Math.max(3600000,Math.min(86400000,Number(result.retryAfterSeconds||0)*1000));
   return res.status(503).json({...result,message:'네이버에서 자동 요청을 제한했습니다. 재시도하지 않습니다.'});
  }
- if(result.status==='runtime_error'||result.status==='navigation_failed')return res.status(502).json({...result,message:'네이버 모바일 플레이스 목록 자동 수집에 실패했습니다.'});
+ if(result.status==='runtime_error'||result.status==='navigation_failed'||result.status==='extraction_failed')return res.status(502).json({...result,message:result.message||'네이버 모바일 플레이스 목록 자동 수집에 실패했습니다.'});
  return res.status(200).json(result);
 }
 module.exports=handler;
