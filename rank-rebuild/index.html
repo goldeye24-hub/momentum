@@ -19,7 +19,7 @@
 <div id="result" class="results hidden">
  <div class="state"><div class="statuslabel">관측 결과</div><div class="big" id="rankValue">—</div><p id="resultDesc" class="statusdesc"></p></div>
  <div class="stats"><div class="stat"><small>실제 수집 업체</small><b id="observedCount">—</b></div><div class="stat"><small>검사한 화면</small><b id="scrollCount">—</b></div><div class="stat"><small>측정 소요</small><b id="elapsed">—</b></div></div>
- <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div></div>
+ <div class="details"><div class="detail"><span>수집 종료 이유</span><strong id="stopReason">—</strong></div><div class="detail"><span>측정 환경</span><strong>익명 모바일 브라우저</strong></div><div class="detail"><span>측정 시각</span><strong id="observedAt">—</strong></div><div class="detail"><span>조회 대상</span><strong id="matchedId">—</strong></div><div class="detail"><span>네이버 페이지 응답</span><strong id="httpStatus">—</strong></div><div class="detail"><span>업체 카드 감지</span><strong id="cardsDetected">—</strong></div></div>
 </div><div style="margin-top:17px"><button type="button" class="secondary" id="debugToggle">수집 진단 정보 보기</button></div></div>
 <div class="panel hidden" id="debugPanel"><div class="actions"><div><h2>수집 진단 내역</h2><p class="hint">최초 발견된 업체 15곳. 전체 순위나 자연검색 순위로 확정하지 않습니다.</p></div><span id="sampleLabel" class="pill">수집 전</span></div><div id="sampleEmpty" class="empty">조회 후 실제 업체 목록이 표시됩니다.</div><div class="table-wrap"><table id="sampleTable" class="hidden"><thead><tr><th>관측 순서</th><th>매장명</th><th>플레이스 ID</th><th>광고 표시</th></tr></thead><tbody id="sampleRows"></tbody></table></div></div>
 </section>
@@ -33,18 +33,21 @@ function navLink(){const kw=clean($('keyword').value),kind=food.test(kw)?'restau
 $('keyword').addEventListener('input',navLink);navLink();
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>{const yes=x===btn;x.classList.toggle('active',yes);x.setAttribute('aria-selected',String(yes));$(x.dataset.tab+'Tab').classList.toggle('hidden',!yes)})}));
 $('debugToggle').addEventListener('click',()=>{const panel=$('debugPanel'),hidden=panel.classList.toggle('hidden');$('debugToggle').textContent=hidden?'수집 진단 정보 보기':'수집 진단 정보 숨기기'});
-const labels={target_found:'대상 업체 발견',sample_limit:'300개 수집 상한',time_budget:'서버 실행 시간 제한',no_new_rows_after_scroll:'스크롤 후 새 업체 없음',max_scroll_steps:'스크롤 횟수 상한',browser_error:'브라우저 오류',not_started:'검색 시작 전'};
+const labels={target_found:'대상 업체 발견',sample_limit:'300개 수집 상한',time_budget:'서버 실행 시간 제한',no_new_rows_after_scroll:'스크롤 후 새 업체 없음',max_scroll_steps:'스크롤 횟수 상한',browser_error:'브라우저 오류',no_place_cards_detected:'검색 화면에서 업체 카드를 읽지 못함',not_started:'검색 시작 전'};
 function display(data){
  $('result').classList.remove('hidden');
  const found=data.status==='found'&&Number.isInteger(data.observedPosition);
- $('rankValue').textContent=found?'약 '+data.observedPosition+'번째':'이번 범위에서 미발견';
+ const scanOk=['found','not_found_in_sample','ambiguous'].includes(data.status);
+ $('rankValue').textContent=!scanOk?'자동 수집 실패':found?'약 '+data.observedPosition+'번째':'이번 수집 범위에서 미발견';
  $('resultDesc').textContent=data.explanation||data.message||'검색 목록의 관측 상태를 확인하세요.';
- $('observedCount').textContent=Number(data.observedCount||0).toLocaleString('ko-KR')+'곳';
+ $('observedCount').textContent=scanOk?Number(data.observedCount||0).toLocaleString('ko-KR')+'곳':'확인 실패';
  $('scrollCount').textContent=(data.diagnostics?.scrolls??0)+'회';
  $('elapsed').textContent=data.diagnostics?.elapsedMs?Math.round(data.diagnostics.elapsedMs/1000)+'초':'—';
  $('stopReason').textContent=labels[data.diagnostics?.stopReason]||data.diagnostics?.stopReason||'미확인';
  $('observedAt').textContent=data.observedAt?new Date(data.observedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'—';
  $('matchedId').textContent=$('place').value.trim();
+ $('httpStatus').textContent=data.diagnostics?.httpStatus||'—';
+ $('cardsDetected').textContent=(data.diagnostics?.finalDOM?.resultLis??data.diagnostics?.validCardNodes??data.diagnostics?.initialDOM?.resultLis??'—')+'개';
  const items=data.topResults||[];
  $('sampleLabel').textContent=items.length?items.length+'개 항목 공개':'목록 없음';
  $('sampleEmpty').classList.toggle('hidden',items.length>0);
@@ -60,7 +63,7 @@ $('searchForm').addEventListener('submit',async e=>{
   const r=await fetch('/api/rank-rebuild',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,placeId:place})});
   const data=await r.json();
   if(!r.ok||!['found','not_found_in_sample','ambiguous'].includes(data.status)){
-   $('message').textContent='조회 완료되지 않음 · '+(data.message||data.status||'서버 오류')+' ('+r.status+')';
+   $('message').textContent='자동 수집 실패: '+(data.message||data.status||'서버 오류')+' (HTTP '+r.status+'). 업체 순위나 미노출로 판단하지 않습니다.';
    if(data.diagnostics)display(data);
    return;
   }
