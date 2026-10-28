@@ -306,6 +306,13 @@ async function runMobile(keyword,target,options={}){
     source:'browser_observed'};
   }
   const reduced=reduceMobile(rows,target);
+  // A DOM list without complete pagination verification is an observation,
+  // not a certified organic ranking.
+  if(options.deepScan&&reduced.status==='ranked'){
+   reduced.rankApproximate=true;
+   reduced.rankBasis='observed_mobile_list_order_unverified';
+   reduced.message='네이버 모바일 플레이스에서 약 '+reduced.rank+'번째로 관측되었습니다. 누락·광고·개인화 여부를 검증하지 않았으므로 확정 순위는 아닙니다.';
+  }
   if(reduced.status==='not_in_block'){
    reduced.status='not_in_observed_range';
    reduced.message='이번에 수집된 '+rows.length+'개 모바일 플레이스 업체 목록에서는 대상이 발견되지 않았습니다. 수집 범위가 전체 검색 결과임을 확인하지 못했으므로 미노출 또는 실제 순위로 판단하지 않습니다.';
