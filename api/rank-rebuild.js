@@ -92,6 +92,7 @@ async function scan(keyword,target){
     // put 'vEZDX' on <li>, not on <a>, in some render modes.
     const links=[...document.querySelectorAll('a[href*="/restaurant/"],a[href*="/place/"],a[href*="/hairshop/"],a[href*="/accommodation/"]')];
     const items=new Map();
+    const groups=new Map();
     const excluded=/^(?:주간 인기 많은 메뉴|주간 인기|예약|톡톡|쿠폰|메뉴|메뉴판|사진|리뷰|주소|찾아가기|길찾기|저장|주문|공유|광고|더보기|전화|네이버페이|이름 미확인)$/;
     const pickName=(anchor,card)=>{
       const selectors=['strong.tit_place','strong.YwYLL','.YwYLL','.place_bluelink','[class*="tit_place"]','a.link_place strong','h3','a[href*="/restaurant/"] > strong'];
@@ -132,19 +133,51 @@ async function scan(keyword,target){
       const ad=[...(mainCard.querySelectorAll?.('span,em,small')||[])].some(n=>n.children.length===0&&n.textContent?.trim()==='광고');
       if(!existing){items.set(id,{id,name,providerRank,ad,preferred});}
       else if(preferred&&!existing.preferred){Object.assign(existing,{name,providerRank,ad,preferred})}
+      // Ranking only: identify repeated business CARD siblings in a single list.
+      // Other same-ID links outside the list are useful for detection, not rank.
+      // A nested <li> from a menu is never promoted to a business card.
+      const row=anchor.closest('li');
+      const parent=row?.parentElement;
+      if(row&&parent&&parent.matches('ul,ol,[role="list"]')&&
+         (anchor.classList?.contains('link_place')||preferred||
+          !!anchor.querySelector('strong.tit_place,.YwYLL,[class*="tit_place"]'))){
+        let group=groups.get(parent);
+        if(!group){group={rows:new Map(),primary:0,cls:String(parent.className||'').slice(0,90)};groups.set(parent,group)}
+        if(!group.rows.has(id)){
+          group.rows.set(id,{id,name,providerRank,ad});
+          if(preferred)group.primary++;
+        }
+      }
     }
-    return {rows:[...items.values()].map(({preferred,...rest})=>rest),
+    const rankedGroups=[...groups.values()].map(g=>({
+      ...g,size:g.rows.size,
+      score:g.rows.size*3+g.primary+( /(?:lst_place|eDFz9|place_list)/.test(g.cls)?30:0)
+    })).sort((a,b)=>b.score-a.score);
+    // At least 5 distinct, titled business cards are required to identify
+    // a results list; a few 'recommended nearby' links are not sufficient.
+    const chosen=rankedGroups.find(g=>g.size>=5)||null;
+    return {rows:chosen?[...chosen.rows.values()]:[],
+      rawEntries:[...items.values()].map(x=>({id:x.id,name:x.name})),
+      rankListConfirmed:!!chosen,rankGroupSize:chosen?.size||0,
+      rankedGroupCandidates:rankedGroups.slice(0,5).map(g=>({size:g.size,primary:g.primary,container:g.cls})),
       rawBusinessLinks:links.length,validBusinessLinks:validLinks,namedBusinessLinks:withName,
       liClassMatches:document.querySelectorAll('li.UEzoS').length};
    });
    diagnostic.validCardNodes=visible.rows.length;
+   diagnostic.rankingList={confirmed:visible.rankListConfirmed,uniqueCards:visible.rankGroupSize,candidates:visible.rankedGroupCandidates};
    diagnostic.parsedLinks={raw:visible.rawBusinessLinks,valid:visible.validBusinessLinks,named:visible.namedBusinessLinks,liClassMatches:visible.liClassMatches};
+   diagnostic.rawTargetLinkFound=!!(target.id?
+    visible.rawEntries.some(x=>x.id===target.id):
+    visible.rawEntries.some(x=>normalizeName(x.name)===normalizeName(target.name)));
    const before=seen.size;
    for(const r of visible.rows)if(!seen.has(r.id)){seen.set(r.id,r);if(seen.size>=MAX_RESULTS)break}
    diagnostic.itemsSeen=seen.size;
    const targetFound=target.id?seen.has(target.id):[...seen.values()].some(r=>normalizeName(r.name)===normalizeName(target.name));
    if(targetFound){diagnostic.stopReason='target_found';break}
    if(seen.size>=MAX_RESULTS){diagnostic.stopReason='sample_limit';break}
+   if(!visible.rankListConfirmed&&step>=3&&visible.validBusinessLinks>0){
+     diagnostic.stopReason='no_confirmed_rank_list';break;
+   }
    unchanged=seen.size===before?unchanged+1:0;
    // Never claim that a stable viewport means no more search results.
    if(unchanged>=6){diagnostic.stopReason='no_new_rows_after_scroll';break}
@@ -172,7 +205,7 @@ async function scan(keyword,target){
   const rows=[...seen.values()];
   diagnostic.elapsedMs=Date.now()-started;
   if(rows.length===0){
-   diagnostic.stopReason='no_place_cards_detected';
+   diagnostic.stopReason=diagnostic.rankingList?.confirmed?'no_place_cards_detected':'no_confirmed_rank_list';
    diagnostic.finalDOM=await page.evaluate(()=>({
     resultLis:document.querySelectorAll('li.UEzoS').length,
     primaryAnchors:document.querySelectorAll('a.vEZDX[href*="/restaurant/"],a.vEZDX[href*="/place/"]').length,
@@ -183,9 +216,14 @@ async function scan(keyword,target){
     title:String(document.title||'').slice(0,100),
     visibleChallenge:/(비정상적인 접근|보안 문자|자동화된 접근|서비스 이용이 제한|captcha)/i.test((document.body?.innerText||'').slice(0,900))
    }));
-   return {status:diagnostic.finalDOM.visibleChallenge?'provider_blocked':'extraction_failed',
-    observedCount:0,diagnostics:diagnostic,sourceUrl:url,observedAt:new Date().toISOString(),
-    message:diagnostic.finalDOM.visibleChallenge?'네이버 화면에 접근 제한 안내가 표시되어 자동 검색을 중단했습니다.':'네이버 모바일 업체 카드가 서버 브라우저에서 확인되지 않았습니다. 0위나 미노출이 아닌 수집 실패입니다.'};
+   const blocked=diagnostic.finalDOM.visibleChallenge;
+   const linkFound=diagnostic.rawTargetLinkFound;
+   return {status:blocked?'provider_blocked':linkFound?'found_without_rank':'rank_list_unavailable',
+    observedPosition:null,observedCount:0,diagnostics:diagnostic,
+    sourceUrl:url,observedAt:new Date().toISOString(),
+    message:blocked?'네이버의 접근 제한 안내가 표시돼 측정을 중단했습니다.':
+      linkFound?'업체 상세 링크는 확인됐지만 검색 결과 순서를 검증할 수 없어 순위를 표시하지 않습니다.':
+      '실제 검색 결과 목록을 식별하지 못했습니다. 순위 미노출로 해석하면 안 됩니다.'};
   }
   return {...evaluate(rows,target,diagnostic),sourceUrl:url,observedAt:new Date().toISOString(),mode:'anonymous_mobile_browser'};
  }catch(err){
@@ -224,7 +262,8 @@ async function handler(req,res){
   sourceBlockedUntil=Date.now()+Math.max(3600000,Math.min(86400000,Number(result.retryAfterSeconds||0)*1000));
   return res.status(503).json({...result,message:'네이버에서 자동 요청을 제한했습니다. 재시도하지 않습니다.'});
  }
- if(result.status==='runtime_error'||result.status==='navigation_failed'||result.status==='extraction_failed')return res.status(502).json({...result,message:result.message||'네이버 모바일 플레이스 목록 자동 수집에 실패했습니다.'});
+ if(['runtime_error','navigation_failed','extraction_failed','rank_list_unavailable'].includes(result.status))return res.status(502).json({...result,message:result.message||'네이버 모바일 플레이스 순위 목록을 식별하지 못했습니다.'});
+ if(result.status==='found_without_rank')return res.status(200).json(result);
  return res.status(200).json(result);
 }
 module.exports=handler;
