@@ -143,11 +143,36 @@ async function loadVolume(){
  try{var r=await call('volume-history',{query:{keyword:key,days:$('volumeDays').value}});volumes=r.rows||[];message('volumeMsg',r.note||'저장된 조회 이력입니다.')}
  catch(e){volumes=[];message('volumeMsg','검색량 기록 조회 불가: '+e.message)}drawVolume();
 }
+function drawVolumeChart(rows){
+ var svg=$('volumeChart'),series=[
+  {field:'pc_count',color:'#225fda'},
+  {field:'mobile_count',color:'#0c9e85'},
+  {field:'total_count',color:'#9864dc'}
+ ];
+ var all=[];rows.forEach(function(r){series.forEach(function(t){if(r[t.field]!=null&&Number.isFinite(Number(r[t.field])))all.push(Number(r[t.field]))})});
+ if(!all.length){svg.innerHTML='<text x="425" y="130" text-anchor="middle" font-size="15" fill="#8a98a9">검색량 실측 데이터가 쌓이면 추이를 표시합니다</text>';return}
+ var max=Math.max(1,Math.max.apply(null,all)),L=65,R=820,T=25,B=217;
+ var x=function(i){return L+(rows.length===1?.5:i/(rows.length-1))*(R-L)};
+ var y=function(v){return B-Number(v)/max*(B-T)};
+ var out='';
+ for(var j=0;j<=4;j++){var n=max*j/4,yy=y(n);out+='<line x1="'+L+'" x2="'+R+'" y1="'+yy+'" y2="'+yy+'" stroke="#e5eaf1"/><text x="57" y="'+(yy+4)+'" font-size="11" fill="#76879a" text-anchor="end">'+Math.round(n).toLocaleString('ko-KR')+'</text>'}
+ series.forEach(function(t){
+  var section=[];
+  function flush(){if(section.length>1)out+='<path d="'+section.map(function(p,i){return (i?'L':'M')+p}).join(' ')+'" fill="none" stroke="'+t.color+'" stroke-width="2.4"/>';section=[]}
+  rows.forEach(function(r,i){
+   if(r[t.field]==null||!Number.isFinite(Number(r[t.field]))){flush();return}
+   var point=x(i).toFixed(1)+' '+y(r[t.field]).toFixed(1);
+   section.push(point);out+='<circle cx="'+x(i)+'" cy="'+y(r[t.field])+'" r="2.5" fill="'+t.color+'"/>';
+  });flush();
+ });
+ var idx=[0,Math.floor((rows.length-1)/2),rows.length-1];
+ idx.filter(function(v,i,a){return a.indexOf(v)===i}).forEach(function(i){out+='<text x="'+x(i)+'" y="250" text-anchor="middle" font-size="11" fill="#8191a4">'+escape(rows[i].measured_date)+'</text>'});
+ svg.innerHTML=out;
+}
 function drawVolume(){
  var ordered=volumes.slice().sort(function(a,b){return a.measured_date.localeCompare(b.measured_date)}),last=ordered[ordered.length-1];
  message('lastPc',last?last.pc_raw:'—');message('lastMobile',last?last.mobile_raw:'—');message('lastTotal',last&&last.total_count!=null?fmt(last.total_count):'—');
- var graphItems=ordered.filter(function(r){return r.total_count!=null}).map(function(r){return {date:r.measured_date,value:Number(r.total_count)}});
- graph('volumeChart',graphItems,false);
+ drawVolumeChart(ordered);
  $('volumeBody').innerHTML=ordered.length?ordered.reverse().map(function(r){return '<tr><td>'+escape(r.measured_date)+'</td><td>'+escape(r.keyword)+'</td><td>'+escape(r.pc_raw)+'</td><td>'+escape(r.mobile_raw)+'</td><td>'+fmt(r.total_count)+'</td><td>'+escape(when(r.observed_at))+'</td></tr>'}).join(''):'<tr><td colspan="6">조회 기록 없음</td></tr>';
 }
 $('volumeForm').addEventListener('submit',async function(e){
