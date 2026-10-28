@@ -19,9 +19,10 @@ function setup({signedIn=true,hasTarget=true}={}){
  './_research-volume-core':{lookup:async()=>({status:'ok',keyword:'포항맛집',pc:100,mobile:200,pcRaw:'100',mobileRaw:'200',total:300,observedAt:'2026-10-28T00:00:00.000Z'})},
  '../server-handlers/member-auth':()=>{},'../server-handlers/member-watches':()=>{}};
  const m={exports:{}};
- vm.runInNewContext('(function(require,module,exports){'+script+'})',{
+ const factory=vm.runInNewContext('(function(require,module,exports){'+script+'})',{
   URLSearchParams,URL,Date,Map,Number,String,Array,JSON,Math,console,process:{env:{VERCEL_ENV:'preview'}}
- })(x=>modules[x],m,m.exports);
+ });
+ factory(x=>modules[x],m,m.exports);
  async function request(action,method='GET',body={}){
   let status=200,result;const res={setHeader(){},status(s){status=s;return this},json(d){result=d;return this}};
   await m.exports({query:{action,targetId:tid},method,headers:{cookie:'valid',host:'localhost',origin:'https://localhost'},body},res);
