@@ -3,6 +3,9 @@
 -- Internal service-role only; app enforces verified signed member session
 -- and validates ownership on ALL reads/writes.
 BEGIN;
+-- Composite ownership constraint prevents a rank record referring to another user's target.
+CREATE UNIQUE INDEX IF NOT EXISTS member_targets_owner_id_unique
+ ON public.momentum_member_targets(owner_id,id);
 CREATE TABLE IF NOT EXISTS public.momentum_research_rank_checks(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  owner_id uuid NOT NULL REFERENCES public.momentum_member_accounts(user_id) ON DELETE CASCADE,
@@ -19,6 +22,17 @@ CREATE TABLE IF NOT EXISTS public.momentum_research_rank_checks(
   (status<>'found' AND rank IS NULL)
  )
 );
+DO $
+BEGIN
+ IF NOT EXISTS (
+  SELECT 1 FROM pg_constraint WHERE conname='momentum_research_rank_owner_target_fk'
+ ) THEN
+  ALTER TABLE public.momentum_research_rank_checks
+   ADD CONSTRAINT momentum_research_rank_owner_target_fk
+   FOREIGN KEY(owner_id,target_id)
+   REFERENCES public.momentum_member_targets(owner_id,id) ON DELETE CASCADE;
+ END IF;
+END $;
 CREATE INDEX IF NOT EXISTS research_rank_owner_target_time
  ON public.momentum_research_rank_checks(owner_id,target_id,observed_at DESC);
 CREATE TABLE IF NOT EXISTS public.momentum_research_keyword_volumes(
