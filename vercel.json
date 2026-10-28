@@ -414,6 +414,13 @@
       "regions": [
         "icn1"
       ]
+    },
+    "api/research-console.js": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**",
+      "regions": [
+        "icn1"
+      ]
     }
   }
 }
