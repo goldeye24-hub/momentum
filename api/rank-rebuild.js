@@ -138,9 +138,7 @@ async function scan(keyword,target){
       // A nested <li> from a menu is never promoted to a business card.
       const row=anchor.closest('li');
       const parent=row?.parentElement;
-      if(row&&parent&&parent.matches('ul,ol,[role="list"]')&&
-         (anchor.classList?.contains('link_place')||preferred||
-          !!anchor.querySelector('strong.tit_place,.YwYLL,[class*="tit_place"]'))){
+      if(row&&parent&&parent.matches('ul,ol,[role="list"]')&&name){
         let group=groups.get(parent);
         if(!group){group={rows:new Map(),primary:0,cls:String(parent.className||'').slice(0,90)};groups.set(parent,group)}
         if(!group.rows.has(id)){
