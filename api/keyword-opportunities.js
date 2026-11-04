@@ -4,7 +4,6 @@
  * with OPTIONAL opt-in NAVER Search Ads keywordstool integration.
  * Never equate heuristic opportunity with real demand/rank.
  */
-const crypto=require('node:crypto');
 const cut=(v,n=80)=>String(v??'').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/g,' ').slice(0,n);
 const regions=['서울','강남','서초','송파','홍대','마포','성수','종로','부산','해운대','광안리','수영','서면','사상','동래','연산동','기장','김해','양산','창원','마산','울산','대구','경주','포항','경산','구미','대전','청주','천안','세종','광주','여수','순천','전주','익산','제주','서귀포','수원','성남','분당','판교','동탄','용인','화성','안양','광명','부천','일산','파주','고양','김포','인천','부평','의정부','남양주','평택','안성','원주','강릉','속초','춘천','삼척','진주','거제','통영','목포','군산'];
 const kinds=[
@@ -56,26 +55,10 @@ function parseCount(value){
  if(typeof value==='string'&&/^<\s*10$/.test(value))return {lessThan:10};
  return null;
 }
-const eligible=()=>process.env.MOMENTUM_SEARCHADS_ENABLED==='true'&&process.env.MOMENTUM_SEARCHADS_PUBLIC_DISPLAY_APPROVED==='true'&&!!process.env.NAVER_SEARCHADS_API_KEY&&!!process.env.NAVER_SEARCHADS_SECRET_KEY&&!!process.env.NAVER_SEARCHADS_CUSTOMER_ID;
-async function adsLookup(input,region){
- if(!eligible())return {status:'not_connected',note:'네이버 검색광고 API 연결 또는 공개 표시 권한이 아직 준비되지 않았습니다.'};
- const {seed,core}=parse(input,region);
- const hints=[...new Set([seed,core].filter(Boolean))].slice(0,2).map(x=>x.replace(/\s+/g,'').slice(0,30));
- const path='/keywordstool';
- const time=String(Date.now());
- const signature=crypto.createHmac('sha256',process.env.NAVER_SEARCHADS_SECRET_KEY).update(time+'.GET.'+path).digest('base64');
- const u=new URL('https://api.searchad.naver.com'+path);
- u.searchParams.set('hintKeywords',hints.join(','));
- u.searchParams.set('showDetail','1');
- const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6000);
- try{
-  const response=await fetch(u,{method:'GET',signal:ctl.signal,headers:{'X-Timestamp':time,'X-API-KEY':process.env.NAVER_SEARCHADS_API_KEY,'X-Customer':process.env.NAVER_SEARCHADS_CUSTOMER_ID,'X-Signature':signature,'Accept':'application/json'}});
-  if(!response.ok)return {status:'unavailable',note:'검색광고 API 호출 오류('+response.status+'). 인증 또는 할당량을 확인하세요.'};
-  const json=await response.json();
-  const rows=Array.isArray(json.keywordList)?json.keywordList:[];
-  return {status:'connected',rows:rows.slice(0,300).map(x=>({keyword:cut(x.relKeyword,70),pc:parseCount(x.monthlyPcQcCnt),mobile:parseCount(x.monthlyMobileQcCnt),adCompetition:cut(x.compIdx,30)})),note:'네이버 검색광고 키워드 도구 제공 검색량 · 광고 경쟁지수 (검색결과 SEO 경쟁도와 다름)'};
- }catch(e){return {status:'unavailable',note:e.name==='AbortError'?'검색광고 API 응답 시간 초과':'검색광고 API 네트워크 연결 실패'};}
- finally{clearTimeout(timer);}
+// API-free operation: keyword candidates use only local deterministic rules.
+// This endpoint intentionally makes no request to NAVER Search Ads.
+async function adsLookup(){
+ return {status:'not_connected',note:'외부 검색광고 API를 사용하지 않습니다. 검색량은 미측정이며 기획 우선순위만 제공합니다.'};
 }
 function joinAds(data,ads){
  if(ads.status!=='connected')return data;
