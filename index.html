@@ -847,13 +847,14 @@ if(action==='admin-delete'){const p=s.admin.find(x=>x.id===b.dataset.id);if(!p||
 document.addEventListener('submit',async event=>{const form=event.target;if(!['admin-login','product-form','inquiry-form','place-self-audit'].includes(form.id))return;event.preventDefault();if(form.id==='place-self-audit'){const count=form.querySelectorAll('input[name=check]:checked').length;const total=12;const n=total-count;const label=count===12?'12개 항목을 모두 확인했습니다.':`${count}개 확인 · ${n}개 미확인`;const box=document.querySelector('#place-audit-result');if(box)box.innerHTML=`<strong>${E(label)}</strong><p>이 결과는 입력하신 체크 상태를 요약한 것입니다. 미확인 항목부터 실제 설정·공개화면을 점검하세요. 검색 순위나 광고 성과를 뜻하지 않습니다.</p>`;return;}if(form.id==='admin-login'){try{const d=new FormData(form);await api('/api/admin/login',{method:'POST',body:JSON.stringify({password:d.get('password')})});s.adminTab='dashboard';s.editId=null;await loadAdmin();toast('로그인 성공');}catch(e){document.querySelector('#login-feedback').innerHTML=`<div class="form-message error">${E(e.message)}</div>`;}return;}
 if(form.id==='product-form'){const d=new FormData(form);const id=form.dataset.id;const payload={title:d.get('title'),slug:d.get('slug'),category:d.get('category'),group:d.get('group'),price:d.get('price')===''?null:Number(d.get('price')),priceDisplay:d.get('priceDisplay'),kind:d.get('kind'),description:d.get('description'),features:String(d.get('features')).split(/\r?\n/).map(x=>x.trim()).filter(Boolean),notice:d.get('notice'),imageUrl:d.get('imageUrl'),label:d.get('label'),tag:d.get('tag'),order:Number(d.get('order')),published:form.elements.published.checked,featured:form.elements.featured.checked};try{await api(id?'/api/admin/products/'+id:'/api/admin/products',{method:id?'PUT':'POST',body:JSON.stringify(payload)});s.editId=null;await loadAdmin();toast('상품 저장 완료 · 로컬');}catch(e){document.querySelector('#product-feedback').innerHTML=`<div class="form-message error">${E(e.message)}</div>`;}return;}
 if(form.id==='inquiry-form'){if(location.protocol==='file:'){document.querySelector('#inquiry-feedback').innerHTML='<div class="form-message">파일 미리보기에서는 접수되지 않습니다. 정식 배포된 주소에서 신청해 주세요.</div>';return;}const d=new FormData(form);const p=s.products.find(x=>x.id===d.get('productId'));const stage=String(d.get('businessStage')||'').trim();const goal=String(d.get('marketingGoal')||'').trim();const extra=String(d.get('message')||'').trim();const stageSummary=['[사업 단계] '+stage,goal?'[상담 목적] '+goal:''].filter(Boolean).join('\n');const fullMessage=[stageSummary,extra].filter(Boolean).join('\n').slice(0,1000);const payload={shop:d.get('shop'),name:d.get('name'),phone:d.get('phone'),productId:d.get('productId'),productTitle:p?.title||'전체 상담',budget:d.get('budget'),contact:d.get('contact'),businessStage:stage,marketingGoal:goal,message:fullMessage,region:d.get('region'),website:d.get('website'),agree:form.elements.agree.checked};try{if(String(payload.website||'').trim())throw new Error('자동 입력이 감지되었습니다.');
-const out={
+const formPayload={
+  access_key:'93d7e602-81e8-4f2c-bbae-a8c38d92b286',
+  subject:'[모멘텀마케팅 홈페이지 상담] '+String(payload.shop||''),
+  from_name:'모멘텀마케팅 홈페이지',
   name:String(payload.name||''),
-  message:String(payload.message||''),
-  _subject:'[모멘텀마케팅 상담] '+String(payload.shop||''),
-  _template:'table',
-  _captcha:'false',
-  _url:location.origin+location.pathname,
+  phone:String(payload.phone||''),
+  message:String(payload.message||'')||'상담을 신청합니다.',
+  botcheck:false,
   '업체명':String(payload.shop||''),
   '담당자명':String(payload.name||''),
   '연락처':String(payload.phone||''),
@@ -864,32 +865,27 @@ const out={
   '지역':String(payload.region||''),
   '선호 연락 방식':String(payload.contact||'')
 };
-// Prefer private server-side Naver SMTP once an app password is configured.
-const internal=await fetch('/api/inquiries',{
-  method:'POST',
-  headers:{'Content-Type':'application/json','Accept':'application/json'},
-  body:JSON.stringify(payload)
-});
-const internalResult=await internal.json().catch(()=>({}));
+const submitButton=form.querySelector('[type="submit"]');
+if(submitButton)submitButton.disabled=true;
 let result;
-if(internal.status===503 && internalResult.code==='MAIL_NOT_CONFIGURED'){
-  // Temporary backup until the owner enables Naver SMTP in Vercel.
-  const sent=await fetch('https://formsubmit.co/ajax/notrack@naver.com',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body:JSON.stringify(out)
-  });
-  const receipt=await sent.json().catch(()=>({}));
-  if(!sent.ok || (receipt.success!==true && receipt.success!=='true')){
-    const needsActivation=/activat|confirm|verify/i.test(String(receipt.message||''));
-    throw new Error(needsActivation?'최초 수신 인증이 아직 완료되지 않았습니다. 직접 이메일로 문의해 주세요.':'자동 접수가 완료되지 않았습니다. 직접 이메일로 문의해 주세요.');
-  }
-  result={message:'상담 문의가 전송 서비스에 접수되었습니다. 확인 후 연락드리겠습니다.'};
-}else{
-  if(!internal.ok || internalResult.success!==true){
-    throw new Error(String(internalResult.error||'문의 접수에 실패했습니다. 직접 이메일로 문의해 주세요.'));
-  }
-  result={message:String(internalResult.message||'상담 문의가 발송 서버에 접수되었습니다.')};
+try{
+ const sent=await fetch('https://api.web3forms.com/submit',{
+   method:'POST',
+   headers:{'Content-Type':'application/json',Accept:'application/json'},
+   body:JSON.stringify(formPayload),
+   signal:AbortSignal.timeout(20000)
+ });
+ const receipt=await sent.json().catch(()=>null);
+ if(!sent.ok || receipt?.success!==true){
+   const providerMessage=String(receipt?.message||'');
+   if(sent.status===429)throw new Error('잠시 요청이 많아 문의를 전달하지 못했습니다. 잠시 후 다시 시도하거나 직접 이메일로 문의해 주세요.');
+   if(sent.status===403)throw new Error('현재 문의 전송이 차단되었습니다. 직접 이메일로 문의해 주세요.');
+   console.warn('문의 전송 실패',sent.status,providerMessage.slice(0,120));
+   throw new Error('자동 문의 전달이 완료되지 않았습니다. 직접 이메일로 문의해 주세요.');
+ }
+ result={message:'상담 문의가 접수되었습니다. 확인 후 연락드리겠습니다.'};
+}finally{
+ if(submitButton)submitButton.disabled=false;
 };form.reset();document.querySelector('#inquiry-feedback').innerHTML=`<div class="form-message success">${E(result.message)}</div>`;}catch(e){
  const subject=encodeURIComponent('[모멘텀마케팅 상담] '+String(payload.shop||''));
  const body=encodeURIComponent('업체명: '+payload.shop+'\n담당자: '+payload.name+'\n연락처: '+payload.phone+'\n사업 단계: '+payload.businessStage+'\n상담 목적: '+payload.marketingGoal+'\n예산: '+payload.budget+'\n요청사항: '+payload.message);
