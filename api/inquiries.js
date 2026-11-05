@@ -51,8 +51,58 @@ export default async function handler(req, res) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.MOMENTUM_MAIL_FROM;
   if (!apiKey || !from) {
-    console.error('Inquiry mail config missing; no email was sent');
-    return response(res, 503, { error: '현재 메일 접수가 준비 중입니다. 잠시 후 다시 시도해 주세요.' });
+    // Keyless form relay: initial use requires the recipient to click the
+    // activation link emailed by FormSubmit. Never report success until the
+    // provider explicitly reports success === true or "true".
+    const fields = {
+      _subject: '[모멘텀마케팅 상담] ' + shop + ' · ' + name,
+      _template: 'table',
+      _captcha: 'false',
+      _url: 'https://momentum-orcin-delta.vercel.app/',
+      '업체명': shop,
+      '담당자': name,
+      '연락처': phone,
+      '사업 단계': stage,
+      '상담 목적': purpose || '미선택',
+      '상품': product || '전체 상담',
+      '예산': budget ? budget + ' 원' : '미기재',
+      '지역': region || '미기재',
+      '상담 방식': contact || '전화',
+      '추가 요청사항': message || '(없음)',
+    };
+    try {
+      const external = await fetch('https://formsubmit.co/ajax/notrack@naver.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Referer': 'https://momentum-orcin-delta.vercel.app/',
+        },
+        body: JSON.stringify(fields),
+        signal: AbortSignal.timeout(12000),
+      });
+      let result = {};
+      try { result = await external.json(); } catch { /* provider returned non-JSON */ }
+      if (external.ok && (result.success === true || result.success === 'true')) {
+        return response(res, 200, {
+          success: true,
+          message: '상담 문의가 접수되었습니다. 확인 후 연락드리겠습니다.',
+        });
+      }
+      const reason = String(result.message ?? '').slice(0, 200);
+      const activation = /activat|confirm|verify|인증|승인/i.test(reason);
+      console.warn('Inquiry relay not accepted:', external.status, reason);
+      return response(res, activation ? 503 : 502, {
+        error: activation
+          ? '수신 이메일의 최초 인증이 아직 완료되지 않았습니다. 아래 직접 이메일 문의를 이용해 주세요.'
+          : '자동 문의 전달이 완료되지 않았습니다. 아래 직접 이메일 문의를 이용해 주세요.',
+      });
+    } catch (err) {
+      console.error('Inquiry relay network failure:', String(err).slice(0, 150));
+      return response(res, 502, {
+        error: '문의 전달 여부를 확인하지 못했습니다. 중복 제출 전에 직접 이메일로 확인해 주세요.',
+      });
+    }
   }
 
   const lines = [
