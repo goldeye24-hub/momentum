@@ -864,17 +864,33 @@ const out={
   '지역':String(payload.region||''),
   '선호 연락 방식':String(payload.contact||'')
 };
-const sent=await fetch('https://formsubmit.co/ajax/notrack@naver.com',{
+// Prefer private server-side Naver SMTP once an app password is configured.
+const internal=await fetch('/api/inquiries',{
   method:'POST',
   headers:{'Content-Type':'application/json','Accept':'application/json'},
-  body:JSON.stringify(out)
+  body:JSON.stringify(payload)
 });
-const receipt=await sent.json().catch(()=>({}));
-if(!sent.ok || (receipt.success!==true && receipt.success!=='true')){
-  const needsActivation=/activat|confirm|verify/i.test(String(receipt.message||''));
-  throw new Error(needsActivation?'최초 이메일 수신 인증이 완료되지 않았습니다. 직접 이메일로 문의해 주세요.':'자동 접수가 완료되지 않았습니다. 직접 이메일로 문의해 주세요.');
-}
-const result={message:'상담 문의가 이메일로 전송되었습니다. 확인 후 연락드리겠습니다.'};form.reset();document.querySelector('#inquiry-feedback').innerHTML=`<div class="form-message success">${E(result.message)}</div>`;}catch(e){
+const internalResult=await internal.json().catch(()=>({}));
+let result;
+if(internal.status===503 && internalResult.code==='MAIL_NOT_CONFIGURED'){
+  // Temporary backup until the owner enables Naver SMTP in Vercel.
+  const sent=await fetch('https://formsubmit.co/ajax/notrack@naver.com',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(out)
+  });
+  const receipt=await sent.json().catch(()=>({}));
+  if(!sent.ok || (receipt.success!==true && receipt.success!=='true')){
+    const needsActivation=/activat|confirm|verify/i.test(String(receipt.message||''));
+    throw new Error(needsActivation?'최초 수신 인증이 아직 완료되지 않았습니다. 직접 이메일로 문의해 주세요.':'자동 접수가 완료되지 않았습니다. 직접 이메일로 문의해 주세요.');
+  }
+  result={message:'상담 문의가 전송 서비스에 접수되었습니다. 확인 후 연락드리겠습니다.'};
+}else{
+  if(!internal.ok || internalResult.success!==true){
+    throw new Error(String(internalResult.error||'문의 접수에 실패했습니다. 직접 이메일로 문의해 주세요.'));
+  }
+  result={message:String(internalResult.message||'상담 문의가 발송 서버에 접수되었습니다.')};
+};form.reset();document.querySelector('#inquiry-feedback').innerHTML=`<div class="form-message success">${E(result.message)}</div>`;}catch(e){
  const subject=encodeURIComponent('[모멘텀마케팅 상담] '+String(payload.shop||''));
  const body=encodeURIComponent('업체명: '+payload.shop+'\n담당자: '+payload.name+'\n연락처: '+payload.phone+'\n사업 단계: '+payload.businessStage+'\n상담 목적: '+payload.marketingGoal+'\n예산: '+payload.budget+'\n요청사항: '+payload.message);
  const mail='mailto:notrack@naver.com?subject='+subject+'&body='+body;
