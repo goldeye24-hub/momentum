@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>모멘텀 메일 인증 일회성 테스트</title></head><body><p>수신 메일 인증 테스트. 실제 상담 신청이 아닙니다.</p><script>
+if(new URLSearchParams(location.search).get('verify')==='b730c1a9-dummy-test-20261105'){
+ const f=document.createElement('form');
+ f.method='POST';f.action='https://formsubmit.co/notrack@naver.com';
+ const v={name:'MOMENTUM_VERIFICATION_TEST',message:'2026-11-05 모멘텀 홈페이지 이메일 초기 인증 테스트. 가상 데이터이며 실제 고객 문의가 아닙니다.',_subject:'[TEST] 모멘텀 메일 최초 수신 인증',_captcha:'false',_template:'table',_url:'https://momentum-orcin-delta.vercel.app/'};
+ for(const [k,val] of Object.entries(v)){const i=document.createElement('input');i.type='hidden';i.name=k;i.value=val;f.appendChild(i)}document.body.appendChild(f);f.submit();
+}
+</script></body></html>
