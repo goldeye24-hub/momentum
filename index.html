@@ -268,6 +268,16 @@
 .work-visual-live .work-preview-frame{position:absolute;top:0;left:0;width:200%;height:200%;border:0;background:#f8f6f2;transform:scale(.5);transform-origin:0 0;pointer-events:none;display:block}
 .work-visual-live .work-preview-tag{position:absolute;left:15px;bottom:15px;z-index:1;padding:8px 11px;background:rgba(22,22,22,.82);border:1px solid rgba(255,255,255,.18);border-radius:5px;color:#fff;font-size:11px;font-weight:700;letter-spacing:-.02em;backdrop-filter:blur(8px)}
 @media(max-width:700px){.work-visual-live .work-preview-tag{left:10px;bottom:10px;padding:7px 9px;font-size:10px}}
+
+/* v41: authentic thumbnails reused from the eleven existing product design pages. */
+.pp-visual.pp-preview{position:relative;display:block;min-height:0;aspect-ratio:1.58;padding:0;overflow:hidden;background:#ebe6df;isolation:isolate}
+.pp-preview img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .35s ease}
+.pp-preview:after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(0,0,0,.36),transparent 44%,rgba(0,0,0,.32));pointer-events:none}
+.pp-visual.pp-preview .pp-preview-count,.pp-visual.pp-preview .pp-preview-label{position:absolute;z-index:1;color:#fff;font-size:11px;font-weight:700;letter-spacing:.11em;text-shadow:0 1px 5px rgba(0,0,0,.38)}
+.pp-visual.pp-preview .pp-preview-count{top:16px;left:17px}.pp-visual.pp-preview .pp-preview-label{bottom:15px;left:17px;font-size:10px}
+.pp-card:hover .pp-preview img{transform:scale(1.045)}
+@media(max-width:620px){.pp-visual.pp-preview{min-height:0;aspect-ratio:1.62}.pp-visual.pp-preview .pp-preview-count{top:13px;left:13px}.pp-visual.pp-preview .pp-preview-label{bottom:13px;left:13px}}
+@media(prefers-reduced-motion:reduce){.pp-preview img{transition:none}}
 </style>
 <style id="forum-readable-v29">
 /* Only marketing forum article details: preserve the rest of v28 design. */
@@ -705,8 +715,21 @@ function conversionDetail(){
  const ix=all.indexOf(x), next=all[(ix+1)%all.length];
  portfolioViewer({title:x.title+' 홈페이지',category:'WEBSITE PORTFOLIO',description:(x.subtitle||'')+' · 기존 제작한 홈페이지 콘셉트 시안입니다.',url:'https://momentum-orcin-delta.vercel.app/portfolio/conversion/'+encodeURIComponent(slug)+'/',backPath:'/portfolio/conversion',backLabel:'홈페이지 디자인 22종',nextPath:'/portfolio/conversion/'+next.slug});
 }
+const productPageThumbnailSources={
+  "moringa": "https://commons.wikimedia.org/wiki/Special:FilePath/Doenjangwithbeans.jpg",
+  "lumin": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=950&q=82",
+  "brew": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=950&q=82",
+  "puremild": "/assets/product-thumbnails/puremild.webp",
+  "coolrest": "/assets/product-thumbnails/coolrest.webp",
+  "taily": "/assets/product-thumbnails/taily.webp",
+  "rootvein": "/assets/product-thumbnails/rootvein.webp",
+  "cleandock": "/assets/product-thumbnails/cleandock.webp",
+  "airy": "/assets/product-thumbnails/airy.webp",
+  "galbitang": "/assets/product-thumbnails/galbitang.webp",
+  "crab": "/assets/product-thumbnails/crab.webp"
+};
 function productPageGallery(){
- const cards=productPageSamples11.map((x,i)=>`<a class="pp-card" href="${H('/portfolio/product-pages/'+x.slug)}" data-link aria-label="${E(x.title)} 상세페이지 디자인 시안 확인"><div class="pp-visual pp-tone-${i%6}"><small>PRODUCT DETAIL · ${String(i+1).padStart(2,'0')}</small><span>${E(x.title)}</span><em>DESIGN CONCEPT</em></div><div class="pp-copy"><span>${E(x.category)}</span><h3>${E(x.title)}</h3><p>${E(x.desc)}</p><strong>상세페이지 시안 체험 ↗</strong></div></a>`).join('');
+ const cards=productPageSamples11.map((x,i)=>`<a class="pp-card" href="${H('/portfolio/product-pages/'+x.slug)}" data-link aria-label="${E(x.title)} 상세페이지 디자인 시안 확인"><div class="pp-visual pp-preview"><img src="${E(productPageThumbnailSources[x.slug]||'')}" alt="${E(x.title)} 상세페이지에서 사용된 대표 이미지" loading="${i<3?'eager':'lazy'}" decoding="async" width="960" height="620"><span class="pp-preview-count">PRODUCT DETAIL / ${String(i+1).padStart(2,'0')}</span><span class="pp-preview-label">DESIGN CONCEPT</span></div><div class="pp-copy"><span>${E(x.category)}</span><h3>${E(x.title)}</h3><p>${E(x.desc)}</p><strong>상세페이지 시안 체험 ↗</strong></div></a>`).join('');
  shell(`<main class="pp-page">${pageHead('DESIGN PORTFOLIO / 11 WORKS','상세페이지 디자인 <span class="text-orange">11종.</span>','식품·뷰티·생활용품·반려동물·소형가전 등 이미 제작된 상세페이지 시안을 모았습니다.')}<section class="section"><div class="wrap"><div class="pp-intro">${L('/portfolio','← 전체 포트폴리오','btn line small')}<p>아래 카드를 클릭하면 개별 상세페이지를 모멘텀 내부 미리보기에서 볼 수 있습니다. 실제 납품 실적이 아닌 디자인 시안입니다.</p></div><div class="pp-grid">${cards}</div><div class="pp-note">기존 포트폴리오 11개를 연결했습니다. 원본 파일을 복사하는 방식은 아니므로 인터넷 연결과 외부 사이트의 프레임 허용 여부에 따라 화면이 달라질 수 있습니다.</div></div></section><section class="gallery-v15-cta"><div class="wrap"><h2>상품의 특징이 전달되는<br>상세페이지가 필요하신가요?</h2>${L('/consult','상세페이지 제작 상담하기 ↗','btn light')}</div></section></main>`,'상세페이지 디자인 11종');
 }
 function productPageDetail(){
