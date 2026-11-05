@@ -50,59 +50,55 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.MOMENTUM_MAIL_FROM;
-  if (!apiKey || !from) {
-    // Keyless form relay: initial use requires the recipient to click the
-    // activation link emailed by FormSubmit. Never report success until the
-    // provider explicitly reports success === true or "true".
-    const fields = {
-      _subject: '[모멘텀마케팅 상담] ' + shop + ' · ' + name,
-      _template: 'table',
-      _captcha: 'false',
-      _url: 'https://momentum-orcin-delta.vercel.app/',
-      '업체명': shop,
-      '담당자': name,
-      '연락처': phone,
-      '사업 단계': stage,
-      '상담 목적': purpose || '미선택',
-      '상품': product || '전체 상담',
-      '예산': budget ? budget + ' 원' : '미기재',
-      '지역': region || '미기재',
-      '상담 방식': contact || '전화',
-      '추가 요청사항': message || '(없음)',
-    };
+  // Naver's application-specific password is configured only on the server.
+  // Never send it to the browser or commit it to Git.
+  const naverAppPassword = process.env.MOMENTUM_NAVER_SMTP_APP_PASSWORD;
+  if (naverAppPassword) {
+    const text = [
+      '모멘텀마케팅 홈페이지 상담 신청', '',
+      `업체명: ${shop}`, `담당자: ${name}`, `연락처: ${phone}`,
+      `사업 단계: ${stage}`, `상담 목적: ${purpose || '미선택'}`,
+      `관심 상품: ${product || '전체 상담'}`, `예상 예산: ${budget ? budget + ' 원' : '미기재'}`,
+      `지역: ${region || '미기재'}`, `상담 방식: ${contact || '전화'}`,
+      '추가 요청사항:', message || '(없음)', '',
+      '개인정보 수집·이용에 동의한 상담 신청입니다.',
+    ].join('\\n');
     try {
-      const external = await fetch('https://formsubmit.co/ajax/notrack@naver.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Referer': 'https://momentum-orcin-delta.vercel.app/',
-        },
-        body: JSON.stringify(fields),
-        signal: AbortSignal.timeout(12000),
+      const { default: nodemailer } = await import('nodemailer');
+      const transport = nodemailer.createTransport({
+        host: 'smtp.naver.com',
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: { user: RECIPIENT, pass: naverAppPassword },
+        connectionTimeout: 9000,
+        greetingTimeout: 7000,
+        socketTimeout: 11000,
+        tls: { servername: 'smtp.naver.com', minVersion: 'TLSv1.2' },
       });
-      let result = {};
-      try { result = await external.json(); } catch { /* provider returned non-JSON */ }
-      if (external.ok && (result.success === true || result.success === 'true')) {
-        return response(res, 200, {
-          success: true,
-          message: '상담 문의가 접수되었습니다. 확인 후 연락드리겠습니다.',
-        });
+      const result = await transport.sendMail({
+        from: `"모멘텀마케팅 상담" <${RECIPIENT}>`,
+        to: RECIPIENT,
+        subject: `[모멘텀마케팅 문의] ${shop} · ${name}`,
+        text,
+      });
+      if (!result.accepted?.some(email => email.toLowerCase() === RECIPIENT)) {
+        console.error('Naver SMTP returned no accepted recipient');
+        return response(res, 502, { success: false, error: '메일 수신 서버가 요청을 수락하지 않았습니다. 직접 이메일로 문의해 주세요.' });
       }
-      const reason = String(result.message ?? '').slice(0, 200);
-      const activation = /activat|confirm|verify|인증|승인/i.test(reason);
-      console.warn('Inquiry relay not accepted:', external.status, reason);
-      return response(res, activation ? 503 : 502, {
-        error: activation
-          ? '수신 이메일의 최초 인증이 아직 완료되지 않았습니다. 아래 직접 이메일 문의를 이용해 주세요.'
-          : '자동 문의 전달이 완료되지 않았습니다. 아래 직접 이메일 문의를 이용해 주세요.',
-      });
-    } catch (err) {
-      console.error('Inquiry relay network failure:', String(err).slice(0, 150));
-      return response(res, 502, {
-        error: '문의 전달 여부를 확인하지 못했습니다. 중복 제출 전에 직접 이메일로 확인해 주세요.',
-      });
+      return response(res, 200, { success: true, message: '상담 문의가 이메일 발송 서버에 접수되었습니다. 확인 후 연락드리겠습니다.' });
+    } catch (error) {
+      console.error('Naver SMTP failed:', error?.code || 'UNKNOWN', String(error?.message || '').slice(0, 140));
+      return response(res, 502, { success: false, error: '이메일 발송에 실패했습니다. 직접 이메일로 문의해 주세요.' });
     }
+  }
+
+  if (!apiKey || !from) {
+    return response(res, 503, {
+      success: false,
+      code: 'MAIL_NOT_CONFIGURED',
+      error: '메일 자동 접수가 아직 설정되지 않았습니다.',
+    });
   }
 
   const lines = [
