@@ -262,6 +262,12 @@
 @media(max-width:900px){.pp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-viewer-stage{padding:16px}.portfolio-viewer-frame iframe{height:660px}}
 @media(max-width:620px){.pp-grid{grid-template-columns:1fr}.portfolio-viewer-heading{padding:45px 0 24px}.portfolio-viewer-heading>p{font-size:14px}.portfolio-viewer-nav{gap:7px}.portfolio-viewer-bar{padding:11px;gap:6px}.portfolio-viewer-bar>span{font-size:10px}.portfolio-viewer-stage{padding:8px;min-height:480px}.portfolio-viewer-frame iframe{height:580px}.portfolio-viewer-hint{flex-direction:column;align-items:start;padding:16px}.portfolio-viewer-hint strong{font-size:13px}.pp-visual{min-height:160px}}
 
+
+/* v40: show true portfolio website screens instead of decorative SVG illustrations. */
+.work-visual-live{position:relative;background:#e9e4dd;isolation:isolate;overflow:hidden}
+.work-visual-live .work-preview-frame{position:absolute;top:0;left:0;width:200%;height:200%;border:0;background:#f8f6f2;transform:scale(.5);transform-origin:0 0;pointer-events:none;display:block}
+.work-visual-live .work-preview-tag{position:absolute;left:15px;bottom:15px;z-index:1;padding:8px 11px;background:rgba(22,22,22,.82);border:1px solid rgba(255,255,255,.18);border-radius:5px;color:#fff;font-size:11px;font-weight:700;letter-spacing:-.02em;backdrop-filter:blur(8px)}
+@media(max-width:700px){.work-visual-live .work-preview-tag{left:10px;bottom:10px;padding:7px 9px;font-size:10px}}
 </style>
 <style id="forum-readable-v29">
 /* Only marketing forum article details: preserve the rest of v28 design. */
@@ -628,10 +634,10 @@ ${faqSection('/')}
 <section class="closing"><div class="closing-art"><img src="${A('closing-visual.jpg')}" alt="업무 공간과 도시를 표현한 캠페인 콘셉트 사진"></div><div class="wrap closing-inner"><div><div class="eyebrow" style="color:#fff">READY TO MOVE?</div><h2>광고부터 결정하지 말고,<br>우리 사업의 상황부터.</h2><p>사업의 현재 상황과 목표부터 확인합니다.<br>필요한 실행 방안과 진행 범위는 상담을 거쳐 협의합니다.</p><button type="button" class="btn light" data-action="cvr-scroll">마케팅 상담 신청 ↗</button></div></div></section>
 <div class="cvr-mobile-bar"><button type="button" class="btn" data-action="cvr-scroll">마케팅 상담 신청하기 ↗</button></div></main>`,'홈');}
 const portfolioItems=[
- {title:'홈페이지 디자인 22종',category:'웹사이트',meta:'기존에 제작한 업종별 홈페이지 디자인 샘플',img:'work-web.svg',href:'/portfolio/conversion'},
- {title:'상세페이지 디자인 11종',category:'상세페이지',meta:'기존 11개 상세페이지 시안 · 내부 목록에서 직접 체험',img:'work-beauty.svg',href:'/portfolio/product-pages'}
+ {title:'홈페이지 디자인 22종',category:'웹사이트',meta:'실제 제작한 업종별 홈페이지 시안을 화면으로 미리보기',preview:'/portfolio/conversion/restaurant/',previewTitle:'수연식당 홈페이지 제작 시안 미리보기',href:'/portfolio/conversion'},
+ {title:'상세페이지 디자인 11종',category:'상세페이지',meta:'실제 제작한 상품 상세페이지 시안을 화면으로 미리보기',preview:'/portfolio/product-pages/lumin/',previewTitle:'루민 세럼 상세페이지 제작 시안 미리보기',href:'/portfolio/product-pages'}
 ];
-function workTile(x){return `<a class="work-card" href="${x.href.startsWith('/')?H(x.href):E(x.href)}" ${x.href.startsWith('/')?'data-link':'target="_blank" rel="noopener noreferrer"'} aria-label="${E(x.title)} 포트폴리오 보기"><div class="work-visual"><img src="${A(x.img)}" alt="${E(x.title)} 디자인을 소개하는 이미지"></div><h3 class="work-title">${E(x.title)} <span aria-hidden="true">↗</span></h3><div class="work-meta">${E(x.meta)}</div><div class="sample-stamp">제작 디자인 샘플 보기 · 실제 고객 납품 실적 아님</div></a>`}
+function workTile(x){return `<a class="work-card" href="${x.href.startsWith('/')?H(x.href):E(x.href)}" ${x.href.startsWith('/')?'data-link':'target="_blank" rel="noopener noreferrer"'} aria-label="${E(x.title)} 포트폴리오 보기"><div class="work-visual work-visual-live"><iframe class="work-preview-frame" src="${E(x.preview)}" title="${E(x.previewTitle)}" loading="lazy" tabindex="-1" aria-hidden="true" scrolling="no"></iframe><span class="work-preview-tag" aria-hidden="true">실제 디자인 시안</span></div><h3 class="work-title">${E(x.title)} <span aria-hidden="true">↗</span></h3><div class="work-meta">${E(x.meta)}</div><div class="sample-stamp">제작 디자인 샘플 보기 · 실제 고객 납품 실적 아님</div></a>`}
 // User-approved, newly designed 3 website concept samples. Displayed only in this local preview.
 const websiteDesignSamples=[
  {slug:'pilates',title:'필라테스 스튜디오',type:'필라테스',subtitle:'한국인 여성 모델을 사용한 프리미엄 필라테스 홈페이지 시안',img:'portfolio-pilates.webp',concept:'웜 베이지·오렌지 톤 / 체험수업 신청 중심',features:['한국인 여성 모델의 운동 이미지','수업 프로그램 및 강사진 안내 레이아웃','체험 수업 예약 전환 중심 CTA']},
