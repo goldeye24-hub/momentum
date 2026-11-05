@@ -27,3 +27,22 @@ test('only count unambiguous label from a matching review link',()=>{
 test('conflicting same-label count is not trusted',()=>{
  assert.equal(numberFrom('방문자 리뷰 20 방문자 리뷰 30','visitor'),null);
 });
+
+test('public description metadata shows visitor and blog review totals separately',()=>{
+ const evidence=[{source:'metadata',type:'both',text:'방문자리뷰 3,292 · 블로그리뷰 4,510'}];
+ assert.deepEqual(JSON.parse(JSON.stringify(fromEvidence(evidence))),{visitorCount:3292,blogCount:4510});
+});
+test('public description does not confuse review totals with keyword evaluations',()=>{
+ const evidence=[
+  {source:'metadata',type:'both',text:'방문자리뷰 3,292 · 블로그리뷰 4,510'},
+  {source:'label',type:'visitor',text:'이런 점이 좋았어요 3,065회'}
+ ];
+ assert.deepEqual(JSON.parse(JSON.stringify(fromEvidence(evidence))),{visitorCount:3292,blogCount:4510});
+});
+test('contradictory labelled review totals do not return fabricated counts',()=>{
+ const evidence=[
+  {source:'metadata',type:'both',text:'방문자리뷰 3,292 · 블로그리뷰 4,510'},
+  {source:'link',type:'visitor',hrefType:'visitor',text:'방문자 리뷰 3,290'}
+ ];
+ assert.deepEqual(JSON.parse(JSON.stringify(fromEvidence(evidence))),{visitorCount:null,blogCount:4510});
+});

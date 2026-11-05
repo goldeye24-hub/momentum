@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Public NAVER Place review counters; no login, no hidden APIs, no review content.
- * Count is null unless unambiguously attached to a visible labelled review link.
+ * Accept counts from consistent labelled review links, tabs or public page description metadata. Unknown stays null.
  */
 const chromium=require('@sparticuz/chromium');
 const playwright=require('playwright-core');
@@ -19,11 +19,13 @@ const numberFrom=(text,label)=>{
 };
 function fromEvidence(evidence){
  const get=k=>{
-  const high=evidence.filter(x=>x.type===k&&x.hrefType===k&&x.source==='link');
-  const fromLinks=high.map(x=>numberFrom(x.text,k)).filter(v=>v!==null);
-  if(fromLinks.length&&fromLinks.every(x=>x===fromLinks[0]))return fromLinks[0];
-  const other=evidence.filter(x=>x.type===k&&x.source==='label').map(x=>numberFrom(x.text,k)).filter(v=>v!==null);
-  return other.length&&other.every(x=>x===other[0])?other[0]:null;
+  const linked=evidence.filter(x=>x.type===k&&x.hrefType===k&&x.source==='link');
+  const labels=evidence.filter(x=>x.type===k&&x.source==='label');
+  const metadata=evidence.filter(x=>x.source==='metadata');
+  const values=[...linked,...labels,...metadata]
+   .map(x=>numberFrom(x.text,k)).filter(x=>x!==null);
+  // Reject contradictions rather than treating an unrelated number as a review count.
+  return values.length&&values.every(x=>x===values[0])?values[0]:null;
  };
  return {visitorCount:get('visitor'),blogCount:get('blog')};
 }
@@ -57,6 +59,11 @@ async function observe(placeId){
     const evidence=await page.evaluate(()=>{
      const result=[];
      const clean=s=>String(s||'').replace(/\s+/g,' ').trim().slice(0,130);
+     // The public description often lists review counters even when tabs omit numbers.
+     for(const el of document.querySelectorAll('meta[name="description"],meta[property="og:description"]')){
+      const text=String(el.getAttribute('content')||'').replace(/\s+/g,' ').trim().slice(0,350);
+      if(/(?:방문자\s*리뷰|블로그\s*리뷰)/.test(text))result.push({source:'metadata',type:'both',text});
+     }
      const classify=link=>{
       const path=link.getAttribute('href')||'';
       if(/\/review\/visitor(?:[/?#]|$)/.test(path))return 'visitor';
@@ -84,7 +91,7 @@ async function observe(placeId){
   }
   const result={status:vis!==null||blog!==null?'partial_or_complete':'unavailable',
    visitorCount:vis,blogCount:blog,observedAt:new Date().toISOString(),
-   source:'public_naver_place_review_labels',note:'네이버 공개 플레이스에 표시된 방문자·블로그 리뷰 수. 영수증 리뷰만의 수량은 아닙니다.',
+   source:'public_naver_place_review_labels_and_metadata',note:'네이버 공개 플레이스에 표시된 방문자·블로그 리뷰 수. 영수증 리뷰만의 수량은 아닙니다.',
    complete:vis!==null&&blog!==null};
   if(result.status!=='unavailable')cache.set(id,{time:Date.now(),result});
   return result;
