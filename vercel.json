@@ -2,6 +2,21 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/lab/keywords/index.html",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/keywords/",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/keywords",
+      "destination": "/lab/",
+      "permanent": false
+    },
+    {
       "source": "/lab/trends",
       "destination": "https://datalab.naver.com/keyword/trendSearch.naver",
       "permanent": false

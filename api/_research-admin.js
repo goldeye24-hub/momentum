@@ -228,21 +228,31 @@ module.exports=async function(req,res){
    if(Date.now()-(lastCall.get('volume')||0)<5000)return fail(res,429,'slow_down','연속 조회 간격은 최소 5초입니다.');
    lastCall.set('volume',Date.now());
    const date=kst(new Date().toISOString());
-   const existing=await db.request('momentum_research_admin_keyword_volumes',{query:{
-    select:'keyword,measured_date,observed_at,pc_raw,mobile_raw,pc_count,mobile_count,total_count',
-    keyword:'eq.'+keyword,measured_date:'eq.'+date,limit:'1'}});
-   if(existing?.length)return res.status(200).json({status:'ok',cachedToday:true,row:existing[0],
-    note:'오늘 이미 기록된 월간 검색량입니다. 하루 한 번 기록합니다.'});
+   let volumeStoreReady=true;
+   try{
+    const existing=await db.request('momentum_research_admin_keyword_volumes',{query:{
+     select:'keyword,measured_date,observed_at,pc_raw,mobile_raw,pc_count,mobile_count,total_count',
+     keyword:'eq.'+keyword,measured_date:'eq.'+date,limit:'1'}});
+    if(existing?.length)return res.status(200).json({status:'ok',cachedToday:true,saved:true,row:existing[0],
+     note:'오늘 이미 기록된 월간 검색량입니다. 하루 한 번 기록합니다.'});
+   }catch(e){volumeStoreReady=false;}
    const checked=await searchVolume.lookup(keyword);
    if(checked.status!=='ok')return fail(res,checked.status==='not_configured'?503:502,
     checked.status,checked.message||'검색광고 API 오류');
    const row={keyword,measured_date:date,observed_at:checked.observedAt,
     pc_raw:checked.pcRaw,mobile_raw:checked.mobileRaw,
     pc_count:checked.pc,mobile_count:checked.mobile,total_count:checked.total};
-   await db.request('momentum_research_admin_keyword_volumes',{method:'POST',body:row,prefer:'return=minimal'});
-   return res.status(200).json({status:'ok',saved:true,row,
-    note:'오늘 조회한 최근 한 달 검색량이 날짜별로 저장되었습니다.'});
+   if(volumeStoreReady){
+    try{
+     await db.request('momentum_research_admin_keyword_volumes',{method:'POST',body:row,prefer:'return=minimal'});
+     return res.status(200).json({status:'ok',saved:true,row,
+      note:'오늘 조회한 최근 한 달 검색량이 날짜별로 저장되었습니다.'});
+    }catch(e){volumeStoreReady=false;}
+   }
+   return res.status(200).json({status:'ok',saved:false,row,
+    note:'실제 네이버 검색광고 API 값입니다. 서버 저장이 불가능해 브라우저 임시 기록으로 저장해야 합니다.'});
   }
+
   return fail(res,404,'unknown_action','지원하지 않는 관리자 연구 기능입니다.');
  }catch(e){
   if(e?.status===409)return fail(res,409,'duplicate','이미 등록한 매장 또는 날짜별 기록입니다.');
