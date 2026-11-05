@@ -1,0 +1,18 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>메일 초기 인증 검사(임시)</title></head><body><pre id="result">메일 테스트를 수행하지 않았습니다.</pre><script>
+if(new URLSearchParams(location.search).get('k')==='hVustd7e-OVjNGHNa0gt-h-SsRDdXwdW5haIGEhk97U'){
+  document.getElementById('result').textContent='폼 발송 검사 중...';
+  fetch('https://formsubmit.co/ajax/notrack@naver.com',{
+    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({
+      name:'SYSTEM_TEST_NOT_A_CUSTOMER',
+      message:'MOMENTUM_TEST_20261105 처음 인증 메일 보내기 위한 테스트입니다. 실제 상담 아님.',
+      _subject:'[TEST ONLY] 모멘텀 문의메일 최초 인증 확인',
+      _captcha:'false',
+      _template:'table',
+      _url:'https://momentum-orcin-delta.vercel.app/'
+    })
+  }).then(async r=>({status:r.status,data:await r.json().catch(()=>({parseError:true}))}))
+  .then(v=>{document.getElementById('result').textContent=JSON.stringify(v);})
+  .catch(e=>{document.getElementById('result').textContent='NETWORK ERROR: '+e.message;});
+}
+</script></body></html>
