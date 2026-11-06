@@ -606,10 +606,25 @@ function regionMarketingSection(){const zones=[
  ['양산','양산 블로그마케팅 · 바이럴마케팅','양산 지역 매장·제품의 방문형 또는 배송형 체험 조건을 확인하고, 블로그 콘텐츠 운영 방향을 제안합니다.','/services/blog-experience']
  ];return `<section class="region-marketing section" aria-labelledby="region-marketing-heading"><div class="wrap"><div class="eyebrow">LOCAL SERVICE / BUSAN · YANGSAN · GIMHAE</div><h2 class="region-marketing-title" id="region-marketing-heading">지역마다 다른 고객의 선택,<br><span>업종에 맞춘 마케팅</span></h2><p class="region-marketing-lead">지역 이름만 바꾼 동일한 광고보다 실제 고객층과 상권 특성을 살핀 실행안을 제안합니다. 지역별 서비스 범위는 상담 시 확인할 수 있습니다.</p><div class="region-marketing-grid">${zones.map(([name,kw,desc,url])=>`<article class="region-marketing-card"><span class="region-city">${name}</span><h3>${kw}</h3><p>${desc}</p>${L(url,'관련 서비스 보기 ↗','inline-link')}</article>`).join('')}</div></div></section>`;}
 const sectionTitle=(id,small,title,desc,right='')=>`<div class="section-top"><div><div class="eyebrow">${small}</div><h2 class="section-title" id="${id}" style="margin-top:13px">${title}</h2>${desc?`<p class="section-desc" style="margin-top:14px">${desc}</p>`:''}</div>${right}</div>`;
-const serviceData=[['pin','플레이스 마케팅','플레이스 SEO 최적화·수정 제안, 정보 정비와 사진촬영','/services'],['search','검색광고','파워링크·플레이스 광고, 키워드 전략과 운영','/services'],['chat','바이럴·리뷰관리','블로그 체험단·리뷰 대응·콘텐츠 마케팅','/services'],['camera','SNS·언론홍보','인스타그램·인플루언서·샤오홍슈·뉴스 송출','/services'],['layers','홈페이지·상세페이지','반응형 웹사이트, 브랜드 페이지, 상세페이지','/websites'],['rocket','마케팅 교육','사업주 실전 5개 과정·대행사 창업 실전교육','/education'],['search','맞춤 마케팅 컨설팅','업체 상황에 맞춘 광고 매체·예산·실행 전략 제안','/product/ad-consulting']];
+const serviceData=[
+ ['search','검색광고','네이버·구글·다음 검색광고 설정 및 키워드 운영','/services/search-ads/'],
+ ['chat','바이럴마케팅','블로그 관리·콘텐츠 기획·바이럴 운영','/services/viral/'],
+ ['chat','체험단·기자단','블로그 체험단 운영 및 기자단 맞춤 상담','/services/blog-experience'],
+ ['camera','SNS마케팅','인스타그램·인플루언서·샤오홍슈 마케팅','/services/sns/'],
+ ['pin','플레이스 최적화','네이버 플레이스 정보 정비·SEO 점검·사진촬영','/services/place-seo/'],
+ ['layers','홈페이지 제작','반응형 홈페이지·브랜드 웹사이트 제작','/services/websites/'],
+ ['layers','상세페이지 제작','제품·서비스의 판매 전환을 고려한 상세페이지 디자인','/services/creative/']
+];
+const MOMENTUM_DISPLAY_PRODUCT_ORDER=[
+ 'search-ads','viral-custom','blog-experience-10','blog-experience-6mo',
+ 'instagram','influencer','xiaohongshu','place-seo','place-simple','place-photo',
+ 'site-build','site-1y','site-3y','website-custom','product-page'
+];
+function productDisplayRank(product){const found=MOMENTUM_DISPLAY_PRODUCT_ORDER.indexOf(product.id);return found<0?1000:found;}
+function sortByCustomerServiceOrder(a,b){return productDisplayRank(a)-productDisplayRank(b)||(a.order||9999)-(b.order||9999);}
 function productUrl(p){return '/product/'+encodeURIComponent(p.slug)}
 function price(p){return E(p.priceDisplay || (p.price===null?'상담 후 견적':comma(p.price)+'원'))}
-function home(){const cards=s.products.filter(p=>p.featured&&p.id!=='place-diagnostic').sort((a,b)=>a.order-b.order).slice(0,4);shell(`<main>
+function home(){const homeOfferIds=['search-ads','viral-custom','blog-experience-10','instagram','place-seo','site-build','product-page'];const cards=homeOfferIds.map(id=>s.products.find(p=>p.id===id&&p.published!==false)).filter(Boolean);shell(`<main>
 <section class="hero cvr-hero"><div class="wrap"><div class="hero-grid"><div class="hero-copy"><div class="eyebrow">MOMENTUM MARKETING · PRACTICAL GROWTH</div><h1>오픈 준비, 매출 고민,<br>그리고 다음 성장까지.<br><span>지금의 사업에 맞는<br>마케팅을 설계합니다.</span></h1><p>처음 고객을 확보해야 할 때와 기존 매장의 매출이 주춤할 때는 필요한 전략이 다릅니다. <strong>현재 상황과 목표를 먼저 살펴봅니다.</strong></p><p class="cvr-hero-value">블로그·플레이스·광고·홈페이지 중 어떤 방법이 적합한지, 실행 순서와 현실적인 범위를 함께 검토합니다.</p><div class="hero-actions"><button type="button" class="btn" data-action="cvr-scroll">내 사업에 맞는 상담 신청 <span>↗</span></button>${L('/services','제공 서비스 살펴보기 ↗','btn line')}</div><div class="cvr-hero-assurance"><span>사업 단계별 상담</span><span>예산 미정도 신청 가능</span><span>진행 여부는 별도 협의</span></div><div class="hero-kicker-stamp">당신의 사업에 동력을 달아드립니다 · MOMENTUM</div></div><div class="hero-visual"><img src="${A('hero-studio.jpg')}" alt="노트북을 활용한 디지털 제작 업무를 표현한 콘셉트 이미지"><div class="hero-sun"></div><div class="photo-label"><span>STRATEGY · CONTENT · DIGITAL</span><span>01 / 04</span></div></div></div></div></section>
 <div class="hero-bottom"><div class="wrap"><div><span>✳</span><strong>고객 행동 중심 전략<small>검색에서 실제 행동까지</small></strong></div><div><span>↗</span><strong>실행형 마케팅<small>기획부터 운영까지</small></strong></div><div><span>◎</span><strong>웹·디자인 제작<small>전환을 돕는 브랜드 경험</small></strong></div><div><span>◇</span><strong>실무 마케팅 교육<small>직접 운영할 수 있는 역량</small></strong></div></div></div>
 <section class="section cvr-problems" aria-labelledby="cvr-problems-title"><div class="wrap"><div class="eyebrow">01 / WHERE IS YOUR BUSINESS TODAY?</div><h2 id="cvr-problems-title" class="cvr-heading">지금 어떤 고민이 가장 크신가요?</h2><p class="cvr-section-desc">오픈을 준비하는 사업자와 기존 매장의 고민은 다릅니다. 내 상황을 선택하면 선택하면 상담 신청서에 자동 반영됩니다.</p><div class="cvr-problem-grid cvr-journey-grid">
@@ -743,19 +758,22 @@ function productPageDetail(){
 function offerTile(p,i){return `<article class="offer-card"><div class="offer-art type-${['a','b','c','d'][i%4]}"><div class="art-circle"></div>${p.imageUrl?`<img src="${E(p.imageUrl)}" alt="${E(p.title)} 상품 이미지" loading="lazy">`:``}</div><div class="offer-body"><div class="type-label">${E(p.tag||p.category)}</div><h3>${E(p.title)}</h3><p>${E(p.description).slice(0,78)}</p><div class="offer-price">${price(p)}</div>${L(productUrl(p),'상품 자세히 보기 ↗','btn line small')}</div></article>`}
 function pageHead(kicker,title,desc){return `<section class="page-hero"><div class="wrap"><div class="eyebrow">${kicker}</div><h1>${title}</h1><p>${desc}</p></div></section>`}
 function services(){
- const group=s.products.filter(p=>p.group==='marketing');
+ const group=s.products.filter(p=>p.group==='marketing'||p.group==='website');
  const taxonomy=[
-  ['검색광고','SEARCH ADS','네이버·구글·다음 유료광고 설정과 운영'],
-  ['플레이스','NAVER PLACE','기본정보 수정 · SEO 분석·개선 제안 · 사진촬영 및 종합 정비'],
-  ['바이럴마케팅','VIRAL MARKETING','10팀 단품·6개월 정액·기타 맞춤 상담'],
-  ['리뷰관리','REVIEW CARE','허위 의심·불만 리뷰 대응과 답글 개선'],
-  ['SNS마케팅','SOCIAL MARKETING','인스타그램·인플루언서·샤오홍슈'],
-  ['언론뉴스송출','NEWS DISTRIBUTION','보도자료·언론 뉴스 송출 상담'],
-  ['촬영','PHOTOGRAPHY','블로그용·플레이스용 촬영'],
-  ['오픈패키지','OPENING PACKAGE','기본 준비부터 검색광고 세팅까지'],
-  ['맞춤컨설팅','TAILORED STRATEGY','업체 상황에 맞춰 제안을 드립니다. 8대 진단 기준으로 필요한 마케팅을 설계합니다.']
+  ['검색광고','SEARCH ADS','네이버·구글·다음 유료 검색광고 설정과 운영',['search-ads']],
+  ['바이럴마케팅','VIRAL MARKETING','블로그·콘텐츠 등 맞춤 바이럴마케팅 운영',['viral-custom']],
+  ['체험단·기자단','EXPERIENCE & BLOG','블로그 체험단 단품·정액 운영, 기자단은 맞춤 상담',['blog-experience-10','blog-experience-6mo']],
+  ['SNS마케팅','SOCIAL MARKETING','인스타그램·인플루언서·샤오홍슈',['instagram','influencer','xiaohongshu']],
+  ['플레이스 최적화','NAVER PLACE','기본정보 수정 · SEO 분석·개선 제안 · 사진촬영 및 종합 정비',['place-seo','place-simple','place-photo']],
+  ['홈페이지 제작','WEBSITE','반응형 홈페이지·브랜드 웹사이트 제작',['site-build','site-1y','site-3y','website-custom']],
+  ['상세페이지 제작','PRODUCT DETAIL','상품 판매와 고객 이해를 돕는 상세페이지 제작',['product-page']],
+  ['리뷰관리','REVIEW CARE','허위 의심·불만 리뷰 대응과 답글 개선',['review-care']],
+  ['언론뉴스송출','NEWS DISTRIBUTION','보도자료·언론 뉴스 송출 상담',['press-pr']],
+  ['촬영','PHOTOGRAPHY','블로그용·플레이스용 촬영',['photo-blog','photo-place']],
+  ['오픈패키지','OPENING PACKAGE','기본 준비부터 검색광고 세팅까지',['opening-package-1','opening-package-2']],
+  ['맞춤컨설팅','TAILORED STRATEGY','업체 상황에 맞춰 필요한 마케팅을 설계합니다.',['ad-consulting']]
  ];
- const blocks=taxonomy.map(([cat,en,ex],i)=>{const found=group.filter(p=>p.category===cat);
+ const blocks=taxonomy.map(([cat,en,ex,ids],i)=>{const found=ids.map(id=>group.find(p=>p.id===id&&p.published!==false)).filter(Boolean);
   return `<section class="offer-group" id="service-${i+1}"><div class="offer-heading"><div><span class="eyebrow">${String(i+1).padStart(2,'0')} / ${en}</span><h2>${cat}</h2><p>${ex}</p></div><span class="offer-count">${found.length} PRODUCTS</span></div><div class="catalog-grid">${found.map(catalogTile).join('')}</div></section>`;
  }).join('');
  shell(`<main>${pageHead('SERVICE / MOMENTUM MARKETING','마케팅서비스<span class="text-orange">.</span>','부산 바이럴마케팅·블로그마케팅부터 양산 블로그마케팅, 김해 바이럴마케팅까지. 지역별 상권을 고려한 검색광고·플레이스 SEO·콘텐츠 운영과 맞춤컨설팅을 제안합니다.')}<section class="section" style="padding-top:40px"><div class="wrap"><div class="blog-trial-quicklink"><div><div class="eyebrow">LOCAL BLOG EXPERIENCE</div><h2>부산·김해·양산 블로그 체험단 안내</h2><p>방문형·제품형 운영 방식, 광고 표기, 비용과 진행 절차를 비교한 후 필요한 상품을 선택하세요.</p></div>${L('/services/blog-experience','체험단 운영 자세히 보기 ↗','btn line small')}</div><div class="subnav offer-subnav">${taxonomy.map(([t],i)=>`<button class="pill" type="button" data-action="jump-service" data-index="${i+1}">${t}</button>`).join('')}</div>${blocks}<div class="notice" style="margin-top:38px">홈페이지·상세페이지 제작과 마케팅교육은 상단 별도 메뉴에서 확인할 수 있습니다. 상품별 포함 사항과 계약 조건은 상담 시 최종 확정합니다.</div></div></section>${faqSection('/services')}</main>`, '마케팅서비스')}
@@ -776,7 +794,7 @@ function blogExperiencePage(){
  </main>`,'블로그 체험단');
 }
 function catalogTile(p){return `<article class="list-offer">${p.imageUrl?`<img class="catalog-image" src="${E(p.imageUrl)}" loading="lazy" alt="${E(p.title)} 이미지">`:``}<div class="tag text-orange">${E(p.label||p.category||'MOMENTUM')}</div><h3>${E(p.title)}</h3><p class="list-desc">${E(p.description||'서비스 설명은 상담 시 안내합니다.')}</p><div class="list-price">${price(p)}</div>${L(productUrl(p),p.kind==='payment'?'상품 내용 확인하기 ↗':'서비스 안내·상담 ↗','btn line small')}</article>`}
-function catalog(){const cats=['전체','marketing','website','diagnostic','education'];const labels={'전체':'전체','marketing':'마케팅','website':'홈페이지·디자인','diagnostic':'플레이스 진단','education':'마케팅교육'};const filtered=(s.filter==='전체'?s.products:s.products.filter(p=>p.group===s.filter)).slice().sort((a,b)=>a.order-b.order);shell(`<main>${pageHead('PRODUCT / SELECT YOUR NEXT MOVE','판매상품<span class="text-orange">.</span>','단품 서비스부터 월 정기 관리·홈페이지 제작·실무 교육까지 필요한 상품을 살펴보세요.')}<section class="section" style="padding-top:40px"><div class="wrap"><div class="subnav">${cats.map(k=>`<button class="pill ${k===s.filter?'active':''}" type="button" data-action="category" data-value="${k}">${labels[k]}</button>`).join('')}</div><div class="catalog-grid">${filtered.length?filtered.map(catalogTile).join(''):'<p class="empty">공개된 상품이 없습니다.</p>'}</div><p class="footnote">상품별 가격·구성은 최종 계약 전에 확인합니다. 관리자가 상품을 비공개로 변경하면 이 목록에서 제외됩니다.</p></div></section></main>`,'판매상품');}
+function catalog(){const cats=['전체','marketing','website','diagnostic','education'];const labels={'전체':'전체','marketing':'마케팅','website':'홈페이지·디자인','diagnostic':'플레이스 진단','education':'마케팅교육'};const filtered=(s.filter==='전체'?s.products:s.products.filter(p=>p.group===s.filter)).slice().sort(sortByCustomerServiceOrder);shell(`<main>${pageHead('PRODUCT / SELECT YOUR NEXT MOVE','판매상품<span class="text-orange">.</span>','단품 서비스부터 월 정기 관리·홈페이지 제작·실무 교육까지 필요한 상품을 살펴보세요.')}<section class="section" style="padding-top:40px"><div class="wrap"><div class="subnav">${cats.map(k=>`<button class="pill ${k===s.filter?'active':''}" type="button" data-action="category" data-value="${k}">${labels[k]}</button>`).join('')}</div><div class="catalog-grid">${filtered.length?filtered.map(catalogTile).join(''):'<p class="empty">공개된 상품이 없습니다.</p>'}</div><p class="footnote">상품별 가격·구성은 최종 계약 전에 확인합니다. 관리자가 상품을 비공개로 변경하면 이 목록에서 제외됩니다.</p></div></section></main>`,'판매상품');}
 function websites(){
  const ps=s.products.filter(p=>p.group==='website');
  const configs=[['site-build','OPTION A','초기 제작형','호스팅·유지관리 비용 별도입니다.'],['site-1y','OPTION B / 1 YEAR','제작비 0원 · 1년','기본 호스팅·관리 포함'],['site-3y','OPTION B / 3 YEARS','제작비 0원 · 3년','기본 호스팅·관리 포함']];
@@ -857,12 +875,17 @@ function insightsDetail(){const slug=decodeURIComponent(pathNow().split('/insigh
 
 
 const INQUIRY_PRODUCT_GROUPS=[
+  ['검색광고',['search-ads']],
+  ['바이럴마케팅',['viral-custom']],
+  ['체험단·기자단',['blog-experience-10','blog-experience-6mo']],
+  ['SNS마케팅',['instagram','influencer','xiaohongshu']],
+  ['플레이스 최적화',['place-seo','place-simple','place-photo']],
+  ['홈페이지 제작',['site-build','site-1y','site-3y','website-custom']],
+  ['상세페이지 제작',['product-page']],
   ['오픈패키지',['opening-package-1','opening-package-2']],
-  ['바이럴마케팅',['blog-experience-10','blog-experience-6mo','viral-custom']],
-  ['검색광고·컨설팅',['search-ads','ad-consulting']],
-  ['플레이스·리뷰관리',['place-simple','place-seo','place-photo','review-care']],
-  ['SNS·언론홍보',['instagram','influencer','xiaohongshu','press-pr']],
-  ['홈페이지·상세페이지',['site-build','site-1y','site-3y','website-custom','product-page']],
+  ['리뷰관리',['review-care']],
+  ['언론홍보',['press-pr']],
+  ['맞춤컨설팅',['ad-consulting']],
   ['사진촬영',['photo-blog','photo-place']],
   ['마케팅교육',['education-owner','education-agency']]
 ];
