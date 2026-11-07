@@ -230,6 +230,14 @@
   ],
   "rewrites": [
     {
+      "source": "/admin/editorial-keywords",
+      "destination": "/api/editorial-keywords"
+    },
+    {
+      "source": "/admin/editorial-keywords/",
+      "destination": "/api/editorial-keywords"
+    },
+    {
       "source": "/api/admin-keyword-matrix",
       "destination": "/api/compact?op=admin-keyword-matrix"
     },
@@ -451,6 +459,9 @@
       "regions": [
         "icn1"
       ]
+    },
+    "api/editorial-keywords.js": {
+      "includeFiles": "private-keyword-workbench/**"
     }
   }
 }

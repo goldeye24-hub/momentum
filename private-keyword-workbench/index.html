@@ -1,0 +1,69 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>비공개 키워드 조사실 | 모멘텀마케팅</title>
+<style>
+:root{color-scheme:light;--ink:#142026;--muted:#637078;--border:#dde3e1;--paper:#f4f6f3;--green:#205c4a}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Noto Sans KR",sans-serif;background:var(--paper)}
+.shell{max-width:1140px;margin:auto;padding:30px 24px 70px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.brand{font-weight:900;letter-spacing:.12em;font-size:13px}.private{font-size:11px;color:var(--green);font-weight:800;letter-spacing:.11em}.top a{font-size:13px;color:var(--ink);text-decoration:none;border-bottom:1px solid}
+header{padding:45px 0 25px}h1{font-size:clamp(30px,5vw,51px);letter-spacing:-.055em;line-height:1.13;margin:9px 0 17px}header p{color:var(--muted);max-width:670px;margin:0;font-size:14px}
+.query{display:flex;gap:10px;margin:30px 0 15px}.query input{flex:1;min-width:0;border:1px solid #bcc8c1;background:white;border-radius:10px;padding:16px 18px;font:inherit;font-size:17px}
+button{border:0;cursor:pointer;font:inherit;font-weight:800;border-radius:10px;padding:13px 22px;background:var(--ink);color:white}button:disabled{opacity:.4;cursor:default}.query button{background:var(--green);white-space:nowrap}
+.mini{font-size:12px;color:var(--muted)}.summary{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-top:30px}
+.summary h2{font-size:22px;margin:0;letter-spacing:-.035em}.actions{display:flex;gap:8px}.actions button{background:white;color:var(--ink);border:1px solid var(--border);padding:10px 13px;font-size:12px}
+.status{min-height:28px;margin-top:15px;font-size:13px;color:#28564a}.status.error{color:#a13628}.table-wrap{margin-top:13px;border:1px solid var(--border);border-radius:14px;overflow:auto;background:white}
+table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px}th{text-align:left;color:#5a6969;background:#eaf0ec;font-size:12px}td,th{padding:13px 15px;border-bottom:1px solid #edf0ee}tbody tr:last-child td{border-bottom:0}tr.seed{background:#f2f9f4}td.num{text-align:right;font-variant-numeric:tabular-nums}th.num{text-align:right}
+.pill{font-size:10px;padding:3px 6px;border-radius:5px;background:#dcefe4;color:#205c4a;margin-left:7px}footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:28px;padding-top:16px;line-height:1.8}
+@media(max-width:640px){.shell{padding:22px 16px 50px}.query{flex-direction:column}.query button{min-height:48px}.top{align-items:flex-start}.summary{align-items:stretch}.actions{width:100%}.actions button{flex:1}h1{font-size:34px}}
+</style></head><body><div class="shell">
+<div class="top"><div><div class="brand">MOMENTUM MARKETING</div><div class="private">PRIVATE · ADMIN ONLY</div></div><a href="/admin/">관리자 홈으로</a></div>
+<header><div class="private">SEARCH INTELLIGENCE / EDITORIAL</div><h1>검색량과 연관키워드를<br>한 화면에서.</h1><p>네이버 검색광고의 월간 PC·모바일 검색수와 관련 키워드를 확인합니다. 권혜미 블로그 원고를 위한 키워드 조사표도 복사할 수 있습니다.</p></header>
+<form class="query" id="form"><input name="keyword" id="keyword" minlength="2" maxlength="30" autocomplete="off" required placeholder="예: 조직소통, 리더십교육, 갈등관리" aria-label="조회할 기준 키워드"><button id="search" type="submit">검색량 · 연관어 조회</button></form>
+<div class="mini">관리자 로그인 필요 · 조회 결과는 공개 사이트에 표시되지 않습니다 · 검색량은 블로그 조회수가 아닌 네이버 검색광고 기준입니다.</div>
+<section class="summary" aria-label="조회 결과"><h2>연관키워드 분석 <span id="count" class="mini">조회 전</span></h2><div class="actions"><button id="copy" type="button" disabled>원고 조사표 복사</button><button id="csv" type="button" disabled>CSV 내보내기</button></div></section>
+<div id="status" class="status" role="status" aria-live="polite">검색어를 입력하면 결과가 표시됩니다.</div>
+<div class="table-wrap"><table><thead><tr><th>연관키워드</th><th class="num">PC 월간</th><th class="num">모바일 월간</th><th class="num">합계</th><th>광고 경쟁</th></tr></thead><tbody id="rows"><tr><td colspan="5">아직 조회하지 않았습니다.</td></tr></tbody></table></div>
+<footer>출처: 네이버 검색광고 키워드도구 API. 데이터 조회 일시와 원문 표기를 함께 제공하며 '10 미만'을 임의 수치로 환산하지 않습니다. 광고 경쟁 정도는 네이버 블로그 검색 경쟁도와 다릅니다. 원고 제목은 검색량뿐 아니라 정확성과 독자의 질문 해결 여부를 우선해 정하세요.</footer>
+</div><script>
+(function(){
+'use strict';
+var form=document.getElementById('form'),input=document.getElementById('keyword'),search=document.getElementById('search'),status=document.getElementById('status'),rows=document.getElementById('rows'),count=document.getElementById('count'),copy=document.getElementById('copy'),csv=document.getElementById('csv');
+var data=null;
+function setStatus(s,error){status.textContent=s;status.className=error?'status error':'status'}
+function cell(tr,s,cls){var td=document.createElement('td');td.textContent=String(s);if(cls)td.className=cls;tr.appendChild(td);return td}
+function quote(s){var v=String(s==null?'':s);return '"'+v.replace(/"/g,'""')+'"'}
+function formatTotal(r){return r.total===null?'미확인':Number(r.total).toLocaleString('ko-KR')}
+function build(){
+ rows.replaceChildren();if(!data)return;
+ data.rows.forEach(function(r){var tr=document.createElement('tr');if(r.isSeed)tr.className='seed';var label=cell(tr,r.keyword);if(r.isSeed){var b=document.createElement('span');b.className='pill';b.textContent='입력';label.appendChild(b)}
+ cell(tr,r.pcDisplay,'num');cell(tr,r.mobileDisplay,'num');cell(tr,formatTotal(r),'num');cell(tr,r.competition);rows.appendChild(tr)});
+ if(!data.rows.length){var tr=document.createElement('tr');cell(tr,'조회된 연관키워드가 없습니다.').colSpan=5;rows.appendChild(tr)}
+ count.textContent='· '+data.rows.length+'개 표시 / API 반환 '+data.returnedCount+'개';
+ copy.disabled=csv.disabled=!data.rows.length;
+ setStatus('조회일시: '+new Date(data.measuredAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · '+data.source+(data.cache?' · 캐시 조회':''));
+}
+form.addEventListener('submit',async function(ev){
+ ev.preventDefault();search.disabled=true;copy.disabled=true;csv.disabled=true;setStatus('네이버 검색광고 API에 조회 중입니다.');
+ try{
+  var response=await fetch(location.pathname,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword:input.value.trim()})});
+  var result=await response.json();if(!response.ok)throw Error(result.message||'조회 실패');data=result;build();
+ }catch(e){data=null;rows.replaceChildren();count.textContent='조회 실패';setStatus(e.message||'조회 실패',true)}
+ finally{search.disabled=false}
+});
+copy.addEventListener('click',async function(){
+ if(!data)return;
+ var lines=['[모멘텀 키워드 조사표]','기준 키워드: '+data.keyword,'조회시각(KST): '+new Date(data.measuredAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),'출처: '+data.source,
+ '| 키워드 | PC 월간 | 모바일 월간 | 합계 | 광고 경쟁 |','|---|---:|---:|---:|---|'];
+ data.rows.forEach(function(r){lines.push('| '+r.keyword.replace(/\|/g,' ')+' | '+r.pcDisplay+' | '+r.mobileDisplay+' | '+formatTotal(r)+' | '+r.competition+' |')});
+ lines.push('※ 10 미만 수치는 임의 환산하지 않음. 광고 경쟁도는 블로그 SEO 난이도가 아님.');
+ try{await navigator.clipboard.writeText(lines.join('\n'));setStatus('원고에 붙여넣을 키워드 조사표를 복사했습니다.')}
+ catch{setStatus('브라우저의 클립보드 권한을 확인해 주세요.',true)}
+});
+csv.addEventListener('click',function(){
+ if(!data)return;
+ var lines=[['키워드','PC 월간','모바일 월간','합계','광고 경쟁','조회시각','출처']];
+ data.rows.forEach(function(r){lines.push([r.keyword,r.pcDisplay,r.mobileDisplay,r.total===null?'미확인':r.total,r.competition,data.measuredAt,data.source])});
+ var body='\ufeff'+lines.map(function(line){return line.map(quote).join(',')}).join('\r\n');
+ var url=URL.createObjectURL(new Blob([body],{type:'text/csv;charset=utf-8'}));
+ var a=document.createElement('a');a.href=url;a.download='momentum-keywords.csv';a.click();URL.revokeObjectURL(url)
+});
+})();
+</script></body></html>
