@@ -14,10 +14,10 @@ table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px}th{text
 .pill{font-size:10px;padding:3px 6px;border-radius:5px;background:#dcefe4;color:#205c4a;margin-left:7px}footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:28px;padding-top:16px;line-height:1.8}
 @media(max-width:640px){.shell{padding:22px 16px 50px}.query{flex-direction:column}.query button{min-height:48px}.top{align-items:flex-start}.summary{align-items:stretch}.actions{width:100%}.actions button{flex:1}h1{font-size:34px}}
 </style></head><body><div class="shell">
-<div class="top"><div><div class="brand">MOMENTUM MARKETING</div><div class="private">PRIVATE · ADMIN ONLY</div></div><a href="/admin/">관리자 홈으로</a></div>
+<div class="top"><div><div class="brand">MOMENTUM MARKETING</div><div class="private">PRIVATE · EDITORIAL ACCESS</div></div><a href="/">모멘텀 홈으로</a></div>
 <header><div class="private">SEARCH INTELLIGENCE / EDITORIAL</div><h1>검색량과 연관키워드를<br>한 화면에서.</h1><p>네이버 검색광고의 월간 PC·모바일 검색수와 관련 키워드를 확인합니다. 권혜미 블로그 원고를 위한 키워드 조사표도 복사할 수 있습니다.</p></header>
 <form class="query" id="form"><input name="keyword" id="keyword" minlength="2" maxlength="30" autocomplete="off" required placeholder="예: 조직소통, 리더십교육, 갈등관리" aria-label="조회할 기준 키워드"><button id="search" type="submit">검색량 · 연관어 조회</button></form>
-<div class="mini">관리자 로그인 필요 · 조회 결과는 공개 사이트에 표시되지 않습니다 · 검색량은 블로그 조회수가 아닌 네이버 검색광고 기준입니다.</div>
+<div class="mini">이 전용 링크를 가진 사람만 이용할 수 있습니다. 링크를 외부에 공유하지 마세요. · 검색량은 블로그 조회수가 아닌 네이버 검색광고 기준입니다.</div>
 <section class="summary" aria-label="조회 결과"><h2>연관키워드 분석 <span id="count" class="mini">조회 전</span></h2><div class="actions"><button id="copy" type="button" disabled>원고 조사표 복사</button><button id="csv" type="button" disabled>CSV 내보내기</button></div></section>
 <div id="status" class="status" role="status" aria-live="polite">검색어를 입력하면 결과가 표시됩니다.</div>
 <div class="table-wrap"><table><thead><tr><th>연관키워드</th><th class="num">PC 월간</th><th class="num">모바일 월간</th><th class="num">합계</th><th>광고 경쟁</th></tr></thead><tbody id="rows"><tr><td colspan="5">아직 조회하지 않았습니다.</td></tr></tbody></table></div>
