@@ -230,6 +230,14 @@
   ],
   "rewrites": [
     {
+      "source": "/private/kw/:access",
+      "destination": "/api/editorial-keywords?access=:access"
+    },
+    {
+      "source": "/private/kw/:access/",
+      "destination": "/api/editorial-keywords?access=:access"
+    },
+    {
       "source": "/admin/editorial-keywords",
       "destination": "/api/editorial-keywords"
     },

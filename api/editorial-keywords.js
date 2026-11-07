@@ -48,21 +48,30 @@ module.exports=async function(req,res){
  res.setHeader('X-Content-Type-Options','nosniff');
  res.setHeader('Referrer-Policy','no-referrer');
  res.setHeader('X-Frame-Options','DENY');
- if(!admin.isAuthorized(req)){
-  if(req.method==='GET'){res.statusCode=302;res.setHeader('Location','/admin/');return res.end()}
-  return fail(res,401,'모멘텀 관리자 로그인이 필요합니다.');
+ // Separate scoped access for ChatGPT's scheduled editorial research.
+ // The access token is kept in Vercel env, never in the public repository.
+ const envToken=String(process.env.MOMENTUM_EDITORIAL_KEYWORD_ACCESS_TOKEN||'');
+ const supplied=String(req.query?.access||'');
+ const viaLink=envToken.length>=32&&supplied.length===envToken.length&&
+   crypto.timingSafeEqual(Buffer.from(supplied,'utf8'),Buffer.from(envToken,'utf8'));
+ const viaAdmin=admin.isAuthorized(req);
+ if(!viaLink&&!viaAdmin){
+  if(!supplied&&req.method==='GET'){res.statusCode=302;res.setHeader('Location','/admin/');return res.end()}
+  return fail(res,404,'조회 페이지를 찾을 수 없습니다.');
  }
- if(req.method==='GET'){
+ // Human-readable workbench. Automated drafts use an unlisted, read-only GET.
+ if(req.method==='GET'&&req.query?.format!=='json'){
   res.setHeader('Content-Type','text/html; charset=utf-8');
   res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
   return res.status(200).end(fs.readFileSync(path.join(process.cwd(),'private-keyword-workbench','index.html'),'utf8'));
  }
  res.setHeader('Content-Type','application/json; charset=utf-8');
- if(req.method!=='POST')return fail(res,405,'GET과 POST만 지원합니다.');
- if(!validOrigin(req))return fail(res,403,'허용되지 않은 요청 출처입니다.');
- const raw=typeof req.body==='string'?req.body:JSON.stringify(req.body||{});
+ const machineRead=req.method==='GET'&&req.query?.format==='json';
+ if(!machineRead&&req.method!=='POST')return fail(res,405,'지원되지 않는 요청 방법입니다.');
+ if(req.method==='POST'&&!validOrigin(req))return fail(res,403,'허용되지 않은 요청 출처입니다.');
+ const raw=machineRead?JSON.stringify({keyword:req.query?.keyword}):(typeof req.body==='string'?req.body:JSON.stringify(req.body||{}));
  if(raw.length>600)return fail(res,413,'입력 데이터가 너무 깁니다.');
- let body=req.body;
+ let body=machineRead?{keyword:req.query?.keyword}:req.body;
  if(typeof body==='string'){try{body=JSON.parse(body)}catch{return fail(res,400,'JSON 입력 오류')}}
  if(!body||typeof body!=='object'||Array.isArray(body))return fail(res,400,'검색어를 입력해 주세요.');
  const keyword=clean(body.keyword);
