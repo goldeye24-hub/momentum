@@ -12,7 +12,7 @@ test('protected admin research retains the live browser observer without retired
  assert.ok(settings.rewrites.some(x=>x.source==='/admin/research/api'&&x.destination==='/api/research-admin'));
  assert.ok(read('api/_research-admin.js').includes("require('./rank-rebuild')"));
 });
-test('public Chromium function retired; protected research and rank functions preserved',()=>{
+test('public Chromium function retired, admin Chromium and original CRM functions preserved',()=>{
  for(const p of ['api/place-rank-live.js','api/_public-rank-quota.js','lab/rank/index.html','lab/rank/public-rank.js'])
   assert.equal(fs.existsSync(path.join(root,p)),false,p);
  assert.equal(settings.functions['api/place-rank-live.js'],undefined);

@@ -24,7 +24,7 @@ test('homepage, portfolio, editorial guides and inquiries stay; old SEO sitemap 
   const oldUrl='https://momentum-orcin-delta.vercel.app/'+file.slice(0,-'index.html'.length);
   assert.ok(!sitemap.includes('<loc>'+oldUrl+'</loc>'),oldUrl);
  }
- for(const file of ['index.html','api/inquiries.js','portfolio/index.html','insights/index.html','site-builder/research-index.html'])
+ for(const file of ['index.html','api/inquiries.js','portfolio/index.html','insights/index.html','site-builder/index.html'])
   assert.equal(fs.existsSync(path.join(root,file)),true,file);
 });
 test('protected research dashboard no longer links to removed public ranking tool',()=>{

@@ -31,7 +31,7 @@ test('admin authentication, private research and contact services remain operati
  assert.ok(fs.existsSync(path.join(root,'private-keyword-workbench/index.html')));
  for(const p of ['/private/kw/:access','/admin/research/api','/admin/connection/api','/admin/login'])
   assert.ok(cfg.rewrites.some(x=>x.source===p),p);
- assert.ok(!fs.existsSync(path.join(root,'site-builder/index.html')));
+ assert.ok(!read('site-builder/index.html').includes('/admin/members/'));
  assert.ok(!read('site-builder/connection-index.html').includes('/admin/members/'));
 });
 test('retired public member handlers are not reachable by compact router',async()=>{

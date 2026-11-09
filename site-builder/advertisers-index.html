@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>광고주 목록 | 모멘텀마케팅 관리자</title>
+<link rel="stylesheet" href="/admin/assets/advertisers.css">
+<script src="/admin/assets/advertisers.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+<div class="container bar">
+<a class="brand" href="/admin/"><span class="brand-symbol">M↗</span><span>MOMENTUM <small>MARKETING</small></span></a>
+<nav aria-label="관리자 바로가기"><a href="/admin/overview/">운영센터</a><a href="/admin/advertisers/" aria-current="page">광고주 목록</a><a href="/admin/suppliers/">외주업체 목록</a><a href="/admin/crm/">계약·CRM</a><a href="/admin/finance/">매출·손익</a></nav>
+<form action="/admin/logout" method="post"><button class="logout" type="submit">로그아웃</button></form>
+</div></header>
+<main class="container">
+<section class="intro"><div><div class="eyebrow">ADVERTISER DIRECTORY / PRIVATE WORKSPACE</div><h1>광고주 목록</h1><p>등록된 광고주를 빠르게 찾아보고, 계약과 연락 일정을 한곳에서 확인합니다.</p></div>
+<div class="intro-buttons"><a class="subtle-button" href="/admin/crm/#catalogSection">+ 상품 직접 등록 · 판매 종료 관리</a><a class="primary" href="/admin/crm/#customerSection">+ 광고주 등록</a></div></section>
+<div class="warning" role="note"><b>브라우저 저장형 · 시범 운영</b> — 기존 CRM과 동일한 브라우저에 저장된 목록만 표시됩니다. 서버 동기화·자동 백업은 아직 제공되지 않습니다. 정식 서버 저장 전에는 실제 고객 개인정보 등록을 피하세요.</div>
+<section class="metrics" aria-label="광고주 요약">
+<div class="metric"><span>전체 광고주</span><strong id="metricTotal">0</strong><small>CRM 등록 업체</small></div>
+<div class="metric"><span>계약고객</span><strong id="metricContracted">0</strong><small>영업 단계 기준</small></div>
+<div class="metric"><span>오늘·지난 연락 예정</span><strong id="metricFollowup">0</strong><small>연락 예정일 확인</small></div>
+<div class="metric"><span>30일 내 계약 만료</span><strong id="metricExpiring">0</strong><small>계약 만료일 기준</small></div>
+</section>
+<section class="work-board" aria-labelledby="workBoardTitle">
+<div class="work-head"><div><span class="eyebrow">TODAY'S CONTRACT ACTIONS</span><h2 id="workBoardTitle">오늘 확인할 재연장·만료 계약 <small id="actionCount">0건</small></h2><p>설정한 재연장 확인일이 도래했거나 계약 종료일이 지난 건을 자동으로 우선 표시합니다.</p></div><a class="subtle-button" href="#contractSchedule">전체 계약 일정 보기 ↓</a></div>
+<div class="work-queue" id="actionQueue"><p class="queue-empty">등록된 계약을 분석하고 있습니다.</p></div>
+<div class="work-hint">재연장 확인일이 비어 있으면 <b>종료 7일 전</b>을 기본 확인일로 계산합니다. ‘확인 처리’는 상담 여부를 기록하는 기능으로 계약 자동 연장은 아닙니다.</div>
+</section>
+<section class="schedule" id="contractSchedule" aria-labelledby="contractScheduleTitle">
+<div class="schedule-header"><div><span class="eyebrow">CONTRACT MANAGEMENT</span><h2 id="contractScheduleTitle">상품별 계약·금액·일정 <small id="scheduleCount">0건</small></h2><p>광고주별 계약을 모아 계약 체결일, 종료일, 재연장 확인일을 한 화면에서 확인합니다.</p></div></div>
+<div class="schedule-filters"><label>계약 검색<input id="contractSearch" type="search" placeholder="광고주, 계약 상품, 지역" autocomplete="off"></label><label>확인 상태<select id="contractActionFilter"><option value="all">전체 계약</option><option value="action">조치 필요</option><option value="soon">30일 이내 예정</option><option value="checked">확인 처리 완료</option></select></label></div>
+<div class="schedule-scroller"><div class="schedule-table" role="table" aria-label="광고주 계약 일정표"><div class="schedule-row schedule-table-head" role="row"><span role="columnheader">광고주 / 상품</span><span role="columnheader">계약금액</span><span role="columnheader">계약·사용·잔여수량</span><span role="columnheader">계약일</span><span role="columnheader">종료일</span><span role="columnheader">재연장 확인일</span><span role="columnheader">관리 상태</span><span role="columnheader">확인</span></div><div id="contractScheduleRows"></div></div></div>
+<div id="scheduleEmpty" class="schedule-empty" hidden>표시할 계약이 없습니다. 계약을 등록하면 일정이 자동으로 계산됩니다.</div>
+</section>
+<section class="directory" aria-labelledby="directoryHeading">
+<div class="section-title"><div><span class="eyebrow">ALL ADVERTISERS</span><h2 id="directoryHeading">등록 광고주 <small id="resultCount">0개 표시</small></h2></div><button class="subtle-button" id="refreshList" type="button">↻ 목록 새로고침</button></div>
+<div class="filters">
+<label class="search-field">광고주 검색<input type="search" id="advertiserSearch" autocomplete="off" placeholder="상호명, 지역, 업종, 담당자, 상품명" aria-label="광고주 검색"></label>
+<label>영업 단계<select id="stageFilter"><option value="">전체 단계</option><option>잠재고객</option><option>상담중</option><option>견적중</option><option>계약고객</option><option>보류</option></select></label>
+<label>정렬<select id="sortFilter"><option value="name">상호명 가나다순</option><option value="recent">최근 등록순</option><option value="followup">연락 예정일순</option><option value="contracts">계약 건수순</option></select></label>
+</div>
+<div class="table-scroll"><table><thead><tr><th scope="col">광고주 / 업종</th><th scope="col">지역</th><th scope="col">영업 단계</th><th scope="col">담당자</th><th scope="col">계약</th><th scope="col">다음 연락</th><th scope="col" class="right">확인 / 관리</th></tr></thead><tbody id="advertiserRows"></tbody></table></div>
+<div id="emptyState" class="empty" hidden><strong>등록된 광고주가 없습니다.</strong><p>CRM에서 광고주를 등록하면 이 목록에 자동으로 표시됩니다.</p><a class="primary" href="/admin/crm/#customerSection">CRM에서 광고주 등록하기</a></div>
+<div class="footnote">동일 도메인 · 동일 브라우저에서 등록한 CRM 자료를 읽어옵니다. 삭제·수정은 기존 CRM에서 진행하므로 데이터가 중복 생성되지 않습니다.</div>
+</section>
+</main>
+<dialog id="detailsDialog" aria-labelledby="detailTitle"><div class="detail-inner">
+<div class="dialog-head"><div><span class="eyebrow">ADVERTISER DETAILS</span><h2 id="detailTitle">광고주 상세</h2></div><button type="button" id="closeDetails" class="icon-button" aria-label="상세 화면 닫기">✕</button></div>
+<div id="detailContent"></div><div class="dialog-actions"><button id="editAdvertiser" type="button" class="primary">광고주 정보 수정 ↗</button><button id="closeDetailsBottom" type="button" class="subtle-button">닫기</button></div>
+</div></dialog>
+</body></html>
