@@ -2,14 +2,329 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/lab/rank/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lab/rank",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lab/rank/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lab/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lab",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lab/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/about/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/about/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/academy/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/academy",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/academy/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hospital/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hospital",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hospital/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hairshop/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hairshop",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/hairshop/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/restaurant/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/restaurant",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/restaurant/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/industries/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites/franchise/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites/franchise",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites/franchise/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/websites/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/viral/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/viral",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/viral/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/sns/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/sns",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/sns/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/search-ads/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/search-ads",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/search-ads/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/reviews/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/reviews",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/reviews/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/press/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/press",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/press/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/place-seo/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/place-seo",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/place-seo/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/photography/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/photography",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/photography/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/open-package/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/open-package",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/open-package/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/education/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/education",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/education/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/creative/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/creative",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/creative/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/ad-planning/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/ad-planning",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services/ad-planning/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/rank-rebuild",
-      "destination": "/lab/rank/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/rank-rebuild/",
-      "destination": "/lab/rank/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/lab/trends/index.html",
@@ -23,18 +338,18 @@
     },
     {
       "source": "/lab/keywords/index.html",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/lab/keywords/",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/lab/keywords",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/lab/trends",
@@ -64,18 +379,18 @@
     },
     {
       "source": "/platform/:path*",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/platform",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/platform/",
-      "destination": "/lab/",
-      "permanent": false
+      "destination": "/",
+      "permanent": true
     },
     {
       "source": "/website-samples",
@@ -469,10 +784,6 @@
   "functions": {
     "api/admin-site-builder.js": {
       "includeFiles": "site-builder/**"
-    },
-    "api/place-rank-live.js": {
-      "maxDuration": 30,
-      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     },
     "api/compact.js": {
       "maxDuration": 30,
