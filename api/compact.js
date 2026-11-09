@@ -1,15 +1,10 @@
 'use strict';
 
-/** Hobby-safe fixed handler dispatch. Each original handler still checks auth,
- * same-origin requirements, HTTP method and DB permissions individually.
- * No dynamic filesystem paths, external proxying or untrusted require().
- */
+// Database/member administration uses a lightweight function. Browser-based
+// ranking operations run on the existing Chromium-enabled research-admin
+// function. Keep the original per-handler auth and method checks.
 const handlers=Object.freeze({
- 'admin-keyword-matrix':require('../server-handlers/admin-keyword-matrix'),
- 'admin-competitor-compare':require('../server-handlers/admin-competitor-compare'),
  'admin-members':require('../server-handlers/admin-members'),
- 'admin-place-keyword-insights':require('../server-handlers/admin-place-keyword-insights'),
- 'admin-rank-watches':require('../server-handlers/admin-rank-watches'),
  'admin-connection':require('../server-handlers/admin-connection')
 });
 module.exports=async function(req,res){

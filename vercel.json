@@ -247,11 +247,11 @@
     },
     {
       "source": "/api/admin-keyword-matrix",
-      "destination": "/api/compact?op=admin-keyword-matrix"
+      "destination": "/api/research-admin?op=admin-keyword-matrix"
     },
     {
       "source": "/api/admin-competitor-compare",
-      "destination": "/api/compact?op=admin-competitor-compare"
+      "destination": "/api/research-admin?op=admin-competitor-compare"
     },
     {
       "source": "/api/admin-members",
@@ -259,7 +259,7 @@
     },
     {
       "source": "/api/admin-place-keyword-insights",
-      "destination": "/api/compact?op=admin-place-keyword-insights"
+      "destination": "/api/research-admin?op=admin-place-keyword-insights"
     },
     {
       "source": "/api/member-auth",
@@ -275,7 +275,7 @@
     },
     {
       "source": "/api/admin-rank-watches",
-      "destination": "/api/compact?op=admin-rank-watches"
+      "destination": "/api/research-admin?op=admin-rank-watches"
     },
     {
       "source": "/platform",
@@ -343,7 +343,7 @@
     },
     {
       "source": "/admin/place-insights/api",
-      "destination": "/api/compact?op=admin-place-keyword-insights"
+      "destination": "/api/research-admin?op=admin-place-keyword-insights"
     },
     {
       "source": "/admin/place-insights",
@@ -355,7 +355,7 @@
     },
     {
       "source": "/admin/competitors/api",
-      "destination": "/api/compact?op=admin-competitor-compare"
+      "destination": "/api/research-admin?op=admin-competitor-compare"
     },
     {
       "source": "/admin/competitors",
@@ -367,7 +367,7 @@
     },
     {
       "source": "/admin/keyword-matrix/api",
-      "destination": "/api/compact?op=admin-keyword-matrix"
+      "destination": "/api/research-admin?op=admin-keyword-matrix"
     },
     {
       "source": "/admin/keyword-matrix",
@@ -415,7 +415,7 @@
     },
     {
       "source": "/admin/watches/api",
-      "destination": "/api/compact?op=admin-rank-watches"
+      "destination": "/api/research-admin?op=admin-rank-watches"
     },
     {
       "source": "/admin/watches",
@@ -458,8 +458,7 @@
       "maxDuration": 60
     },
     "api/compact.js": {
-      "maxDuration": 30,
-      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+      "maxDuration": 30
     },
     "api/research-admin.js": {
       "maxDuration": 60,
@@ -471,5 +470,6 @@
     "api/editorial-keywords.js": {
       "includeFiles": "private-keyword-workbench/**"
     }
-  }
+  },
+  "ignoreCommand": "node scripts/should-vercel-build.cjs"
 }
