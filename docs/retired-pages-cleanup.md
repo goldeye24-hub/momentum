@@ -1,18 +1,22 @@
-# Retired Momentum page cleanup (2026-11-09)
+# Momentum Lab: retired-feature cleanup (2026-11-09)
 
-Safe removal only. This does **not** remove any production service, DB, rankings API, news collection or customer-facing portfolio page.
+Scope confirmed by owner: the active admin-facing Momentum Lab uses the Place ranking monitor, monthly keyword search volume, single Place rank lookup, and a link to Naver DataLab. Public /lab/ and /lab/rank/ remain, as do the existing marketing, CRM, and site-builder pages.
 
-Removed seven obsolete static files:
-- `lab/keywords/index.html`, `keywords.js`, `keywords.css`: every old page URL already redirected to `/lab/`.
-- `lab/trends/index.html`, `trends.js`, `trends.css`: old user-facing path already pointed to official Naver DataLab. Add a redirect for the previously unhandled `/lab/trends/index.html`.
-- `website-samples/index.html`: HTML-only fallback. Existing portfolio redirects remain; add `/website-samples/index.html` redirect.
+Removed in the cleanup branch:
+- lab/rank/rank.js
+- lab/customer.js
+- lab/intel.js
+- lab/tools-v2.js
+- lab/studio.js
+- lab/self-audit.js
+- api/search-trends.js
+- api/keyword-opportunities.js
+- api/rank-watch-cron.js
 
-Retained intentionally:
-- `lab/rank/rank.js` (obsolete on current public page, but contains blog ranking implementation and is referenced in older regression tests).
-- `api/search-trends.js`, `api/keyword-opportunities.js`, `api/blog-rank-observation.js` and all active public ranking and admin APIs pending separate usage review.
-- `lab/rank/index.html`, `lab/rank/public-rank.js`, the homepage, portfolio, site-builder, SEO content, news jobs, redirects, sitemap and DB configuration.
+Retained: site-builder/research-index.html, api/research-admin.js, api/_research-admin.js, api/rank-rebuild.js, api/_place-observe.js, api/place-rank-live.js, lab/rank/index.html, lab/rank/public-rank.js, the admin/login/CRM/SEO routes, existing redirects and sitemap. NOTE: Removing the disabled cron does not establish daily automated ranking; that was never scheduled in vercel.json.
 
-Validation:
-`node --test tests/retired-pages-redirects.test.cjs tests/public-free-tools-access.test.cjs tests/search-trends.test.cjs`
+Verified user-facing defect: admin research screen previously pointed one-off lookup to /rank-rebuild/ (404); change link and both URL variants to the functioning /lab/rank/ endpoint.
 
-Actual use cannot be verified from pageviews because project Web Analytics is not enabled. These files are removed as unused **default entrypoints**, not proven never requested. Retain redirects for bookmarks and search engine links.
+No pageview or historical external API caller telemetry was available; removal is based on the declared active workflows and GitHub code references, not proof that endpoint URLs were never requested by a third party. Keep historical SEO redirects.
+
+Validation: node --test tests/active-momentum-workflow.test.cjs tests/retired-pages-redirects.test.cjs tests/search-trends.test.cjs tests/public-free-tools-access.test.cjs tests/rank-position-accuracy.test.cjs

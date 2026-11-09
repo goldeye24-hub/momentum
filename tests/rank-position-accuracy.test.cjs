@@ -7,7 +7,7 @@ const observer=require('../api/_place-observe.js');
 const matrix=require('../api/_rank-keyword-model.js');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'lab/rank/index.html'),'utf8');
-const js=fs.readFileSync(path.join(root,'lab/rank/rank.js'),'utf8');
+const js=fs.readFileSync(path.join(root,'lab/rank/public-rank.js'),'utf8');
 
 const id=n=>String(10000000+n);
 test('mobile metadata rank may be far from card order; show observed position only, flagged approximate',()=>{
@@ -54,12 +54,12 @@ test('map observed rank may be definite only as visible list position, not organ
  assert.equal(result.rankApproximate,false);
  assert.match(result.message,/광고 제외 자연검색 순위와 다를 수/);
 });
-test('ui distinguishes observed position from official rank, preserves source link and marks stale cache',()=>{
- assert.match(html,/최근 관측 위치/);
- assert.match(html,/openObservedSource/);
- assert.match(html,/실제로 읽은 특정 검색 목록/);
- assert.match(js,/sourceUrl:safeObservedSource/);
- assert.match(js,/30분 이내 기존 관측값 재사용/);
- assert.match(js,/추정치 비교 불가/);
- assert.doesNotThrow(()=>new Function('document','window','localStorage','fetch',js));
+test('current public rank page retains the live route, shows limitations, and stores no private history',()=>{
+ assert.match(html,/\/lab\/rank\/public-rank\.js/);
+ assert.match(html,/id="rankForm"/);
+ assert.match(html,/비회원의 경우 1일 1회/);
+ assert.match(html,/공식 광고 제외 순위와 다를 수/);
+ assert.match(js,/\/api\/place-rank-live/);
+ assert.doesNotMatch(js,/localStorage/);
+ assert.doesNotThrow(()=>new Function('document','window','fetch',js));
 });
