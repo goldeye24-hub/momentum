@@ -55,7 +55,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020f # v4.4.0
         with:
           node-version: '22'
-      - run: node --test tests/active-momentum-workflow.test.cjs tests/admin-manual-measure.test.cjs tests/admin-connection.test.cjs tests/retired-pages-redirects.test.cjs tests/admin-email-login.test.cjs tests/hobby-function-budget.test.cjs tests/supabase-key-compat.test.cjs tests/admin-only-workflow.test.cjs
+      - run: node --test tests/active-momentum-workflow.test.cjs tests/admin-manual-measure.test.cjs tests/admin-connection.test.cjs tests/retired-pages-redirects.test.cjs tests/admin-email-login.test.cjs tests/hobby-function-budget.test.cjs tests/supabase-key-compat.test.cjs tests/admin-only-workflow.test.cjs tests/unified-admin-session.test.cjs
 
   public-smoke:
     name: Anonymous production route audit
