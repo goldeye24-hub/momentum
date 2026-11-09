@@ -21,10 +21,10 @@
 }
 </style></head><body><div class="app">
 <aside class="side"><div class="brand">MOMENTUM LAB</div><div class="caption">관리자 전용 검색 데이터 모니터링</div>
-<a class="nav" href="/admin/">← 통합 관리자 홈</a><a class="nav" href="/admin/watches/">↗ 자동 순위 추적</a><a class="nav" href="/admin/keyword-matrix/">↗ 키워드 순위표</a><button class="nav active" id="navRank">▥ 플레이스 순위 모니터링</button><button class="nav" id="navVolume">▤ 월간 키워드 검색량</button>
+<button class="nav active" id="navRank">▥ 플레이스 순위 모니터링</button><button class="nav" id="navVolume">▤ 월간 키워드 검색량</button>
 <a class="nav" target="_blank" rel="noopener noreferrer" href="https://datalab.naver.com/keyword/trendSearch.naver">↗ 네이버 데이터랩</a><div class="side-info" id="sideInfo">관리자 전용 매장·검색량 기록을 별도 저장합니다.</div></aside>
 <main class="content"><div class="top"><div><h1 id="title">플레이스 순위 모니터링</h1><p>실제 조회 데이터만 기록 · 광고 제외 공식 순위가 아닌 모바일 목록 관측값</p></div><div class="group"><span class="muted" id="userLabel">로그인 확인 중</span><button class="btn hidden" id="logout">로그아웃</button></div></div>
-<div class="panel auth hidden" id="authBox"><h2>관리자 세션이 만료되었습니다.</h2><div class="hint" id="authMsg" role="status">통합 관리자에서 다시 로그인해 주세요.</div><a class="btn primary" href="/admin/">통합 관리자 로그인 ↗</a></div>
+<div class="panel auth hidden" id="authBox"><h2>모멘텀 관리자 로그인</h2><p class="muted" style="line-height:1.7">기존 관리자 페이지에서 사용하던 <b>같은 비밀번호</b>를 입력하세요. 별도의 연구실 계정이나 비밀번호는 필요하지 않습니다.</p><div class="hint" id="authMsg" role="status">기존 관리자 인증 상태를 확인 중입니다.</div><form id="existingAdminForm" class="group"><label for="existingAdminPassword">기존 관리자 비밀번호 <input id="existingAdminPassword" type="password" autocomplete="current-password" minlength="16" maxlength="512" required placeholder="현재 관리자 비밀번호"></label><button id="existingAdminSubmit" type="submit" class="btn primary">기존 비밀번호로 연구실 입장</button></form><p class="muted" style="margin-top:12px">비밀번호는 기존 관리자 인증 서버로만 전송되며 연구실 코드나 브라우저 저장소에 보관하지 않습니다. <a href="/admin/" style="text-decoration:underline">기존 관리자 페이지로 이동</a></p></div>
 <div id="main" class="hidden">
 <section id="rankPage"><div class="tools"><div class="group"><input id="filter" placeholder="매장·키워드 검색" aria-label="매장 검색"><select id="sort"><option value="recent">최근 등록 순서</option><option value="name">이름순</option></select><span class="muted" id="slot"></span></div><div class="group"><button type="button" class="btn hidden" id="backupLocal">브라우저 기록 백업</button><label class="btn hidden" id="restoreLabel" style="cursor:pointer">백업 불러오기<input id="restoreLocal" type="file" accept=".json,application/json" class="hidden"></label><button class="btn primary" id="addToggle">＋ 매장 등록</button></div></div>
 <div class="panel formbox hidden" id="addBox"><h2>추적 매장·키워드 등록</h2><form id="addForm" class="group"><label>표시 이름 <input id="label" placeholder="예: 퐝물회 · 포항맛집" maxlength="70" required></label><label>검색어 <input id="keyword" placeholder="포항맛집" maxlength="60" required></label><label>숫자 플레이스 ID <input id="placeId" pattern="[0-9]{6,20}" placeholder="2085358113" required></label><button class="btn primary" type="submit">등록</button></form><p class="muted">동일 업체를 다른 키워드로 추적하려면 별도로 등록합니다.</p></div>
@@ -153,17 +153,17 @@ async function call(action,options){
  return data;
 }
 function showAuth(logged){
- $('authBox').classList.toggle('hidden',logged);$('main').classList.toggle('hidden',!logged);$('logout').classList.toggle('hidden',!logged);
+ $('authBox').classList.toggle('hidden',logged);$('main').classList.remove('hidden');$('logout').classList.toggle('hidden',!logged);
  $('addToggle').disabled=!logged||!storageReady;$('measureVolume').disabled=!logged||!storageReady;
  if(!logged){storageReady=false;localMode=false;volumeLocalMode=false;allowLocalTools();targets=[];active=null;ranking=[];volumes=[];renderList();drawRank();drawVolume();}
- message('userLabel',logged?'통합 관리자 인증됨':'인증 만료');
- message('sideInfo',logged?'통합 관리자 인증 확인 · 관리자 전용 기록':'통합 관리자에서 로그인해 주세요.');
+ message('userLabel',logged?'관리자 인증됨':'관리자 로그인 필요');
+ message('sideInfo',logged?'기존 관리자 인증 확인 · 관리자 전용 기록':'기존 관리자 비밀번호로 바로 접속하세요.');
 }
 async function init(){
  var result;
  try{result=await call('auth')}
  catch(e){account=null;showAuth(false);message('authMsg','인증 서버 연결 확인이 필요합니다: '+e.message);return}
- if(!result.authenticated){account=null;showAuth(false);message('authMsg','로그인 상태가 만료되었습니다. 통합 관리자에서 다시 로그인해 주세요.');return}
+ if(!result.authenticated){account=null;showAuth(false);message('authMsg','기존 관리자 비밀번호를 입력하면 이 화면에서 바로 접속합니다.');return}
  account=result;showAuth(true);
  try{
   // Keep local records visible until manually migrated. Never silently replace them with an empty cloud list.
@@ -181,6 +181,25 @@ async function init(){
   await activateLocal('연구실 DB 조회 실패');
  }
 }
+$('existingAdminForm').addEventListener('submit',async function(e){
+ e.preventDefault();
+ var password=$('existingAdminPassword').value,button=$('existingAdminSubmit');
+ button.disabled=true;message('authMsg','기존 관리자 비밀번호로 인증 중입니다.');
+ try{
+  var response=await fetch('/admin/login',{
+   method:'POST',credentials:'same-origin',redirect:'follow',
+   headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+   body:new URLSearchParams({password:password})
+  });
+  var dest=new URL(response.url,location.href);
+  if(!response.ok||!response.redirected||dest.origin!==location.origin||dest.pathname!=='/admin/'){
+   message('authMsg','기존 관리자 비밀번호가 일치하지 않거나 관리자 인증을 완료하지 못했습니다.');return;
+  }
+  $('existingAdminPassword').value='';
+  location.replace('/admin/research/');
+ }catch(err){message('authMsg','관리자 인증 서버 연결 오류가 발생했습니다. '+String(err.message||err))}
+ finally{button.disabled=false}
+});
 $('logout').onclick=function(){
  var f=document.createElement('form');f.method='POST';f.action='/admin/logout';document.body.appendChild(f);f.submit();
 };
