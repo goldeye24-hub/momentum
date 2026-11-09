@@ -324,9 +324,9 @@ test('retire all 15 common-frame URLs, preserve old visitors with redirects and 
  const retired=['restaurant','foodie','franchise','poolvilla','pension','glamping','petgroom','ladder','movers','cleaning','aircon','beauty','academy','clinic','corporate'];
  const current=['restaurant','beauty','b2b','shop','stay','interior','academy','pet','legal','clinic','auto','fitness','estate','hrd','tax','moving','cleaning','pilates'];
  const vercel=JSON.parse(fs.readFileSync('vercel.json','utf8'));
- const gallery=fs.readFileSync('website-samples/index.html','utf8');
- assert.match(gallery,/portfolio\/conversion/);
- assert.doesNotMatch(gallery,/class="sample-card/);
+ assert.equal(fs.existsSync('website-samples/index.html'),false,'legacy gallery landing must not be packaged');
+ assert.ok(vercel.redirects.some(r=>r.source==='/website-samples/'&&r.destination==='/portfolio/conversion/'));
+ assert.ok(vercel.redirects.some(r=>r.source==='/website-samples/index.html'&&r.destination==='/portfolio/conversion/'));
  for(const id of retired){
   assert.equal(fs.existsSync('website-samples/'+id+'/index.html'),false,'legacy file '+id+' must be removed');
   assert.ok(vercel.redirects.some(r=>r.source==='/website-samples/'+id+'/'),'Redirect absent for retired '+id);
@@ -554,12 +554,11 @@ test('keyword explorer produces intent-first candidates without invented search 
  assert.ok(joined.candidates.some(x=>x.source==='naver_searchads'&&x.monthlyTotal===1000));
  assert.equal(engine.parseCount('< 10').lessThan,10);
  assert.equal(engine.parseCount('invalid'),null);
- const html=fs.readFileSync('lab/keywords/index.html','utf8');
- const script=fs.readFileSync('lab/keywords/keywords.js','utf8');
- assert.match(html,/키워드 기회 탐색기/);
- assert.match(html,/실측/);
- assert.match(fs.readFileSync('lab/index.html','utf8'),/href="\/lab\/keywords\/"/);
- assert.doesNotThrow(()=>new vm.Script(script));
+ for(const path of ['lab/keywords/index.html','lab/keywords/keywords.js','lab/keywords/keywords.css'])
+  assert.equal(fs.existsSync(path),false,'legacy keyword explorer must not be packaged: '+path);
+ const vercel=JSON.parse(fs.readFileSync('vercel.json','utf8'));
+ for(const source of ['/lab/keywords','/lab/keywords/','/lab/keywords/index.html'])
+  assert.ok(vercel.redirects.some(r=>r.source===source&&r.destination==='/lab/'),'Legacy keyword URL no longer redirects: '+source);
 });
 
 
