@@ -605,54 +605,6 @@
       "destination": "/api/admin-site-builder"
     },
     {
-      "source": "/admin/overview",
-      "destination": "/api/admin-site-builder?view=overview"
-    },
-    {
-      "source": "/admin/overview/",
-      "destination": "/api/admin-site-builder?view=overview"
-    },
-    {
-      "source": "/admin/studio",
-      "destination": "/api/admin-site-builder?view=studio"
-    },
-    {
-      "source": "/admin/studio/",
-      "destination": "/api/admin-site-builder?view=studio"
-    },
-    {
-      "source": "/admin/advertisers",
-      "destination": "/api/admin-site-builder?view=advertisers"
-    },
-    {
-      "source": "/admin/advertisers/",
-      "destination": "/api/admin-site-builder?view=advertisers"
-    },
-    {
-      "source": "/admin/suppliers",
-      "destination": "/api/admin-site-builder?view=suppliers"
-    },
-    {
-      "source": "/admin/suppliers/",
-      "destination": "/api/admin-site-builder?view=suppliers"
-    },
-    {
-      "source": "/admin/crm",
-      "destination": "/api/admin-site-builder?view=crm"
-    },
-    {
-      "source": "/admin/crm/",
-      "destination": "/api/admin-site-builder?view=crm"
-    },
-    {
-      "source": "/admin/finance",
-      "destination": "/api/admin-site-builder?view=finance"
-    },
-    {
-      "source": "/admin/finance/",
-      "destination": "/api/admin-site-builder?view=finance"
-    },
-    {
       "source": "/admin/place-insights/api",
       "destination": "/api/compact?op=admin-place-keyword-insights"
     },
@@ -723,14 +675,6 @@
     {
       "source": "/admin/watches/",
       "destination": "/api/admin-site-builder?view=watches"
-    },
-    {
-      "source": "/admin/designs",
-      "destination": "/api/admin-site-builder?view=designs"
-    },
-    {
-      "source": "/admin/designs/",
-      "destination": "/api/admin-site-builder?view=designs"
     },
     {
       "source": "/admin/login",
