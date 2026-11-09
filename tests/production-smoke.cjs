@@ -10,7 +10,7 @@ const cases=[
  {name:'member_history_js',path:'/platform/history.js',expected:[200],contains:'MomentumHistory'},
  {name:'admin_login',path:'/admin/',expected:[200],contains:'관리자 로그인'},
  {name:'admin_connection_private',path:'/admin/connection/',expected:[200],contains:'관리자 로그인'},
- {name:'rank_lab',path:'/lab/rank/',expected:[200],contains:'순위'},
+ {name:'retired_rank_redirect',path:'/lab/rank/',expected:[200],contains:'모멘텀'},
  {name:'member_auth_session',path:'/api/member-auth',expected:[200],json:true,check:x=>x.authenticated===false},
  {name:'member_watches_unauthorized',path:'/api/member-watches',expected:[401],json:true},
  {name:'member_history_unauthorized',path:'/api/member-history',expected:[401],json:true},

@@ -6,8 +6,6 @@ const path=require('node:path');
 const observer=require('../api/_place-observe.js');
 const matrix=require('../api/_rank-keyword-model.js');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'lab/rank/index.html'),'utf8');
-const js=fs.readFileSync(path.join(root,'lab/rank/public-rank.js'),'utf8');
 
 const id=n=>String(10000000+n);
 test('mobile metadata rank may be far from card order; show observed position only, flagged approximate',()=>{
@@ -54,12 +52,9 @@ test('map observed rank may be definite only as visible list position, not organ
  assert.equal(result.rankApproximate,false);
  assert.match(result.message,/광고 제외 자연검색 순위와 다를 수/);
 });
-test('current public rank page retains the live route, shows limitations, and stores no private history',()=>{
- assert.match(html,/\/lab\/rank\/public-rank\.js/);
- assert.match(html,/id="rankForm"/);
- assert.match(html,/비회원의 경우 1일 1회/);
- assert.match(html,/공식 광고 제외 순위와 다를 수/);
- assert.match(js,/\/api\/place-rank-live/);
- assert.doesNotMatch(js,/localStorage/);
- assert.doesNotThrow(()=>new Function('document','window','fetch',js));
+test('retired public rank page does not remove shared admin observer',()=>{
+ for(const file of ['lab/rank/index.html','lab/rank/public-rank.js','api/place-rank-live.js'])
+  assert.equal(fs.existsSync(path.join(root,file)),false,file);
+ assert.equal(fs.existsSync(path.join(root,'api/_place-observe.js')),true);
+ assert.equal(fs.existsSync(path.join(root,'api/_rank-live-shared.js')),true);
 });
