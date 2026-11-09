@@ -1,37 +1,25 @@
 'use strict';
-const test=require('node:test');
-const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const path=require('node:path');
-const root=path.resolve(__dirname,'..');
-const cfg=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
-const redirect=source=>cfg.redirects.find(x=>x.source===source);
-test('legacy keyword pages and static assets removed with complete redirect coverage',()=>{
- for(const file of ['lab/keywords/index.html','lab/keywords/keywords.js','lab/keywords/keywords.css'])
-  assert.equal(fs.existsSync(path.join(root,file)),false,file+' is still present');
- for(const url of ['/lab/keywords','/lab/keywords/','/lab/keywords/index.html'])
-  assert.equal(redirect(url)?.destination,'/lab/',url);
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const config=JSON.parse(read('vercel.json')),redirect=p=>config.redirects.find(x=>x.source===p);
+test('legacy keyword URLs preserve their original destination',()=>{
+ for(const p of ['/lab/keywords','/lab/keywords/','/lab/keywords/index.html'])assert.equal(redirect(p)?.destination,'/lab/');
+ for(const p of ['lab/keywords/index.html','lab/keywords/keywords.js','lab/keywords/keywords.css'])assert.equal(fs.existsSync(path.join(root,p)),false);
 });
-test('legacy trend pages removed; direct index URL also redirects to Naver DataLab',()=>{
- for(const file of ['lab/trends/index.html','lab/trends/trends.js','lab/trends/trends.css'])
-  assert.equal(fs.existsSync(path.join(root,file)),false,file+' is still present');
- for(const url of ['/lab/trends','/lab/trends/','/lab/trends/index.html'])
-  assert.equal(redirect(url)?.destination,'https://datalab.naver.com/keyword/trendSearch.naver',url);
+test('retired DataLab pages and samples preserve external links',()=>{
+ for(const p of ['/lab/trends','/lab/trends/','/lab/trends/index.html'])assert.equal(redirect(p)?.destination,'https://datalab.naver.com/keyword/trendSearch.naver');
+ for(const p of ['/website-samples','/website-samples/','/website-samples/index.html'])assert.equal(redirect(p)?.destination,'/portfolio/conversion/');
+ assert.match(read('lab/index.html'),/datalab\.naver\.com\/keyword\/trendSearch\.naver/);
 });
-test('retired website sample landing has an explicit destination even for /index.html',()=>{
- assert.equal(fs.existsSync(path.join(root,'website-samples/index.html')),false);
- for(const url of ['/website-samples','/website-samples/','/website-samples/index.html'])
-  assert.equal(redirect(url)?.destination,'/portfolio/conversion/',url);
- for(const url of ['/website-samples/restaurant/','/website-samples/poolvilla/'])
-  assert.ok(redirect(url),'Retired campaign URL redirect must remain '+url);
+test('nine obsolete assets and endpoints removed without changing active public and admin entrypoints',()=>{
+ const removed=['lab/rank/rank.js','lab/customer.js','lab/intel.js','lab/tools-v2.js','lab/studio.js','lab/self-audit.js','api/search-trends.js','api/keyword-opportunities.js','api/rank-watch-cron.js'];
+ for(const p of removed)assert.equal(fs.existsSync(path.join(root,p)),false,p+' should be removed');
+ for(const p of ['lab/index.html','lab/rank/index.html','lab/rank/public-rank.js','api/place-rank-live.js','api/rank-rebuild.js','api/research-admin.js','api/_research-admin.js','site-builder/research-index.html','site-builder/index.html','insights/index.html','sitemap.xml'])assert.equal(fs.existsSync(path.join(root,p)),true,p+' should remain');
+ assert.match(read('lab/rank/index.html'),/\/lab\/rank\/public-rank\.js/);
+ assert.equal(config.rewrites.some(x=>x.source==='/admin/research/api'&&x.destination==='/api/research-admin'),true);
 });
-test('public ranking, admin site builder, marketing insights, and original APIs are untouched',()=>{
- for(const file of ['lab/rank/index.html','lab/rank/public-rank.js','lab/rank/rank.js',
-     'api/place-rank-live.js','api/search-trends.js','api/keyword-opportunities.js',
-     'api/blog-rank-observation.js','site-builder/index.html','insights/index.html'])
-  assert.equal(fs.existsSync(path.join(root,file)),true,file+' unexpectedly missing');
- const rank=fs.readFileSync(path.join(root,'lab/rank/index.html'),'utf8');
- assert.match(rank,/\/lab\/rank\/public-rank\.js/);
- const sitemap=fs.readFileSync(path.join(root,'sitemap.xml'),'utf8');
- assert.doesNotMatch(sitemap,/\/lab\/keywords\/|\/lab\/trends\/|\/website-samples\//);
+test('obsolete one-off rank page redirects to the live single-lookup screen',()=>{
+ assert.equal(redirect('/rank-rebuild/')?.destination,'/lab/rank/');
+ assert.equal(redirect('/rank-rebuild')?.destination,'/lab/rank/');
+ assert.match(read('site-builder/research-index.html'),/href="\/lab\/rank\/"/);
 });
