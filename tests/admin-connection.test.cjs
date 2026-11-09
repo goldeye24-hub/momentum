@@ -53,7 +53,7 @@ test('diagnostics remain on the single protected admin API router',()=>{
  assert.ok(cfg.rewrites.some(x=>x.source==='/admin/connection/api'&&x.destination==='/api/compact?op=admin-connection'));
  assert.ok(cfg.rewrites.some(x=>x.source==='/admin/connection/'&&x.destination.includes('view=connection')));
  assert.match(compact,/admin-connection/);
- assert.match(router,/view==='connection'/);
+ assert.match(router,/connection:'connection-index\.html'/);
  assert.match(ui,/\/admin\/connection\/api/);
  assert.doesNotMatch(ui,/service_role|sb_secret_|sb_publishable_|회원 인증/);
  assert.equal(fs.existsSync('api/admin-connection.js'),false);
