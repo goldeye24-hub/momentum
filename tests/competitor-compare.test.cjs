@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../api/_place-competitor-model');
 const handler=require('../server-handlers/admin-competitor-compare');
-const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
+const auth=require('../api/_admin-session'),db=require('../api/_rank-store');
 const A='2085358113',B='1616273949';
 function res(){return{code:0,data:null,setHeader(){},status(code){this.code=code;return this},json(value){this.data=value;return this}}}
 async function stub(config,cb){

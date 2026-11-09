@@ -1,5 +1,5 @@
 'use strict';
-const admin=require('../api/admin-site-builder');
+const admin=require('../api/_admin-session');
 const db=require('../api/_rank-store');
 const diagnosis=require('../api/_db-failure');
 // Only the operator's actual rank/research tables matter. No public accounts.
