@@ -45,7 +45,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020f # v4.4.0
         with:
           node-version: '22'
-      - run: node --test tests/lab.test.cjs tests/search-trends.test.cjs tests/portfolio-photography.test.cjs tests/function-routing-cost.test.cjs tests/vercel-build-guard.test.cjs
+      - name: Cost control and admin routing regression (isolated)
+        run: node --test tests/function-routing-cost.test.cjs tests/vercel-build-guard.test.cjs
+      - name: Legacy site regression suite
+        run: node --test tests/lab.test.cjs tests/search-trends.test.cjs tests/portfolio-photography.test.cjs
 
   browser:
     name: Browser and PNG export checks
