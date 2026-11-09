@@ -54,11 +54,11 @@ test('active compact handlers remain independently authenticated',async()=>{
   assert.equal(r.code,401,op);
  }
 });
-test('legacy Momentum hostname keeps a single admin-login cookie origin',()=>{
+test('admin login routes remain registered while public membership is retired',()=>{
  const cfg=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
- const redirect=cfg.redirects.find(x=>x.has?.some(y=>y.type==='host'&&y.value==='momentum-orcin-delta.vercel.app'));
- assert.ok(redirect);
- assert.equal(redirect.source,'/:path*');
- assert.equal(redirect.destination,'https://momentum-goldeye24-hubs-projects.vercel.app/:path*');
- assert.equal(redirect.permanent,false);
+ for(const route of ['/admin','/admin/','/admin/login','/admin/logout']){
+  assert.ok(cfg.rewrites.some(x=>x.source===route),route);
+ }
+ assert.ok(cfg.redirects.some(x=>x.source==='/platform/:path*'&&x.destination==='/'));
+ assert.ok(!cfg.rewrites.some(x=>x.source==='/api/member-auth'||x.source==='/admin/members'));
 });
