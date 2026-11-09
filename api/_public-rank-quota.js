@@ -10,7 +10,7 @@ const secret=()=>{const s=process.env.MOMENTUM_SESSION_SECRET||'';return s.lengt
 const dateKST=(now=Date.now())=>new Date(now+9*60*60*1000).toISOString().slice(0,10);
 const nextReset=(now=Date.now())=>{
  const date=dateKST(now);
- return Date.parse(date+'T15:00:00.000Z')+DAY_MS;
+ return Date.parse(date+'T15:00:00.000Z');
 };
 const sign=(value,key)=>crypto.createHmac('sha256',key).update('public_rank_day_v1\n'+value).digest('hex');
 function previouslyUsed(req,now=Date.now()){

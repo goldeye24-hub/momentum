@@ -44,11 +44,11 @@ test('free tool has no rank history and opens DataLab directly',()=>{
  const html=fs.readFileSync(path.join(__dirname,'../lab/rank/index.html'),'utf8');
  const js=fs.readFileSync(path.join(__dirname,'../lab/rank/public-rank.js'),'utf8');
  const lab=fs.readFileSync(path.join(__dirname,'../lab/index.html'),'utf8');
- const keyword=fs.readFileSync(path.join(__dirname,'../api/keyword-opportunities.js'),'utf8');
+ assert.equal(fs.existsSync(path.join(__dirname,'../api/keyword-opportunities.js')),false);
  const vercel=JSON.parse(fs.readFileSync(path.join(__dirname,'../vercel.json'),'utf8'));
  assert.match(html,/비회원의 경우 1일 1회만 조회 가능합니다/);
  assert.doesNotMatch(html+js,/localStorage|id="rankTrend"|id="history"/);
  assert.match(lab,/datalab\.naver\.com\/keyword\/trendSearch\.naver/);
  assert.equal(vercel.redirects.some(x=>x.source==='/lab/trends/'&&x.destination.startsWith('https://datalab.naver.com/')),true);
- assert.doesNotMatch(keyword,/tooMany\(ip\)|const limits=new Map\(\)/);
+
 });
