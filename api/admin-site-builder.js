@@ -5,32 +5,9 @@ const fs=require('node:fs');
 const path=require('node:path');
 
 const ASSETS=new Set(['index.html','editor.css','editor.js','kit.js','presets.json','site-template.css','advertisers-index.html','advertisers.css','advertisers.js','suppliers-index.html','suppliers.css','suppliers.js','crm-index.html','crm.css','crm.js','crm-commerce.js','products.json','finance-index.html','finance.css','finance.js','design-editor.html','design-editor.css','design-editor.js','rank-watch-index.html','rank-watch.css','rank-watch.js','keyword-matrix-index.html','keyword-matrix.css','keyword-matrix.js','competitor-compare-index.html','competitor-compare.css','competitor-compare.js','place-keyword-insights-index.html','place-keyword-insights.css','place-keyword-insights.js','connection-index.html','operations-index.html','research-index.html']);
-const COOKIE='momentum_admin_session';
-const SIX_HOURS=6*60*60;
+const {COOKIE,ready,safeCompare,makeCookie,loggedIn,isAuthorized}=require('./_admin-session');
 const MAX_FORM=4096;
 const HEADERS={'Cache-Control':'private, no-store, max-age=0','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin'};
-function ready(){
- const pass=process.env.MOMENTUM_ADMIN_PASSWORD||'';
- const secret=process.env.MOMENTUM_SESSION_SECRET||'';
- return pass.length>=16&&secret.length>=32?{pass,secret}:null;
-}
-function safeCompare(a,b){const aa=Buffer.from(String(a)),bb=Buffer.from(String(b));return aa.length===bb.length&&crypto.timingSafeEqual(aa,bb)}
-function signature(payload,secret){return crypto.createHmac('sha256',secret).update(payload).digest('hex')}
-function makeCookie(secret){
- const payload=String(Math.floor(Date.now()/1000));
- const token=payload+'.'+signature(payload,secret);
- return COOKIE+'='+encodeURIComponent(token)+'; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age='+SIX_HOURS;
-}
-function loggedIn(req,secret){
- const cookies=String(req.headers.cookie||'').split(';').map(x=>x.trim());
- const cookie=cookies.find(x=>x.startsWith(COOKIE+'='));
- if(!cookie)return false;
- let token;try{token=decodeURIComponent(cookie.slice(COOKIE.length+1))}catch{return false}
- const parts=token.split('.');if(parts.length!==2||!/^\d{9,12}$/.test(parts[0]))return false;
- const timestamp=Number(parts[0]),now=Math.floor(Date.now()/1000);
- if(timestamp>now+60||now-timestamp>SIX_HOURS)return false;
- return safeCompare(parts[1],signature(parts[0],secret));
-}
 function pageError(res,status,message){
  res.statusCode=status;res.setHeader('Content-Type','text/html; charset=utf-8');
  res.end('<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="robots" content="noindex"><title>관리자 접근 안내</title><body style="font-family:system-ui;padding:48px;max-width:550px;margin:auto"><h1>'+message+'</h1><p>모멘텀마케팅 관리자 전용 페이지입니다.</p><p><a href="/">고객 사이트로 돌아가기</a></p></body></html>');
@@ -188,4 +165,4 @@ module.exports=async function(req,res){
 };
 
 // Shared read-only session verification for authenticated admin API handlers.
-module.exports.isAuthorized=function(req){const config=ready();return !!config&&loggedIn(req,config.secret)};
+module.exports.isAuthorized=isAuthorized;

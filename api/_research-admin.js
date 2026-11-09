@@ -4,7 +4,7 @@
  * verified by admin-site-builder.isAuthorized. No second password or member
  * impersonation. Only available via the /admin/research/api rewrite.
  */
-const admin=require('./admin-site-builder');
+const admin=require('./_admin-session');
 const validOrigin=req=>{try{const o=new URL(String(req.headers?.origin||''));return o.protocol==='https:'&&o.host===req.headers?.host}catch{return false}};
 const db=require('./_rank-store');
 const place=require('./rank-rebuild');

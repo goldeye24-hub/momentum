@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../api/_place-keyword-insight-model');
 const handler=require('../server-handlers/admin-place-keyword-insights');
-const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
+const auth=require('../api/_admin-session'),db=require('../api/_rank-store');
 const place='2085358113';
 function response(){return{code:0,data:null,setHeader(){},status(n){this.code=n;return this},json(d){this.data=d;return this}}}
 async function stub(config,task){

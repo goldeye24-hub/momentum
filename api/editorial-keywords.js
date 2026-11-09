@@ -1,5 +1,5 @@
 'use strict';
-const admin=require('./admin-site-builder');
+const admin=require('./_admin-session');
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');

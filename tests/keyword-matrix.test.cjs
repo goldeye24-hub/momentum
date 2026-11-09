@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const model=require('../api/_rank-keyword-model');
 const observer=require('../api/_place-observe');
 const handler=require('../server-handlers/admin-keyword-matrix');
-const auth=require('../api/admin-site-builder');
+const auth=require('../api/_admin-session');
 const db=require('../api/_rank-store');
 const sid1='11111111-1111-4111-8111-111111111111',sid2='22222222-2222-4222-8222-222222222222';
 function res(){return {code:0,data:null,headers:{},setHeader(k,v){this.headers[k]=v},status(n){this.code=n;return this},json(v){this.data=v;return this}}}

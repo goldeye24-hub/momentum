@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
-const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store'),gate=require('../api/_rank-live-shared');
+const auth=require('../api/_admin-session'),db=require('../api/_rank-store'),gate=require('../api/_rank-live-shared');
 const handle=require('../server-handlers/admin-rank-watches');
 const ID='11111111-1111-4111-8111-111111111111';
 function reply(){return{code:null,body:null,setHeader(){},status(n){this.code=n;return this},json(x){this.body=x;return this}}}

@@ -1,5 +1,5 @@
 'use strict';
-const auth=require('../api/admin-site-builder');
+const auth=require('../api/_admin-session');
 const db=require('../api/_rank-store');
 const observer=require('../api/_place-observe');
 const sourceGate=require('../api/_rank-live-shared');

@@ -1,6 +1,6 @@
 'use strict';
 /** Admin-only mobile keyword snapshots; no public scraping API or paid promises. */
-const auth=require('../api/admin-site-builder');
+const auth=require('../api/_admin-session');
 const db=require('../api/_rank-store');
 const observer=require('../api/_place-observe');
 const {sharedMeasure}=require('../api/_rank-live-shared');

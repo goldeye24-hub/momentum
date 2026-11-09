@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
 const handler=require('../server-handlers/admin-connection');
-const admin=require('../api/admin-site-builder'),db=require('../api/_rank-store');
+const admin=require('../api/_admin-session'),db=require('../api/_rank-store');
 function res(){return{statusCode:200,headers:{},body:null,setHeader(k,v){this.headers[k]=v},status(n){this.statusCode=n;return this},json(x){this.body=x;return this}}}
 async function mocked(opts,run){
  const prev={authorized:admin.isAuthorized,config:db.config,request:db.request};

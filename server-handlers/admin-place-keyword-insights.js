@@ -1,5 +1,5 @@
 'use strict';
-const auth=require('../api/admin-site-builder'),db=require('../api/_rank-store');
+const auth=require('../api/_admin-session'),db=require('../api/_rank-store');
 const observer=require('../api/_place-observe'),model=require('../api/_place-keyword-insight-model');
 module.exports=async function(req,res){
  res.setHeader('Content-Type','application/json; charset=utf-8');
