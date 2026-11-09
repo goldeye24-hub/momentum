@@ -1,22 +1,24 @@
-# Momentum Lab: retired-feature cleanup (2026-11-09)
+# Momentum redesigned home: retire old standalone web pages (2026-11-09)
 
-Scope confirmed by owner: the active admin-facing Momentum Lab uses the Place ranking monitor, monthly keyword search volume, single Place rank lookup, and a link to Naver DataLab. Public /lab/ and /lab/rank/ remain, as do the existing marketing, CRM, and site-builder pages.
+The new homepage at / is the only general sales landing page. At the
+owner's request, 21 old standalone public pages (13 old service pages,
+five old industries, one about, and two old free-tool pages) were retired.
 
-Removed in the cleanup branch:
-- lab/rank/rank.js
-- lab/customer.js
-- lab/intel.js
-- lab/tools-v2.js
-- lab/studio.js
-- lab/self-audit.js
-- api/search-trends.js
-- api/keyword-opportunities.js
-- api/rank-watch-cron.js
+The original page URLs now permanently redirect to the new main website,
+including direct /index.html paths. The sitemap was updated accordingly.
+Previous Naver DataLab and portfolio demo redirects remain as they were.
 
-Retained: site-builder/research-index.html, api/research-admin.js, api/_research-admin.js, api/rank-rebuild.js, api/_place-observe.js, api/place-rank-live.js, lab/rank/index.html, lab/rank/public-rank.js, the admin/login/CRM/SEO routes, existing redirects and sitemap. NOTE: Removing the disabled cron does not establish daily automated ranking; that was never scheduled in vercel.json.
+The public rank query endpoint (api/place-rank-live.js) and its quota helper
+were removed. This eliminates one explicitly Chromium-bearing serverless
+function. Admin's rank browser modules and API handlers are preserved,
+along with the modern homepage, production inquiries, marketing news and
+insights articles, portfolio demonstrations, and membership/admin data.
 
-Verified user-facing defect: admin research screen previously pointed one-off lookup to /rank-rebuild/ (404); change link and both URL variants to the functioning /lab/rank/ endpoint.
+Old /lab static resources were removed. Service-specific CSS and other
+shared site assets were kept pending a separate dependency review.
 
-No pageview or historical external API caller telemetry was available; removal is based on the declared active workflows and GitHub code references, not proof that endpoint URLs were never requested by a third party. Keep historical SEO redirects.
+Validation:
+node --test tests/site-legacy-retirement.test.cjs tests/active-momentum-workflow.test.cjs tests/retired-pages-redirects.test.cjs tests/search-trends.test.cjs tests/public-free-tools-access.test.cjs
 
-Validation: node --test tests/active-momentum-workflow.test.cjs tests/retired-pages-redirects.test.cjs tests/search-trends.test.cjs tests/public-free-tools-access.test.cjs tests/rank-position-accuracy.test.cjs
+Releasing this change does not immediately remove older retained
+function builds. Vercel Function Storage savings must be checked later.
