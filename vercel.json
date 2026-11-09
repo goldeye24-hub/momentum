@@ -2,13 +2,43 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/lab/rank/index.html",
+      "destination": "/services/place-seo/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/rank/",
+      "destination": "/services/place-seo/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/rank",
+      "destination": "/services/place-seo/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/index.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lab/",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lab",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/rank-rebuild",
-      "destination": "/lab/rank/",
+      "destination": "/services/place-seo/",
       "permanent": false
     },
     {
       "source": "/rank-rebuild/",
-      "destination": "/lab/rank/",
+      "destination": "/services/place-seo/",
       "permanent": false
     },
     {
@@ -23,17 +53,17 @@
     },
     {
       "source": "/lab/keywords/index.html",
-      "destination": "/lab/",
+      "destination": "/",
       "permanent": false
     },
     {
       "source": "/lab/keywords/",
-      "destination": "/lab/",
+      "destination": "/",
       "permanent": false
     },
     {
       "source": "/lab/keywords",
-      "destination": "/lab/",
+      "destination": "/",
       "permanent": false
     },
     {
@@ -469,10 +499,6 @@
   "functions": {
     "api/admin-site-builder.js": {
       "includeFiles": "site-builder/**"
-    },
-    "api/place-rank-live.js": {
-      "maxDuration": 30,
-      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     },
     "api/compact.js": {
       "maxDuration": 30,
