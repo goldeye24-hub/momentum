@@ -561,6 +561,36 @@
       "source": "/site-builder/:path*",
       "destination": "/admin/",
       "permanent": false
+    },
+    {
+      "source": "/admin/overview",
+      "destination": "/admin/research/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/overview/",
+      "destination": "/admin/research/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/studio",
+      "destination": "/admin/research/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/studio/",
+      "destination": "/admin/research/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/designs",
+      "destination": "/admin/research/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/designs/",
+      "destination": "/admin/research/",
+      "permanent": false
     }
   ],
   "rewrites": [
@@ -603,22 +633,6 @@
     {
       "source": "/admin/",
       "destination": "/api/admin-site-builder"
-    },
-    {
-      "source": "/admin/overview",
-      "destination": "/api/admin-site-builder?view=overview"
-    },
-    {
-      "source": "/admin/overview/",
-      "destination": "/api/admin-site-builder?view=overview"
-    },
-    {
-      "source": "/admin/studio",
-      "destination": "/api/admin-site-builder?view=studio"
-    },
-    {
-      "source": "/admin/studio/",
-      "destination": "/api/admin-site-builder?view=studio"
     },
     {
       "source": "/admin/advertisers",
@@ -723,14 +737,6 @@
     {
       "source": "/admin/watches/",
       "destination": "/api/admin-site-builder?view=watches"
-    },
-    {
-      "source": "/admin/designs",
-      "destination": "/api/admin-site-builder?view=designs"
-    },
-    {
-      "source": "/admin/designs/",
-      "destination": "/api/admin-site-builder?view=designs"
     },
     {
       "source": "/admin/login",
