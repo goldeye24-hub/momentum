@@ -31,3 +31,37 @@ test('protected research dashboard no longer links to removed public ranking too
  for(const file of ['site-builder/research-index.html','site-builder/rank-watch-index.html','site-builder/keyword-matrix-index.html'])
   assert.ok(!fs.readFileSync(path.join(root,file),'utf8').includes('href="/lab/rank/"'),file);
 });
+
+
+const retiredStandaloneCss=[
+  "industries/site.css",
+  "services/creative-premium.css",
+  "services/design-collection.css",
+  "services/distinct-visuals.css",
+  "services/education-agency.css",
+  "services/landing-v2.css",
+  "services/menu-extensions.css",
+  "services/press-products.css",
+  "services/service-visuals.css",
+  "services/site.css",
+  "services/sns-products.css",
+  "services/utility-visuals.css",
+  "services/websites/websites.css"
+];
+test('retired standalone styles are absent from active source files',()=>{
+ const skip=new Set(['.git','.github','.vercel','.next','node_modules','tests','docs','db','coverage']);
+ const files=[];
+ function visit(dir){
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+   const full=path.join(dir,entry.name);
+   if(entry.isDirectory()){if(!skip.has(entry.name))visit(full);continue;}
+   if(entry.isFile()&&/\.(?:html|css|js|json|cjs|mjs)$/.test(entry.name))files.push(full);
+  }
+ }
+ visit(root);
+ const active=files.map(file=>({file:path.relative(root,file),content:fs.readFileSync(file,'utf8')}));
+ for(const css of retiredStandaloneCss){
+  assert.equal(fs.existsSync(path.join(root,css)),false,'retired stylesheet still exists: '+css);
+  for(const source of active)assert.equal(source.content.includes(css),false,source.file+' still references '+css);
+ }
+});
