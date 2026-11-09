@@ -474,9 +474,6 @@
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     },
-    "api/rank-watch-cron.js": {
-      "maxDuration": 60
-    },
     "api/compact.js": {
       "maxDuration": 30,
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
