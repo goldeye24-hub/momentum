@@ -4,7 +4,7 @@
  * grant admin status to normal members; the email must match the Vercel allowlist.
  * No secret, OTP, or access token is stored in GitHub or the client.
  */
-const auth = require('./_member-session');
+const auth = require('./_admin-auth-provider');
 function allowedEmail(){
   const email=String(process.env.MOMENTUM_ADMIN_EMAIL||'').trim().toLowerCase();
   return /^[^\s@]{1,64}@[^\s@]{1,180}\.[^\s@]+$/.test(email)?email:null;

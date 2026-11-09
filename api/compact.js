@@ -7,7 +7,6 @@
 const handlers=Object.freeze({
  'admin-keyword-matrix':require('../server-handlers/admin-keyword-matrix'),
  'admin-competitor-compare':require('../server-handlers/admin-competitor-compare'),
- 'admin-members':require('../server-handlers/admin-members'),
  'admin-place-keyword-insights':require('../server-handlers/admin-place-keyword-insights'),
  'admin-rank-watches':require('../server-handlers/admin-rank-watches'),
  'admin-connection':require('../server-handlers/admin-connection')

@@ -1,66 +1,62 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const compact=require('../api/compact');
-const moved=[
- 'admin-keyword-matrix','admin-competitor-compare','admin-members',
- 'admin-place-keyword-insights','member-auth','member-watches','member-history','admin-rank-watches'
+const active=[
+ 'admin-keyword-matrix','admin-competitor-compare',
+ 'admin-place-keyword-insights','admin-rank-watches'
 ];
 const root=path.resolve(__dirname,'..');
 function mockResponse(){
  return {code:200,headers:{},data:null,setHeader(k,v){this.headers[k]=v},
   status(n){this.code=n;return this},json(value){this.data=value;return this}};
 }
-test('Hobby deployments expose no more than twelve standalone API entrypoints',()=>{
- const filenames=fs.readdirSync(path.join(root,'api')).filter(name=>name.endsWith('.js')&&!name.startsWith('_'));
- assert.ok(filenames.length<=12,'Standalone endpoints '+filenames.length+': '+filenames.join(', '));
- assert.ok(filenames.includes('compact.js'));
- for(const name of moved){
-  assert.ok(!filenames.includes(name+'.js'),'Old standalone function must not remain: '+name);
+test('the current admin-only site has at most twelve standalone API entrypoints',()=>{
+ const names=fs.readdirSync(path.join(root,'api')).filter(n=>n.endsWith('.js')&&!n.startsWith('_'));
+ assert.ok(names.length<=12,'Standalone functions: '+names.join(', '));
+ assert.ok(names.includes('compact.js'));
+ for(const name of active){
+  assert.ok(!names.includes(name+'.js'));
   assert.ok(fs.existsSync(path.join(root,'server-handlers',name+'.js')));
  }
+ for(const name of ['member-auth','member-watches','member-history','admin-members'])
+  assert.ok(!fs.existsSync(path.join(root,'server-handlers',name+'.js')),name);
 });
-test('each former API URL is rewritten to an allowlisted compact handler',()=>{
- const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
- for(const name of moved){
-  assert.ok(config.rewrites.some(x=>x.source==='/api/'+name&&
-    x.destination==='/api/compact?op='+name),'Missing compatibility route: '+name);
+test('only active administrator routes are rewritten into the compact API handler',()=>{
+ const cfg=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+ for(const name of active){
+  assert.ok(cfg.rewrites.some(x=>x.source==='/api/'+name&&x.destination==='/api/compact?op='+name),name);
  }
  for(const [route,op] of [
   ['/admin/keyword-matrix/api','admin-keyword-matrix'],
   ['/admin/place-insights/api','admin-place-keyword-insights'],
   ['/admin/competitors/api','admin-competitor-compare'],
-  ['/admin/members/api','admin-members'],
-  ['/admin/watches/api','admin-rank-watches']
+  ['/admin/watches/api','admin-rank-watches'],
+  ['/admin/connection/api','admin-connection']
  ]){
-  assert.ok(config.rewrites.some(x=>x.source===route&&x.destination==='/api/compact?op='+op));
+  assert.ok(cfg.rewrites.some(x=>x.source===route&&x.destination==='/api/compact?op='+op),route);
  }
- assert.ok(config.functions['api/compact.js'].includeFiles.includes('@sparticuz/chromium'));
- for(const name of moved)assert.equal(config.functions['api/'+name+'.js'],undefined);
+ assert.ok(cfg.functions['api/compact.js'].includeFiles.includes('@sparticuz/chromium'));
+ for(const name of ['admin-members','member-auth','member-watches','member-history'])
+  assert.ok(!cfg.rewrites.some(x=>x.source.includes(name)||x.destination.includes('op='+name)));
 });
-test('invalid router operation never reads a handler or leaks an internal error',async()=>{
- const r=mockResponse();
- await compact({method:'POST',query:{op:'../../_rank-store'},headers:{}},r);
- assert.equal(r.code,404);assert.match(r.data.error,/지원하지 않는/);
- assert.equal(r.headers['Cache-Control'],'private, no-store');
+test('invalid or retired router operations always reject',async()=>{
+ for(const op of ['../../_rank-store','admin-members','member-auth','member-watches','member-history']){
+  const r=mockResponse();
+  await compact({method:'POST',query:{op},headers:{}},r);
+  assert.equal(r.code,404,op);assert.match(r.data.error,/지원하지 않는/);
+  assert.equal(r.headers['Cache-Control'],'private, no-store');
+ }
 });
-test('all previously protected API handlers remain independently authenticated',async()=>{
- for(const op of moved){
+test('active compact handlers remain independently authenticated',async()=>{
+ for(const op of [...active,'admin-connection']){
   const r=mockResponse();
   await compact({method:'GET',query:{op},headers:{}},r);
-  if(op==='member-auth'){
-   // Login status is deliberately public. An unconfigured Auth service
-   // returns 503; a configured service without cookies returns anonymous.
-   assert.ok([200,503].includes(r.code));
-   if(r.code===200)assert.equal(r.data.authenticated,false);
-  }else{
-   assert.equal(r.code,401,'Unauthenticated request should fail for '+op);
-  }
+  assert.equal(r.code,401,op);
  }
 });
-
-test('legacy Momentum hostname redirects to the one login-cookie origin',()=>{
- const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
- const redirect=config.redirects.find(x=>x.has?.some(item=>item.type==='host'&&item.value==='momentum-orcin-delta.vercel.app'));
+test('legacy Momentum hostname keeps a single admin-login cookie origin',()=>{
+ const cfg=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+ const redirect=cfg.redirects.find(x=>x.has?.some(y=>y.type==='host'&&y.value==='momentum-orcin-delta.vercel.app'));
  assert.ok(redirect);
  assert.equal(redirect.source,'/:path*');
  assert.equal(redirect.destination,'https://momentum-goldeye24-hubs-projects.vercel.app/:path*');

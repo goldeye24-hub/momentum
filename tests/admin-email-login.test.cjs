@@ -2,7 +2,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const helper=require('../api/_admin-email-login');
-const auth=require('../api/_member-session');
+const auth=require('../api/_admin-auth-provider');
 
 test('email login is opt-in and requires configured authentication',()=>{
  const prior={...process.env},original=auth.configured;

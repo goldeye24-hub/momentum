@@ -589,36 +589,12 @@
       "destination": "/api/compact?op=admin-competitor-compare"
     },
     {
-      "source": "/api/admin-members",
-      "destination": "/api/compact?op=admin-members"
-    },
-    {
       "source": "/api/admin-place-keyword-insights",
       "destination": "/api/compact?op=admin-place-keyword-insights"
     },
     {
-      "source": "/api/member-auth",
-      "destination": "/api/compact?op=member-auth"
-    },
-    {
-      "source": "/api/member-watches",
-      "destination": "/api/compact?op=member-watches"
-    },
-    {
-      "source": "/api/member-history",
-      "destination": "/api/compact?op=member-history"
-    },
-    {
       "source": "/api/admin-rank-watches",
       "destination": "/api/compact?op=admin-rank-watches"
-    },
-    {
-      "source": "/platform",
-      "destination": "/platform/index.html"
-    },
-    {
-      "source": "/platform/",
-      "destination": "/platform/index.html"
     },
     {
       "source": "/admin",
@@ -735,18 +711,6 @@
     {
       "source": "/admin/connection/",
       "destination": "/api/admin-site-builder?view=connection"
-    },
-    {
-      "source": "/admin/members/api",
-      "destination": "/api/compact?op=admin-members"
-    },
-    {
-      "source": "/admin/members",
-      "destination": "/api/admin-site-builder?view=members"
-    },
-    {
-      "source": "/admin/members/",
-      "destination": "/api/admin-site-builder?view=members"
     },
     {
       "source": "/admin/watches/api",

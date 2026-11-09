@@ -5,7 +5,7 @@
  * impersonation. Only available via the /admin/research/api rewrite.
  */
 const admin=require('./admin-site-builder');
-const member=require('./_member-session');
+const validOrigin=req=>{try{const o=new URL(String(req.headers?.origin||''));return o.protocol==='https:'&&o.host===req.headers?.host}catch{return false}};
 const db=require('./_rank-store');
 const place=require('./rank-rebuild');
 const searchVolume=require('./_research-volume-core');
@@ -62,7 +62,7 @@ module.exports=async function(req,res){
  );
  if(!authorized)return fail(res,401,'admin_login_required','기존 모멘텀 관리자 인증이 필요합니다. /admin/에서 로그인하세요.');
  if(!['GET','POST'].includes(req.method))return fail(res,405,'method_not_allowed','GET 또는 POST만 허용됩니다.');
- if(req.method==='POST'&&!member.validOrigin(req))return fail(res,403,'invalid_origin','요청 출처가 올바르지 않습니다.');
+ if(req.method==='POST'&&!validOrigin(req))return fail(res,403,'invalid_origin','요청 출처가 올바르지 않습니다.');
  // Direct verified observations for temporary browser-local records.
  // Admin session and same-origin are mandatory. Never accept a client rank.
  if(action==='scan-rank-direct'&&req.method==='POST'){

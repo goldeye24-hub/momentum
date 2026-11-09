@@ -4,16 +4,10 @@
 const ORIGIN=(process.env.MOMENTUM_SMOKE_BASE||'https://momentum-goldeye24-hubs-projects.vercel.app').replace(/\/$/,'');
 const cases=[
  {name:'marketing_home',path:'/',expected:[200],contains:'모멘텀'},
- {name:'member_portal',path:'/platform/',expected:[200],contains:'회원 로그인'},
- {name:'member_js',path:'/platform/portal.js',expected:[200],contains:'REMEMBER_EMAIL_KEY'},
- {name:'member_css',path:'/platform/portal.css',expected:[200],contains:'.remember-email'},
- {name:'member_history_js',path:'/platform/history.js',expected:[200],contains:'MomentumHistory'},
+ {name:'retired_member_portal_redirect',path:'/platform/',expected:[200],contains:'모멘텀'},
  {name:'admin_login',path:'/admin/',expected:[200],contains:'관리자 로그인'},
  {name:'admin_connection_private',path:'/admin/connection/',expected:[200],contains:'관리자 로그인'},
  {name:'retired_rank_redirect',path:'/lab/rank/',expected:[200],contains:'모멘텀'},
- {name:'member_auth_session',path:'/api/member-auth',expected:[200],json:true,check:x=>x.authenticated===false},
- {name:'member_watches_unauthorized',path:'/api/member-watches',expected:[401],json:true},
- {name:'member_history_unauthorized',path:'/api/member-history',expected:[401],json:true},
  {name:'admin_connection_unauthorized',path:'/admin/connection/api',expected:[401],json:true},
  {name:'keyword_matrix_unauthorized',path:'/admin/keyword-matrix/api',expected:[401],json:true},
  {name:'competitors_unauthorized',path:'/admin/competitors/api',expected:[401],json:true},
