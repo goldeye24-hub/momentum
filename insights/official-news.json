@@ -1,6 +1,14 @@
 {
-  "lastAddedKST": "2026-11-05",
+  "lastAddedKST": "2026-11-12",
   "items": [
+    {
+      "title": "Moving to a CDN without overwhelming your origin (or blocking Googlebot)",
+      "date": "2026-11-11",
+      "url": "https://developers.google.com/search/blog/2026/11/crawling-cdn",
+      "source": "Google 검색센터",
+      "category": "seo",
+      "addedOnKST": "2026-11-12"
+    },
     {
       "title": "Search Central Live in Zurich is back!",
       "date": "2026-11-04",
