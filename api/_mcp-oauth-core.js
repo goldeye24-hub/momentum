@@ -34,7 +34,9 @@ function verify(kind,value){
  return o;
 }
 function validClient(id){
- return typeof id==='string' && /^https:\/\/chatgpt\.com\/oauth\/(?:client\.json|[A-Za-z0-9_-]{1,128}\/client\.json)$/.test(id);
+ if(typeof id!=='string'||id.length>1000)return false;
+ let u;try{u=new URL(id)}catch{return false}
+ return u.protocol==='https:'&&u.hostname==='chatgpt.com'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname.endsWith('.json');
 }
 async function verifyClientRedirect(clientId,redirectUri){
  if(!validClient(clientId)||typeof redirectUri!=='string'||redirectUri.length>1500)return false;
