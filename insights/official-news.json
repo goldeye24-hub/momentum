@@ -1,6 +1,14 @@
 {
-  "lastAddedKST": "2026-11-14",
+  "lastAddedKST": "2026-11-17",
   "items": [
+    {
+      "title": "New filtering and reporting capabilities in the Search Analytics API",
+      "date": "2026-11-16",
+      "url": "https://developers.google.com/search/blog/2026/11/search-analytics-api-update",
+      "source": "Google 검색센터",
+      "category": "seo",
+      "addedOnKST": "2026-11-17"
+    },
     {
       "title": "We’re introducing a new transparency tool for invalid traffic in Google Ads.",
       "date": "2026-11-12",
